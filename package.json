@@ -1,0 +1,66 @@
+{
+  "name": "@bioinsilico/rcsb-saguaro-3d",
+  "version": "0.0.1",
+  "description": "RCSB Molstar/Saguaro Web App",
+  "main": "dist/config.js",
+  "scripts": {
+    "tsc": "tsc",
+    "build": "webpack --config ./webpack.config.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/rcsb/rcsb-saguaro-3d.git"
+  },
+  "keywords": [
+    "3D",
+    "structure",
+    "1D",
+    "viewer",
+    "sequence",
+    "annotations",
+    "gene",
+    "protein",
+    "PDB",
+    "RCSB",
+    "UniProt"
+  ],
+  "author": "Joan Segura Mora <joan.segura@rcsb.org>",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.10.4",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "@types/react": "^16.9.41",
+    "@types/react-dom": "^16.9.8",
+    "babel-loader": "^8.1.0",
+    "css-loader": "^3.6.0",
+    "node-sass": "^4.14.1",
+    "react-icons": "^3.11.0",
+    "sass-loader": "^7.3.1",
+    "style-loader": "^1.2.1",
+    "ts-loader": "^6.2.2",
+    "typedoc": "^0.17.8",
+    "typescript": "^3.9.6",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "mini-css-extract-plugin": "^0.9.0"
+  },
+  "dependencies": {
+    "@bioinsilico/rcsb-saguaro-app": "^0.9.13",
+    "molstar": "^1.1.33"
+  },
+  "bugs": {
+    "url": "https://github.com/rcsb/rcsb-saguaro-3d/issues"
+  },
+  "homepage": "https://rcsb.github.io/rcsb-saguaro-3d",
+  "directories": {
+    "doc": "docs",
+    "example": "examples"
+  }
+}
