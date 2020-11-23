@@ -4,16 +4,12 @@ module.exports = [{
     //mode: "development",
     mode: "production",
     entry: {
-        'RcsbFv3D':'./src/RcsbFv3DBuilder.tsx',
-        'rcsb-saguaro-3d':'./src/RcsbSaguaro3D.js'
+        'RcsbFv3D':'./dist/src/RcsbFv3DBuilder.js',
+        'rcsb-saguaro-3d':'./dist/src/RcsbSaguaro3D.js'
     },
     module: {
       rules: [
         {
-          test: /\.tsx?$/,
-          loader: 'ts-loader',
-          exclude: /node_modules/
-        },{
           test: /\.jsx?$/,
           loader: 'babel-loader',
           exclude: [/node_modules/]
@@ -45,7 +41,7 @@ module.exports = [{
         library: 'RcsbFv3D',
         libraryTarget: 'umd',
         umdNamedDefine: true,
-        path: path.resolve(__dirname, 'dist')
+        path: path.resolve(__dirname, 'dist/build/')
     },
     devtool: 'source-map',
 }];

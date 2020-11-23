@@ -1,10 +1,24 @@
+$div-main-width: 1550px;
 
+.rcsbFvMain {
+  width: 90vw;
+  position: relative;
+  left: calc(-45vw + 50%);
+  display: flex;
+  justify-content: center;
+}
+
+.rcsbFvInnerDiv {
+  border: #eee 1px solid;
+  border-radius: 5px;
+  display: flex;
+}
 
 .rcsbFvMain * {
   box-sizing: border-box;
 }
 
 .rcsbFvCell {
-  float: left;
+  display: inline-block;
 }
 

@@ -13,17 +13,20 @@ interface RcsbFv3DInterface {
 export class RcsbFv3D extends React.Component <RcsbFv3DInterface, RcsbFv3DInterface > {
 
     private currentAsymId: string;
+    private readonly size: number = 500;
 
     render(): JSX.Element {
         return (
             <div className={classes.rcsbFvMain} >
-                <div id={RcsbFvDOMConstants.SELECT_PFV_ID} style={{display: "inline-block"}}/>
-                <div>
-                    <div id={RcsbFvDOMConstants.PFV_ID} className={classes.rcsbFvCell}>
-                        <div id ={RcsbFvDOMConstants.PFV_APP_ID} />
+                <div className={classes.rcsbFvInnerDiv} style={{paddingBottom:10}}>
+                    <div className={classes.rcsbFvCell} style={{minHeight:this.size, marginTop:10, marginLeft:10, marginBottom:10}} >
+                        <div id={RcsbFvDOMConstants.SELECT_PFV_ID} />
+                        <div id={RcsbFvDOMConstants.PFV_ID} >
+                            <div id ={RcsbFvDOMConstants.PFV_APP_ID} />
+                        </div>
                     </div>
-                    <div id={RcsbFvDOMConstants.MOLSTAR_ID} style={{width:600, height: 600, marginLeft:50}} className={classes.rcsbFvCell}>
-                        <div id={RcsbFvDOMConstants.MOLSTAR_APP_ID} style={{position: "absolute", width:600, height: 600}} />
+                    <div id={RcsbFvDOMConstants.MOLSTAR_ID} style={{width:this.size, minHeight: this.size, height: "100%", marginLeft:5}} className={classes.rcsbFvCell}>
+                        <div id={RcsbFvDOMConstants.MOLSTAR_APP_ID} style={{position: "absolute", width:this.size, minHeight:this.size, height:"98%"}} />
                     </div>
                 </div>
             </div>
@@ -35,6 +38,7 @@ export class RcsbFv3D extends React.Component <RcsbFv3DInterface, RcsbFv3DInterf
         msPlugin.setBackground(0xffffff);
         msPlugin.load({url:'//files.rcsb.org/download/'+this.props.entryId+'.cif'});
         setBoardConfig({
+            trackWidth: 600,
             elementClickCallBack:(e:{begin:number, end:number|undefined})=>{
                 if(e == null)
                     return;

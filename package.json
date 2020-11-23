@@ -2,10 +2,19 @@
   "name": "@bioinsilico/rcsb-saguaro-3d",
   "version": "0.0.1",
   "description": "RCSB Molstar/Saguaro Web App",
-  "main": "dist/config.js",
+  "main": "dist/build/RcsbFv3DBuilder.js",
+  "files": [
+    "dist/build/config.js",
+    "dist/build/*ts"
+  ],
   "scripts": {
     "tsc": "tsc",
     "build": "webpack --config ./webpack.config.js",
+    "buildApp": "npm run cleanAll && npm run tsc && npm run cpStyles && npm run copyConfig && npm run build && npm run clean",
+    "cpStyles": "ncp src/styles dist/src/styles",
+    "copyConfig": "ncp dist/src/config.js dist/build/config.js",
+    "clean": "del-cli dist/src",
+    "cleanAll": "npm run clean && del-cli dist/build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -38,7 +47,12 @@
     "@types/react-dom": "^16.9.8",
     "babel-loader": "^8.1.0",
     "css-loader": "^3.6.0",
+    "del-cli": "^3.0.1",
+    "mini-css-extract-plugin": "^0.9.0",
+    "ncp": "^2.0.0",
     "node-sass": "^4.14.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "react-icons": "^3.11.0",
     "sass-loader": "^7.3.1",
     "style-loader": "^1.2.1",
@@ -46,10 +60,7 @@
     "typedoc": "^0.17.8",
     "typescript": "^3.9.6",
     "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.12",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "mini-css-extract-plugin": "^0.9.0"
+    "webpack-cli": "^3.3.12"
   },
   "dependencies": {
     "@bioinsilico/rcsb-saguaro-app": "^0.9.13",

@@ -2,10 +2,11 @@
   "compilerOptions": {
     "outDir": "./dist/src/",
     "noImplicitAny": true,
-    "target": "es6",
+    "target": "es5",
     "module": "commonjs",
     "jsx": "react",
-    "lib": [ "dom", "es2017" ],
+    "lib": [ "es6", "dom", "esnext.asynciterable", "es2016"  ],
+    "allowJs": true,
     "declaration": true,
     "sourceMap": true,
     "strictNullChecks": true,
