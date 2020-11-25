@@ -1,9 +1,10 @@
 {
   "name": "@bioinsilico/rcsb-saguaro-3d",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "RCSB Molstar/Saguaro Web App",
   "main": "dist/build/RcsbFv3DBuilder.js",
   "files": [
+    "dist/build/rcsb-saguaro-3d.js",
     "dist/build/config.js",
     "dist/build/*ts"
   ],
