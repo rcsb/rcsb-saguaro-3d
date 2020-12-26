@@ -1,103 +1,103 @@
-
-import {setBoardConfig, buildAssemblySequenceFv, getRcsbFv, unmount } from '@bioinsilico/rcsb-saguaro-app';
-import {RcsbFvMolstar} from './RcsbFvMolstar';
 import * as React from "react";
 import * as classes from './styles/RcsbFvStyle.module.scss';
-import './styles/RcsbFvMolstarStyle.module.scss';
-import {RcsbFvDOMConstants} from "./RcsbFvConstants";
 
-interface RcsbFv3DInterface {
-    entryId: string;
-    closeCallback: () => void;
-    title?: string;
-    subtitle?: string;
+import {MolstarPlugin} from './RcsbFvStructure/StructurePlugins/MolstarPlugin';
+import {SaguaroPluginInterface} from './RcsbFvStructure/StructurePlugins/SaguaroPluginInterface';
+
+import './styles/RcsbFvMolstarStyle.module.scss';
+import {RcsbFvSequence, SequenceViewInterface} from "./RcsbFvSequence/RcsbFvSequence";
+import {RcsbFvStructure, StructureViewInterface} from "./RcsbFvStructure/RcsbFvStructure";
+import {
+    EventType,
+    RcsbFvContextManager,
+    RcsbFvContextManagerInterface,
+    UpdateConfigInterface
+} from "./RcsbFvContextManager/RcsbFvContextManager";
+import {Subscription} from "rxjs";
+import {PluginContext} from "molstar/lib/mol-plugin/context";
+import {RcsbFvSelection} from "./RcsbFvSelection/RcsbFvSelection";
+
+export interface RcsbFv3DInterface {
+    structurePanelConfig:StructureViewInterface;
+    sequencePanelConfig: SequenceViewInterface;
+    id: string;
+    ctxManager: RcsbFvContextManager;
 }
 
-export class RcsbFv3D extends React.Component <RcsbFv3DInterface, RcsbFv3DInterface > {
+export class RcsbFv3D extends React.Component <RcsbFv3DInterface, {structurePanelConfig:StructureViewInterface, sequencePanelConfig:SequenceViewInterface}> {
 
-    private currentAsymId: string;
-    private readonly pfvScreenFraction = 0.55;
-    private msPlugin: RcsbFvMolstar;
+    private readonly pfvScreenFraction = 0.5;
+    private readonly plugin: SaguaroPluginInterface;
+    private readonly selection: RcsbFvSelection = new RcsbFvSelection();
+    private subscription: Subscription;
+
+    readonly state: {structurePanelConfig:StructureViewInterface, sequencePanelConfig:SequenceViewInterface} = {
+        structurePanelConfig: this.props.structurePanelConfig,
+        sequencePanelConfig: this.props.sequencePanelConfig
+    }
+
+    constructor(props: RcsbFv3DInterface) {
+        super(props);
+        this.plugin = new MolstarPlugin(this.selection);
+    }
 
     render(): JSX.Element {
-        document.body.style.overflow = "hidden";
         return (
             <div className={classes.rcsbFvMain} >
-                    <div id={RcsbFvDOMConstants.MOLSTAR_ID} style={{width:Math.round((1-this.pfvScreenFraction)*100).toString()+"%"}} className={classes.rcsbFvCell}>
-                        <div id={RcsbFvDOMConstants.MOLSTAR_APP_ID} style={{position: "absolute", width:Math.round((1-this.pfvScreenFraction)*100).toString()+"%", height:"100%"}} />
-                    </div>
-                    <div className={classes.rcsbFvCell} style={{width:Math.round((this.pfvScreenFraction)*100).toString()+"%", paddingLeft: 10, paddingTop:10, borderLeft: "1px solid #ccc"}} >
-                        {this.createTitle()}
-                        {this.createSubtitle()}
-                        <div>
-                            <div id={RcsbFvDOMConstants.SELECT_ASSEMBLY_PFV_ID} style={{display:"inline-block"}}/>
-                            <div id={RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID} style={{display:"inline-block", marginLeft:5}}/>
-                        </div>
-                        <div id={RcsbFvDOMConstants.PFV_ID} >
-                            <div id ={RcsbFvDOMConstants.PFV_APP_ID} />
-                        </div>
-                    </div>
-                <div id={RcsbFvDOMConstants.CLOSE_ID} className={classes.rcsbFvClose} onClick={this.close.bind(this)}>CLOSE</div>
+                <div style={{width:Math.round((1-this.pfvScreenFraction)*100).toString()+"%", height:"100%"}} className={classes.rcsbFvCell}>
+                    <RcsbFvStructure
+                        {...this.state.structurePanelConfig}
+                        componentId={this.props.id}
+                        plugin={this.plugin}
+                        selection={this.selection}
+                    />
+                </div>
+                <div style={{width:Math.round((this.pfvScreenFraction)*100).toString()+"%", height:"100%"}} className={classes.rcsbFvCell}>
+                    <RcsbFvSequence
+                        type={this.state.sequencePanelConfig.type}
+                        config={this.state.sequencePanelConfig.config}
+                        componentId={this.props.id}
+                        plugin={this.plugin}
+                        selection={this.selection}
+                    />
+                </div>
             </div>
         );
     }
 
-    private close(): void {
-        document.body.style.overflow = "visible";
-        unmount(RcsbFvDOMConstants.PFV_APP_ID);
-        this.props.closeCallback();
-    }
-
-    private createTitle(): JSX.Element | null{
-        if(this.props.title)
-            return (<div id={RcsbFvDOMConstants.TITLE_ID} className={classes.rcsbFvTitle}>{this.props.title}</div>)
-        return null;
-    }
-
-    private createSubtitle(): JSX.Element | null{
-        if(this.props.subtitle)
-            return (<div id={RcsbFvDOMConstants.SUBTITLE_ID} className={classes.rcsbFvSubtitle}>{this.props.subtitle}</div>)
-        return null;
-    }
-
-    componentDidMount(): void {
-        this.msPlugin = new RcsbFvMolstar(RcsbFvDOMConstants.MOLSTAR_APP_ID);
-        this.msPlugin.setBackground(0xffffff);
-        this.msPlugin.load({url:'//files.rcsb.org/download/'+this.props.entryId+'.cif'});
-        const width: number = window.innerWidth*this.pfvScreenFraction;
-        const trackWidth: number = width - 190 - 55;
-        setBoardConfig({
-            trackWidth: trackWidth,
-            elementClickCallBack:(e:{begin:number, end:number|undefined})=>{
-                if(e == null)
-                    return;
-                const x = e.begin;
-                const y = e.end ?? e.begin;
-                this.msPlugin.interactivity.select(this.currentAsymId, x, y);
-            }
-        });
-        buildAssemblySequenceFv(
-            RcsbFvDOMConstants.PFV_APP_ID,
-            RcsbFvDOMConstants.SELECT_ASSEMBLY_PFV_ID,
-            RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID,
-            this.props.entryId,
-            (x)=>{
-                this.msPlugin.load({url:'//files.rcsb.org/download/'+this.props.entryId+'.cif', assemblyId: x == "Model" ? "" : x});
-            },
-            (x)=>{
-            this.currentAsymId = x.asymId;
-            }
-        );
-        window.addEventListener('resize', this.updatePfvDimensions.bind(this));
+    componentDidMount() {
+        this.subscription = this.subscribe();
     }
 
     componentWillUnmount() {
-        window.removeEventListener('resize', this.updatePfvDimensions.bind(this));
+        this.unsubscribe();
     }
 
-    private updatePfvDimensions(): void{
-        const width: number = window.innerWidth*this.pfvScreenFraction;
-        const trackWidth: number = width - 190 - 55;
-        getRcsbFv(RcsbFvDOMConstants.PFV_APP_ID).updateBoardConfig({boardConfigData:{trackWidth:trackWidth}});
+    private subscribe(): Subscription{
+        return this.props.ctxManager.subscribe((obj:RcsbFvContextManagerInterface)=>{
+            if(obj.eventType == EventType.UPDATE_CONFIG){
+                this.updateConfig(obj.eventData as UpdateConfigInterface)
+            }else if(obj.eventType == EventType.PLUGIN_CALL){
+                this.plugin.pluginCall(obj.eventData as ((f:PluginContext)=>void));
+            }
+        });
     }
+
+    /**Unsubscribe className to rxjs events. Useful if many panels are created an destroyed.*/
+    private unsubscribe(): void{
+        this.subscription.unsubscribe();
+    }
+
+    private updateConfig(config:UpdateConfigInterface){
+        const structureConfig: StructureViewInterface | undefined = config.structurePanelConfig;
+        const sequenceConfig: SequenceViewInterface | undefined = config.sequencePanelConfig;
+        if(structureConfig != null && sequenceConfig != null){
+            this.setState({structurePanelConfig:structureConfig, sequencePanelConfig:sequenceConfig});
+        }else if(structureConfig != null){
+            this.setState({structurePanelConfig:structureConfig});
+        }else if(sequenceConfig != null){
+            this.setState({sequencePanelConfig: sequenceConfig});
+        }
+    }
+
 }

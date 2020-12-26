@@ -1,19 +1,16 @@
 const path = require('path');
 
-module.exports = [{
-    //mode: "development",
-    mode: "production",
-    entry: {
-        'RcsbFv3D':'./dist/src/RcsbFv3DBuilder.js',
-        'rcsb-saguaro-3d':'./dist/src/RcsbSaguaro3D.js'
-    },
+const commonConfig = {
     module: {
       rules: [
+          {
+              test: /\.(html|ico)$/,
+              use: [{
+                  loader: 'file-loader',
+                  options: { name: '[name].[ext]' }
+              }]
+          },
         {
-          test: /\.jsx?$/,
-          loader: 'babel-loader',
-          exclude: [/node_modules/]
-        },{
           test: /\.scss$/,
           use: [
               'style-loader',
@@ -31,17 +28,31 @@ module.exports = [{
       ]
     },
     resolve: {
-      extensions: [ '.tsx', '.ts', '.js', 'jsx' ]
+        modules: [
+            'node_modules',
+            path.resolve(__dirname, 'build/src/')
+        ],
     },
     node: {
         fs: "empty"
+    }
+};
+
+const appConfig = {
+    ...commonConfig,
+    entry: {
+        'RcsbFv3D':'./build/src/RcsbFv3DBuilder.js',
+        'rcsb-saguaro-3d':'./build/src/RcsbSaguaro3D.js'
     },
+    mode: "production",
     output: {
         filename: '[name].js',
         library: 'RcsbFv3D',
         libraryTarget: 'umd',
         umdNamedDefine: true,
-        path: path.resolve(__dirname, 'dist/build/')
+        path: path.resolve(__dirname, 'build/dist')
     },
-    devtool: 'source-map',
-}];
+    devtool: 'source-map'
+}
+
+module.exports = [appConfig];

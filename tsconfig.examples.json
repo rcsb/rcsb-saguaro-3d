@@ -7,12 +7,14 @@
     "jsx": "react",
     "lib": [ "es6", "dom", "esnext.asynciterable", "es2016"  ],
     "allowJs": true,
-    "declaration": true,
     "sourceMap": true,
-    "strictNullChecks": true,
-    "declarationDir": "./build/dist"
+    "strictNullChecks": true
   },
-  "include": [ "src/*" ],
+  "include": [
+    "src/custom.d.ts",
+    "src/examples/custom-panel/example.tsx",
+    "src/examples/assembly/example.ts"
+  ],
   "exclude": [
     "node_modules"
   ]

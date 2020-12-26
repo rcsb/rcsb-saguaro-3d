@@ -18,7 +18,53 @@
         return result;
     }
     const args = getJsonFromUrl();
-    const fv = new RcsbFv3D.Create("pfv", args.entryId);
+    const structurePanelConfig = {
+        loadConfig:{
+            method:"loadPdbId",
+            pdbId: args.entryId
+        }
+    };
+    /*const sequencePanelConfig = {
+        type: "assembly",
+        blockConfig: {
+            entryId:args.entryId
+        }
+    };*/
+    const sequencePanelConfig = {
+        type: "custom",
+        config: {
+            boardConfig: {
+                range: {
+                    min: 1,
+                    max: 110
+                },
+                trackWidth: 940,
+                rowTitleWidth: 60,
+                includeAxis: true
+            },
+            rowConfig: [{
+                trackId: "blockTrack",
+                trackHeight: 20,
+                trackColor: "#F9F9F9",
+                displayType: "block",
+                displayColor: "#FF0000",
+                rowTitle: "BLOCK",
+                trackData: [{
+                    begin: 30,
+                    end: 60,
+                    gaps:[{
+                        begin:40,
+                        end:50
+                    }]
+                },{
+                    begin: 80,
+                    end: 90,
+                    openEnd: true
+                }]
+            }]
+        }
+    };
+    const fv = new RcsbFv3D.Create(structureConfig, sequenceConfig);
     fv.render();
 </script>
 
