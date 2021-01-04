@@ -12,3 +12,7 @@ export interface SaguaroPluginInterface {
     getChains: () => Map<string,{entryId: string; chains:Array<{label:string, auth:string}>;}>;
     objectChangeCallback: (f:()=>void)=>void;
 }
+
+export interface SaguaroPluginPublicInterface {
+    select: (modelId:string, asymId: string, x: number, y: number) => void;
+}

@@ -1,6 +1,6 @@
 import {Viewer, ViewerProps} from '@rcsb-bioinsilico/rcsb-molstar/build/src/viewer';
 import {PresetProps} from '@rcsb-bioinsilico/rcsb-molstar/build/src/viewer/helpers/preset';
-import {SaguaroPluginInterface} from "./SaguaroPluginInterface";
+import {SaguaroPluginInterface, SaguaroPluginPublicInterface} from "./SaguaroPluginInterface";
 
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {MolScriptBuilder} from "molstar/lib/mol-script/language/builder";
@@ -44,9 +44,7 @@ interface LoadParams {
     id?:string;
 }
 
-
-
-export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterface {
+export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterface, SaguaroPluginPublicInterface {
     private plugin: Viewer;
     private localSelectionFlag: boolean = false;
     private loadingFlag: boolean = false;
@@ -122,68 +120,47 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     }
 
     public select(modelId:string, asymId: string, x: number, y: number): void {
-        const f:(plugin: PluginContext)=>void = (plugin: PluginContext) => {
-            this.localSelectionFlag = true;
-            const data: Structure | undefined = getStructureWithModelId(plugin.managers.structure.hierarchy.current.structures, this.getModelId(modelId));
-            if (data == null) return;
-            const seq_id: Array<number> = new Array<number>();
-            for(let n = x; n <= y; n++){
-                seq_id.push(n);
-            }
-            const sel = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
-                'chain-test': Q.core.rel.eq([asymId, MolScriptBuilder.ammp('label_asym_id')]),
-                'residue-test': Q.core.set.has([MolScriptBuilder.set(...SetUtils.toArray(new Set(seq_id))), MolScriptBuilder.ammp('label_seq_id')])
-            }), data);
-            const loci:Loci = StructureSelection.toLociWithSourceUnits(sel);
-            plugin.managers.structure.selection.fromLoci('set', loci);
-        }
-        this.plugin.pluginCall(f.bind(this));
+        this.localSelectionFlag = true;
+        this.plugin.select(this.getModelId(modelId), asymId, x, y)
     }
 
     public selectCallback( g:()=>void ){
-        const f: (plugin: PluginContext) => void = (plugin: PluginContext)=>{
-            plugin.managers.structure.selection.events.changed.subscribe((()=>{
-                if(this.localSelectionFlag) {
-                    this.localSelectionFlag = false;
-                    return;
-                }
-                const sequenceData: Array<ResidueSelectionInterface> = new Array<ResidueSelectionInterface>();
-                for(const structure of plugin.managers.structure.hierarchy.current.structures){
-                    const data: Structure | undefined = structure.cell.obj?.data;
-                    if(data == null) return;
-                    const loci: Loci = plugin.managers.structure.selection.getLoci(data);
-                    if(StructureElement.Loci.is(loci)){
-                        const loc = StructureElement.Location.create(loci.structure);
-                        for (const e of loci.elements) {
-                            const seqIds = new Set<number>();
-                            loc.unit = e.unit;
-                            for (let i = 0, il = OrderedSet.size(e.indices); i < il; ++i) {
-                                loc.element = e.unit.elements[OrderedSet.getAt(e.indices, i)];
-                                seqIds.add(SP.residue.label_seq_id(loc));
-                            }
-                            sequenceData.push({
-                                modelId: this.getModelId(data.model.id),
-                                labelAsymId: SP.chain.label_asym_id(loc),
-                                seqIds
-                            });
+        this.plugin.getPlugin().managers.structure.selection.events.changed.subscribe((()=>{
+            if(this.localSelectionFlag) {
+                this.localSelectionFlag = false;
+                return;
+            }
+            const sequenceData: Array<ResidueSelectionInterface> = new Array<ResidueSelectionInterface>();
+            for(const structure of this.plugin.getPlugin().managers.structure.hierarchy.current.structures){
+                const data: Structure | undefined = structure.cell.obj?.data;
+                if(data == null) return;
+                const loci: Loci = this.plugin.getPlugin().managers.structure.selection.getLoci(data);
+                if(StructureElement.Loci.is(loci)){
+                    const loc = StructureElement.Location.create(loci.structure);
+                    for (const e of loci.elements) {
+                        const seqIds = new Set<number>();
+                        loc.unit = e.unit;
+                        for (let i = 0, il = OrderedSet.size(e.indices); i < il; ++i) {
+                            loc.element = e.unit.elements[OrderedSet.getAt(e.indices, i)];
+                            seqIds.add(SP.residue.label_seq_id(loc));
                         }
-
+                        sequenceData.push({
+                            modelId: this.getModelId(data.model.id),
+                            labelAsymId: SP.chain.label_asym_id(loc),
+                            seqIds
+                        });
                     }
+
                 }
-                this.selection.setSelectionFromResidueSelection(sequenceData);
-                g();
-            }));
-        };
-        this.pluginCall(f.bind(this));
+            }
+            this.selection.setSelectionFromResidueSelection(sequenceData);
+            g();
+        }));
     }
 
     public clearSelect(): void {
-        const f:(plugin: PluginContext)=>void = (plugin: PluginContext) => {
-            this.localSelectionFlag = true;
-            plugin.managers.interactivity.lociSelects.deselectAll();
-            this.selection.clearSelection();
-        }
-        this.plugin.pluginCall(f);
+        this.plugin.getPlugin().managers.interactivity.lociSelects.deselectAll();
+        this.selection.clearSelection();
     }
 
     public pluginCall(f: (plugin: PluginContext) => void){

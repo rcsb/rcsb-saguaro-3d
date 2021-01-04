@@ -2,8 +2,6 @@ import * as React from "react";
 import * as classes from '../../styles/RcsbFvStyle.module.scss';
 import {RcsbFvDOMConstants} from "../../RcsbFvConstants/RcsbFvConstants";
 import {SaguaroPluginInterface} from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
-import {PluginContext} from "molstar/lib/mol-plugin/context";
-import {RcsbFv, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import { RcsbFvSelection} from "../../RcsbFvSelection/RcsbFvSelection";
 
 export interface AbstractViewInterface {

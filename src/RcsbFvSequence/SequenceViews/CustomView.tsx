@@ -7,7 +7,7 @@ import {
 } from "@rcsb/rcsb-saguaro";
 import * as React from "react";
 import {RcsbFvSelection} from "../../RcsbFvSelection/RcsbFvSelection";
-import {PluginContext} from "molstar/lib/mol-plugin/context";
+import {SaguaroPluginPublicInterface} from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
 
 export interface CustomViewInterface {
     config: FeatureBlockInterface | Array<FeatureBlockInterface>;
@@ -25,7 +25,7 @@ export interface FeatureViewInterface {
     boardId?:string;
     boardConfig: RcsbFvBoardConfigInterface;
     rowConfig: Array<RcsbFvRowConfigInterface>;
-    sequenceSelectionCallback: (plugin: PluginContext, selection: RcsbFvSelection, d: RcsbFvTrackDataElementInterface) => void;
+    sequenceSelectionCallback: (plugin: SaguaroPluginPublicInterface, selection: RcsbFvSelection, d: RcsbFvTrackDataElementInterface) => void;
     structureSelectionCallback: (pfv: RcsbFv, selection: RcsbFvSelection) => void;
 }
 
@@ -69,12 +69,11 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
                 this.boardMap.set(board.boardId, board);
             });
         });
-        this.blockViewSelector.setActiveBlock( (props.config instanceof Array ? props.config : [props.config])[0].blockId! );
     }
 
     componentDidMount(): void {
         super.componentDidMount();
-        this.buildBlockFv();
+        this.blockViewSelector.setActiveBlock( (this.props.config instanceof Array ? this.props.config : [this.props.config])[0].blockId! );
     }
 
     componentWillUnmount() {
@@ -85,6 +84,10 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
 
     private blockChange(): void{
         this.unmountBlockFv();
+        this.buildBlockFv();
+        setTimeout(()=>{
+            this.structureSelectionCallback();
+        },1000);
     }
 
     private unmountBlockFv(){
@@ -102,16 +105,15 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
             if(this.boardMap.get(boardId) == null)
                 return;
             const div: HTMLDivElement = document.createElement<"div">("div");
-            div.setAttribute("id", "boardDiv_"+boardId)
+            div.setAttribute("id", "boardDiv_"+boardId);
+            div.style.marginBottom = "2px";
             document.getElementById(this.componentDivId)?.append(div);
             const rcsbFv: RcsbFv = new RcsbFv({
                 elementId: "boardDiv_"+boardId,
                 boardConfigData:{
                     ...this.boardMap.get(boardId)!.boardConfig,
                     elementClickCallBack:(d:RcsbFvTrackDataElementInterface)=>{
-                        this.props.plugin.pluginCall((plugin: PluginContext)=>{
-                            this.boardMap.get(boardId)!.sequenceSelectionCallback(plugin, this.props.selection, d);
-                        });
+                        this.boardMap.get(boardId)!.sequenceSelectionCallback(this.props.plugin, this.props.selection, d);
                     }
                 },
                 rowConfigData: this.boardMap.get(boardId)!.rowConfig
@@ -119,14 +121,7 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
             this.rcsbFvMap.set(boardId, rcsbFv);
         });
         this.props.plugin.selectCallback(()=>{
-            this.blockMap.get(this.blockViewSelector.getActiveBlock())?.forEach(boardId=> {
-                if (this.boardMap.get(boardId) == null)
-                    return;
-                this.boardMap.get(boardId)!.structureSelectionCallback(
-                    this.rcsbFvMap.get(boardId)!,
-                    this.props.selection
-                )
-            });
+           this.structureSelectionCallback();
         });
     }
 
@@ -145,8 +140,16 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
         return this.props.additionalContent(this.blockViewSelector);
     }
 
-    protected objectChangeCallback(): void {}
+    protected objectChangeCallback(): void {
 
-    protected updatePfvDimensions(): void {}
+    }
+
+    protected updatePfvDimensions(): void {
+        this.rcsbFvMap.forEach((rcsbFv, boardId)=>{
+            const width: number = window.document.getElementById(this.componentDivId)?.getBoundingClientRect().width ?? 0;
+            const trackWidth: number = width - 190 - 55;
+            rcsbFv.updateBoardConfig({boardConfigData:{trackWidth:trackWidth}});
+        });
+    }
 
 }

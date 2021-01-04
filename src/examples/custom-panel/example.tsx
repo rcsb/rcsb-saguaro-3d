@@ -1,10 +1,3 @@
-import {PluginContext} from "molstar/lib/mol-plugin/context";
-import {MolScriptBuilder} from "molstar/lib/mol-script/language/builder";
-import {Script} from "molstar/lib/mol-script/script";
-import {SetUtils} from "molstar/lib/mol-util/set";
-import {StructureSelection} from "molstar/lib/mol-model/structure/query";
-
-
 import {RcsbFv3DBuilder} from "../../RcsbFv3DBuilder";
 import {StructureViewInterface} from "../../RcsbFvStructure/RcsbFvStructure";
 import {SequenceViewInterface} from "../../RcsbFvSequence/RcsbFvSequence";
@@ -23,45 +16,39 @@ import {
     RcsbFvRowConfigInterface,
     RcsbFvTrackDataElementInterface
 } from "@rcsb/rcsb-saguaro";
-import {RcsbFvSelection} from "../../RcsbFvSelection/RcsbFvSelection";
-
+import {ChainSelectionInterface, RcsbFvSelection} from "../../RcsbFvSelection/RcsbFvSelection";
+import {SaguaroPluginPublicInterface} from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
 
 const structureConfig:StructureViewInterface = {
     loadConfig: {
-        method: LoadMethod.loadPdbId,
-        params: {
+        method: LoadMethod.loadPdbIds,
+        params: [{
             pdbId: "101m",
-            id:"101m_1"
-        }
+            id:"model_1"
+        },{
+            pdbId: "1ash",
+            id:"model_2"
+        }]
     }
-};
-
-const sequenceSelectionCallback = (plugin: PluginContext, ann: RcsbFvTrackDataElementInterface) => {
-    const data = plugin.managers.structure.hierarchy.current.structures[0]?.cell.obj?.data;
-    if (!data) return;
-    const MS = MolScriptBuilder;
-    const seq_id: Array<number> = new Array<number>();
-    const x: number = ann.begin;
-    const y: number = ann.end ?? ann.begin
-    for(let n = x; n <= y; n++){
-        seq_id.push(n);
-    }
-    const sel = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
-        'chain-test': Q.core.rel.eq(["A", MS.ammp('label_asym_id')]),
-        'residue-test': Q.core.set.has([MS.set(...SetUtils.toArray(new Set(seq_id))), MS.ammp('label_seq_id')])
-    }), data);
-    const loci = StructureSelection.toLociWithSourceUnits(sel);
-    plugin.managers.structure.selection.fromLoci('set', loci);
 };
 
 const additionalContent: (select: BlockViewSelector) => JSX.Element = (select: BlockViewSelector) => {
     function changeBlock(select: BlockViewSelector){
-        console.log(select.getActiveBlock());
+        select.setActiveBlock("MyBlock_2");
+    }
+    function changeBlock2(select: BlockViewSelector){
+        select.setActiveBlock("MyBlock_1");
     }
     return (
-        <div onClick={()=>{changeBlock(select)}}>
-            ClickMe
-        </div>);
+        <div>
+            <div onClick={()=>{changeBlock(select)}}>
+                Option 1
+            </div>
+            <div onClick={()=>{changeBlock2(select)}}>
+                Option 2
+            </div>
+        </div>
+    );
 }
 
 const rowConfig: Array<RcsbFvRowConfigInterface> = [{
@@ -75,8 +62,22 @@ const rowConfig: Array<RcsbFvRowConfigInterface> = [{
         begin: 30,
         end: 60
     }]
+}];
+
+const rowConfig2: Array<RcsbFvRowConfigInterface> = [{
+    trackId: "blockTrack",
+    trackHeight: 20,
+    trackColor: "#F9F9F9",
+    displayType: RcsbFvDisplayTypes.BLOCK,
+    displayColor: "#00FF00",
+    rowTitle: "BLOCK",
+    trackData: [{
+        begin: 30,
+        end: 60
+    }]
 }]
-const fv: FeatureViewInterface = {
+
+const fv1: FeatureViewInterface = {
     boardId:"101m_board",
     boardConfig: {
         range: {
@@ -88,19 +89,56 @@ const fv: FeatureViewInterface = {
         includeAxis: true
     },
     rowConfig: rowConfig,
-    sequenceSelectionCallback: (plugin: PluginContext, selection: RcsbFvSelection, d: RcsbFvTrackDataElementInterface) => {
-        sequenceSelectionCallback(plugin,d);
+    sequenceSelectionCallback: (plugin: SaguaroPluginPublicInterface, selection: RcsbFvSelection, d: RcsbFvTrackDataElementInterface) => {
+        selection.setSelectionFromRegion("model_1", "A", {begin:d.begin, end:d.end??d.begin});
+        plugin.select("model_1", "A", d.begin, d.end??d.begin);
     },
-    structureSelectionCallback: (pfv: RcsbFv, selection: RcsbFvSelection) => {}
+    structureSelectionCallback: (pfv: RcsbFv, selection: RcsbFvSelection) => {
+        const sel: ChainSelectionInterface | undefined = selection.getSelectionWithCondition("model_1", "A");
+        if(sel == null)
+            pfv.clearSelection();
+        else
+            pfv.setSelection(sel.regions);
+    }
+}
+
+const fv2: FeatureViewInterface = {
+    boardId:"1ash_board",
+    boardConfig: {
+        range: {
+            min: 1,
+            max: 150
+        },
+        trackWidth: 940,
+        rowTitleWidth: 60,
+        includeAxis: true
+    },
+    rowConfig: rowConfig2,
+    sequenceSelectionCallback: (plugin: SaguaroPluginPublicInterface, selection: RcsbFvSelection, d: RcsbFvTrackDataElementInterface) => {
+        selection.setSelectionFromRegion("model_2", "A", {begin:d.begin, end:d.end??d.begin});
+        plugin.select("model_2", "A", d.begin, d.end??d.begin);
+    },
+    structureSelectionCallback: (pfv: RcsbFv, selection: RcsbFvSelection) => {
+        const sel: ChainSelectionInterface | undefined = selection.getSelectionWithCondition("model_2", "A");
+        if(sel == null)
+            pfv.clearSelection();
+        else
+            pfv.setSelection(sel.regions);
+    }
 }
 
 const block: FeatureBlockInterface = {
     blockId:"MyBlock_1",
-    blockConfig: [fv]
+    blockConfig: [fv1]
+};
+
+const block2: FeatureBlockInterface = {
+    blockId:"MyBlock_2",
+    blockConfig: [fv2, fv1]
 };
 
 const customConfig: CustomViewInterface = {
-    config:[block],
+    config:[block, block2],
     additionalContent:additionalContent
 }
 

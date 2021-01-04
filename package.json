@@ -74,7 +74,7 @@
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "@rcsb-bioinsilico/rcsb-molstar": "^1.0.24",
+    "@rcsb-bioinsilico/rcsb-molstar": "^1.0.25",
     "@rcsb/rcsb-saguaro": "^1.0.2",
     "@rcsb/rcsb-saguaro-app": "^1.0.9",
     "molstar": "^1.2.3"
