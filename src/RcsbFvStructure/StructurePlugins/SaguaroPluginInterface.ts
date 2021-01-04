@@ -10,7 +10,7 @@ export interface SaguaroPluginInterface {
     selectCallback: ( g:()=>void)=>void;
     clear: () => void;
     getChains: () => Map<string,{entryId: string; chains:Array<{label:string, auth:string}>;}>;
-    objectChangeCallback: (f:()=>void)=>void;
+    setObjectChangeCallback: (f:()=>void)=>void;
 }
 
 export interface SaguaroPluginPublicInterface {

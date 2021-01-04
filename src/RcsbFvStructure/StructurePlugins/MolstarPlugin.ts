@@ -48,7 +48,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     private plugin: Viewer;
     private localSelectionFlag: boolean = false;
     private loadingFlag: boolean = false;
-    private _objectChangeCallback: ()=>void;
+    private objectChangeCallback: ()=>void;
     private modelMap: Map<string,string|undefined> = new Map<string, string>();
 
     constructor(props: RcsbFvSelection) {
@@ -87,7 +87,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         }
         this.loadingFlag = false;
         this.mapModels(loadConfig.params);
-        this._objectChangeCallback();
+        this.objectChangeCallback();
     }
 
     private static checkLoadData(loadConfig: LoadMolstarInterface): boolean{
@@ -167,8 +167,8 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         this.plugin.pluginCall(f);
     }
 
-    public objectChangeCallback(f:()=>void){
-        this._objectChangeCallback = f;
+    public setObjectChangeCallback(f:()=>void){
+        this.objectChangeCallback = f;
         this.plugin.getPlugin().state.events.object.updated.subscribe((o)=>{
             if(this.loadingFlag)
                 return;

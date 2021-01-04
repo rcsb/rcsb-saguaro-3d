@@ -36,7 +36,7 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
 
     componentDidMount() {
         this.props.plugin.selectCallback(this.structureSelectionCallback.bind(this));
-        this.props.plugin.objectChangeCallback(this.objectChangeCallback.bind(this));
+        this.props.plugin.setObjectChangeCallback(this.objectChangeCallback.bind(this));
         window.addEventListener('resize', this.updatePfvDimensions.bind(this));
     }
 

@@ -26,7 +26,7 @@ const structureConfig:StructureViewInterface = {
             pdbId: "101m",
             id:"model_1"
         },{
-            pdbId: "1ash",
+            pdbId: "1xxx",
             id:"model_2"
         }]
     }
@@ -115,8 +115,8 @@ const fv2: FeatureViewInterface = {
     },
     rowConfig: rowConfig2,
     sequenceSelectionCallback: (plugin: SaguaroPluginPublicInterface, selection: RcsbFvSelection, d: RcsbFvTrackDataElementInterface) => {
-        selection.setSelectionFromRegion("model_2", "A", {begin:d.begin, end:d.end??d.begin});
-        plugin.select("model_2", "A", d.begin, d.end??d.begin);
+        selection.setSelectionFromRegion("model_2", "B", {begin:d.begin, end:d.end??d.begin});
+        plugin.select("model_2", "B", d.begin, d.end??d.begin);
     },
     structureSelectionCallback: (pfv: RcsbFv, selection: RcsbFvSelection) => {
         const sel: ChainSelectionInterface | undefined = selection.getSelectionWithCondition("model_2", "A");
