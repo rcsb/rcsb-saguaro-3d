@@ -22,12 +22,6 @@ import {
     SaguaroPluginPublicInterface
 } from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
 
-
-
-const modelChangeCallback = (modelMap: SaguaroPluginModelMapType) => {
-    console.log(modelMap);
-};
-
 const additionalContent: (select: BlockViewSelector) => JSX.Element = (select: BlockViewSelector) => {
     function changeBlock(select: BlockViewSelector){
         select.setActiveBlock("MyBlock_2");
@@ -66,7 +60,7 @@ const rowConfig2: Array<RcsbFvRowConfigInterface> = [{
     trackColor: "#F9F9F9",
     displayType: RcsbFvDisplayTypes.BLOCK,
     displayColor: "#00FF00",
-    rowTitle: "1XXX.A",
+    rowTitle: "1XXX.B",
     trackData: [{
         begin: 30,
         end: 60
@@ -99,7 +93,7 @@ const fv1: FeatureViewInterface = {
 }
 
 const fv2: FeatureViewInterface = {
-    boardId:"1ash_board",
+    boardId:"1xxx_board",
     boardConfig: {
         range: {
             min: 1,
@@ -115,7 +109,7 @@ const fv2: FeatureViewInterface = {
         plugin.select("model_2", "B", d.begin, d.end??d.begin);
     },
     structureSelectionCallback: (pfv: RcsbFv, selection: RcsbFvSelection) => {
-        const sel: ChainSelectionInterface | undefined = selection.getSelectionWithCondition("model_2", "A");
+        const sel: ChainSelectionInterface | undefined = selection.getSelectionWithCondition("model_2", "B");
         if(sel == null)
             pfv.clearSelection();
         else
@@ -131,6 +125,42 @@ const block: FeatureBlockInterface = {
 const block2: FeatureBlockInterface = {
     blockId:"MyBlock_2",
     blockConfig: [fv2, fv1]
+};
+
+const block3: FeatureBlockInterface = {
+    blockId:"MyBlock_3",
+    blockConfig: [fv1, fv2]
+};
+
+const modelChangeCallback = (modelMap: SaguaroPluginModelMapType) => {
+    console.log(modelMap);
+    return {
+      config:[block, block2, block3],
+      additionalContent:(select: BlockViewSelector) => {
+          function changeBlock(select: BlockViewSelector){
+              select.setActiveBlock("MyBlock_2");
+          }
+          function changeBlock2(select: BlockViewSelector){
+              select.setActiveBlock("MyBlock_1");
+          }
+          function changeBlock3(select: BlockViewSelector){
+              select.setActiveBlock("MyBlock_3");
+          }
+          return (
+              <div>
+                  <div onClick={()=>{changeBlock(select)}}>
+                      Option 1
+                  </div>
+                  <div onClick={()=>{changeBlock2(select)}}>
+                      Option 2
+                  </div>
+                  <div onClick={()=>{changeBlock3(select)}}>
+                      Option 3
+                  </div>
+              </div>
+          );
+      }
+    };
 };
 
 const customConfig: CustomViewInterface = {

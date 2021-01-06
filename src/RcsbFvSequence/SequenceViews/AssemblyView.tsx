@@ -64,7 +64,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
             getRcsbFv(this.pfvDivId).setSelection(sel.regions);
     }
 
-    protected modelChangeCallback(modelMap:SaguaroPluginModelMapType) {
+    protected modelChangeCallback(modelMap:SaguaroPluginModelMapType): void {
         const onChangeCallback: Map<string, (x: InstanceSequenceOnchangeInterface)=>void> = new Map<string, (x: InstanceSequenceOnchangeInterface) => {}>();
         const filterInstances: Map<string, Set<string>> = new Map<string, Set<string>>();
         modelMap.forEach((v,k)=>{

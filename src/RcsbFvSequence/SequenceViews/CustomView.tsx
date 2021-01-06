@@ -12,10 +12,12 @@ import {
     SaguaroPluginPublicInterface
 } from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
 
+export type CustomViewStateInterface = Omit<CustomViewInterface, "modelChangeCallback">;
+
 export interface CustomViewInterface {
     config: FeatureBlockInterface | Array<FeatureBlockInterface>;
     additionalContent?: (select: BlockViewSelector) => JSX.Element;
-    modelChangeCallback?: (modelMap: SaguaroPluginModelMapType) => void;
+    modelChangeCallback?: (modelMap: SaguaroPluginModelMapType) => (void | CustomViewStateInterface);
 }
 
 export interface FeatureBlockInterface {
@@ -53,18 +55,41 @@ export class BlockViewSelector {
     }
 }
 
-export class CustomView extends AbstractView<CustomViewInterface & AbstractViewInterface, CustomViewInterface & AbstractViewInterface> {
+export class CustomView extends AbstractView<CustomViewInterface & AbstractViewInterface, CustomViewStateInterface> {
 
     private blockViewSelector: BlockViewSelector = new BlockViewSelector( this.blockChange.bind(this) );
     private boardMap: Map<string, FeatureViewInterface> = new Map<string, FeatureViewInterface>();
     private blockMap: Map<string, Array<string>> = new Map<string, Array<string>>();
     private rcsbFvMap: Map<string, RcsbFv> = new Map<string, RcsbFv>();
+    private firstModelLoad: boolean = true;
+
+    readonly state: CustomViewStateInterface = {
+        config: this.props.config,
+        additionalContent: this.props.additionalContent
+    };
 
     constructor(props: CustomViewInterface & AbstractViewInterface) {
         super({
             ...props
         });
-        ( props.config instanceof Array ? props.config : [props.config]).forEach(block=>{
+       this.mapBlocks(props.config);
+    }
+
+    componentDidMount(): void {
+        super.componentDidMount();
+        this.blockViewSelector.setActiveBlock( (this.state.config instanceof Array ? this.state.config : [this.state.config])[0].blockId! );
+    }
+
+    componentWillUnmount() {
+        this.rcsbFvMap.forEach((pfv,id)=>{
+            pfv.unmount();
+        });
+    }
+
+    private mapBlocks(config: FeatureBlockInterface | Array<FeatureBlockInterface>){
+        this.blockMap.clear();
+        this.boardMap.clear();
+        ( config instanceof Array ? config : [config]).forEach(block=>{
             if(block.blockId == null)block.blockId = "block_"+Math.random().toString(36).substr(2);
             if(!this.blockMap.has(block.blockId))this.blockMap.set(block.blockId, new Array<string>());
             (block.blockConfig instanceof Array ? block.blockConfig : [block.blockConfig]).forEach(board=>{
@@ -72,17 +97,6 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
                 this.blockMap.get(block.blockId!)?.push(board.boardId);
                 this.boardMap.set(board.boardId, board);
             });
-        });
-    }
-
-    componentDidMount(): void {
-        super.componentDidMount();
-        this.blockViewSelector.setActiveBlock( (this.props.config instanceof Array ? this.props.config : [this.props.config])[0].blockId! );
-    }
-
-    componentWillUnmount() {
-        this.rcsbFvMap.forEach((pfv,id)=>{
-            pfv.unmount();
         });
     }
 
@@ -139,14 +153,30 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
     }
 
     protected additionalContent(): JSX.Element {
-        if(this.props.additionalContent == null)
+        if(this.state.additionalContent == null)
             return <></>;
-        return this.props.additionalContent(this.blockViewSelector);
+        return this.state.additionalContent(this.blockViewSelector);
     }
 
     protected modelChangeCallback(modelMap:SaguaroPluginModelMapType): void {
-        if(typeof this.props.modelChangeCallback === "function")
-            this.props.modelChangeCallback(modelMap);
+        if(this.firstModelLoad){
+            this.firstModelLoad = false;
+            return;
+        }
+        if(typeof this.props.modelChangeCallback === "function") {
+            const newConfig: CustomViewStateInterface | void = this.props.modelChangeCallback(modelMap);
+            if(newConfig != null){
+                if(newConfig.config != null && newConfig.additionalContent != null){
+                    this.mapBlocks(newConfig.config);
+                    this.setState({config: newConfig.config, additionalContent: newConfig.additionalContent})
+                }else if(newConfig.config == null && newConfig.additionalContent != null){
+                    this.setState({additionalContent: newConfig.additionalContent})
+                }else if(newConfig.config != null && newConfig.additionalContent == null){
+                    this.mapBlocks(newConfig.config);
+                    this.setState({config: newConfig.config})
+                }
+            }
+        }
     }
 
     protected updatePfvDimensions(): void {

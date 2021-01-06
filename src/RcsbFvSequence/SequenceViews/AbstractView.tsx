@@ -15,7 +15,7 @@ export interface AbstractViewInterface {
     selection: RcsbFvSelection;
 }
 
-export abstract class AbstractView<P,S> extends React.Component <P & AbstractViewInterface, S & AbstractViewInterface> {
+export abstract class AbstractView<P,S> extends React.Component <P & AbstractViewInterface, S> {
 
     protected componentDivId: string;
     protected pfvDivId: string;
