@@ -22,7 +22,7 @@ export class RcsbFvStructure extends React.Component <StructureViewInterface & {
 
     componentDidMount() {
         this.updatePfvDimensions();
-        this.props.plugin.init(this.props.componentId+"_"+RcsbFvDOMConstants.MOLSTAR_APP_ID);
+        this.props.plugin.init(this.props.componentId+"_"+RcsbFvDOMConstants.MOLSTAR_APP_ID, this.props.pluginConfig);
         this.props.plugin.load(this.props.loadConfig);
         window.addEventListener('resize', this.updatePfvDimensions.bind(this));
     }

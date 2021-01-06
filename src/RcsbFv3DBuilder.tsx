@@ -5,7 +5,6 @@ import {StructureViewInterface} from "./RcsbFvStructure/RcsbFvStructure";
 import {SequenceViewInterface} from "./RcsbFvSequence/RcsbFvSequence";
 import {EventType, RcsbFvContextManager} from "./RcsbFvContextManager/RcsbFvContextManager";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
-import {RcsbFv, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 
 export interface RcsbFv3DBuilderInterface {
     elementId: string;

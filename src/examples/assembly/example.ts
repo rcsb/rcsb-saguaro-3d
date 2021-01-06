@@ -37,6 +37,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 pdbId:"1ash",
                 id:"4"
             }]
+        },
+        pluginConfig: {
+            showImportControls: true,
+            showSessionControls: false
         }
     };
 

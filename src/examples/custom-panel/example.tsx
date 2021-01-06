@@ -17,19 +17,15 @@ import {
     RcsbFvTrackDataElementInterface
 } from "@rcsb/rcsb-saguaro";
 import {ChainSelectionInterface, RcsbFvSelection} from "../../RcsbFvSelection/RcsbFvSelection";
-import {SaguaroPluginPublicInterface} from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
+import {
+    SaguaroPluginModelMapType,
+    SaguaroPluginPublicInterface
+} from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
 
-const structureConfig:StructureViewInterface = {
-    loadConfig: {
-        method: LoadMethod.loadPdbIds,
-        params: [{
-            pdbId: "101m",
-            id:"model_1"
-        },{
-            pdbId: "1xxx",
-            id:"model_2"
-        }]
-    }
+
+
+const modelChangeCallback = (modelMap: SaguaroPluginModelMapType) => {
+    console.log(modelMap);
 };
 
 const additionalContent: (select: BlockViewSelector) => JSX.Element = (select: BlockViewSelector) => {
@@ -57,7 +53,7 @@ const rowConfig: Array<RcsbFvRowConfigInterface> = [{
     trackColor: "#F9F9F9",
     displayType: RcsbFvDisplayTypes.BLOCK,
     displayColor: "#FF0000",
-    rowTitle: "BLOCK",
+    rowTitle: "101M.A",
     trackData: [{
         begin: 30,
         end: 60
@@ -70,7 +66,7 @@ const rowConfig2: Array<RcsbFvRowConfigInterface> = [{
     trackColor: "#F9F9F9",
     displayType: RcsbFvDisplayTypes.BLOCK,
     displayColor: "#00FF00",
-    rowTitle: "BLOCK",
+    rowTitle: "1XXX.A",
     trackData: [{
         begin: 30,
         end: 60
@@ -139,12 +135,30 @@ const block2: FeatureBlockInterface = {
 
 const customConfig: CustomViewInterface = {
     config:[block, block2],
-    additionalContent:additionalContent
+    additionalContent:additionalContent,
+    modelChangeCallback:modelChangeCallback
 }
 
 const sequenceConfig: SequenceViewInterface = {
     type: "custom",
     config: customConfig
+};
+
+const structureConfig:StructureViewInterface = {
+    loadConfig: {
+        method: LoadMethod.loadPdbIds,
+        params: [{
+            pdbId: "101m",
+            id:"model_1"
+        },{
+            pdbId: "1xxx",
+            id:"model_2"
+        }]
+    },
+    pluginConfig: {
+        showImportControls: true,
+        showSessionControls: false
+    }
 };
 
 document.addEventListener("DOMContentLoaded", function(event) {

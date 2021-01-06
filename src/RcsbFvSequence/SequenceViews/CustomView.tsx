@@ -7,11 +7,15 @@ import {
 } from "@rcsb/rcsb-saguaro";
 import * as React from "react";
 import {RcsbFvSelection} from "../../RcsbFvSelection/RcsbFvSelection";
-import {SaguaroPluginPublicInterface} from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
+import {
+    SaguaroPluginModelMapType,
+    SaguaroPluginPublicInterface
+} from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
 
 export interface CustomViewInterface {
     config: FeatureBlockInterface | Array<FeatureBlockInterface>;
     additionalContent?: (select: BlockViewSelector) => JSX.Element;
+    modelChangeCallback?: (modelMap: SaguaroPluginModelMapType) => void;
 }
 
 export interface FeatureBlockInterface {
@@ -120,7 +124,7 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
             });
             this.rcsbFvMap.set(boardId, rcsbFv);
         });
-        this.props.plugin.selectCallback(()=>{
+        this.props.plugin.setSelectCallback(()=>{
            this.structureSelectionCallback();
         });
     }
@@ -140,8 +144,9 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
         return this.props.additionalContent(this.blockViewSelector);
     }
 
-    protected objectChangeCallback(): void {
-
+    protected modelChangeCallback(modelMap:SaguaroPluginModelMapType): void {
+        if(typeof this.props.modelChangeCallback === "function")
+            this.props.modelChangeCallback(modelMap);
     }
 
     protected updatePfvDimensions(): void {

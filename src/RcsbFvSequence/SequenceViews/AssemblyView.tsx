@@ -5,6 +5,7 @@ import {AbstractView, AbstractViewInterface} from "./AbstractView";
 import {InstanceSequenceOnchangeInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
 import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {ChainSelectionInterface} from "../../RcsbFvSelection/RcsbFvSelection";
+import {SaguaroPluginModelMapType} from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
 
 export interface AssemblyViewInterface {
     entryId: string;
@@ -63,11 +64,10 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
             getRcsbFv(this.pfvDivId).setSelection(sel.regions);
     }
 
-    protected objectChangeCallback() {
-        const chainMap:Map<string,{entryId: string; chains:Array<{label:string, auth:string}>;}> = this.props.plugin.getChains();
+    protected modelChangeCallback(modelMap:SaguaroPluginModelMapType) {
         const onChangeCallback: Map<string, (x: InstanceSequenceOnchangeInterface)=>void> = new Map<string, (x: InstanceSequenceOnchangeInterface) => {}>();
         const filterInstances: Map<string, Set<string>> = new Map<string, Set<string>>();
-        chainMap.forEach((v,k)=>{
+        modelMap.forEach((v,k)=>{
             onChangeCallback.set(v.entryId,(x)=>{
                 this.currentEntryId = v.entryId;
                 this.currentLabelId = x.asymId;
@@ -83,7 +83,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
             this.pfvDivId,
             RcsbFvDOMConstants.SELECT_ASSEMBLY_PFV_ID,
             RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID,
-            Array.from(chainMap.values()).map(d=>d.entryId),
+            Array.from(modelMap.values()).map(d=>d.entryId),
             undefined,
             onChangeCallback,
             filterInstances

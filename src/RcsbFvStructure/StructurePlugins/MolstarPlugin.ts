@@ -1,12 +1,12 @@
 import {Viewer, ViewerProps} from '@rcsb-bioinsilico/rcsb-molstar/build/src/viewer';
 import {PresetProps} from '@rcsb-bioinsilico/rcsb-molstar/build/src/viewer/helpers/preset';
-import {SaguaroPluginInterface, SaguaroPluginPublicInterface} from "./SaguaroPluginInterface";
+import {
+    SaguaroPluginInterface,
+    SaguaroPluginModelMapType,
+    SaguaroPluginPublicInterface
+} from "./SaguaroPluginInterface";
 
 import {PluginContext} from "molstar/lib/mol-plugin/context";
-import {MolScriptBuilder} from "molstar/lib/mol-script/language/builder";
-import {Script} from "molstar/lib/mol-script/script";
-import {SetUtils} from "molstar/lib/mol-util/set";
-import {StructureSelection} from "molstar/lib/mol-model/structure/query";
 import {Loci} from "molstar/lib/mol-model/loci";
 import {Mat4} from "molstar/lib/mol-math/linear-algebra";
 import {BuiltInTrajectoryFormat} from "molstar/lib/mol-plugin-state/formats/trajectory";
@@ -48,7 +48,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     private plugin: Viewer;
     private localSelectionFlag: boolean = false;
     private loadingFlag: boolean = false;
-    private objectChangeCallback: ()=>void;
+    private modelChangeCallback: (chainMap:SaguaroPluginModelMapType)=>void;
     private modelMap: Map<string,string|undefined> = new Map<string, string>();
 
     constructor(props: RcsbFvSelection) {
@@ -87,7 +87,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         }
         this.loadingFlag = false;
         this.mapModels(loadConfig.params);
-        this.objectChangeCallback();
+        this.modelChangeCallback(this.getChains());
     }
 
     private static checkLoadData(loadConfig: LoadMolstarInterface): boolean{
@@ -124,7 +124,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         this.plugin.select(this.getModelId(modelId), asymId, x, y)
     }
 
-    public selectCallback( g:()=>void ){
+    public setSelectCallback(g:()=>void ){
         this.plugin.getPlugin().managers.structure.selection.events.changed.subscribe((()=>{
             if(this.localSelectionFlag) {
                 this.localSelectionFlag = false;
@@ -167,18 +167,18 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         this.plugin.pluginCall(f);
     }
 
-    public setObjectChangeCallback(f:()=>void){
-        this.objectChangeCallback = f;
+    public setModelChangeCallback(f:(modelMap:SaguaroPluginModelMapType)=>void){
+        this.modelChangeCallback = f;
         this.plugin.getPlugin().state.events.object.updated.subscribe((o)=>{
             if(this.loadingFlag)
                 return;
             if(o.action === "in-place" && o.ref === "ms-plugin.create-structure-focus-representation") {
-                f();
+                f(this.getChains());
             }
         });
     }
 
-    public getChains(): Map<string,{entryId: string; chains:Array<{label:string, auth:string}>;}>{
+    private getChains(): SaguaroPluginModelMapType{
         const structureRefList = getStructureOptions(this.plugin.getPlugin().state.data);
         const out: Map<string,{entryId: string; chains:Array<{label:string, auth:string}>;}> = new Map<string, {entryId: string; chains:Array<{label:string, auth:string}>;}>();
         structureRefList.forEach((structureRef,i)=>{

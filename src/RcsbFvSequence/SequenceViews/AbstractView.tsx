@@ -1,7 +1,10 @@
 import * as React from "react";
 import * as classes from '../../styles/RcsbFvStyle.module.scss';
 import {RcsbFvDOMConstants} from "../../RcsbFvConstants/RcsbFvConstants";
-import {SaguaroPluginInterface} from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
+import {
+    SaguaroPluginInterface,
+    SaguaroPluginModelMapType
+} from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
 import { RcsbFvSelection} from "../../RcsbFvSelection/RcsbFvSelection";
 
 export interface AbstractViewInterface {
@@ -35,8 +38,8 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
     }
 
     componentDidMount() {
-        this.props.plugin.selectCallback(this.structureSelectionCallback.bind(this));
-        this.props.plugin.setObjectChangeCallback(this.objectChangeCallback.bind(this));
+        this.props.plugin.setSelectCallback(this.structureSelectionCallback.bind(this));
+        this.props.plugin.setModelChangeCallback(this.modelChangeCallback.bind(this));
         window.addEventListener('resize', this.updatePfvDimensions.bind(this));
     }
 
@@ -54,7 +57,7 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
 
     protected structureSelectionCallback(): void{}
 
-    protected objectChangeCallback(): void{}
+    protected modelChangeCallback(modelMap:SaguaroPluginModelMapType): void{}
 
     protected updatePfvDimensions(): void{}
 
