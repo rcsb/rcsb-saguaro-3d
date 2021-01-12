@@ -1,7 +1,7 @@
 import * as React from "react";
 import {SaguaroPluginInterface} from "./StructurePlugins/SaguaroPluginInterface";
 import {RcsbFvDOMConstants} from "../RcsbFvConstants/RcsbFvConstants";
-import {ViewerProps} from "@rcsb-bioinsilico/rcsb-molstar/build/src/viewer";
+import {ViewerProps} from "@rcsb/rcsb-molstar/build/src/viewer";
 import {LoadMolstarInterface} from "./StructurePlugins/MolstarPlugin";
 import {RcsbFvSelection} from "../RcsbFvSelection/RcsbFvSelection";
 
@@ -21,14 +21,17 @@ export class RcsbFvStructure extends React.Component <StructureViewInterface & {
     }
 
     componentDidMount() {
-        this.updatePfvDimensions();
+        this.updateDimensions();
         this.props.plugin.init(this.props.componentId+"_"+RcsbFvDOMConstants.MOLSTAR_APP_ID, this.props.pluginConfig);
         this.props.plugin.load(this.props.loadConfig);
-        window.addEventListener('resize', this.updatePfvDimensions.bind(this));
+        window.addEventListener('resize', this.updateDimensions.bind(this));
     }
 
-    private updatePfvDimensions(): void {
-        const rect: DOMRect | undefined = document.getElementById(this.props.componentId+"_"+RcsbFvDOMConstants.MOLSTAR_DIV)?.parentElement?.getBoundingClientRect()
+    private updateDimensions(): void {
+        const div: HTMLElement | undefined | null = document.getElementById(this.props.componentId+"_"+RcsbFvDOMConstants.MOLSTAR_DIV)?.parentElement;
+        if(div == null)
+            return;
+        const rect: DOMRect = div.getBoundingClientRect()
         RcsbFvStructure.setSize(document.getElementById(this.props.componentId+"_"+RcsbFvDOMConstants.MOLSTAR_DIV), rect);
         RcsbFvStructure.setSize(document.getElementById(this.props.componentId+"_"+RcsbFvDOMConstants.MOLSTAR_APP_ID), rect);
     }

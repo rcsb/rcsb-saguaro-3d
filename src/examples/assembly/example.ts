@@ -1,10 +1,11 @@
 
-import {RcsbFv3DBuilder} from "../../RcsbFv3DBuilder";
+import {RcsbFv3DCustomBuilder} from "../../RcsbFv3D/RcsbFv3DCustom";
 import {StructureViewInterface} from "../../RcsbFvStructure/RcsbFvStructure";
 import {SequenceViewInterface} from "../../RcsbFvSequence/RcsbFvSequence";
 
 import './example.html';
 import {LoadMethod} from "../../RcsbFvStructure/StructurePlugins/MolstarPlugin";
+import {RcsbFv3DAssembly} from "../../RcsbFv3D/RcsbFv3DAssembly";
 
 document.addEventListener("DOMContentLoaded", function(event) {
 
@@ -21,40 +22,27 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     const args = getJsonFromUrl();
 
-    const structureConfig:StructureViewInterface = {
-        loadConfig:{
-            method: LoadMethod.loadPdbIds,
-            params: [{
-                pdbId:args.pdbId,
-                id:"1"
-            },{
-                pdbId:"2uzi",
-                id:"2"
-            },{
-                pdbId:"101m",
-                id:"3"
-            },{
-                pdbId:"1ash",
-                id:"4"
-            }]
-        },
-        pluginConfig: {
-            showImportControls: true,
-            showSessionControls: false
-        }
+    const sequenceConfig = {
+        entryId:args.pdbId,
+        title: args.pdbId,
+        subtitle: "Subtitle for "+args.pdbId
     };
 
-    const sequenceConfig: SequenceViewInterface = {
-        type: "assembly",
-        config: {
-           entryId:args.pdbId
-        }
-    };
-
-    const panel3d = new RcsbFv3DBuilder({
+    const panel3d = new RcsbFv3DAssembly({
         elementId: "pfv",
-        structurePanelConfig: structureConfig,
-        sequencePanelConfig: sequenceConfig
+        config: sequenceConfig,
+        /*cssConfig:{
+            rootPanel:{
+                flexDirection:"column"
+            },
+            structurePanel:{
+                height:800,
+                width:800
+            },
+            sequencePanel:{
+                width:800
+            }
+        }*/
     });
     panel3d.render();
 

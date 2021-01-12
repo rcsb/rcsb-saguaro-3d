@@ -1,6 +1,6 @@
 {
-  "name": "@bioinsilico/rcsb-saguaro-3d",
-  "version": "0.0.8",
+  "name": "@rcsb/rcsb-saguaro-3d",
+  "version": "0.0.9",
   "description": "RCSB Molstar/Saguaro Web App",
   "main": "build/dist/RcsbFv3DBuilder.js",
   "files": [
@@ -74,9 +74,9 @@
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "@rcsb-bioinsilico/rcsb-molstar": "^1.0.25",
+    "@rcsb/rcsb-molstar": "^1.0.26",
     "@rcsb/rcsb-saguaro": "^1.0.2",
-    "@rcsb/rcsb-saguaro-app": "^1.0.9",
+    "@rcsb/rcsb-saguaro-app": "^1.0.10",
     "molstar": "^1.2.3"
   },
   "bugs": {

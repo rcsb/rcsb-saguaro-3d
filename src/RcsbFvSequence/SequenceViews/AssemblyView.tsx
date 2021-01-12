@@ -1,6 +1,12 @@
 import {RcsbFvDOMConstants} from "../../RcsbFvConstants/RcsbFvConstants";
 import * as React from "react";
-import {buildMultipleInstanceSequenceFv, getRcsbFv, setBoardConfig, unmount} from "@rcsb/rcsb-saguaro-app";
+import {
+    buildInstanceSequenceFv,
+    buildMultipleInstanceSequenceFv,
+    getRcsbFv,
+    setBoardConfig,
+    unmount
+} from "@rcsb/rcsb-saguaro-app";
 import {AbstractView, AbstractViewInterface} from "./AbstractView";
 import {InstanceSequenceOnchangeInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
 import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
@@ -25,9 +31,9 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
 
     protected additionalContent(): JSX.Element {
         return (
-            <div style={{marginTop:10, marginLeft:5}}>
-                <div id={RcsbFvDOMConstants.SELECT_ASSEMBLY_PFV_ID} style={{display:"inline-block"}}/>
-                <div id={RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID} style={{display:"inline-block", marginLeft:5}}/>
+            <div style={{marginTop:10}}>
+                <div id={RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID} style={{display:"inline-block"}}/>
+                <div style={{position:"absolute", top:5, right:7, cursor:"pointer", color: "grey"}} onClick={()=>{this.props.unmount(true)}}>&#10006;</div>
             </div>
         );
     }
@@ -79,18 +85,18 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
             filterInstances.set(v.entryId,new Set<string>(v.chains.map(d=>d.label)));
         });
         unmount(this.pfvDivId);
-        buildMultipleInstanceSequenceFv(
+        const entryId: string = Array.from(modelMap.values()).map(d=>d.entryId)[0];
+        buildInstanceSequenceFv(
             this.pfvDivId,
-            RcsbFvDOMConstants.SELECT_ASSEMBLY_PFV_ID,
             RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID,
-            Array.from(modelMap.values()).map(d=>d.entryId),
+            entryId,
             undefined,
-            onChangeCallback,
-            filterInstances
+            onChangeCallback.get(entryId),
+            filterInstances.get(entryId)
         );
     }
 
-    protected updatePfvDimensions(): void{
+    protected updateDimensions(): void{
         const width: number = window.document.getElementById(this.componentDivId)?.getBoundingClientRect().width ?? 0;
         const trackWidth: number = width - 190 - 55;
         getRcsbFv(this.pfvDivId).updateBoardConfig({boardConfigData:{trackWidth:trackWidth}});

@@ -13,12 +13,14 @@ export interface AbstractViewInterface {
     subtitle?: string;
     plugin: SaguaroPluginInterface;
     selection: RcsbFvSelection;
+    unmount:(flag:boolean)=>void;
 }
 
 export abstract class AbstractView<P,S> extends React.Component <P & AbstractViewInterface, S> {
 
     protected componentDivId: string;
     protected pfvDivId: string;
+    protected updateDimTimeout: number = 0;
 
     constructor(props:P & AbstractViewInterface) {
         super(props);
@@ -28,10 +30,12 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
 
     render():JSX.Element {
         return (
-                <div id={this.componentDivId} style={{width: "100%", height:"100%"}} >
+                <div id={this.componentDivId} >
+                    <div style={{paddingLeft:10}}>
                     {this.createTitle()}
                     {this.createSubtitle()}
                     {this.additionalContent()}
+                    </div>
                     <div id ={this.pfvDivId} />
                 </div>
         );
@@ -40,7 +44,12 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
     componentDidMount() {
         this.props.plugin.setSelectCallback(this.structureSelectionCallback.bind(this));
         this.props.plugin.setModelChangeCallback(this.modelChangeCallback.bind(this));
-        window.addEventListener('resize', this.updatePfvDimensions.bind(this));
+        window.addEventListener('resize', ()=>{
+            window.clearTimeout(this.updateDimTimeout);
+            this.updateDimTimeout = window.setTimeout(()=> {
+                this.updateDimensions();
+            },100);
+        });
     }
 
     private createTitle(): JSX.Element | null{
@@ -59,10 +68,10 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
 
     protected modelChangeCallback(modelMap:SaguaroPluginModelMapType): void{}
 
-    protected updatePfvDimensions(): void{}
+    protected updateDimensions(): void{}
 
     protected additionalContent(): JSX.Element | null {
-        return null;
+        return <div></div>;
     }
 
 }

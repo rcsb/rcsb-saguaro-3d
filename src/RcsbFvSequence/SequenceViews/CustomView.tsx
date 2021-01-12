@@ -124,11 +124,14 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
                 return;
             const div: HTMLDivElement = document.createElement<"div">("div");
             div.setAttribute("id", "boardDiv_"+boardId);
-            div.style.marginBottom = "2px";
+            div.style.marginBottom = "25px";
             document.getElementById(this.componentDivId)?.append(div);
+            const width: number = window.document.getElementById(this.componentDivId)?.getBoundingClientRect().width ?? 0;
+            const trackWidth: number = width - (this.boardMap.get(boardId)!.boardConfig?.rowTitleWidth ?? 190) - 55;
             const rcsbFv: RcsbFv = new RcsbFv({
                 elementId: "boardDiv_"+boardId,
                 boardConfigData:{
+                    trackWidth:trackWidth,
                     ...this.boardMap.get(boardId)!.boardConfig,
                     elementClickCallBack:(d:RcsbFvTrackDataElementInterface)=>{
                         this.boardMap.get(boardId)!.sequenceSelectionCallback(this.props.plugin, this.props.selection, d);
@@ -179,10 +182,13 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
         }
     }
 
-    protected updatePfvDimensions(): void {
+    protected updateDimensions(): void {
+        const div: HTMLElement | undefined | null = document.getElementById(this.componentDivId)?.parentElement;
+        const width: number = window.document.getElementById(this.componentDivId)?.getBoundingClientRect().width ?? 0;
+        if(div == null || (div.style.width && !div.style.width.includes("%")) )
+            return;
         this.rcsbFvMap.forEach((rcsbFv, boardId)=>{
-            const width: number = window.document.getElementById(this.componentDivId)?.getBoundingClientRect().width ?? 0;
-            const trackWidth: number = width - 190 - 55;
+            const trackWidth: number = width - (this.boardMap.get(boardId)!.boardConfig?.rowTitleWidth ?? 190) - 55;
             rcsbFv.updateBoardConfig({boardConfigData:{trackWidth:trackWidth}});
         });
     }

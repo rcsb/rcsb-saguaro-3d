@@ -20,6 +20,16 @@ export class RcsbFvSelection {
         this.selection.push({modelId:modelId, labelAsymId:labelAsymId, regions:[region]});
     }
 
+    public addSelectionFromRegion(modelId: string, labelAsymId: string, region: {begin:number, end:number}): void {
+        this.selection.push({modelId:modelId, labelAsymId:labelAsymId, regions:[region]});
+    }
+
+    public setSelectionFromMultipleRegions(regions: {modelId: string, labelAsymId: string, region: {begin:number, end:number}}[]): void {
+        regions.forEach(r=>{
+            this.addSelectionFromRegion(r.modelId, r.labelAsymId, r.region);
+        });
+    }
+
     public setSelectionFromResidueSelection(res: Array<ResidueSelectionInterface>): void {
         const selMap: Map<string,Map<string,Set<number>>> = new Map<string, Map<string, Set<number>>>();
         res.forEach(r=>{

@@ -1,5 +1,5 @@
-import {Viewer, ViewerProps} from '@rcsb-bioinsilico/rcsb-molstar/build/src/viewer';
-import {PresetProps} from '@rcsb-bioinsilico/rcsb-molstar/build/src/viewer/helpers/preset';
+import {Viewer, ViewerProps} from '@rcsb/rcsb-molstar/build/src/viewer';
+import {PresetProps} from '@rcsb/rcsb-molstar/build/src/viewer/helpers/preset';
 import {
     SaguaroPluginInterface,
     SaguaroPluginModelMapType,
@@ -46,7 +46,7 @@ interface LoadParams {
 
 export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterface, SaguaroPluginPublicInterface {
     private plugin: Viewer;
-    private localSelectionFlag: boolean = false;
+    private innerSelectionFlag: boolean = false;
     private loadingFlag: boolean = false;
     private modelChangeCallback: (chainMap:SaguaroPluginModelMapType)=>void;
     private modelMap: Map<string,string|undefined> = new Map<string, string>();
@@ -55,8 +55,8 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         super(props);
     }
 
-    public init(target: string | HTMLElement, props: Partial<ViewerProps> = {layoutShowSequence: true}) {
-        this.plugin = new Viewer(target, props);
+    public init(target: string | HTMLElement, props?: Partial<ViewerProps>) {
+        this.plugin = new Viewer(target, {layoutShowControls:false, layoutShowSequence: true, ...props});
     }
 
     public clear(): void{
@@ -120,14 +120,14 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     }
 
     public select(modelId:string, asymId: string, x: number, y: number): void {
-        this.localSelectionFlag = true;
+        this.innerSelectionFlag = true;
         this.plugin.select(this.getModelId(modelId), asymId, x, y)
     }
 
     public setSelectCallback(g:()=>void ){
-        this.plugin.getPlugin().managers.structure.selection.events.changed.subscribe((()=>{
-            if(this.localSelectionFlag) {
-                this.localSelectionFlag = false;
+        this.plugin.getPlugin().managers.structure.selection.events.changed.subscribe(()=>{
+            if(this.innerSelectionFlag) {
+                this.innerSelectionFlag = false;
                 return;
             }
             const sequenceData: Array<ResidueSelectionInterface> = new Array<ResidueSelectionInterface>();
@@ -155,10 +155,11 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
             }
             this.selection.setSelectionFromResidueSelection(sequenceData);
             g();
-        }));
+        });
     }
 
     public clearSelect(): void {
+        this.innerSelectionFlag = true;
         this.plugin.getPlugin().managers.interactivity.lociSelects.deselectAll();
         this.selection.clearSelection();
     }

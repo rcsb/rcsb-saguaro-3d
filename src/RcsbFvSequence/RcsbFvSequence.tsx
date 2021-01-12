@@ -9,7 +9,8 @@ import {RcsbFvSelection} from "../RcsbFvSelection/RcsbFvSelection";
 export interface SequenceViewInterface{
     type: "custom" | "assembly";
     config: AssemblyViewInterface | CustomViewInterface;
-
+    title?: string;
+    subtitle?: string;
 }
 
 interface CallbackConfig {
@@ -17,7 +18,7 @@ interface CallbackConfig {
     sequenceCallback?: (rcsbFv: RcsbFv)=>void;
 }
 
-export class RcsbFvSequence extends React.Component <SequenceViewInterface & CallbackConfig & {plugin: SaguaroPluginInterface, selection:RcsbFvSelection, componentId:string}, SequenceViewInterface > {
+export class RcsbFvSequence extends React.Component <SequenceViewInterface & CallbackConfig & {unmount:(flag:boolean)=>void, plugin: SaguaroPluginInterface, selection:RcsbFvSelection, componentId:string}, SequenceViewInterface > {
 
     render() {
         if(this.props.type == "custom"){
@@ -27,6 +28,9 @@ export class RcsbFvSequence extends React.Component <SequenceViewInterface & Cal
                 componentId={this.props.componentId}
                 plugin={this.props.plugin}
                 selection={this.props.selection}
+                title={this.props.title}
+                subtitle={this.props.subtitle}
+                unmount={this.props.unmount}
             />)
         }else if(this.props.type == "assembly"){
             const config: AssemblyViewInterface = this.props.config as AssemblyViewInterface;
@@ -35,6 +39,9 @@ export class RcsbFvSequence extends React.Component <SequenceViewInterface & Cal
                 componentId={this.props.componentId}
                 plugin={this.props.plugin}
                 selection={this.props.selection}
+                title={this.props.title}
+                subtitle={this.props.subtitle}
+                unmount={this.props.unmount}
             />)
         }
     }

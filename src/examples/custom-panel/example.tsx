@@ -1,4 +1,4 @@
-import {RcsbFv3DBuilder} from "../../RcsbFv3DBuilder";
+import {RcsbFv3DCustomBuilder} from "../../RcsbFv3D/RcsbFv3DCustom";
 import {StructureViewInterface} from "../../RcsbFvStructure/RcsbFvStructure";
 import {SequenceViewInterface} from "../../RcsbFvSequence/RcsbFvSequence";
 
@@ -74,7 +74,6 @@ const fv1: FeatureViewInterface = {
             min: 1,
             max: 110
         },
-        trackWidth: 940,
         rowTitleWidth: 60,
         includeAxis: true
     },
@@ -99,7 +98,6 @@ const fv2: FeatureViewInterface = {
             min: 1,
             max: 150
         },
-        trackWidth: 940,
         rowTitleWidth: 60,
         includeAxis: true
     },
@@ -169,8 +167,7 @@ const customConfig: CustomViewInterface = {
     modelChangeCallback:modelChangeCallback
 }
 
-const sequenceConfig: SequenceViewInterface = {
-    type: "custom",
+const sequenceConfig = {
     config: customConfig
 };
 
@@ -192,10 +189,19 @@ const structureConfig:StructureViewInterface = {
 };
 
 document.addEventListener("DOMContentLoaded", function(event) {
-    const panel3d = new RcsbFv3DBuilder({
+    const panel3d = new RcsbFv3DCustomBuilder({
         elementId: "pfv",
         structurePanelConfig: structureConfig,
-        sequencePanelConfig: sequenceConfig
+        sequencePanelConfig: sequenceConfig,
+        cssConfig:{
+            structurePanel:{
+                minWidth:800,
+                minHeight:800
+            },
+            sequencePanel:{
+                minWidth:800
+            }
+        }
     });
     panel3d.render();
 });
