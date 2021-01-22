@@ -150,9 +150,6 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     }
 
     public setHoverCallback(g:()=>void){
-        this.plugin.getPlugin().managers.structure.component.events.optionsUpdated.subscribe(()=>{
-            console.log("!!!!!!!");
-        });
         this.plugin.getPlugin().behaviors.interaction.hover.subscribe((r: InteractivityManager.HoverEvent)=>{
             const sequenceData: Array<ResidueSelectionInterface> = new Array<ResidueSelectionInterface>();
             const loci: Loci = r.current.loci;

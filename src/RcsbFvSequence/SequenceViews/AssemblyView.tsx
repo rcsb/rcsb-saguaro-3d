@@ -22,6 +22,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
     private currentLabelId: string;
     private currentEntryId: string;
     private currentModelId: string;
+    private createComponentThresholdBatch = 3;
     private createComponentThreshold: number = 9;
 
     constructor(props: AssemblyViewInterface & AbstractViewInterface) {
@@ -48,14 +49,12 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         setBoardConfig({
             trackWidth: trackWidth,
             elementClickCallBack:(e: RcsbFvTrackDataElementInterface)=>{
-                console.log(e);
-                if(e == null) {
-                    this.props.plugin.clearSelection('select');
+                this.props.plugin.clearSelection('select');
+                this.props.plugin.removeComponent();
+                if(e == null)
                     return;
-                }
                 const x = e.begin;
                 const y = e.end ?? e.begin;
-                this.props.plugin.clearSelection('select');
                 if(e.isEmpty){
                     this.props.plugin.selectSet(
                         [{modelId: this.currentModelId, asymId: this.currentLabelId, position: x},{modelId: this.currentModelId, asymId: this.currentLabelId, position: y}], 'select'
@@ -66,12 +65,10 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                             {modelId: this.currentModelId, labelAsymId: this.currentLabelId, region: {begin: y, end: y}}
                             ], 'select'
                     );
-                    this.props.plugin.removeComponent();
                     this.props.plugin.createComponentFromSet(this.currentModelId,[{asymId:this.currentLabelId, position:x}, {asymId:this.currentLabelId, position:y}], 'spacefill');
                 }else{
                     this.props.plugin.selectRange(this.currentModelId, this.currentLabelId,x,y, 'select');
                     this.props.selection.setSelectionFromRegion(this.currentModelId, this.currentLabelId, {begin:x, end:y}, 'select');
-                    this.props.plugin.removeComponent();
                     if((y-x)<this.createComponentThreshold){
                         this.props.plugin.createComponentFromRange(this.currentModelId, this.currentLabelId, x, y, 'spacefill');
                     }
@@ -104,10 +101,13 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
 
         if(getRcsbFv(this.pfvDivId) == null)
             return;
-        if(sel == null)
+        if(sel == null) {
             getRcsbFv(this.pfvDivId).clearSelection(mode);
-        else
-            getRcsbFv(this.pfvDivId).setSelection({elements:sel.regions, mode:mode});
+            if(mode === 'select')
+                this.props.plugin.removeComponent();
+        } else {
+            getRcsbFv(this.pfvDivId).setSelection({elements: sel.regions, mode: mode});
+        }
     }
 
     protected modelChangeCallback(modelMap:SaguaroPluginModelMapType): void {
@@ -135,7 +135,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
             filterInstances.get(entryId)
         ).then(()=>{
             const length: number = getRcsbFv(this.pfvDivId).getBoardConfig().length ?? 0;
-            this.createComponentThreshold = (((Math.floor(length/100))+1)*10)-1;
+            this.createComponentThreshold = (((Math.floor(length/100))+1)*this.createComponentThresholdBatch)-1;
         });
     }
 
