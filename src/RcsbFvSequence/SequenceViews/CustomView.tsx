@@ -15,7 +15,7 @@ import {
 export type CustomViewStateInterface = Omit<CustomViewInterface, "modelChangeCallback">;
 
 export interface CustomViewInterface {
-    config: FeatureBlockInterface | Array<FeatureBlockInterface>;
+    blockConfig: FeatureBlockInterface | Array<FeatureBlockInterface>;
     additionalContent?: (select: BlockViewSelector) => JSX.Element;
     modelChangeCallback?: (modelMap: SaguaroPluginModelMapType) => (void | CustomViewStateInterface);
 }
@@ -24,7 +24,7 @@ export interface FeatureBlockInterface {
     blockId:string;
     blockTitle?: string;
     blockShortName?: string;
-    blockConfig: Array<FeatureViewInterface> | FeatureViewInterface;
+    featureViewConfig: Array<FeatureViewInterface> | FeatureViewInterface;
 }
 
 export interface FeatureViewInterface {
@@ -64,7 +64,7 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
     private firstModelLoad: boolean = true;
 
     readonly state: CustomViewStateInterface = {
-        config: this.props.config,
+        blockConfig: this.props.blockConfig,
         additionalContent: this.props.additionalContent
     };
 
@@ -72,15 +72,16 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
         super({
             ...props
         });
-       this.mapBlocks(props.config);
+       this.mapBlocks(props.blockConfig);
     }
 
     componentDidMount(): void {
         super.componentDidMount();
-        this.blockViewSelector.setActiveBlock( (this.state.config instanceof Array ? this.state.config : [this.state.config])[0].blockId! );
+        this.blockViewSelector.setActiveBlock( (this.state.blockConfig instanceof Array ? this.state.blockConfig : [this.state.blockConfig])[0].blockId! );
     }
 
     componentWillUnmount() {
+        super.componentWillUnmount();
         this.rcsbFvMap.forEach((pfv,id)=>{
             pfv.unmount();
         });
@@ -92,7 +93,7 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
         ( config instanceof Array ? config : [config]).forEach(block=>{
             if(block.blockId == null)block.blockId = "block_"+Math.random().toString(36).substr(2);
             if(!this.blockMap.has(block.blockId))this.blockMap.set(block.blockId, new Array<string>());
-            (block.blockConfig instanceof Array ? block.blockConfig : [block.blockConfig]).forEach(board=>{
+            (block.featureViewConfig instanceof Array ? block.featureViewConfig : [block.featureViewConfig]).forEach(board=>{
                 if(board.boardId == null)board.boardId = "board_"+Math.random().toString(36).substr(2);
                 this.blockMap.get(block.blockId!)?.push(board.boardId);
                 this.boardMap.set(board.boardId, board);
@@ -116,6 +117,7 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
             document.getElementById("boardDiv_"+boardId)?.remove()
         });
         this.rcsbFvMap.clear();
+        this.props.plugin.unsetCallbacks();
     }
 
     private buildBlockFv(){
@@ -169,14 +171,14 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
         if(typeof this.props.modelChangeCallback === "function") {
             const newConfig: CustomViewStateInterface | void = this.props.modelChangeCallback(modelMap);
             if(newConfig != null){
-                if(newConfig.config != null && newConfig.additionalContent != null){
-                    this.mapBlocks(newConfig.config);
-                    this.setState({config: newConfig.config, additionalContent: newConfig.additionalContent})
-                }else if(newConfig.config == null && newConfig.additionalContent != null){
+                if(newConfig.blockConfig != null && newConfig.additionalContent != null){
+                    this.mapBlocks(newConfig.blockConfig);
+                    this.setState({blockConfig: newConfig.blockConfig, additionalContent: newConfig.additionalContent})
+                }else if(newConfig.blockConfig == null && newConfig.additionalContent != null){
                     this.setState({additionalContent: newConfig.additionalContent})
-                }else if(newConfig.config != null && newConfig.additionalContent == null){
-                    this.mapBlocks(newConfig.config);
-                    this.setState({config: newConfig.config})
+                }else if(newConfig.blockConfig != null && newConfig.additionalContent == null){
+                    this.mapBlocks(newConfig.blockConfig);
+                    this.setState({blockConfig: newConfig.blockConfig})
                 }
             }
         }

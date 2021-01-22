@@ -1,10 +1,5 @@
 
-import {RcsbFv3DCustomBuilder} from "../../RcsbFv3D/RcsbFv3DCustom";
-import {StructureViewInterface} from "../../RcsbFvStructure/RcsbFvStructure";
-import {SequenceViewInterface} from "../../RcsbFvSequence/RcsbFvSequence";
-
 import './example.html';
-import {LoadMethod} from "../../RcsbFvStructure/StructurePlugins/MolstarPlugin";
 import {RcsbFv3DAssembly} from "../../RcsbFv3D/RcsbFv3DAssembly";
 
 document.addEventListener("DOMContentLoaded", function(event) {

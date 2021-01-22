@@ -22,6 +22,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
     private currentLabelId: string;
     private currentEntryId: string;
     private currentModelId: string;
+    private createComponentThreshold: number = 9;
 
     constructor(props: AssemblyViewInterface & AbstractViewInterface) {
         super({
@@ -47,27 +48,66 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         setBoardConfig({
             trackWidth: trackWidth,
             elementClickCallBack:(e: RcsbFvTrackDataElementInterface)=>{
-                if(e == null)
+                console.log(e);
+                if(e == null) {
+                    this.props.plugin.clearSelection('select');
                     return;
+                }
                 const x = e.begin;
                 const y = e.end ?? e.begin;
-                this.props.plugin.clearSelect();
-                this.props.plugin.select(this.currentModelId, this.currentLabelId,x,y);
-                this.props.selection.setSelectionFromRegion(this.currentModelId, this.currentLabelId, {begin:x, end:y});
+                this.props.plugin.clearSelection('select');
+                if(e.isEmpty){
+                    this.props.plugin.selectSet(
+                        [{modelId: this.currentModelId, asymId: this.currentLabelId, position: x},{modelId: this.currentModelId, asymId: this.currentLabelId, position: y}], 'select'
+                    );
+                    this.props.selection.setSelectionFromMultipleRegions(
+                        [
+                            {modelId: this.currentModelId, labelAsymId: this.currentLabelId, region: {begin:x, end: x}},
+                            {modelId: this.currentModelId, labelAsymId: this.currentLabelId, region: {begin: y, end: y}}
+                            ], 'select'
+                    );
+                    this.props.plugin.removeComponent();
+                    this.props.plugin.createComponentFromSet(this.currentModelId,[{asymId:this.currentLabelId, position:x}, {asymId:this.currentLabelId, position:y}], 'spacefill');
+                }else{
+                    this.props.plugin.selectRange(this.currentModelId, this.currentLabelId,x,y, 'select');
+                    this.props.selection.setSelectionFromRegion(this.currentModelId, this.currentLabelId, {begin:x, end:y}, 'select');
+                    this.props.plugin.removeComponent();
+                    if((y-x)<this.createComponentThreshold){
+                        this.props.plugin.createComponentFromRange(this.currentModelId, this.currentLabelId, x, y, 'spacefill');
+                    }
+                }
+            },
+            highlightHoverPosition:true,
+            highlightHoverCallback:(selection: RcsbFvTrackDataElementInterface[])=>{
+                this.props.plugin.clearSelection('hover');
+                if(selection != null && selection.length > 0)
+                    this.props.plugin.selectRange(this.currentModelId, this.currentLabelId,selection[0].begin,selection[0].end ?? selection[0].begin,'hover');
             }
         });
     }
 
     componentWillUnmount() {
+        super.componentWillUnmount();
         unmount(this.pfvDivId);
     }
 
     protected structureSelectionCallback(): void{
-        const sel: ChainSelectionInterface | undefined = this.props.selection.getSelectionWithCondition(this.currentModelId, this.currentLabelId)
+       this.pluginSelectCallback('select');
+    }
+
+    protected structureHoverCallback(): void{
+        this.pluginSelectCallback('hover');
+    }
+
+    private pluginSelectCallback(mode:'select'|'hover'): void{
+        const sel: ChainSelectionInterface | undefined = this.props.selection.getSelectionWithCondition(this.currentModelId, this.currentLabelId, mode)
+
+        if(getRcsbFv(this.pfvDivId) == null)
+            return;
         if(sel == null)
-            getRcsbFv(this.pfvDivId).clearSelection();
+            getRcsbFv(this.pfvDivId).clearSelection(mode);
         else
-            getRcsbFv(this.pfvDivId).setSelection(sel.regions);
+            getRcsbFv(this.pfvDivId).setSelection({elements:sel.regions, mode:mode});
     }
 
     protected modelChangeCallback(modelMap:SaguaroPluginModelMapType): void {
@@ -93,7 +133,10 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
             undefined,
             onChangeCallback.get(entryId),
             filterInstances.get(entryId)
-        );
+        ).then(()=>{
+            const length: number = getRcsbFv(this.pfvDivId).getBoardConfig().length ?? 0;
+            this.createComponentThreshold = (((Math.floor(length/100))+1)*10)-1;
+        });
     }
 
     protected updateDimensions(): void{

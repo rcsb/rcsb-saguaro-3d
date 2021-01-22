@@ -5,7 +5,7 @@ import {
     SaguaroPluginInterface,
     SaguaroPluginModelMapType
 } from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
-import { RcsbFvSelection} from "../../RcsbFvSelection/RcsbFvSelection";
+import {RcsbFvSelection, ResidueSelectionInterface} from "../../RcsbFvSelection/RcsbFvSelection";
 
 export interface AbstractViewInterface {
     componentId: string;
@@ -44,13 +44,21 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
     componentDidMount() {
         this.props.plugin.setSelectCallback(this.structureSelectionCallback.bind(this));
         this.props.plugin.setModelChangeCallback(this.modelChangeCallback.bind(this));
-        window.addEventListener('resize', ()=>{
-            window.clearTimeout(this.updateDimTimeout);
-            this.updateDimTimeout = window.setTimeout(()=> {
-                this.updateDimensions();
-            },100);
-        });
+        this.props.plugin.setHoverCallback(this.structureHoverCallback.bind(this));
+        window.addEventListener('resize', this.resizeCallback);
     }
+
+    componentWillUnmount() {
+        this.props.plugin.unsetCallbacks();
+        window.removeEventListener('resize', this.resizeCallback);
+    }
+
+    protected resizeCallback: ()=>void =  () => {
+        window.clearTimeout(this.updateDimTimeout);
+        this.updateDimTimeout = window.setTimeout(()=> {
+            this.updateDimensions();
+        },100);
+    };
 
     private createTitle(): JSX.Element | null{
         if(this.props.title)
@@ -65,6 +73,8 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
     }
 
     protected structureSelectionCallback(): void{}
+
+    protected structureHoverCallback(): void{}
 
     protected modelChangeCallback(modelMap:SaguaroPluginModelMapType): void{}
 

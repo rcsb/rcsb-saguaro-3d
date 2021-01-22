@@ -18,6 +18,9 @@ import {State, StateSelection} from "molstar/lib/mol-state";
 import {StructureRef} from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
 import {RcsbFvSelection, ResidueSelectionInterface} from "../../RcsbFvSelection/RcsbFvSelection";
 import {AbstractPlugin} from "./AbstractPlugin";
+import {Subscription} from "rxjs";
+import {InteractivityManager} from "molstar/lib/mol-plugin-state/manager/interactivity";
+import {StateBuilder} from "molstar/lib/mol-state/state/builder";
 
 export enum LoadMethod {
     loadPdbId = "loadPdbId",
@@ -46,10 +49,12 @@ interface LoadParams {
 
 export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterface, SaguaroPluginPublicInterface {
     private plugin: Viewer;
-    private innerSelectionFlag: boolean = false;
+    private innerSelectionFlag: number = 0;
     private loadingFlag: boolean = false;
     private modelChangeCallback: (chainMap:SaguaroPluginModelMapType)=>void;
     private modelMap: Map<string,string|undefined> = new Map<string, string>();
+    private selectCallbackSubs: Subscription;
+    private modelChangeCallbackSubs: Subscription;
 
     constructor(props: RcsbFvSelection) {
         super(props);
@@ -119,15 +124,64 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     public setBackground(color: number) {
     }
 
-    public select(modelId:string, asymId: string, x: number, y: number): void {
-        this.innerSelectionFlag = true;
-        this.plugin.select(this.getModelId(modelId), asymId, x, y)
+    public selectRange(modelId:string, asymId: string, begin: number, end: number, mode: 'select'|'hover'): void {
+        if(mode == null || mode === 'select') {
+            this.innerSelectionFlag += 1;
+        }
+        this.plugin.select(this.getModelId(modelId), asymId, begin, end, mode);
+    }
+    public selectSet(selection: Array<{modelId:string; asymId: string; position: number;}>, mode: 'select'|'hover'): void {
+        if(mode == null || mode === 'select') {
+            this.innerSelectionFlag += 1;
+        }
+        this.plugin.select(selection.map(r=>{return{modelId: this.getModelId(r.modelId), position:r.position, asymId: r.asymId}}), mode);
     }
 
-    public setSelectCallback(g:()=>void ){
-        this.plugin.getPlugin().managers.structure.selection.events.changed.subscribe(()=>{
-            if(this.innerSelectionFlag) {
-                this.innerSelectionFlag = false;
+    public createComponentFromRange(modelId:string, asymId: string, begin: number, end : number, representationType: 'ball-and-stick' | 'spacefill' | 'gaussian-surface' | 'cartoon'): void {
+        this.plugin.createComponentFromRange("1D annotation", this.getModelId(modelId), asymId, begin, end, representationType);
+    }
+
+    public createComponentFromSet(modelId:string, residues: Array<{asymId: string; position: number;}>, representationType: 'ball-and-stick' | 'spacefill' | 'gaussian-surface' | 'cartoon'): void {
+        this.plugin.createComponentFromSet("1D annotation", this.getModelId(modelId), residues, representationType);
+    }
+
+    public removeComponent(): void{
+        this.plugin.removeComponent("1D annotation");
+    }
+
+    public setHoverCallback(g:()=>void){
+        this.plugin.getPlugin().managers.structure.component.events.optionsUpdated.subscribe(()=>{
+            console.log("!!!!!!!");
+        });
+        this.plugin.getPlugin().behaviors.interaction.hover.subscribe((r: InteractivityManager.HoverEvent)=>{
+            const sequenceData: Array<ResidueSelectionInterface> = new Array<ResidueSelectionInterface>();
+            const loci: Loci = r.current.loci;
+            if(StructureElement.Loci.is(loci)){
+                const loc = StructureElement.Location.create(loci.structure);
+                for (const e of loci.elements) {
+                    const modelId: string = e.unit?.model?.id;
+                    const seqIds = new Set<number>();
+                    loc.unit = e.unit;
+                    for (let i = 0, il = OrderedSet.size(e.indices); i < il; ++i) {
+                        loc.element = e.unit.elements[OrderedSet.getAt(e.indices, i)];
+                        seqIds.add(SP.residue.label_seq_id(loc));
+                    }
+                    sequenceData.push({
+                        modelId: this.getModelId(modelId),
+                        labelAsymId: SP.chain.label_asym_id(loc),
+                        seqIds
+                    });
+                }
+            }
+            this.selection.setSelectionFromResidueSelection(sequenceData, 'hover');
+            g();
+        });
+    }
+
+    public setSelectCallback(g:()=>void){
+        this.selectCallbackSubs = this.plugin.getPlugin().managers.structure.selection.events.changed.subscribe(()=>{
+            if(this.innerSelectionFlag > 0) {
+                this.innerSelectionFlag -= 1;
                 return;
             }
             const sequenceData: Array<ResidueSelectionInterface> = new Array<ResidueSelectionInterface>();
@@ -153,15 +207,17 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
 
                 }
             }
-            this.selection.setSelectionFromResidueSelection(sequenceData);
+            this.selection.setSelectionFromResidueSelection(sequenceData, 'select');
             g();
         });
     }
 
-    public clearSelect(): void {
-        this.innerSelectionFlag = true;
-        this.plugin.getPlugin().managers.interactivity.lociSelects.deselectAll();
-        this.selection.clearSelection();
+    public clearSelection(mode:'select'|'hover'): void {
+        if(mode === 'select') {
+            this.innerSelectionFlag += 1;
+        }
+        this.plugin.clearSelection(mode);
+
     }
 
     public pluginCall(f: (plugin: PluginContext) => void){
@@ -170,7 +226,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
 
     public setModelChangeCallback(f:(modelMap:SaguaroPluginModelMapType)=>void){
         this.modelChangeCallback = f;
-        this.plugin.getPlugin().state.events.object.updated.subscribe((o)=>{
+        this. modelChangeCallbackSubs = this.plugin.getPlugin().state.events.object.updated.subscribe((o)=>{
             if(this.loadingFlag)
                 return;
             if(o.action === "in-place" && o.ref === "ms-plugin.create-structure-focus-representation") {
@@ -207,6 +263,12 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     private getModelId(id: string): string{
         return this.modelMap.get(id) ?? id;
     }
+
+    public unsetCallbacks(): void {
+        this.selectCallbackSubs?.unsubscribe();
+        this.modelChangeCallbackSubs?.unsubscribe();
+    }
+
 
 }
 

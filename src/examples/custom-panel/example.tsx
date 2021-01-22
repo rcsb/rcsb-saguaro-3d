@@ -117,23 +117,23 @@ const fv2: FeatureViewInterface = {
 
 const block: FeatureBlockInterface = {
     blockId:"MyBlock_1",
-    blockConfig: [fv1]
+    featureViewConfig: [fv1]
 };
 
 const block2: FeatureBlockInterface = {
     blockId:"MyBlock_2",
-    blockConfig: [fv2, fv1]
+    featureViewConfig: [fv2, fv1]
 };
 
 const block3: FeatureBlockInterface = {
     blockId:"MyBlock_3",
-    blockConfig: [fv1, fv2]
+    featureViewConfig: [fv1, fv2]
 };
 
 const modelChangeCallback = (modelMap: SaguaroPluginModelMapType) => {
     console.log(modelMap);
     return {
-      config:[block, block2, block3],
+      blockConfig:[block, block2, block3],
       additionalContent:(select: BlockViewSelector) => {
           function changeBlock(select: BlockViewSelector){
               select.setActiveBlock("MyBlock_2");
@@ -162,7 +162,7 @@ const modelChangeCallback = (modelMap: SaguaroPluginModelMapType) => {
 };
 
 const customConfig: CustomViewInterface = {
-    config:[block, block2],
+    blockConfig:[block, block2],
     additionalContent:additionalContent,
     modelChangeCallback:modelChangeCallback
 }
