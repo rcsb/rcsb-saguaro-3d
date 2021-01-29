@@ -177,9 +177,8 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
 
 
     public createComponentFromSet(componentId: string, modelId:string, residues: Array<{asymId: string; position: number;}>, representationType: 'ball-and-stick' | 'spacefill' | 'gaussian-surface' | 'cartoon'): Promise<void> {
-        return this.plugin.createComponentFromSet(componentId, this.getModelId(modelId), residues, representationType).then(()=>{
-            this.componentSet.add(componentId);
-        });
+        this.componentSet.add(componentId);
+        return this.plugin.createComponentFromSet(componentId, this.getModelId(modelId), residues, representationType);
     }
 
     public isComponent(componentId: string): boolean{

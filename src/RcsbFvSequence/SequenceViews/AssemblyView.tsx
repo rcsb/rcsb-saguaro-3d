@@ -58,20 +58,20 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 const x = e.begin;
                 const y = e.end ?? e.begin;
                 if(e.isEmpty){
+                    this.props.plugin.focusPositions(this.currentModelId, this.currentLabelAsymId, [x,y]);
                     const componentId: string = this.currentLabelAsymId +":"+ ((x === y) ? x.toString() : x.toString()+","+y.toString());
                     this.props.plugin.createComponentFromSet(
                         componentId,
                         this.currentModelId,
                         [{asymId: this.currentLabelAsymId, position: x}, {asymId: this.currentLabelAsymId, position: y}],
                         'ball-and-stick'
-                    )
-                    this.props.plugin.focusPositions(this.currentModelId, this.currentLabelAsymId, [x,y]);
+                    );
                 }else{
-                    const componentId: string = this.currentLabelAsymId +":"+ (x === y ? x.toString() : x.toString()+"-"+y.toString());
-                    if((y-x)<this.createComponentThreshold){
-                        this.props.plugin.createComponentFromRange(componentId, this.currentModelId, this.currentLabelAsymId, x, y, 'ball-and-stick')
-                    }
                     this.props.plugin.focusRange(this.currentModelId, this.currentLabelAsymId, x, y);
+                    if((y-x)<this.createComponentThreshold){
+                        const componentId: string = this.currentLabelAsymId +":"+ (x === y ? x.toString() : x.toString()+"-"+y.toString());
+                        this.props.plugin.createComponentFromRange(componentId, this.currentModelId, this.currentLabelAsymId, x, y, 'ball-and-stick');
+                    }
                 }
             },
             selectionChangeCallBack:(selection: Array<SelectionInterface>)=>{
