@@ -11,7 +11,12 @@ import {Loci} from "molstar/lib/mol-model/loci";
 import {Mat4} from "molstar/lib/mol-math/linear-algebra";
 import {BuiltInTrajectoryFormat} from "molstar/lib/mol-plugin-state/formats/trajectory";
 import {PluginState} from "molstar/lib/mol-plugin/state";
-import {Structure, StructureElement, StructureProperties as SP } from "molstar/lib/mol-model/structure";
+import {
+    Structure,
+    StructureElement,
+    StructureProperties as SP,
+    StructureSelection
+} from "molstar/lib/mol-model/structure";
 import {OrderedSet} from "molstar/lib/mol-data/int";
 import { PluginStateObject as PSO } from 'molstar/lib/mol-plugin-state/objects';
 import {State, StateSelection} from "molstar/lib/mol-state";
@@ -20,7 +25,9 @@ import {RcsbFvSelection, ResidueSelectionInterface} from "../../RcsbFvSelection/
 import {AbstractPlugin} from "./AbstractPlugin";
 import {Subscription} from "rxjs";
 import {InteractivityManager} from "molstar/lib/mol-plugin-state/manager/interactivity";
-import {StateBuilder} from "molstar/lib/mol-state/state/builder";
+import {Script} from "molstar/lib/mol-script/script";
+import {MolScriptBuilder} from "molstar/lib/mol-script/language/builder";
+import {SetUtils} from "molstar/lib/mol-util/set";
 
 export enum LoadMethod {
     loadPdbId = "loadPdbId",
@@ -49,12 +56,13 @@ interface LoadParams {
 
 export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterface, SaguaroPluginPublicInterface {
     private plugin: Viewer;
-    private innerSelectionFlag: number = 0;
+    private innerSelectionFlag: boolean = false;
     private loadingFlag: boolean = false;
     private modelChangeCallback: (chainMap:SaguaroPluginModelMapType)=>void;
     private modelMap: Map<string,string|undefined> = new Map<string, string>();
     private selectCallbackSubs: Subscription;
     private modelChangeCallbackSubs: Subscription;
+    private readonly componentSet: Set<string> = new Set<string>();
 
     constructor(props: RcsbFvSelection) {
         super(props);
@@ -124,29 +132,91 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     public setBackground(color: number) {
     }
 
-    public selectRange(modelId:string, asymId: string, begin: number, end: number, mode: 'select'|'hover'): void {
+    public selectRange(modelId:string, asymId: string, begin: number, end: number, mode: 'select'|'hover', operation:'add'|'set'): void {
         if(mode == null || mode === 'select') {
-            this.innerSelectionFlag += 1;
+            this.innerSelectionFlag = true;
         }
-        this.plugin.select(this.getModelId(modelId), asymId, begin, end, mode);
+        this.plugin.select(this.getModelId(modelId), asymId, begin, end, mode, operation);
+        this.innerSelectionFlag = false;
     }
-    public selectSet(selection: Array<{modelId:string; asymId: string; position: number;}>, mode: 'select'|'hover'): void {
+    public selectSet(selection: Array<{modelId:string; asymId: string; position: number;}>, mode: 'select'|'hover', operation:'add'|'set'): void {
         if(mode == null || mode === 'select') {
-            this.innerSelectionFlag += 1;
+            this.innerSelectionFlag = true;
         }
-        this.plugin.select(selection.map(r=>{return{modelId: this.getModelId(r.modelId), position:r.position, asymId: r.asymId}}), mode);
+        this.plugin.select(selection.map(r=>{return{modelId: this.getModelId(r.modelId), position:r.position, asymId: r.asymId}}), mode, operation);
+        this.innerSelectionFlag = false;
     }
 
-    public createComponentFromRange(modelId:string, asymId: string, begin: number, end : number, representationType: 'ball-and-stick' | 'spacefill' | 'gaussian-surface' | 'cartoon'): void {
-        this.plugin.createComponentFromRange("1D annotation", this.getModelId(modelId), asymId, begin, end, representationType);
+    public focusPositions(modelId: string, asymId: string, positions:Array<number>): void{
+        const data: Structure | undefined = getStructureWithModelId(this.plugin.getPlugin().managers.structure.hierarchy.current.structures, this.getModelId(modelId));
+        if (data == null) return;
+        const sel: StructureSelection = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
+            'chain-test': Q.core.rel.eq([asymId, MolScriptBuilder.ammp('label_asym_id')]),
+            'residue-test': Q.core.set.has([MolScriptBuilder.set(...SetUtils.toArray(new Set(positions))), MolScriptBuilder.ammp('label_seq_id')])
+        }), data);
+        const loci: Loci = StructureSelection.toLociWithSourceUnits(sel);
+        if(!StructureElement.Loci.isEmpty(loci))
+            this.plugin.getPlugin().managers.camera.focusLoci(loci);
+        else
+            this.plugin.getPlugin().managers.camera.reset();
     }
 
-    public createComponentFromSet(modelId:string, residues: Array<{asymId: string; position: number;}>, representationType: 'ball-and-stick' | 'spacefill' | 'gaussian-surface' | 'cartoon'): void {
-        this.plugin.createComponentFromSet("1D annotation", this.getModelId(modelId), residues, representationType);
+    public focusRange(modelId: string, asymId: string, begin: number, end: number): void{
+        const seqIds: Array<number> = new Array<number>();
+        for(let n = begin; n <= end; n++){
+            seqIds.push(n);
+        }
+        this.focusPositions(modelId, asymId, seqIds);
     }
 
-    public removeComponent(): void{
-        this.plugin.removeComponent("1D annotation");
+    public createComponentFromRange(componentId: string, modelId:string, asymId: string, begin: number, end : number, representationType: 'ball-and-stick' | 'spacefill' | 'gaussian-surface' | 'cartoon'): Promise<void> {
+        return this.plugin.createComponentFromRange(componentId, this.getModelId(modelId), asymId, begin, end, representationType).then(()=>{
+            this.componentSet.add(componentId);
+        });
+    }
+
+
+    public createComponentFromSet(componentId: string, modelId:string, residues: Array<{asymId: string; position: number;}>, representationType: 'ball-and-stick' | 'spacefill' | 'gaussian-surface' | 'cartoon'): Promise<void> {
+        return this.plugin.createComponentFromSet(componentId, this.getModelId(modelId), residues, representationType).then(()=>{
+            this.componentSet.add(componentId);
+        });
+    }
+
+    public isComponent(componentId: string): boolean{
+        for(const c of this.plugin.getPlugin().managers.structure.hierarchy.currentComponentGroups){
+            for(const comp of c){
+                if(comp.cell.obj?.label === componentId) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public getComponentSet(): Set<string>{
+        const out: Set<string> = new Set<string>();
+        this.plugin.getPlugin().managers.structure.hierarchy.currentComponentGroups.forEach(c=>{
+            for(const comp of c){
+                if(comp.cell.obj?.label != null && out.has(comp.cell.obj?.label)) {
+                    break;
+                }else if(comp.cell.obj?.label != null){
+                    out.add(comp.cell.obj?.label);
+                }
+            }
+        });
+        return out;
+    }
+
+    public removeComponent(componentId?: string): void{
+        if(componentId == null){
+            this.componentSet.forEach(id=>{
+                this.plugin.removeComponent(id);
+            })
+            this.componentSet.clear();
+        }else{
+            this.plugin.removeComponent(componentId);
+            this.componentSet.delete(componentId);
+        }
     }
 
     public setHoverCallback(g:()=>void){
@@ -170,15 +240,14 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
                     });
                 }
             }
-            this.selection.setSelectionFromResidueSelection(sequenceData, 'hover');
+            this.selection.setSelectionFromResidueSelection(sequenceData, 'hover', 'structure');
             g();
         });
     }
 
-    public setSelectCallback(g:()=>void){
+    public setSelectCallback(g:(flag?:boolean)=>void){
         this.selectCallbackSubs = this.plugin.getPlugin().managers.structure.selection.events.changed.subscribe(()=>{
-            if(this.innerSelectionFlag > 0) {
-                this.innerSelectionFlag -= 1;
+            if(this.innerSelectionFlag) {
                 return;
             }
             const sequenceData: Array<ResidueSelectionInterface> = new Array<ResidueSelectionInterface>();
@@ -204,17 +273,20 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
 
                 }
             }
-            this.selection.setSelectionFromResidueSelection(sequenceData, 'select');
+            this.selection.setSelectionFromResidueSelection(sequenceData, 'select', 'structure');
             g();
         });
     }
 
-    public clearSelection(mode:'select'|'hover'): void {
+    public clearSelection(mode:'select'|'hover', option?:{modelId:string; labelAsymId:string;}): void {
         if(mode === 'select') {
-            this.innerSelectionFlag += 1;
+            this.innerSelectionFlag = true;
         }
-        this.plugin.clearSelection(mode);
-
+        if(option != null)
+            this.plugin.clearSelection(mode, {modelId: this.getModelId(option.modelId), labelAsymId: option.labelAsymId});
+        else
+            this.plugin.clearSelection(mode);
+        this.innerSelectionFlag = false;
     }
 
     public pluginCall(f: (plugin: PluginContext) => void){
@@ -223,7 +295,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
 
     public setModelChangeCallback(f:(modelMap:SaguaroPluginModelMapType)=>void){
         this.modelChangeCallback = f;
-        this. modelChangeCallbackSubs = this.plugin.getPlugin().state.events.object.updated.subscribe((o)=>{
+        this.modelChangeCallbackSubs = this.plugin.getPlugin().state.events.object.updated.subscribe((o)=>{
             if(this.loadingFlag)
                 return;
             if(o.action === "in-place" && o.ref === "ms-plugin.create-structure-focus-representation") {
