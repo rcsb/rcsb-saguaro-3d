@@ -338,6 +338,9 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         this.modelChangeCallbackSubs?.unsubscribe();
     }
 
+    public resetCamera(): void {
+        this.plugin.getPlugin().managers.camera.reset();
+    }
 
 }
 

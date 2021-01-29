@@ -80,9 +80,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 this.props.plugin.clearSelection('select', {modelId: this.currentModelId, labelAsymId: this.currentLabelAsymId});
                 this.props.selection.clearSelection('select', this.currentLabelAsymId);
                 if(selection == null || selection.length === 0) {
-                    this.props.plugin.pluginCall(plugin => {
-                        plugin.managers.camera.reset();
-                    });
+                    this.props.plugin.resetCamera();
                     return;
                 }
                 this.select(selection);
@@ -114,7 +112,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
     }
 
     protected structureSelectionCallback(): void{
-       this.pluginSelectCallback('select');
+        this.pluginSelectCallback('select');
     }
 
     protected structureHoverCallback(): void{
@@ -130,10 +128,6 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         const allSel: Array<ChainSelectionInterface> | undefined = this.props.selection.getSelection(mode);
         if(allSel == null || allSel.length ===0) {
             getRcsbFv(this.pfvDivId).clearSelection(mode);
-            if(mode === 'select')
-                this.props.plugin.pluginCall(plugin => {
-                    plugin.managers.camera.reset();
-                });
         }else{
             const sel: ChainSelectionInterface | undefined = this.props.selection.getSelectionWithCondition(this.currentModelId, this.currentLabelAsymId, mode);
             if (sel == null) {
@@ -153,6 +147,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 this.currentEntryId = v.entryId;
                 this.currentLabelAsymId = x.asymId;
                 this.currentModelId = k;
+                this.props.plugin.resetCamera();
                 setTimeout(()=>{
                     this.structureSelectionCallback();
                 },1000);

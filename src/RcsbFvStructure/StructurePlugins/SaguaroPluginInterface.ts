@@ -25,4 +25,5 @@ export interface SaguaroPluginPublicInterface {
     getComponentSet: () => Set<string>;
     focusPositions: (modelId: string, asymId: string, positions:Array<number>)=> void;
     focusRange: (modelId: string, asymId: string, begin: number, end: number) => void;
+    resetCamera: ()=>void;
 }
