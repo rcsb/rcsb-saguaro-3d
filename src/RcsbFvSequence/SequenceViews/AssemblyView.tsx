@@ -123,15 +123,20 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         if(getRcsbFv(this.pfvDivId) == null)
             return;
         this.innerSelectionFlag = true;
-        if(mode === 'select')
+        if(mode === 'select'){
             this.props.plugin.removeComponent();
+        }
         const allSel: Array<ChainSelectionInterface> | undefined = this.props.selection.getSelection(mode);
         if(allSel == null || allSel.length ===0) {
             getRcsbFv(this.pfvDivId).clearSelection(mode);
+            if(mode === 'select')
+                this.props.plugin.resetCamera();
         }else{
             const sel: ChainSelectionInterface | undefined = this.props.selection.getSelectionWithCondition(this.currentModelId, this.currentLabelAsymId, mode);
             if (sel == null) {
                 getRcsbFv(this.pfvDivId).clearSelection(mode);
+                if(mode === 'select')
+                    this.props.plugin.resetCamera();
             } else {
                 getRcsbFv(this.pfvDivId).setSelection({elements: sel.regions, mode: mode});
             }
