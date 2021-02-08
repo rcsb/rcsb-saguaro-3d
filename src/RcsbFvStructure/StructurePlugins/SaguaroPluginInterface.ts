@@ -1,7 +1,8 @@
 import {LoadMolstarInterface} from "./MolstarPlugin";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
+import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/registry";
 
-export type SaguaroPluginModelMapType = Map<string,{entryId: string; chains:Array<{label:string, auth:string}>;}>;
+export type SaguaroPluginModelMapType = Map<string,{entryId: string; chains:Array<{label:string, auth:string; entityId: string; title: string; type:"polymer"|"water"|"branched"|"non-polymer"|"macrolide";}>;}>;
 
 export interface SaguaroPluginInterface extends SaguaroPluginPublicInterface{
     init: (elementId: string, props?: any) => void;
@@ -18,8 +19,9 @@ export interface SaguaroPluginPublicInterface {
     selectRange: (modelId:string, asymId: string, x: number, y: number, mode: 'select'|'hover', operation:'set'|'add') => void;
     selectSet: (selection: Array<{modelId:string; asymId: string; position: number;}>, mode: 'select'|'hover', operation:'add'|'set') => void;
     clearSelection: (mode:'select'|'hover', option?:{modelId:string; labelAsymId:string;}) => void;
-    createComponentFromRange: (componentId: string, modelId:string, asymId: string, x: number, y: number, representationType: 'ball-and-stick' | 'spacefill' | 'gaussian-surface' | 'cartoon') => Promise<void>;
-    createComponentFromSet: (componentId: string, modelId:string, residues: Array<{asymId: string; position: number;}>, representationType: 'ball-and-stick' | 'spacefill' | 'gaussian-surface' | 'cartoon') => Promise<void>;
+    createComponent(componentId: string, modelId:string, asymId: string, begin: number, end : number, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
+    createComponent(componentId: string, modelId:string, asymId: string, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
+    createComponent(componentId: string, modelId:string, residues: Array<{asymId: string; position: number;}>, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
     removeComponent: (componentId?: string) => void;
     isComponent: (componentId: string) => boolean;
     getComponentSet: () => Set<string>;

@@ -23,9 +23,11 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
     private currentLabelAsymId: string;
     private currentEntryId: string;
     private currentModelId: string;
+    private currentModelNumber: string;
     private createComponentThresholdBatch = 3;
     private createComponentThreshold: number = 9;
     private innerSelectionFlag: boolean = false;
+    private currentSelectedComponentId: string;
     //private readonly componentSet = new Map<string, {current: Set<string>, previous: Set<string>}>();
 
     constructor(props: AssemblyViewInterface & AbstractViewInterface) {
@@ -52,16 +54,17 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         setBoardConfig({
             trackWidth: trackWidth,
             elementClickCallBack:(e:RcsbFvTrackDataElementInterface)=>{
-                this.props.plugin.removeComponent();
+                if(this.currentSelectedComponentId != null)
+                    this.props.plugin.removeComponent(this.currentSelectedComponentId);
                 if(e == null)
                     return;
                 const x = e.begin;
                 const y = e.end ?? e.begin;
                 if(e.isEmpty){
                     this.props.plugin.focusPositions(this.currentModelId, this.currentLabelAsymId, [x,y]);
-                    const componentId: string = this.currentLabelAsymId +":"+ ((x === y) ? x.toString() : x.toString()+","+y.toString());
-                    this.props.plugin.createComponentFromSet(
-                        componentId,
+                    this.currentSelectedComponentId = this.currentLabelAsymId +":"+ ((x === y) ? x.toString() : x.toString()+","+y.toString());
+                    this.props.plugin.createComponent(
+                        this.currentSelectedComponentId,
                         this.currentModelId,
                         [{asymId: this.currentLabelAsymId, position: x}, {asymId: this.currentLabelAsymId, position: y}],
                         'ball-and-stick'
@@ -69,8 +72,8 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 }else{
                     this.props.plugin.focusRange(this.currentModelId, this.currentLabelAsymId, x, y);
                     if((y-x)<this.createComponentThreshold){
-                        const componentId: string = this.currentLabelAsymId +":"+ (x === y ? x.toString() : x.toString()+"-"+y.toString());
-                        this.props.plugin.createComponentFromRange(componentId, this.currentModelId, this.currentLabelAsymId, x, y, 'ball-and-stick');
+                        this.currentSelectedComponentId = this.currentLabelAsymId +":"+ (x === y ? x.toString() : x.toString()+"-"+y.toString());
+                        this.props.plugin.createComponent(this.currentSelectedComponentId, this.currentModelId, this.currentLabelAsymId, x, y, 'ball-and-stick');
                     }
                 }
             },
@@ -123,8 +126,8 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         if(getRcsbFv(this.pfvDivId) == null)
             return;
         this.innerSelectionFlag = true;
-        if(mode === 'select'){
-            this.props.plugin.removeComponent();
+        if(mode === 'select' && this.currentSelectedComponentId != null){
+            this.props.plugin.removeComponent(this.currentSelectedComponentId);
         }
         const allSel: Array<ChainSelectionInterface> | undefined = this.props.selection.getSelection(mode);
         if(allSel == null || allSel.length ===0) {
@@ -173,6 +176,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 const length: number = getRcsbFv(this.pfvDivId).getBoardConfig().length ?? 0;
                 this.createComponentThreshold = (((Math.floor(length/100))+1)*this.createComponentThresholdBatch)-1;
             });
+        this.createChainComponents(modelMap);
     }
 
     protected updateDimensions(): void{
@@ -197,6 +201,21 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 this.props.selection.addSelectionFromRegion(this.currentModelId, this.currentLabelAsymId, {begin:x, end:y, source: 'sequence'}, 'select');
             }
         });
+    }
+
+    private async createChainComponents(modelMap:SaguaroPluginModelMapType): Promise<void> {
+        const chains: Array<{modelId: string; auth: string; label: string;}> = new Array<{modelId: string; auth: string; label: string;}>();
+        modelMap.forEach((entry, modelId)=>{
+            entry.chains.forEach(ch=>{
+                if(ch.type === "polymer") {
+                    chains.push({modelId: modelId, auth: ch.auth, label: ch.label});
+                }
+            });
+        });
+        this.props.plugin.removeComponent();
+        for(const ch of chains) {
+            await this.props.plugin.createComponent("Chain " + ch.auth, ch.modelId, ch.label, 'cartoon');
+        }
     }
 
     /*private removeComponents(labelAsymId?:string){

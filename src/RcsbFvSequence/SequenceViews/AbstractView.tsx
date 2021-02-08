@@ -81,7 +81,7 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
     protected updateDimensions(): void{}
 
     protected additionalContent(): JSX.Element | null {
-        return <div></div>;
+        return <></>;
     }
 
 }

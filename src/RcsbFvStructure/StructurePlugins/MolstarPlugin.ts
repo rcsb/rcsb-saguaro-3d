@@ -28,6 +28,7 @@ import {InteractivityManager} from "molstar/lib/mol-plugin-state/manager/interac
 import {Script} from "molstar/lib/mol-script/script";
 import {MolScriptBuilder} from "molstar/lib/mol-script/language/builder";
 import {SetUtils} from "molstar/lib/mol-util/set";
+import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/registry";
 
 export enum LoadMethod {
     loadPdbId = "loadPdbId",
@@ -58,10 +59,10 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     private plugin: Viewer;
     private innerSelectionFlag: boolean = false;
     private loadingFlag: boolean = false;
-    private modelChangeCallback: (chainMap:SaguaroPluginModelMapType)=>void;
-    private modelMap: Map<string,string|undefined> = new Map<string, string>();
     private selectCallbackSubs: Subscription;
+    private modelChangeCallback: (chainMap:SaguaroPluginModelMapType)=>void;
     private modelChangeCallbackSubs: Subscription;
+    private modelMap: Map<string,string|undefined> = new Map<string, string>();
     private readonly componentSet: Set<string> = new Set<string>();
 
     constructor(props: RcsbFvSelection) {
@@ -70,6 +71,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
 
     public init(target: string | HTMLElement, props?: Partial<ViewerProps>) {
         this.plugin = new Viewer(target, {layoutShowControls:false, layoutShowSequence: true, ...props});
+        this.plugin.getPlugin().representation.structure.registry
     }
 
     public clear(): void{
@@ -169,22 +171,21 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         this.focusPositions(modelId, asymId, seqIds);
     }
 
-    public createComponentFromRange(componentId: string, modelId:string, asymId: string, begin: number, end : number, representationType: 'ball-and-stick' | 'spacefill' | 'gaussian-surface' | 'cartoon'): Promise<void> {
-        return this.plugin.createComponentFromRange(componentId, this.getModelId(modelId), asymId, begin, end, representationType).then(()=>{
-            this.componentSet.add(componentId);
-        });
+    public async createComponent(componentLabel: string, modelId:string, asymId: string, begin: number, end : number, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
+    public async createComponent(componentLabel: string, modelId:string, asymId: string, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
+    public async createComponent(componentLabel: string, modelId:string, residues: Array<{asymId: string; position: number;}>, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
+    public async createComponent(...args: any[]): Promise<void> {
+        this.componentSet.add(args[0]);
+        if(args.length === 4)
+            await this.plugin.createComponent(args[0], this.getModelId(args[1]), args[2], args[3]);
+        else if(args.length === 6)
+            await this.plugin.createComponent(args[0], this.getModelId(args[1]), args[2], args[3], args[4], args[5]);
     }
 
-
-    public createComponentFromSet(componentId: string, modelId:string, residues: Array<{asymId: string; position: number;}>, representationType: 'ball-and-stick' | 'spacefill' | 'gaussian-surface' | 'cartoon'): Promise<void> {
-        this.componentSet.add(componentId);
-        return this.plugin.createComponentFromSet(componentId, this.getModelId(modelId), residues, representationType);
-    }
-
-    public isComponent(componentId: string): boolean{
+    public isComponent(componentLabel: string): boolean{
         for(const c of this.plugin.getPlugin().managers.structure.hierarchy.currentComponentGroups){
             for(const comp of c){
-                if(comp.cell.obj?.label === componentId) {
+                if(comp.cell.obj?.label === componentLabel) {
                     return true;
                 }
             }
@@ -206,15 +207,15 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         return out;
     }
 
-    public removeComponent(componentId?: string): void{
-        if(componentId == null){
+    public removeComponent(componentLabel?: string): void{
+        if(componentLabel == null){
             this.componentSet.forEach(id=>{
                 this.plugin.removeComponent(id);
             })
             this.componentSet.clear();
         }else{
-            this.plugin.removeComponent(componentId);
-            this.componentSet.delete(componentId);
+            this.plugin.removeComponent(componentLabel);
+            this.componentSet.delete(componentLabel);
         }
     }
 
@@ -297,19 +298,21 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         this.modelChangeCallbackSubs = this.plugin.getPlugin().state.events.object.updated.subscribe((o)=>{
             if(this.loadingFlag)
                 return;
-            if(o.action === "in-place" && o.ref === "ms-plugin.create-structure-focus-representation") {
+            if(o.obj.type.name === "Behavior" && o.action === "in-place") {
+                f(this.getChains());
+            }else if(o.obj.type.name === "Model" && o.action === "in-place"){
                 f(this.getChains());
             }
         });
     }
 
     private getChains(): SaguaroPluginModelMapType{
-        const structureRefList = getStructureOptions(this.plugin.getPlugin().state.data);
-        const out: Map<string,{entryId: string; chains:Array<{label:string, auth:string}>;}> = new Map<string, {entryId: string; chains:Array<{label:string, auth:string}>;}>();
+        const structureRefList = getStructureOptions(this.plugin.getPlugin());
+        const out: SaguaroPluginModelMapType = new Map<string, {entryId: string; chains: Array<{label:string;auth:string;entityId:string;title:string;type:ChainType;}>}>();
         structureRefList.forEach((structureRef,i)=>{
             const structure = getStructure(structureRef[0], this.plugin.getPlugin().state.data);
             let modelEntityId = getModelEntityOptions(structure)[0][0];
-            const chains: [{modelId:string, entryId:string},{auth:string,label:string}[]] = getChainValues(structure, modelEntityId);
+            const chains: [{modelId:string;entryId:string},{auth:string;label:string;entityId:string;title:string;type:ChainType;}[]] = getChainValues(structure, modelEntityId);
             out.set(this.getModelId(chains[0].modelId),{entryId:chains[0].entryId, chains: chains[1]});
         });
         return out;
@@ -317,11 +320,11 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
 
     private mapModels(loadParams: LoadParams | Array<LoadParams>): void{
         const loadParamList: Array<LoadParams> = loadParams instanceof Array ? loadParams : [loadParams];
-        const structureRefList = getStructureOptions(this.plugin.getPlugin().state.data);
+        const structureRefList = getStructureOptions(this.plugin.getPlugin());
         structureRefList.forEach((structureRef,i)=>{
             const structure = getStructure(structureRef[0], this.plugin.getPlugin().state.data);
             let modelEntityId = getModelEntityOptions(structure)[0][0];
-            const chains: [{modelId:string, entryId:string},{auth:string,label:string}[]] = getChainValues(structure, modelEntityId);
+            const chains: [{modelId:string, entryId:string},{auth:string,label:string;entityId:string;title:string;type:ChainType;}[]] = getChainValues(structure, modelEntityId);
             this.modelMap.set(chains[0].modelId,loadParamList[i].id);
             if(loadParamList[i].id!=null)
                 this.modelMap.set(loadParamList[i].id!,chains[0].modelId);
@@ -343,20 +346,30 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
 
 }
 
-function getChainValues(structure: Structure, modelEntityId: string): [{modelId:string, entryId:string},{auth:string;label:string}[]] {
-    const options: {auth:string;label:string}[] = [];
+type ChainType = "polymer"|"water"|"branched"|"non-polymer"|"macrolide";
+
+function getStructureOptions(plugin: PluginContext): [string,string][] {
+    const options: [string, string][] = [];
+    plugin.managers.structure.hierarchy.current.structures.forEach(s=>{
+        options.push([s.cell.transform.ref, s.cell.obj!.data.label]);
+    })
+    return options;
+}
+
+function getChainValues(structure: Structure, modelEntityId: string): [{modelId:string, entryId:string},{auth:string;label:string;entityId:string;title:string;type:ChainType;}[]] {
+    const options: {auth:string;label:string;entityId:string;title:string;type:ChainType;}[] = [];
     const l = StructureElement.Location.create(structure);
     const seen = new Set<number>();
-    const [ modelIdx, entityId ] = splitModelEntityId(modelEntityId);
+    const [modelIdx, entityId] = splitModelEntityId(modelEntityId);
 
     for (const unit of structure.units) {
         StructureElement.Location.set(l, structure, unit, unit.elements[0]);
         if (structure.getModelIndex(unit.model) !== modelIdx) continue;
 
         const id = unit.chainGroupId;
-        if (seen.has(id)) continue;
+        if(seen.has(id)) continue;
 
-        options.push({label:SP.chain.label_asym_id(l), auth:SP.chain.auth_asym_id(l)});
+        options.push({label:SP.chain.label_asym_id(l), auth:SP.chain.auth_asym_id(l), entityId: SP.entity.id(l), title: SP.entity.pdbx_description(l).join("|"), type: SP.entity.type(l)});
         seen.add(id);
     }
     const id: {modelId:string, entryId:string} = {modelId:l.unit?.model?.id, entryId: l.unit?.model?.entryId};
@@ -374,23 +387,13 @@ function getStructureWithModelId(structures: StructureRef[], modelId: string): S
     }
 }
 
-function getStructureOptions(state: State) {
-    const options: [string, string][] = [];
-    const structures = state.select(StateSelection.Generators.rootsOfType(PSO.Molecule.Structure));
-    for (const s of structures) {
-        options.push([s.transform.ref, s.obj!.data.label]);
-    }
-    if (options.length === 0) options.push(['', 'No structure']);
-    return options;
-}
-
 function getStructure(ref: string, state: State) {
     const cell = state.select(ref)[0];
     if (!ref || !cell || !cell.obj) return Structure.Empty;
     return (cell.obj as PSO.Molecule.Structure).data;
 }
 
-function getModelEntityOptions(structure: Structure) {
+function getModelEntityOptions(structure: Structure):[string, string][] {
     const options: [string, string][] = [];
     const l = StructureElement.Location.create(structure);
     const seen = new Set<string>();
