@@ -52,7 +52,7 @@ const appConfig = {
         umdNamedDefine: true,
         path: path.resolve(__dirname, 'build/dist')
     },
-    devtool: 'source-map'
+    devtool: false//'source-map'
 }
 
 module.exports = [appConfig];

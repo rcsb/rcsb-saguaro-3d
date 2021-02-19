@@ -45,6 +45,7 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
         this.props.plugin.setSelectCallback(this.structureSelectionCallback.bind(this));
         this.props.plugin.setModelChangeCallback(this.modelChangeCallback.bind(this));
         this.props.plugin.setHoverCallback(this.structureHoverCallback.bind(this));
+        this.props.plugin.setRepresentationChangeCallback(this.representationChangeCallback.bind(this));
         window.addEventListener('resize', this.resizeCallback);
     }
 
@@ -75,6 +76,8 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
     protected structureSelectionCallback(): void{}
 
     protected structureHoverCallback(): void{}
+
+    protected representationChangeCallback(): void{}
 
     protected modelChangeCallback(modelMap:SaguaroPluginModelMapType): void{}
 

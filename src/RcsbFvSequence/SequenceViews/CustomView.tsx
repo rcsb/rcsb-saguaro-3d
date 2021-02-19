@@ -157,6 +157,14 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
         });
     }
 
+    protected structureHoverCallback(): void{
+        //TODO;
+    }
+
+    protected representationChangeCallback(): void{
+        //TODO
+    }
+
     protected additionalContent(): JSX.Element {
         if(this.state.additionalContent == null)
             return <></>;

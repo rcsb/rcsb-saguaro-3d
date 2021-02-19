@@ -1,5 +1,5 @@
 import * as React from "react";
-import {AssemblyView, AssemblyViewInterface} from "./SequenceViews/AssemblyView";
+import {AssemblyView, AssemblyViewInterface} from "./SequenceViews/AssemblyView/AssemblyView";
 import {CustomView, CustomViewInterface} from "./SequenceViews/CustomView";
 import {SaguaroPluginInterface} from "../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
 import {PluginContext} from "molstar/lib/mol-plugin/context";

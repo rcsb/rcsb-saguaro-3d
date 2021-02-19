@@ -19,6 +19,7 @@ export interface ChainSelectionInterface {
 
 export class RcsbFvSelection {
 
+    private lastSelection: ChainSelectionInterface | null = null;
     private selection: Array<ChainSelectionInterface> = new Array<ChainSelectionInterface>();
     private hover: Array<ChainSelectionInterface> = new Array<ChainSelectionInterface>();
 
@@ -81,6 +82,14 @@ export class RcsbFvSelection {
             return this.selection;
         else
             return this.hover;
+    }
+
+    public getLastSelection(mode:'select'|'hover'): ChainSelectionInterface | null{
+       return this.lastSelection;
+    }
+
+    public setLastSelection(mode:'select'|'hover', selection: ChainSelectionInterface | null): void {
+        this.lastSelection = selection;
     }
 
     public getSelectionWithCondition(modelId: string, labelAsymId: string, mode:'select'|'hover'): ChainSelectionInterface | undefined{

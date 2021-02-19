@@ -22,7 +22,11 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract{
                 method: LoadMethod.loadPdbId,
                 params: {
                     pdbId:assemblyData.config.entryId,
-                    id:assemblyData.config.entryId
+                    id:assemblyData.config.entryId,
+                    props:{
+                        kind:'empty',
+                        assemblyId:'1'
+                    }
                 }
             }
         };
