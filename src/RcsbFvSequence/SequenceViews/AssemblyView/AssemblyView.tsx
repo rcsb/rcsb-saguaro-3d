@@ -171,7 +171,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
             const authId: string | undefined = this.currentModelMap
                 .get(this.currentModelId)?.chains
                 .filter(ch=>(ch.label===this.props.selection.getLastSelection('select')?.labelAsymId))[0]?.auth;
-            this.modelChangeCallback(this.currentModelMap, this.currentEntryId+"."+authId);
+            this.modelChangeCallback(this.currentModelMap, authId);
         }else{
             const sel: ChainSelectionInterface | undefined = this.props.selection.getSelectionWithCondition(this.currentModelId, this.currentLabelAsymId, mode);
             if (sel == null) {
@@ -185,7 +185,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         this.innerSelectionFlag = false;
     }
 
-    protected async modelChangeCallback(modelMap:SaguaroPluginModelMapType, defaultAsymId?: string): Promise<void> {
+    protected async modelChangeCallback(modelMap:SaguaroPluginModelMapType, defaultAuthId?: string): Promise<void> {
         this.currentModelMap = modelMap;
         this.props.plugin.clearFocus();
         const onChangeCallback: Map<string, (x: InstanceSequenceOnchangeInterface)=>void> = new Map<string, (x: InstanceSequenceOnchangeInterface) => {}>();
@@ -209,7 +209,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 this.pfvDivId,
                 RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID,
                 entryId, {
-                    defaultValue: defaultAsymId,
+                    defaultValue: defaultAuthId,
                     onChangeCallback: onChangeCallback.get(entryId),
                     filterInstances: filterInstances.get(entryId),
                     selectButtonOptionProps:(props:OptionProps<OptionPropsInterface>)=>(components.Option && <div style={{display:'flex'}}>
@@ -220,7 +220,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 const length: number = getRcsbFv(this.pfvDivId).getBoardConfig().length ?? 0;
                 this.createComponentThreshold = (((Math.floor(length/100))+1)*this.createComponentThresholdBatch)-1;
             });
-        if(!defaultAsymId)
+        if(!defaultAuthId)
             await this.createComponents(modelMap);
     }
 
@@ -254,6 +254,8 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
     }
 
     private async createComponents(modelMap:SaguaroPluginModelMapType): Promise<void> {
+        await this.props.plugin.displayComponent("Water", false);
+        await this.props.plugin.colorComponent("Polymer", 'entity-source');
         const chains: Array<{modelId: string; auth: string; label: string;}> = new Array<{modelId: string; auth: string; label: string;}>();
         modelMap.forEach((entry, modelId)=>{
             entry.chains.forEach(ch=>{
@@ -265,12 +267,11 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         this.props.plugin.removeComponent();
         this.props.plugin.clearFocus();
         for(const ch of chains) {
-            const label: string = "chain " + ch.auth;
+            const label: string = ch.auth === ch.label ? ch.label : `${ch.label} [auth ${ch.auth}]`;
             await this.props.plugin.createComponent(label, ch.modelId, ch.label, 'cartoon');
             await this.props.plugin.colorComponent(label, 'entity-source');
         }
-
-        this.props.plugin.pluginCall((plugin)=>{
+        /*this.props.plugin.pluginCall((plugin)=>{
             const createComponent = (label: string, tag: string, expression: Expression, representationType: StructureRepresentationRegistry.BuiltIn) => {
                 return plugin.managers.structure.component.add({
                     selection: StructureSelectionQuery(tag, expression),
@@ -309,8 +310,8 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 representationType: 'ball-and-stick'
             }]);
 
-        });
-
+        });*/
+        await this.props.plugin.removeComponent("Polymer");
     }
 
     /*private removeComponents(labelAsymId?:string){

@@ -24,7 +24,7 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract{
                     pdbId:assemblyData.config.entryId,
                     id:assemblyData.config.entryId,
                     props:{
-                        kind:'empty',
+                        kind:'standard',
                         assemblyId:'1'
                     }
                 }
