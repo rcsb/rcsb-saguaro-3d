@@ -87,7 +87,7 @@ export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterfa
     }
 
     private structureCssConfig(css: CSSProperties | undefined): CSSProperties{
-        return {...{width:Math.round((1-this.pfvScreenFraction)*100).toString()+"%", height:"100%"}, ...css };
+        return {...{width:Math.round((1-this.pfvScreenFraction)*100).toString()+"%", height:"100%", zIndex:1}, ...css };
     }
 
     private sequenceCssConfig(css: CSSProperties | undefined): CSSProperties{
