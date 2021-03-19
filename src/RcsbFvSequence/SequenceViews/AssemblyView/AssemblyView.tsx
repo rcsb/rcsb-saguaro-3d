@@ -1,7 +1,7 @@
 import {RcsbFvDOMConstants} from "../../../RcsbFvConstants/RcsbFvConstants";
 import * as React from "react";
 import {
-    buildInstanceSequenceFv,
+    buildInstanceSequenceFv, buildInstanceTcgaFv,
     buildMultipleInstanceSequenceFv,
     getRcsbFv,
     setBoardConfig,
@@ -208,7 +208,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         unmount(this.pfvDivId);
         const entryId: string = Array.from(modelMap.values()).map(d=>d.entryId)[0];
         if(entryId != null)
-            buildInstanceSequenceFv(
+            buildInstanceTcgaFv(
                 this.pfvDivId,
                 RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID,
                 entryId, {
@@ -223,6 +223,21 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 const length: number = getRcsbFv(this.pfvDivId).getBoardConfig().length ?? 0;
                 this.createComponentThreshold = (((Math.floor(length/100))+1)*this.createComponentThresholdBatch)-1;
             });
+            /*buildInstanceSequenceFv(
+                this.pfvDivId,
+                RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID,
+                entryId, {
+                    defaultValue: defaultAuthId,
+                    onChangeCallback: onChangeCallback.get(entryId),
+                    filterInstances: filterInstances.get(entryId),
+                    selectButtonOptionProps:(props:OptionProps<OptionPropsInterface>)=>(components.Option && <div style={{display:'flex'}}>
+                        <ChainDisplay plugin={this.props.plugin} label={props.data.label}/><components.Option {...props}/>
+                    </div>)
+                }
+            ).then(()=>{
+                const length: number = getRcsbFv(this.pfvDivId).getBoardConfig().length ?? 0;
+                this.createComponentThreshold = (((Math.floor(length/100))+1)*this.createComponentThresholdBatch)-1;
+            });*/
         if(!defaultAuthId)
             await this.createComponents(modelMap);
     }
