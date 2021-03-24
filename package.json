@@ -75,7 +75,7 @@
   },
   "dependencies": {
     "@rcsb/rcsb-molstar": "^1.3.0-beta.saguaro.1",
-    "@rcsb/rcsb-saguaro": "file:../rcsb-saguaro",
+    "@rcsb/rcsb-saguaro": "^1.1.0",
     "@rcsb/rcsb-saguaro-app": "file:../rcsb-saguaro-app",
     "@types/react": "^17.0.0",
     "@types/react-select": "^3.0.11",
