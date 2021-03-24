@@ -12,7 +12,7 @@
   width: 100%;
   height: 100%;
   background-color: #fff;
-  z-index: 1000000;
+  z-index: 10;
 }
 
 .rcsbFvMain > div {
@@ -20,7 +20,7 @@
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
-  flex-flow: row wrap;
+  flex-flow: row-reverse wrap;
 }
 
 .rcsbFvMain * {
@@ -32,18 +32,17 @@
 }
 
 .rcsbFvSubtitle {
-  font-size: 18px;
+  font-size: 16px;
   font-family: inherit;
-  font-weight: 500;
   line-height: 1.1;
   color: inherit;
   margin-bottom: 15px;
 }
 
 .rcsbFvTitle{
-  font-size: 36px;
+  font-size: 24px;
   font-family: inherit;
-  font-weight: 500;
+  font-weight: bold;
   line-height: 1.1;
   color: inherit;
   margin-bottom: 15px;

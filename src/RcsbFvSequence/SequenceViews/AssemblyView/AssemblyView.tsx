@@ -53,7 +53,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         return (
             <div style={{marginTop:10}}>
                 <div id={RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID} style={{display:"inline-block"}}/>
-                <div style={{position:"absolute", top:5, right:24}} >
+                <div style={{position:"absolute", top:5, right:5}} >
                     <a style={{textDecoration:"none", color:"#337ab7", cursor:"pointer", marginRight:15}} target={"_blank"} href={"/docs/sequence-viewers/3d-protein-feature-view"}>
                         Help
                     </a>
