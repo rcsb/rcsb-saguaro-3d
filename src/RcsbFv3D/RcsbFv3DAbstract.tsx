@@ -71,6 +71,7 @@ export abstract class RcsbFv3DAbstract {
                 element.remove();
                 document.body.style.overflow = "visible";
             }
+            window.history.back();
         }
     }
 

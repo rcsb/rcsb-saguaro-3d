@@ -52,11 +52,20 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
     protected additionalContent(): JSX.Element {
         return (
             <div style={{marginTop:10}}>
-                <div id={RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID} style={{display:"inline-block"}}/>
-                <div style={{position:"absolute", top:5, right:24, cursor:"pointer"}} >
-                    <a style={{textDecoration:"none", fontWeight:"bold", color:"grey"}} target={"_blank"} href={"/docs/sequence-viewers/3d-protein-feature-view"}>?</a>
+                <div>
+                    <div id={RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID} style={{display:"inline-block"}}/>
+                    <div style={{display:"inline-block", marginLeft:25}}>
+                        <a href={"/docs/sequence-viewers/protein-feature-view"} target={"_blank"}>Help</a>
+                    </div>
                 </div>
-                <div style={{position:"absolute", top:5, right:7, cursor:"pointer", color: "grey"}} onClick={()=>{this.props.unmount(true)}}>&#10006;</div>
+                <div style={{position:"absolute", top:5, right:5}} >
+                    <a style={{textDecoration:"none", color:"#337ab7", cursor:"pointer", marginRight:15}} target={"_blank"} href={"/docs/sequence-viewers/3d-protein-feature-view"}>
+                        Help
+                    </a>
+                    <a style={{textDecoration:"none", color: "#337ab7", cursor:"pointer"}} onClick={()=>{this.props.unmount(true)}}>
+                        Back
+                    </a>
+                </div>
             </div>
         );
     }

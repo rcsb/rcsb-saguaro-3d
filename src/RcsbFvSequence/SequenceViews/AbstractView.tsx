@@ -31,10 +31,10 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
     render():JSX.Element {
         return (
                 <div id={this.componentDivId} >
-                    <div style={{paddingLeft:10}}>
-                    {this.createTitle()}
-                    {this.createSubtitle()}
-                    {this.additionalContent()}
+                    <div style={{paddingLeft:10, position:"relative"}}>
+                        {this.createTitle()}
+                        {this.createSubtitle()}
+                        {this.additionalContent()}
                     </div>
                     <div id ={this.pfvDivId} />
                 </div>
