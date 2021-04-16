@@ -36,7 +36,7 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
                         {this.createSubtitle()}
                         {this.additionalContent()}
                     </div>
-                    <div id ={this.pfvDivId} />
+                    <div id ={this.pfvDivId} style={{paddingLeft:5}}/>
                 </div>
         );
     }

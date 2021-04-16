@@ -1,6 +1,8 @@
 export enum RcsbFvDOMConstants {
     SELECT_ASSEMBLY_PFV_ID = "selectAssemblyPfv",
     SELECT_INSTANCE_PFV_ID = "selectInstancePfv",
+    ANNOTATIONS_SELECT_ID = "annotationsSelectPfv",
+    ANNOTATIONS_UI_PANEL_ID = "annotationsUIPanel",
     PFV_APP_ID = "pfvApp",
     PFV_DIV = "pfvDiv",
     MOLSTAR_DIV= "molstarDiv",

@@ -1,12 +1,6 @@
 import {RcsbFvDOMConstants} from "../../../RcsbFvConstants/RcsbFvConstants";
 import * as React from "react";
-import {
-    buildInstanceSequenceFv, buildInstanceTcgaFv,
-    buildMultipleInstanceSequenceFv,
-    getRcsbFv,
-    setBoardConfig,
-    unmount
-} from "@rcsb/rcsb-saguaro-app";
+import {buildInstanceTcgaFv, getFeatures, getRcsbFv, setBoardConfig, unmount} from "@rcsb/rcsb-saguaro-app";
 import {AbstractView, AbstractViewInterface} from "../AbstractView";
 import {InstanceSequenceOnchangeInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
 import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
@@ -18,13 +12,7 @@ import {OptionPropsInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/
 import {OptionProps} from "react-select/src/components/Option";
 import {components} from 'react-select';
 import {ChainDisplay} from "./ChainDisplay";
-
-import {
-    StructureSelectionQueries as Q,
-    StructureSelectionQuery
-} from 'molstar/lib/mol-plugin-state/helpers/structure-selection-query';
-import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/registry";
-import Expression from "molstar/lib/mol-script/language/expression";
+import {Feature} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbGraphQL/Types/Borrego/GqlTypes";
 
 export interface AssemblyViewInterface {
     entryId: string;
@@ -44,9 +32,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
     //private readonly componentSet = new Map<string, {current: Set<string>, previous: Set<string>}>();
 
     constructor(props: AssemblyViewInterface & AbstractViewInterface) {
-        super({
-            ...props
-        });
+        super(props);
     }
 
     protected additionalContent(): JSX.Element {
@@ -57,6 +43,10 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                     <div style={{display:"inline-block", marginLeft:25}}>
                         <a href={"/docs/sequence-viewers/protein-feature-view"} target={"_blank"}>Help</a>
                     </div>
+                </div>
+                <div>
+                    <div id={RcsbFvDOMConstants.ANNOTATIONS_SELECT_ID} />
+                    <div id={RcsbFvDOMConstants.ANNOTATIONS_UI_PANEL_ID} />
                 </div>
                 <div style={{position:"absolute", top:5, right:5}} >
                     <a style={{textDecoration:"none", color:"#337ab7", cursor:"pointer", marginRight:15}} target={"_blank"} href={"/docs/sequence-viewers/3d-protein-feature-view"}>
@@ -220,13 +210,20 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
             buildInstanceTcgaFv(
                 this.pfvDivId,
                 RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID,
-                entryId, {
+                entryId,
+                {
                     defaultValue: defaultAuthId,
                     onChangeCallback: onChangeCallback.get(entryId),
                     filterInstances: filterInstances.get(entryId),
                     selectButtonOptionProps:(props:OptionProps<OptionPropsInterface>)=>(components.Option && <div style={{display:'flex'}}>
                         <ChainDisplay plugin={this.props.plugin} label={props.data.label}/><components.Option {...props}/>
-                    </div>)
+                    </div>),
+                    additionalConfig:{
+                        annotationUI:{
+                            selectId: RcsbFvDOMConstants.ANNOTATIONS_SELECT_ID,
+                            panelId: RcsbFvDOMConstants.ANNOTATIONS_UI_PANEL_ID
+                        }
+                    }
                 }
             ).then(()=>{
                 const length: number = getRcsbFv(this.pfvDivId).getBoardConfig().length ?? 0;

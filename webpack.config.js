@@ -44,7 +44,8 @@ const appConfig = {
         'RcsbFv3DCustom':'./build/src/RcsbFv3D/RcsbFv3DCustom.js',
         'rcsb-saguaro-3d':'./build/src/RcsbSaguaro3D.js'
     },
-    mode: "production",
+    mode: "development",
+    //mode: "production",
     output: {
         filename: '[name].js',
         library: 'RcsbFv3D',
@@ -52,7 +53,7 @@ const appConfig = {
         umdNamedDefine: true,
         path: path.resolve(__dirname, 'build/dist')
     },
-    devtool: false//'source-map'
+    devtool: 'source-map'
 }
 
 module.exports = [appConfig];
