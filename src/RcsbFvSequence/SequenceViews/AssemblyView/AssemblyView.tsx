@@ -2,7 +2,10 @@ import {RcsbFvDOMConstants} from "../../../RcsbFvConstants/RcsbFvConstants";
 import * as React from "react";
 import {buildInstanceTcgaFv, getFeatures, getRcsbFv, setBoardConfig, unmount} from "@rcsb/rcsb-saguaro-app";
 import {AbstractView, AbstractViewInterface} from "../AbstractView";
-import {InstanceSequenceOnchangeInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
+import {
+    InstanceSequenceConfig,
+    InstanceSequenceOnchangeInterface
+} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
 import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {ChainSelectionInterface} from "../../../RcsbFvSelection/RcsbFvSelection";
 import {SaguaroPluginModelMapType} from "../../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
@@ -12,10 +15,11 @@ import {OptionPropsInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/
 import {OptionProps} from "react-select/src/components/Option";
 import {components} from 'react-select';
 import {ChainDisplay} from "./ChainDisplay";
-import {Feature} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {RcsbFvModulePublicInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 
 export interface AssemblyViewInterface {
     entryId: string;
+    rcsbFvInstanceBuilder: (elementFvId: string, elementSelectId: string, entryId: string, config?: InstanceSequenceConfig)=> Promise<RcsbFvModulePublicInterface>;
 }
 
 export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractViewInterface, AssemblyViewInterface & AbstractViewInterface>{
@@ -207,7 +211,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         unmount(this.pfvDivId);
         const entryId: string = Array.from(modelMap.values()).map(d=>d.entryId)[0];
         if(entryId != null)
-            buildInstanceTcgaFv(
+            this.props.rcsbFvInstanceBuilder(
                 this.pfvDivId,
                 RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID,
                 entryId,
@@ -229,21 +233,6 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 const length: number = getRcsbFv(this.pfvDivId).getBoardConfig().length ?? 0;
                 this.createComponentThreshold = (((Math.floor(length/100))+1)*this.createComponentThresholdBatch)-1;
             });
-            /*buildInstanceSequenceFv(
-                this.pfvDivId,
-                RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID,
-                entryId, {
-                    defaultValue: defaultAuthId,
-                    onChangeCallback: onChangeCallback.get(entryId),
-                    filterInstances: filterInstances.get(entryId),
-                    selectButtonOptionProps:(props:OptionProps<OptionPropsInterface>)=>(components.Option && <div style={{display:'flex'}}>
-                        <ChainDisplay plugin={this.props.plugin} label={props.data.label}/><components.Option {...props}/>
-                    </div>)
-                }
-            ).then(()=>{
-                const length: number = getRcsbFv(this.pfvDivId).getBoardConfig().length ?? 0;
-                this.createComponentThreshold = (((Math.floor(length/100))+1)*this.createComponentThresholdBatch)-1;
-            });*/
         if(!defaultAuthId)
             await this.createComponents(modelMap);
     }
