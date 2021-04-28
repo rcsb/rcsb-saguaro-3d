@@ -38,7 +38,7 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract{
                 entryId:assemblyData.config.entryId,
                 rcsbFvInstanceBuilder: assemblyData.config.type === "rcsb" ? buildInstanceSequenceFv : buildInstanceTcgaFv
             },
-            title:"3D Protein Features View: "+assemblyData.config.title,
+            title: assemblyData.config.title,
             subtitle: assemblyData.config.subtitle
         };
         this.cssConfig = assemblyData.cssConfig;

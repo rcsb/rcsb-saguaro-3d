@@ -1,6 +1,6 @@
 import {RcsbFvDOMConstants} from "../../../RcsbFvConstants/RcsbFvConstants";
 import * as React from "react";
-import {buildInstanceTcgaFv, getFeatures, getRcsbFv, setBoardConfig, unmount} from "@rcsb/rcsb-saguaro-app";
+import {getRcsbFv, setBoardConfig, unmount} from "@rcsb/rcsb-saguaro-app";
 import {AbstractView, AbstractViewInterface} from "../AbstractView";
 import {
     InstanceSequenceConfig,
@@ -51,6 +51,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 <div>
                     <div id={RcsbFvDOMConstants.ANNOTATIONS_SELECT_ID} />
                     <div id={RcsbFvDOMConstants.ANNOTATIONS_UI_PANEL_ID} />
+                    <div id={RcsbFvDOMConstants.ANNOTATIONS_METADATA_PANEL_ID} />
                 </div>
                 <div style={{position:"absolute", top:5, right:5}} >
                     <a style={{textDecoration:"none", color:"#337ab7", cursor:"pointer", marginRight:15}} target={"_blank"} href={"/docs/sequence-viewers/3d-protein-feature-view"}>
@@ -225,7 +226,8 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                     additionalConfig:{
                         annotationUI:{
                             selectId: RcsbFvDOMConstants.ANNOTATIONS_SELECT_ID,
-                            panelId: RcsbFvDOMConstants.ANNOTATIONS_UI_PANEL_ID
+                            panelId: RcsbFvDOMConstants.ANNOTATIONS_UI_PANEL_ID,
+                            metadataId: RcsbFvDOMConstants.ANNOTATIONS_METADATA_PANEL_ID
                         }
                     }
                 }
@@ -240,7 +242,9 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
     protected updateDimensions(): void{
         const width: number = window.document.getElementById(this.componentDivId)?.getBoundingClientRect().width ?? 0;
         const trackWidth: number = width - 190 - 55;
-        getRcsbFv(this.pfvDivId).updateBoardConfig({boardConfigData:{trackWidth:trackWidth}});
+        getRcsbFv(this.pfvDivId).updateBoardConfig({boardConfigData:{trackWidth:trackWidth}}).then(()=>{
+            this.structureSelectionCallback();
+        });
     }
 
     private select(selection: Array<SelectionInterface>): void{
