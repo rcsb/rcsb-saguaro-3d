@@ -239,7 +239,9 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
     protected updateDimensions(): void{
         const width: number = window.document.getElementById(this.componentDivId)?.getBoundingClientRect().width ?? 0;
         const trackWidth: number = width - 190 - 55;
-        getRcsbFv(this.pfvDivId).updateBoardConfig({boardConfigData:{trackWidth:trackWidth}});
+        getRcsbFv(this.pfvDivId).updateBoardConfig({boardConfigData:{trackWidth:trackWidth}}).then(()=>{
+            this.structureSelectionCallback();
+        });
     }
 
     private select(selection: Array<SelectionInterface>): void{
