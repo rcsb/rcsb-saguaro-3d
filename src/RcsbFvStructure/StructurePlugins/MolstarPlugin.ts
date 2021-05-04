@@ -156,7 +156,6 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         if(mode == null || mode === 'select') {
             this.innerSelectionFlag = true;
         }
-
         this.plugin.select(this.getModelId(modelId), asymId, begin, end, mode, operation);
         this.innerSelectionFlag = false;
     }
