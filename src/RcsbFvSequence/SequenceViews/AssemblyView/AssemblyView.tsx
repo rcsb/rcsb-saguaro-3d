@@ -24,7 +24,7 @@ import {
     StructureSelectionQuery
 } from 'molstar/lib/mol-plugin-state/helpers/structure-selection-query';
 import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/registry";
-import Expression from "molstar/lib/mol-script/language/expression";
+import {Expression} from "molstar/lib/mol-script/language/expression";
 
 export interface AssemblyViewInterface {
     entryId: string;
@@ -108,7 +108,12 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                     if((y-x)<this.createComponentThreshold){
                         this.currentSelectedComponentId = this.currentLabelAsymId +":"+ (x === y ? x.toString() : x.toString()+"-"+y.toString());
                         setTimeout(()=>{
-                            this.props.plugin.createComponent(this.currentSelectedComponentId, this.currentModelId, this.currentLabelAsymId, x, y, 'ball-and-stick').then(()=>{
+                            this.props.plugin.createComponent(
+                                this.currentSelectedComponentId,
+                                this.currentModelId,
+                                processGaps(this.currentModelId, this.currentLabelAsymId, e),
+                                'ball-and-stick'
+                            ).then(()=>{
                                 if(x === y)
                                     setTimeout(()=>{
                                         this.props.plugin.setFocus(this.currentModelId, this.currentLabelAsymId, x, y);
@@ -143,7 +148,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                             'add'
                         );
                     }else {
-                        this.props.plugin.select(this.currentModelId, this.currentLabelAsymId, selection[0].begin, selection[0].end ?? selection[0].begin, 'hover', 'set');
+                        this.props.plugin.select(processMultipleGaps(this.currentModelId, this.currentLabelAsymId, selection), 'hover', 'set');
                     }
                 }
             },
@@ -256,7 +261,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 );
                 this.props.selection.addSelectionFromRegion(this.currentModelId, this.currentLabelAsymId, {begin:x, end:y, isEmpty: true, source: 'sequence'}, 'select');
             }else{
-                this.props.plugin.select(this.currentModelId, this.currentLabelAsymId,x,y, 'select', 'add');
+                this.props.plugin.select(processGaps(this.currentModelId, this.currentLabelAsymId, e), 'select', 'add');
                 this.props.selection.addSelectionFromRegion(this.currentModelId, this.currentLabelAsymId, {begin:x, end:y, source: 'sequence'}, 'select');
             }
         });
@@ -360,4 +365,33 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         this.componentSet.get(this.currentLabelAsymId)?.current.clear();
     }*/
 
+}
+
+function processGaps(modelId: string, asymId: string, e: RcsbFvTrackDataElementInterface): Array<{modelId: string; asymId: string; begin: number; end: number;}>{
+    const regions: Array<{modelId: string; asymId: string; begin: number; end: number;}> = new Array<{modelId: string; asymId: string; begin: number; end: number}>();
+    let lastIndex: number = e.begin;
+    e.gaps?.forEach((g)=>{
+        regions.push({
+            modelId: modelId,
+            asymId: asymId,
+            begin: lastIndex,
+            end: g.begin
+        });
+        lastIndex = g.end;
+    });
+    regions.push({
+        modelId: modelId,
+        asymId: asymId,
+        begin: lastIndex,
+        end: e.end ?? e.begin
+    });
+    return regions;
+}
+
+function processMultipleGaps(modelId: string, asymId: string, list: Array<RcsbFvTrackDataElementInterface>): Array<{modelId: string; asymId: string; begin: number; end: number;}>{
+    let regions: Array<{modelId: string; asymId: string; begin: number; end: number;}> = new Array<{modelId: string; asymId: string; begin: number; end: number}>();
+    list.forEach(e=>{
+        regions = regions.concat(processGaps(modelId, asymId, e));
+    });
+    return regions;
 }
