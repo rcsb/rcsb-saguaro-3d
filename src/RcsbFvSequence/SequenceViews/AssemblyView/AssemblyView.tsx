@@ -36,8 +36,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
     private currentEntryId: string;
     private currentModelId: string;
     private currentModelNumber: string;
-    private createComponentThresholdBatch = 3;
-    private createComponentThreshold: number = 9;
+    private createComponentThreshold: number = 3;
     private innerSelectionFlag: boolean = false;
     private currentSelectedComponentId: string;
     private currentModelMap:SaguaroPluginModelMapType;
@@ -233,10 +232,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                         <ChainDisplay plugin={this.props.plugin} label={props.data.label}/><components.Option {...props}/>
                     </div>)
                 }
-            ).then(()=>{
-                const length: number = getRcsbFv(this.pfvDivId).getBoardConfig().length ?? 0;
-                this.createComponentThreshold = (((Math.floor(length/100))+1)*this.createComponentThresholdBatch)-1;
-            });
+            );
         if(!defaultAuthId)
             await this.createComponents(modelMap);
     }
@@ -274,7 +270,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
 
     private async createComponents(modelMap:SaguaroPluginModelMapType): Promise<void> {
         await this.props.plugin.displayComponent("Water", false);
-        await this.props.plugin.colorComponent("Polymer", 'entity-source');
+        await this.props.plugin.colorComponent("Polymer", 'chain-id');
         const chains: Array<{modelId: string; auth: string; label: string;}> = new Array<{modelId: string; auth: string; label: string;}>();
         modelMap.forEach((entry, modelId)=>{
             entry.chains.forEach(ch=>{
@@ -288,7 +284,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         for(const ch of chains) {
             const label: string = ch.auth === ch.label ? ch.label : `${ch.label} [auth ${ch.auth}]`;
             await this.props.plugin.createComponent(label, ch.modelId, ch.label, 'cartoon');
-            await this.props.plugin.colorComponent(label, 'entity-source');
+            await this.props.plugin.colorComponent(label, 'chain-id');
         }
         /*this.props.plugin.pluginCall((plugin)=>{
             const createComponent = (label: string, tag: string, expression: Expression, representationType: StructureRepresentationRegistry.BuiltIn) => {
