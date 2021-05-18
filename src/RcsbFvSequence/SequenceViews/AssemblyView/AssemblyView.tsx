@@ -17,6 +17,13 @@ import {components} from 'react-select';
 import {ChainDisplay} from "./ChainDisplay";
 import {RcsbFvModulePublicInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 
+import {
+    StructureSelectionQueries as Q,
+    StructureSelectionQuery
+} from 'molstar/lib/mol-plugin-state/helpers/structure-selection-query';
+import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/registry";
+import {Expression} from "molstar/lib/mol-script/language/expression";
+
 export interface AssemblyViewInterface {
     entryId: string;
     rcsbFvInstanceBuilder: (elementFvId: string, elementSelectId: string, entryId: string, config?: InstanceSequenceConfig)=> Promise<RcsbFvModulePublicInterface>;
@@ -28,8 +35,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
     private currentEntryId: string;
     private currentModelId: string;
     private currentModelNumber: string;
-    private createComponentThresholdBatch = 3;
-    private createComponentThreshold: number = 9;
+    private createComponentThreshold: number = 3;
     private innerSelectionFlag: boolean = false;
     private currentSelectedComponentId: string;
     private currentModelMap:SaguaroPluginModelMapType;
@@ -103,7 +109,12 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                     if((y-x)<this.createComponentThreshold){
                         this.currentSelectedComponentId = this.currentLabelAsymId +":"+ (x === y ? x.toString() : x.toString()+"-"+y.toString());
                         setTimeout(()=>{
-                            this.props.plugin.createComponent(this.currentSelectedComponentId, this.currentModelId, this.currentLabelAsymId, x, y, 'ball-and-stick').then(()=>{
+                            this.props.plugin.createComponent(
+                                this.currentSelectedComponentId,
+                                this.currentModelId,
+                                processGaps(this.currentModelId, this.currentLabelAsymId, e),
+                                'ball-and-stick'
+                            ).then(()=>{
                                 if(x === y)
                                     setTimeout(()=>{
                                         this.props.plugin.setFocus(this.currentModelId, this.currentLabelAsymId, x, y);
@@ -138,7 +149,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                             'add'
                         );
                     }else {
-                        this.props.plugin.select(this.currentModelId, this.currentLabelAsymId, selection[0].begin, selection[0].end ?? selection[0].begin, 'hover', 'set');
+                        this.props.plugin.select(processMultipleGaps(this.currentModelId, this.currentLabelAsymId, selection), 'hover', 'set');
                     }
                 }
             },
@@ -231,10 +242,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                         }
                     }
                 }
-            ).then(()=>{
-                const length: number = getRcsbFv(this.pfvDivId).getBoardConfig().length ?? 0;
-                this.createComponentThreshold = (((Math.floor(length/100))+1)*this.createComponentThresholdBatch)-1;
-            });
+            );
         if(!defaultAuthId)
             await this.createComponents(modelMap);
     }
@@ -259,7 +267,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 );
                 this.props.selection.addSelectionFromRegion(this.currentModelId, this.currentLabelAsymId, {begin:x, end:y, isEmpty: true, source: 'sequence'}, 'select');
             }else{
-                this.props.plugin.select(this.currentModelId, this.currentLabelAsymId,x,y, 'select', 'add');
+                this.props.plugin.select(processGaps(this.currentModelId, this.currentLabelAsymId, e), 'select', 'add');
                 this.props.selection.addSelectionFromRegion(this.currentModelId, this.currentLabelAsymId, {begin:x, end:y, source: 'sequence'}, 'select');
             }
         });
@@ -272,7 +280,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
 
     private async createComponents(modelMap:SaguaroPluginModelMapType): Promise<void> {
         await this.props.plugin.displayComponent("Water", false);
-        await this.props.plugin.colorComponent("Polymer", 'entity-source');
+        await this.props.plugin.colorComponent("Polymer", 'chain-id');
         const chains: Array<{modelId: string; auth: string; label: string;}> = new Array<{modelId: string; auth: string; label: string;}>();
         modelMap.forEach((entry, modelId)=>{
             entry.chains.forEach(ch=>{
@@ -286,7 +294,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         for(const ch of chains) {
             const label: string = ch.auth === ch.label ? ch.label : `${ch.label} [auth ${ch.auth}]`;
             await this.props.plugin.createComponent(label, ch.modelId, ch.label, 'cartoon');
-            await this.props.plugin.colorComponent(label, 'entity-source');
+            await this.props.plugin.colorComponent(label, 'chain-id');
         }
         /*this.props.plugin.pluginCall((plugin)=>{
             const createComponent = (label: string, tag: string, expression: Expression, representationType: StructureRepresentationRegistry.BuiltIn) => {
@@ -363,4 +371,33 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         this.componentSet.get(this.currentLabelAsymId)?.current.clear();
     }*/
 
+}
+
+function processGaps(modelId: string, asymId: string, e: RcsbFvTrackDataElementInterface): Array<{modelId: string; asymId: string; begin: number; end: number;}>{
+    const regions: Array<{modelId: string; asymId: string; begin: number; end: number;}> = new Array<{modelId: string; asymId: string; begin: number; end: number}>();
+    let lastIndex: number = e.begin;
+    e.gaps?.forEach((g)=>{
+        regions.push({
+            modelId: modelId,
+            asymId: asymId,
+            begin: lastIndex,
+            end: g.begin
+        });
+        lastIndex = g.end;
+    });
+    regions.push({
+        modelId: modelId,
+        asymId: asymId,
+        begin: lastIndex,
+        end: e.end ?? e.begin
+    });
+    return regions;
+}
+
+function processMultipleGaps(modelId: string, asymId: string, list: Array<RcsbFvTrackDataElementInterface>): Array<{modelId: string; asymId: string; begin: number; end: number;}>{
+    let regions: Array<{modelId: string; asymId: string; begin: number; end: number;}> = new Array<{modelId: string; asymId: string; begin: number; end: number}>();
+    list.forEach(e=>{
+        regions = regions.concat(processGaps(modelId, asymId, e));
+    });
+    return regions;
 }

@@ -20,10 +20,12 @@ export interface SaguaroPluginInterface extends SaguaroPluginPublicInterface{
 export interface SaguaroPluginPublicInterface {
     select(modelId:string, asymId: string, x: number, y: number, mode: 'select'|'hover', operation:'set'|'add'): void;
     select(selection: Array<{modelId:string; asymId: string; position: number;}>, mode: 'select'|'hover', operation:'add'|'set'): void;
+    select(selection: Array<{modelId:string; asymId: string; begin: number; end:number;}>, mode: 'select'|'hover', operation:'add'|'set'): void;
     clearSelection: (mode:'select'|'hover', option?:{modelId:string; labelAsymId:string;}) => void;
     createComponent(componentId: string, modelId:string, asymId: string, begin: number, end : number, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
     createComponent(componentId: string, modelId:string, asymId: string, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
     createComponent(componentId: string, modelId:string, residues: Array<{asymId: string; position: number;}>, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
+    createComponent(componentId: string, modelId:string, residues: Array<{asymId: string; begin: number; end: number;}>, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
     colorComponent(componentId: string, color: ColorTheme.BuiltIn): Promise<void>;
     removeComponent: (componentId?: string) => void;
     isComponent: (componentId: string) => boolean;

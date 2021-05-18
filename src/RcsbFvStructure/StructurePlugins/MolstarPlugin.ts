@@ -142,18 +142,20 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
 
     public select(modelId:string, asymId: string, begin: number, end: number, mode: 'select'|'hover', operation:'add'|'set'): void;
     public select(selection: Array<{modelId:string; asymId: string; position: number;}>, mode: 'select'|'hover', operation:'add'|'set'): void;
+    public select(selection: Array<{modelId:string; asymId: string; begin: number; end: number;}>, mode: 'select'|'hover', operation:'add'|'set'): void;
     public select(...args: any[]): void{
         if(args.length === 6){
             this.selectRange(args[0],args[1],args[2],args[3],args[4],args[5]);
-        }else if(args.length === 3){
+        }else if(args.length === 3 && (args[0] as Array<{modelId: string; asymId: string; position: number;}>).length > 0 && typeof (args[0] as Array<{modelId: string; asymId: string; position: number;}>)[0].position === 'number'){
             this.selectSet(args[0],args[1],args[2]);
+        }else if(args.length === 3 && (args[0] as Array<{modelId: string; asymId: string; begin: number; end: number;}>).length > 0 && typeof (args[0] as Array<{modelId: string; asymId: string; begin: number; end: number;}>)[0].begin === 'number'){
+            this.selectMultipleRanges(args[0],args[1],args[2]);
         }
     }
     private selectRange(modelId:string, asymId: string, begin: number, end: number, mode: 'select'|'hover', operation:'add'|'set'): void {
         if(mode == null || mode === 'select') {
             this.innerSelectionFlag = true;
         }
-
         this.plugin.select(this.getModelId(modelId), asymId, begin, end, mode, operation);
         this.innerSelectionFlag = false;
     }
@@ -162,6 +164,13 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
             this.innerSelectionFlag = true;
         }
         this.plugin.select(selection.map(r=>{return{modelId: this.getModelId(r.modelId), position:r.position, asymId: r.asymId}}), mode, operation);
+        this.innerSelectionFlag = false;
+    }
+    private selectMultipleRanges(selection: Array<{modelId:string; asymId: string; begin: number; end:number;}>, mode: 'select'|'hover', operation:'add'|'set'): void {
+        if(mode == null || mode === 'select') {
+            this.innerSelectionFlag = true;
+        }
+        this.plugin.select(selection.map(r=>{return{modelId: this.getModelId(r.modelId), begin:r.begin, end: r.end, asymId: r.asymId}}), mode, operation);
         this.innerSelectionFlag = false;
     }
     public clearSelection(mode:'select'|'hover', option?:{modelId:string; labelAsymId:string;}): void {
@@ -216,6 +225,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     public async createComponent(componentLabel: string, modelId:string, asymId: string, begin: number, end : number, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
     public async createComponent(componentLabel: string, modelId:string, asymId: string, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
     public async createComponent(componentLabel: string, modelId:string, residues: Array<{asymId: string; position: number;}>, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
+    public async createComponent(componentLabel: string, modelId:string, residues: Array<{asymId: string; begin: number; end: number;}>, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
     public async createComponent(...args: any[]): Promise<void> {
         this.removeComponent(args[0]);
         this.componentVisibility.set(args[0], true);
