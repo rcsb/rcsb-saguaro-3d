@@ -1,6 +1,8 @@
 import {LoadMethod} from "../RcsbFvStructure/StructurePlugins/MolstarPlugin";
 import {RcsbFv3DAbstract, RcsbFv3DAbstractInterface} from "./RcsbFv3DAbstract";
 import {buildInstanceSequenceFv, buildInstanceTcgaFv} from "@rcsb/rcsb-saguaro-app";
+import {RcsbFv} from "@rcsb/rcsb-saguaro";
+import {SaguaroPluginPublicInterface} from "../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
 
 export interface RcsbFv3DAssemblyInterface extends RcsbFv3DAbstractInterface {
    config: {
@@ -8,6 +10,7 @@ export interface RcsbFv3DAssemblyInterface extends RcsbFv3DAbstractInterface {
         type: "rcsb" | "tcga";
         title?: string;
         subtitle?: string;
+        resolveFvCallback?: (rcsbFv: RcsbFv, saguaroPlugin: SaguaroPluginPublicInterface)=>void;
     };
 }
 
@@ -36,7 +39,8 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract{
             type:"assembly",
             config:{
                 entryId:assemblyData.config.entryId,
-                rcsbFvInstanceBuilder: assemblyData.config.type === "rcsb" ? buildInstanceSequenceFv : buildInstanceTcgaFv
+                rcsbFvInstanceBuilder: assemblyData.config.type === "rcsb" ? buildInstanceSequenceFv : buildInstanceTcgaFv,
+                resolveFvCallback: assemblyData.config.resolveFvCallback
             },
             title: assemblyData.config.title,
             subtitle: assemblyData.config.subtitle

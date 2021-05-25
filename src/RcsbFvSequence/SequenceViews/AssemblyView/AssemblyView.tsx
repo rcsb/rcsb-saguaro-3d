@@ -6,9 +6,12 @@ import {
     InstanceSequenceConfig,
     InstanceSequenceOnchangeInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
-import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
+import {RcsbFv, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {ChainSelectionInterface} from "../../../RcsbFvSelection/RcsbFvSelection";
-import {SaguaroPluginModelMapType} from "../../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
+import {
+    SaguaroPluginModelMapType,
+    SaguaroPluginPublicInterface
+} from "../../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
 import {SelectionInterface} from "@rcsb/rcsb-saguaro/build/RcsbBoard/RcsbSelection";
 import {OptionPropsInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/WebTools/SelectButton";
 
@@ -27,6 +30,7 @@ import {Expression} from "molstar/lib/mol-script/language/expression";
 export interface AssemblyViewInterface {
     entryId: string;
     rcsbFvInstanceBuilder: (elementFvId: string, elementSelectId: string, entryId: string, config?: InstanceSequenceConfig)=> Promise<RcsbFvModulePublicInterface>;
+    resolveFvCallback?: (rcsbFv: RcsbFv, saguaroPlugin: SaguaroPluginPublicInterface)=>void;
 }
 
 export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractViewInterface, AssemblyViewInterface & AbstractViewInterface>{
@@ -242,7 +246,11 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                         }
                     }
                 }
-            );
+            ).then((rcsbFv)=>{
+                if(typeof this.props.resolveFvCallback === "function") {
+                    this.props.resolveFvCallback(getRcsbFv(this.pfvDivId), this.props.plugin);
+                }
+            });
         if(!defaultAuthId)
             await this.createComponents(modelMap);
     }
