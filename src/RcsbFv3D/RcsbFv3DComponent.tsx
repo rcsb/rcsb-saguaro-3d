@@ -17,6 +17,7 @@ import {Subscription} from "rxjs";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {RcsbFvSelection} from "../RcsbFvSelection/RcsbFvSelection";
 import {CSSProperties} from "react";
+import {Col, Container, Row} from "react-bootstrap";
 
 export interface RcsbFv3DComponentInterface {
     structurePanelConfig:RcsbFvStructureInterface;
@@ -51,28 +52,32 @@ export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterfa
 
     render(): JSX.Element {
         return (
-            <div style={RcsbFv3DComponent.mainDivCssConfig(this.props.cssConfig?.rootPanel)} className={ this.props.fullScreen ? classes.fullScreen+" "+classes.rcsbFvMain : classes.rcsbFvMain} >
-                <div>
-                    <div style={this.structureCssConfig(this.props.cssConfig?.structurePanel)} className={classes.rcsbFvCell}>
-                        <RcsbFvStructure
-                            {...this.state.structurePanelConfig}
-                            componentId={this.props.id}
-                            plugin={this.plugin}
-                            selection={this.selection}
-                        />
-                    </div>
-                    <div style={this.sequenceCssConfig(this.props.cssConfig?.sequencePanel)} className={classes.rcsbFvCell} >
-                        <RcsbFvSequence
-                            type={this.state.sequencePanelConfig.type}
-                            config={this.state.sequencePanelConfig.config}
-                            componentId={this.props.id}
-                            plugin={this.plugin}
-                            selection={this.selection}
-                            title={this.state.sequencePanelConfig.title}
-                            subtitle={this.state.sequencePanelConfig.subtitle}
-                            unmount={this.props.unmount}
-                        />
-                    </div>
+            <div className={ this.props.fullScreen ? classes.fullScreen : ""} >
+                <div className={classes.bootstrapRcsbFv3DComponentScope}>
+                    <Container fluid>
+                        <Row className={"h-100"}>
+                            <Col lg={5}>
+                                <RcsbFvStructure
+                                    {...this.state.structurePanelConfig}
+                                    componentId={this.props.id}
+                                    plugin={this.plugin}
+                                    selection={this.selection}
+                                />
+                            </Col>
+                            <Col lg={7}>
+                                <RcsbFvSequence
+                                    type={this.state.sequencePanelConfig.type}
+                                    config={this.state.sequencePanelConfig.config}
+                                    componentId={this.props.id}
+                                    plugin={this.plugin}
+                                    selection={this.selection}
+                                    title={this.state.sequencePanelConfig.title}
+                                    subtitle={this.state.sequencePanelConfig.subtitle}
+                                    unmount={this.props.unmount}
+                                />
+                            </Col>
+                        </Row>
+                    </Container>
                 </div>
             </div>
         );

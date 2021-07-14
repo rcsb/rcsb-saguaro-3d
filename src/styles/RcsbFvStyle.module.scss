@@ -1,26 +1,18 @@
 .fullScreen {
   position: fixed;
   top: 0;
-  right: 0;
-  bottom: 0;
   left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.bootstrapRcsbFv3DComponentScope {
+  @import "~bootstrap/scss/bootstrap";
 }
 
 .rcsbFvMain {
-  display: flex;
-  flex-wrap: nowrap;
-  width: 100%;
-  height: 100%;
   background-color: #fff;
   z-index: 10;
-}
-
-.rcsbFvMain > div {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  flex-flow: row-reverse wrap;
 }
 
 .rcsbFvMain * {
@@ -28,7 +20,6 @@
 }
 
 .rcsbFvCell {
-
 }
 
 .rcsbFvSubtitle {
