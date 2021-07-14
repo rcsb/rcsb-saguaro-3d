@@ -148,7 +148,7 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
         });
     }
 
-    protected structureSelectionCallback(): void {
+    structureSelectionCallback(): void {
         this.blockMap.get(this.blockViewSelector.getActiveBlock())?.forEach(boardId=>{
             const pfv: RcsbFv | undefined = this.rcsbFvMap.get(boardId);
             if(pfv == null)
@@ -157,28 +157,29 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
         });
     }
 
-    protected structureHoverCallback(): void{
+    structureHoverCallback(): void{
         //TODO;
     }
 
-    protected representationChangeCallback(): void{
+    representationChangeCallback(): void{
         //TODO
     }
 
-    protected additionalContent(): JSX.Element {
+    additionalContent(): JSX.Element {
         if(this.state.additionalContent == null)
             return <></>;
         return this.state.additionalContent(this.blockViewSelector);
     }
 
-    protected modelChangeCallback(modelMap:SaguaroPluginModelMapType): void {
+    modelChangeCallback(modelMap:SaguaroPluginModelMapType): void {
         if(this.firstModelLoad){
             this.firstModelLoad = false;
             return;
         }
         if(typeof this.props.modelChangeCallback === "function") {
-            const newConfig: CustomViewStateInterface | void = this.props.modelChangeCallback(modelMap);
-            if(newConfig != null){
+            let newConfig: CustomViewStateInterface | void = this.props.modelChangeCallback(modelMap);
+            if(newConfig != null && typeof newConfig !== "function"){
+                newConfig = newConfig as CustomViewStateInterface;
                 if(newConfig.blockConfig != null && newConfig.additionalContent != null){
                     this.mapBlocks(newConfig.blockConfig);
                     this.setState({blockConfig: newConfig.blockConfig, additionalContent: newConfig.additionalContent})
@@ -192,7 +193,7 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
         }
     }
 
-    protected updateDimensions(): void {
+    updateDimensions(): void {
         const div: HTMLElement | undefined | null = document.getElementById(this.componentDivId)?.parentElement;
         const width: number = window.document.getElementById(this.componentDivId)?.getBoundingClientRect().width ?? 0;
         if(div == null || (div.style.width && !div.style.width.includes("%")) )

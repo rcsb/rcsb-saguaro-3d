@@ -1,10 +1,10 @@
 
-import {StructureViewInterface} from "../RcsbFvStructure/RcsbFvStructure";
+import {RcsbFvStructureInterface} from "../RcsbFvStructure/RcsbFvStructure";
 import {CustomViewInterface} from "../RcsbFvSequence/SequenceViews/CustomView";
 import {RcsbFv3DAbstract, RcsbFv3DAbstractInterface} from "./RcsbFv3DAbstract";
 
 export interface RcsbFv3DCustomInterface extends RcsbFv3DAbstractInterface {
-    structurePanelConfig: StructureViewInterface;
+    structurePanelConfig: RcsbFvStructureInterface;
     sequencePanelConfig: {
         config: CustomViewInterface;
         title?: string;

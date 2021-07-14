@@ -6,7 +6,7 @@ import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {RcsbFv, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {RcsbFvSelection} from "../RcsbFvSelection/RcsbFvSelection";
 
-export interface SequenceViewInterface{
+export interface RcsbFvSequenceInterface{
     type: "custom" | "assembly";
     config: AssemblyViewInterface | CustomViewInterface;
     title?: string;
@@ -18,7 +18,7 @@ interface CallbackConfig {
     sequenceCallback?: (rcsbFv: RcsbFv)=>void;
 }
 
-export class RcsbFvSequence extends React.Component <SequenceViewInterface & CallbackConfig & {unmount:(flag:boolean)=>void, plugin: SaguaroPluginInterface, selection:RcsbFvSelection, componentId:string}, SequenceViewInterface > {
+export class RcsbFvSequence extends React.Component <RcsbFvSequenceInterface & CallbackConfig & {unmount:(flag:boolean)=>void, plugin: SaguaroPluginInterface, selection:RcsbFvSelection, componentId:string}, RcsbFvSequenceInterface > {
 
     render() {
         if(this.props.type == "custom"){

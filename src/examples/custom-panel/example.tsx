@@ -1,6 +1,6 @@
 import {RcsbFv3DCustomBuilder} from "../../RcsbFv3D/RcsbFv3DCustom";
-import {StructureViewInterface} from "../../RcsbFvStructure/RcsbFvStructure";
-import {SequenceViewInterface} from "../../RcsbFvSequence/RcsbFvSequence";
+import {RcsbFvStructureInterface} from "../../RcsbFvStructure/RcsbFvStructure";
+import {RcsbFvSequenceInterface} from "../../RcsbFvSequence/RcsbFvSequence";
 
 import './example.html';
 import {LoadMethod} from "../../RcsbFvStructure/StructurePlugins/MolstarPlugin";
@@ -171,7 +171,7 @@ const sequenceConfig = {
     config: customConfig
 };
 
-const structureConfig:StructureViewInterface = {
+const structureConfig:RcsbFvStructureInterface = {
     loadConfig: {
         method: LoadMethod.loadPdbIds,
         params: [{

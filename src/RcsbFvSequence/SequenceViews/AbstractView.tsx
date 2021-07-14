@@ -6,6 +6,7 @@ import {
     SaguaroPluginModelMapType
 } from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
 import {RcsbFvSelection, ResidueSelectionInterface} from "../../RcsbFvSelection/RcsbFvSelection";
+import {SequenceViewInterface} from "./SequenceViewInterface";
 
 export interface AbstractViewInterface {
     componentId: string;
@@ -16,16 +17,16 @@ export interface AbstractViewInterface {
     unmount:(flag:boolean)=>void;
 }
 
-export abstract class AbstractView<P,S> extends React.Component <P & AbstractViewInterface, S> {
+export abstract class AbstractView<P,S> extends React.Component <P & AbstractViewInterface, S> implements SequenceViewInterface {
 
-    protected componentDivId: string;
-    protected pfvDivId: string;
-    protected updateDimTimeout: number = 0;
+    protected readonly componentDivId: string;
+    protected readonly rcsbFvDivId: string;
+    private updateDimTimeout: number = 0;
 
     constructor(props:P & AbstractViewInterface) {
         super(props);
         this.componentDivId = props.componentId+"_"+RcsbFvDOMConstants.PFV_DIV;
-        this.pfvDivId = props.componentId+"_"+RcsbFvDOMConstants.PFV_APP_ID;
+        this.rcsbFvDivId = props.componentId+"_"+RcsbFvDOMConstants.PFV_APP_ID;
     }
 
     render():JSX.Element {
@@ -36,7 +37,7 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
                         {this.createSubtitle()}
                         {this.additionalContent()}
                     </div>
-                    <div id ={this.pfvDivId} />
+                    <div id ={this.rcsbFvDivId} />
                 </div>
         );
     }
@@ -54,11 +55,11 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
         window.removeEventListener('resize', this.resizeCallback);
     }
 
-    protected resizeCallback: ()=>void =  () => {
+    private resizeCallback: ()=>void =  () => {
         window.clearTimeout(this.updateDimTimeout);
         this.updateDimTimeout = window.setTimeout(()=> {
             this.updateDimensions();
-        },100);
+        },300);
     };
 
     private createTitle(): JSX.Element | null{
@@ -73,18 +74,11 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
         return null;
     }
 
-    protected structureSelectionCallback(): void{}
-
-    protected structureHoverCallback(): void{}
-
-    protected representationChangeCallback(): void{}
-
-    protected modelChangeCallback(modelMap:SaguaroPluginModelMapType): void{}
-
-    protected updateDimensions(): void{}
-
-    protected additionalContent(): JSX.Element | null {
-        return <></>;
-    }
+    abstract structureSelectionCallback(): void;
+    abstract structureHoverCallback(): void;
+    abstract representationChangeCallback(): void;
+    abstract modelChangeCallback(modelMap:SaguaroPluginModelMapType): void;
+    abstract updateDimensions(): void;
+    abstract additionalContent(): JSX.Element | null;
 
 }

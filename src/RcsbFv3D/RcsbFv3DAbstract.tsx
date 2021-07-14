@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as ReactDom from "react-dom";
 import {RcsbFv3DComponent} from './RcsbFv3DComponent';
-import {StructureViewInterface} from "../RcsbFvStructure/RcsbFvStructure";
-import {SequenceViewInterface} from "../RcsbFvSequence/RcsbFvSequence";
+import {RcsbFvStructureInterface} from "../RcsbFvStructure/RcsbFvStructure";
+import {RcsbFvSequenceInterface} from "../RcsbFvSequence/RcsbFvSequence";
 import {EventType, RcsbFvContextManager} from "../RcsbFvContextManager/RcsbFvContextManager";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {CSSProperties} from "react";
@@ -17,12 +17,11 @@ export interface RcsbFv3DAbstractInterface {
     }
 }
 
-
 export abstract class RcsbFv3DAbstract {
 
     protected elementId: string;
-    protected structureConfig: StructureViewInterface;
-    protected sequenceConfig: SequenceViewInterface;
+    protected structureConfig: RcsbFvStructureInterface;
+    protected sequenceConfig: RcsbFvSequenceInterface;
     protected ctxManager: RcsbFvContextManager = new RcsbFvContextManager();
     private fullScreenFlag: boolean = false;
     protected cssConfig:{
@@ -36,7 +35,7 @@ export abstract class RcsbFv3DAbstract {
             this.init(config);
     }
 
-    protected init(config: any){}
+    protected abstract init(config: any): void;
 
     public render(): void{
         if(this.elementId == null )
@@ -75,7 +74,7 @@ export abstract class RcsbFv3DAbstract {
         }
     }
 
-    public updateConfig(config: {structurePanelConfig?: StructureViewInterface; sequencePanelConfig?: SequenceViewInterface;}){
+    public updateConfig(config: {structurePanelConfig?: RcsbFvStructureInterface; sequencePanelConfig?: RcsbFvSequenceInterface;}){
         this.ctxManager.next({eventType: EventType.UPDATE_CONFIG, eventData:config});
     }
 

@@ -3,15 +3,16 @@ import * as React from "react";
 import {
     buildInstanceSequenceFv,
     buildMultipleInstanceSequenceFv,
-    getRcsbFv,
-    setBoardConfig,
     unmount
 } from "@rcsb/rcsb-saguaro-app";
 import {AbstractView, AbstractViewInterface} from "../AbstractView";
 import {InstanceSequenceOnchangeInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
-import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
+import {RcsbFvBoardConfigInterface, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {ChainSelectionInterface} from "../../../RcsbFvSelection/RcsbFvSelection";
-import {SaguaroPluginModelMapType} from "../../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
+import {
+    SaguaroPluginInterface,
+    SaguaroPluginModelMapType
+} from "../../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
 import {SelectionInterface} from "@rcsb/rcsb-saguaro/build/RcsbBoard/RcsbSelection";
 import {OptionPropsInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/WebTools/SelectButton";
 
@@ -19,12 +20,7 @@ import {OptionProps} from "react-select/src/components/Option";
 import {components} from 'react-select';
 import {ChainDisplay} from "./ChainDisplay";
 
-import {
-    StructureSelectionQueries as Q,
-    StructureSelectionQuery
-} from 'molstar/lib/mol-plugin-state/helpers/structure-selection-query';
-import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/registry";
-import {Expression} from "molstar/lib/mol-script/language/expression";
+import {RcsbFvModulePublicInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 
 export interface AssemblyViewInterface {
     entryId: string;
@@ -40,15 +36,11 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
     private innerSelectionFlag: boolean = false;
     private currentSelectedComponentId: string;
     private currentModelMap:SaguaroPluginModelMapType;
+    private boardConfig: Partial<RcsbFvBoardConfigInterface>;
+    private rcsbFvModule: RcsbFvModulePublicInterface | null;
     //private readonly componentSet = new Map<string, {current: Set<string>, previous: Set<string>}>();
 
-    constructor(props: AssemblyViewInterface & AbstractViewInterface) {
-        super({
-            ...props
-        });
-    }
-
-    protected additionalContent(): JSX.Element {
+    additionalContent(): JSX.Element {
         return (
             <div style={{marginTop:10}}>
                 <div>
@@ -75,104 +67,55 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         if(width == null)
             return;
         const trackWidth: number = width - 190 - 55;
-        setBoardConfig({
+        this.boardConfig = {
             trackWidth: trackWidth,
-            elementClickCallBack:(e:RcsbFvTrackDataElementInterface)=>{
-                this.props.plugin.clearFocus();
-                if(this.currentSelectedComponentId != null)
-                    this.props.plugin.removeComponent(this.currentSelectedComponentId);
-                if(e == null)
-                    return;
-                const x = e.begin;
-                const y = e.end ?? e.begin;
-                if(e.isEmpty){
-                    this.props.plugin.cameraFocus(this.currentModelId, this.currentLabelAsymId, [x,y]);
-                    this.currentSelectedComponentId = this.currentLabelAsymId +":"+ ((x === y) ? x.toString() : x.toString()+","+y.toString());
-                    setTimeout(()=>{
-                        this.props.plugin.createComponent(
-                            this.currentSelectedComponentId,
-                            this.currentModelId,
-                            [{asymId: this.currentLabelAsymId, position: x}, {asymId: this.currentLabelAsymId, position: y}],
-                            'ball-and-stick'
-                        ).then(()=>{
-                            if(x === y)
-                                setTimeout(()=>{
-                                    this.props.plugin.setFocus(this.currentModelId, this.currentLabelAsymId, x, y);
-                                },200);
-                        });
-                    },100);
-
-                }else{
-                    this.props.plugin.cameraFocus(this.currentModelId, this.currentLabelAsymId, x, y);
-                    if((y-x)<this.createComponentThreshold){
-                        this.currentSelectedComponentId = this.currentLabelAsymId +":"+ (x === y ? x.toString() : x.toString()+"-"+y.toString());
-                        setTimeout(()=>{
-                            this.props.plugin.createComponent(
-                                this.currentSelectedComponentId,
-                                this.currentModelId,
-                                processGaps(this.currentModelId, this.currentLabelAsymId, e),
-                                'ball-and-stick'
-                            ).then(()=>{
-                                if(x === y)
-                                    setTimeout(()=>{
-                                        this.props.plugin.setFocus(this.currentModelId, this.currentLabelAsymId, x, y);
-                                    },200);
-                            });
-                        },100);
-                    }
-                }
-            },
-            selectionChangeCallBack:(selection: Array<SelectionInterface>)=>{
-                if(this.innerSelectionFlag)
-                    return;
-                this.props.plugin.clearSelection('select', {modelId: this.currentModelId, labelAsymId: this.currentLabelAsymId});
-                this.props.selection.clearSelection('select', this.currentLabelAsymId);
-                if(selection == null || selection.length === 0) {
-                    this.resetPluginView();
-                    return;
-                }
-                this.select(selection);
-            },
             highlightHoverPosition:true,
             highlightHoverElement:true,
-            highlightHoverCallback:(selection: RcsbFvTrackDataElementInterface[])=>{
-                this.props.plugin.clearSelection('hover');
-                if(selection != null && selection.length > 0) {
-                    if(selection[0].isEmpty){
-                        const selectionList = [{modelId: this.currentModelId, asymId: this.currentLabelAsymId, position: selection[0].begin}];
-                        if(selection[0].end != null) selectionList.push({modelId: this.currentModelId, asymId: this.currentLabelAsymId, position: selection[0].end})
-                        this.props.plugin.select(
-                            selectionList,
-                            'hover',
-                            'add'
-                        );
-                    }else {
-                        this.props.plugin.select(processMultipleGaps(this.currentModelId, this.currentLabelAsymId, selection), 'hover', 'set');
-                    }
-                }
+            elementClickCallBack:(e:RcsbFvTrackDataElementInterface)=>{
+                this.elementClickCallback(e);
             },
-        });
+            selectionChangeCallBack:(selection: Array<SelectionInterface>)=>{
+                this.selectionChangeCallback(selection);
+            },
+            highlightHoverCallback:(selection: RcsbFvTrackDataElementInterface[])=>{
+                this.highlightHoverCallback(selection);
+            },
+        };
     }
 
     componentWillUnmount() {
         super.componentWillUnmount();
-        unmount(this.pfvDivId);
+        unmount(this.rcsbFvDivId);
     }
 
-    protected structureSelectionCallback(): void{
-        this.pluginSelectCallback('select');
+    async structureSelectionCallback(): Promise<void> {
+        await this.pluginSelectCallback('select');
     }
 
-    protected structureHoverCallback(): void{
-        this.pluginSelectCallback('hover');
+    async structureHoverCallback(): Promise<void> {
+        await this.pluginSelectCallback('hover');
     }
 
-    protected representationChangeCallback(): void{
+    representationChangeCallback(): void{
         //TODO
     }
 
-    private pluginSelectCallback(mode:'select'|'hover'): void{
-        if(getRcsbFv(this.pfvDivId) == null)
+    async updateDimensions(): Promise<void> {
+        const width: number = window.document.getElementById(this.componentDivId)?.getBoundingClientRect().width ?? 0;
+        const trackWidth: number = width - 190 - 55;
+        this.boardConfig.trackWidth = trackWidth;
+        await this.rcsbFvModule?.getFv().updateBoardConfig({boardConfigData:{trackWidth:trackWidth}})
+        await this.structureSelectionCallback();
+        return void 0;
+    }
+
+    private resetPluginView(): void {
+        this.props.plugin.clearFocus();
+        this.props.plugin.resetCamera();
+    }
+
+    private async pluginSelectCallback(mode:'select'|'hover'): Promise<void> {
+        if(this.rcsbFvModule == null)
             return;
         this.innerSelectionFlag = true;
         if(mode === 'select' && this.currentSelectedComponentId != null){
@@ -180,28 +123,28 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         }
         const allSel: Array<ChainSelectionInterface> | undefined = this.props.selection.getSelection(mode);
         if(allSel == null || allSel.length ===0) {
-            getRcsbFv(this.pfvDivId).clearSelection(mode);
+            this.rcsbFvModule?.getFv().clearSelection(mode);
             if(mode === 'select')
                 this.resetPluginView();
         }else if(mode === 'select' && this.props.selection.getLastSelection('select')?.labelAsymId != null && this.props.selection.getLastSelection('select')?.labelAsymId != this.currentLabelAsymId){
             const authId: string | undefined = this.currentModelMap
                 .get(this.currentModelId)?.chains
                 .filter(ch=>(ch.label===this.props.selection.getLastSelection('select')?.labelAsymId))[0]?.auth;
-            this.modelChangeCallback(this.currentModelMap, authId);
+            await this.modelChangeCallback(this.currentModelMap, authId);
         }else{
             const sel: ChainSelectionInterface | undefined = this.props.selection.getSelectionWithCondition(this.currentModelId, this.currentLabelAsymId, mode);
             if (sel == null) {
-                getRcsbFv(this.pfvDivId).clearSelection(mode);
+                this.rcsbFvModule?.getFv().clearSelection(mode);
                 if(mode === 'select')
                     this.resetPluginView();
             } else {
-                getRcsbFv(this.pfvDivId).setSelection({elements: sel.regions, mode: mode});
+                this.rcsbFvModule?.getFv().setSelection({elements: sel.regions, mode: mode});
             }
         }
         this.innerSelectionFlag = false;
     }
 
-    protected async modelChangeCallback(modelMap:SaguaroPluginModelMapType, defaultAuthId?: string): Promise<void> {
+    async modelChangeCallback(modelMap:SaguaroPluginModelMapType, defaultAuthId?: string): Promise<void> {
         this.currentModelMap = modelMap;
         this.props.plugin.clearFocus();
         const onChangeCallback: Map<string, (x: InstanceSequenceOnchangeInterface)=>void> = new Map<string, (x: InstanceSequenceOnchangeInterface) => {}>();
@@ -218,31 +161,64 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
             });
             filterInstances.set(v.entryId,new Set<string>(v.chains.map(d=>d.label)));
         });
-        unmount(this.pfvDivId);
+        this.unmountRcsbFv();
         const entryId: string = Array.from(modelMap.values()).map(d=>d.entryId)[0];
-        if(entryId != null)
-            buildInstanceSequenceFv(
-                this.pfvDivId,
+        if(entryId != null) {
+            this.rcsbFvModule = await buildInstanceSequenceFv(
+                this.rcsbFvDivId,
                 RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID,
-                entryId, {
+                entryId,
+                {
                     defaultValue: defaultAuthId,
                     onChangeCallback: onChangeCallback.get(entryId),
                     filterInstances: filterInstances.get(entryId),
-                    selectButtonOptionProps:(props:OptionProps<OptionPropsInterface>)=>(components.Option && <div style={{display:'flex'}}>
-                        <ChainDisplay plugin={this.props.plugin} label={props.data.label}/><components.Option {...props}/>
-                    </div>)
+                    selectButtonOptionProps: (props: OptionProps<OptionPropsInterface>) => (components.Option &&
+                        <div style={{display: 'flex'}}>
+                            <ChainDisplay plugin={this.props.plugin} label={props.data.label}/>
+                            <components.Option {...props}/>
+                        </div>)
+                },
+                {
+                    boardConfig: this.boardConfig
                 }
             );
+        }
         if(!defaultAuthId)
-            await this.createComponents(modelMap);
+            await createComponents(this.props.plugin, modelMap);
     }
 
-    protected updateDimensions(): void{
-        const width: number = window.document.getElementById(this.componentDivId)?.getBoundingClientRect().width ?? 0;
-        const trackWidth: number = width - 190 - 55;
-        getRcsbFv(this.pfvDivId).updateBoardConfig({boardConfigData:{trackWidth:trackWidth}}).then(()=>{
-            this.structureSelectionCallback();
-        });
+    private unmountRcsbFv(): void {
+        this.rcsbFvModule = null;
+        unmount(this.rcsbFvDivId);
+    }
+
+    private highlightHoverCallback(selection: RcsbFvTrackDataElementInterface[]): void {
+        this.props.plugin.clearSelection('hover');
+        if(selection != null && selection.length > 0) {
+            if(selection[0].isEmpty){
+                const selectionList = [{modelId: this.currentModelId, asymId: this.currentLabelAsymId, position: selection[0].begin}];
+                if(selection[0].end != null) selectionList.push({modelId: this.currentModelId, asymId: this.currentLabelAsymId, position: selection[0].end})
+                this.props.plugin.select(
+                    selectionList,
+                    'hover',
+                    'add'
+                );
+            }else {
+                this.props.plugin.select(processMultipleGaps(this.currentModelId, this.currentLabelAsymId, selection), 'hover', 'set');
+            }
+        }
+    }
+
+    private selectionChangeCallback(selection: Array<SelectionInterface>): void {
+        if(this.innerSelectionFlag)
+            return;
+        this.props.plugin.clearSelection('select', {modelId: this.currentModelId, labelAsymId: this.currentLabelAsymId});
+        this.props.selection.clearSelection('select', this.currentLabelAsymId);
+        if(selection == null || selection.length === 0) {
+            this.resetPluginView();
+        }else{
+            this.select(selection);
+        }
     }
 
     private select(selection: Array<SelectionInterface>): void{
@@ -263,103 +239,49 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         });
     }
 
-    private resetPluginView(): void {
+    private elementClickCallback(e:RcsbFvTrackDataElementInterface): void {
         this.props.plugin.clearFocus();
-        this.props.plugin.resetCamera();
-    }
+        if(this.currentSelectedComponentId != null)
+            this.props.plugin.removeComponent(this.currentSelectedComponentId);
+        if(e == null)
+            return;
+        const x = e.begin;
+        const y = e.end ?? e.begin;
+        if(e.isEmpty){
+            this.props.plugin.cameraFocus(this.currentModelId, this.currentLabelAsymId, [x,y]);
+            this.currentSelectedComponentId = this.currentLabelAsymId +":"+ ((x === y) ? x.toString() : x.toString()+","+y.toString());
+            setTimeout(async ()=>{
+                await this.props.plugin.createComponent(
+                    this.currentSelectedComponentId,
+                    this.currentModelId,
+                    [{asymId: this.currentLabelAsymId, position: x}, {asymId: this.currentLabelAsymId, position: y}],
+                    'ball-and-stick'
+                )
+                if(x === y)
+                    setTimeout(()=>{
+                        this.props.plugin.setFocus(this.currentModelId, this.currentLabelAsymId, x, y);
+                    },200);
+            },100);
 
-    private async createComponents(modelMap:SaguaroPluginModelMapType): Promise<void> {
-        await this.props.plugin.displayComponent("Water", false);
-        await this.props.plugin.colorComponent("Polymer", 'chain-id');
-        const chains: Array<{modelId: string; auth: string; label: string;}> = new Array<{modelId: string; auth: string; label: string;}>();
-        modelMap.forEach((entry, modelId)=>{
-            entry.chains.forEach(ch=>{
-                if(ch.type === "polymer") {
-                    chains.push({modelId: modelId, auth: ch.auth, label: ch.label});
-                }
-            });
-        });
-        this.props.plugin.removeComponent();
-        this.props.plugin.clearFocus();
-        for(const ch of chains) {
-            const label: string = ch.auth === ch.label ? ch.label : `${ch.label} [auth ${ch.auth}]`;
-            await this.props.plugin.createComponent(label, ch.modelId, ch.label, 'cartoon');
-            await this.props.plugin.colorComponent(label, 'chain-id');
-        }
-        /*this.props.plugin.pluginCall((plugin)=>{
-            const createComponent = (label: string, tag: string, expression: Expression, representationType: StructureRepresentationRegistry.BuiltIn) => {
-                return plugin.managers.structure.component.add({
-                    selection: StructureSelectionQuery(tag, expression),
-                    options: { checkExisting: false, label: label },
-                    representation: representationType,
-
-                });
-            }
-            const recursive = (componentList: {label: string; tag: string; expression: Expression; representationType: StructureRepresentationRegistry.BuiltIn;}[])=>{
-                if(componentList.length>0){
-                    const component = componentList.shift()!;
-                    createComponent(component.label, component.tag, component.expression, component.representationType).then(()=>{
-                        recursive(componentList);
-                    });
-                }
-            };
-            recursive([{
-                label: 'Ligands',
-                tag: 'ligand',
-                expression: Q.ligand.expression,
-                representationType: 'ball-and-stick'
-            },{
-                label: 'Carbohydrates',
-                tag: 'carbohydrate',
-                expression: Q.branched.expression,
-                representationType: 'carbohydrate'
-            },{
-                label: 'Ions',
-                tag: 'ion',
-                expression: Q.ion.expression,
-                representationType: 'ball-and-stick'
-            },{
-                label: 'Lipids',
-                tag: 'lipid',
-                expression: Q.lipid.expression,
-                representationType: 'ball-and-stick'
-            }]);
-
-        });*/
-        await this.props.plugin.removeComponent("Polymer");
-    }
-
-    /*private removeComponents(labelAsymId?:string){
-        if(labelAsymId != null){
-            this.componentSet.get(labelAsymId)?.current.forEach(componentId=>{
-                this.props.plugin.removeComponent(componentId);
-            });
         }else{
-            Array.from(this.componentSet.keys()).forEach(labelAsymId=>{
-                this.componentSet.get(labelAsymId)?.current.forEach(componentId=>{
-                    this.props.plugin.removeComponent(componentId);
-                });
-            });
+            this.props.plugin.cameraFocus(this.currentModelId, this.currentLabelAsymId, x, y);
+            if((y-x)<this.createComponentThreshold){
+                this.currentSelectedComponentId = this.currentLabelAsymId +":"+ (x === y ? x.toString() : x.toString()+"-"+y.toString());
+                setTimeout(async ()=>{
+                    await this.props.plugin.createComponent(
+                        this.currentSelectedComponentId,
+                        this.currentModelId,
+                        processGaps(this.currentModelId, this.currentLabelAsymId, e),
+                        'ball-and-stick'
+                    )
+                    if(x === y)
+                        setTimeout(()=>{
+                            this.props.plugin.setFocus(this.currentModelId, this.currentLabelAsymId, x, y);
+                        },200);
+                },100);
+            }
         }
     }
-
-    private removeObsoleteComponents(): void{
-        this.componentSet.get(this.currentLabelAsymId)?.previous.forEach(componentId=>{
-            if(!this.componentSet.get(this.currentLabelAsymId)?.current.has(componentId)) {
-                this.props.plugin.removeComponent(componentId);
-            }
-        });
-    }
-
-    private resetComponentKeys(): void {
-        if(!this.componentSet.has(this.currentLabelAsymId))
-            this.componentSet.set(this.currentLabelAsymId, {current: new Set<string>(), previous: new Set<string>()});
-        this.componentSet.get(this.currentLabelAsymId)?.previous.clear();
-        this.componentSet.get(this.currentLabelAsymId)?.current.forEach(e=>{
-            this.componentSet.get(this.currentLabelAsymId)?.previous.add(e);
-        });
-        this.componentSet.get(this.currentLabelAsymId)?.current.clear();
-    }*/
 
 }
 
@@ -390,4 +312,25 @@ function processMultipleGaps(modelId: string, asymId: string, list: Array<RcsbFv
         regions = regions.concat(processGaps(modelId, asymId, e));
     });
     return regions;
+}
+
+async function createComponents(plugin: SaguaroPluginInterface, modelMap:SaguaroPluginModelMapType): Promise<void> {
+    await plugin.displayComponent("Water", false);
+    await plugin.colorComponent("Polymer", 'chain-id');
+    const chains: Array<{modelId: string; auth: string; label: string;}> = new Array<{modelId: string; auth: string; label: string;}>();
+    modelMap.forEach((entry, modelId)=>{
+        entry.chains.forEach(ch=>{
+            if(ch.type === "polymer") {
+                chains.push({modelId: modelId, auth: ch.auth, label: ch.label});
+            }
+        });
+    });
+    plugin.removeComponent();
+    plugin.clearFocus();
+    for(const ch of chains) {
+        const label: string = ch.auth === ch.label ? ch.label : `${ch.label} [auth ${ch.auth}]`;
+        await plugin.createComponent(label, ch.modelId, ch.label, 'cartoon');
+        await plugin.colorComponent(label, 'chain-id');
+    }
+    await plugin.removeComponent("Polymer");
 }

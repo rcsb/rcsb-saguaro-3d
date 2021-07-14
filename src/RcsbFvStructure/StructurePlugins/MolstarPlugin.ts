@@ -22,8 +22,8 @@ import {
 } from "molstar/lib/mol-model/structure";
 import {OrderedSet} from "molstar/lib/mol-data/int";
 import { PluginStateObject as PSO } from 'molstar/lib/mol-plugin-state/objects';
-import {State} from "molstar/lib/mol-state";
-import {StructureRef} from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
+import {State, StateObject} from "molstar/lib/mol-state";
+import {StructureComponentRef, StructureRef} from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
 import {RcsbFvSelection, ResidueSelectionInterface} from "../../RcsbFvSelection/RcsbFvSelection";
 import {AbstractPlugin} from "./AbstractPlugin";
 import {Subscription} from "rxjs";
@@ -33,6 +33,7 @@ import {MolScriptBuilder} from "molstar/lib/mol-script/language/builder";
 import {SetUtils} from "molstar/lib/mol-util/set";
 import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/registry";
 import {ColorTheme} from "molstar/lib/mol-theme/color";
+import {StateObjectCell} from "molstar/lib/mol-state/object";
 
 export enum LoadMethod {
     loadPdbId = "loadPdbId",
@@ -60,7 +61,7 @@ interface LoadParams {
 }
 
 export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterface {
-    private plugin: Viewer;
+    private viewer: Viewer;
     private innerSelectionFlag: boolean = false;
     private loadingFlag: boolean = false;
     private selectCallbackSubs: Subscription;
@@ -75,12 +76,11 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     }
 
     public init(target: string | HTMLElement, props?: Partial<ViewerProps>) {
-        this.plugin = new Viewer(target, {layoutShowControls:false, layoutShowSequence: true, ...props});
-        this.plugin.getPlugin().representation.structure.registry
+        this.viewer = new Viewer(target, {layoutShowControls:false, layoutShowSequence: true, ...props});
     }
 
     public clear(): void{
-        this.plugin.clear();
+        this.viewer.clear();
     }
 
     async load(loadConfig: LoadMolstarInterface): Promise<void>{
@@ -88,24 +88,24 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         if(MolstarPlugin.checkLoadData(loadConfig)) {
             if (loadConfig.method == LoadMethod.loadPdbId) {
                 const config: LoadParams = loadConfig.params as LoadParams;
-                await this.plugin.loadPdbId(config.pdbId!, config.props, config.matrix);
+                await this.viewer.loadPdbId(config.pdbId!, config.props, config.matrix);
             } else if (loadConfig.method == LoadMethod.loadPdbIds) {
                 const config: Array<LoadParams> = loadConfig.params as Array<LoadParams>;
-                await this.plugin.loadPdbIds(config.map((d) => {
+                await this.viewer.loadPdbIds(config.map((d) => {
                     return {pdbId: d.pdbId!, props: d.props, matrix: d.matrix}
                 }));
             } else if (loadConfig.method == LoadMethod.loadStructureFromUrl) {
                 const config: LoadParams = loadConfig.params as LoadParams;
-                await this.plugin.loadStructureFromUrl(config.url!, config.format!, config.isBinary!);
+                await this.viewer.loadStructureFromUrl(config.url!, config.format!, config.isBinary!);
             } else if (loadConfig.method == LoadMethod.loadSnapshotFromUrl) {
                 const config: LoadParams = loadConfig.params as LoadParams;
-                await this.plugin.loadSnapshotFromUrl(config.url!, config.type!);
+                await this.viewer.loadSnapshotFromUrl(config.url!, config.type!);
             } else if (loadConfig.method == LoadMethod.loadStructureFromData) {
                 const config: LoadParams = loadConfig.params as LoadParams;
-                await this.plugin.loadStructureFromData(config.data!, config.format!, config.isBinary!);
+                await this.viewer.loadStructureFromData(config.data!, config.format!, config.isBinary!);
             }
         }
-        this.plugin.getPlugin().selectionMode = true;
+        this.viewer.plugin.selectionMode = true;
         this.loadingFlag = false;
         this.mapModels(loadConfig.params);
         this.modelChangeCallback(this.getChains());
@@ -156,40 +156,41 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         if(mode == null || mode === 'select') {
             this.innerSelectionFlag = true;
         }
-        this.plugin.select(this.getModelId(modelId), asymId, begin, end, mode, operation);
+        this.viewer.select({modelId:this.getModelId(modelId), label_asym_id: asymId, label_seq_range:{beg: begin, end:end}}, mode,operation);
         this.innerSelectionFlag = false;
     }
     private selectSet(selection: Array<{modelId:string; asymId: string; position: number;}>, mode: 'select'|'hover', operation:'add'|'set'): void {
         if(mode == null || mode === 'select') {
             this.innerSelectionFlag = true;
         }
-        this.plugin.select(selection.map(r=>{return{modelId: this.getModelId(r.modelId), position:r.position, asymId: r.asymId}}), mode, operation);
+        this.viewer.select(selection.map(r=>({modelId: this.getModelId(r.modelId), label_seq_id:r.position, label_asym_id: r.asymId})), mode, operation);
         this.innerSelectionFlag = false;
     }
     private selectMultipleRanges(selection: Array<{modelId:string; asymId: string; begin: number; end:number;}>, mode: 'select'|'hover', operation:'add'|'set'): void {
         if(mode == null || mode === 'select') {
             this.innerSelectionFlag = true;
         }
-        this.plugin.select(selection.map(r=>{return{modelId: this.getModelId(r.modelId), begin:r.begin, end: r.end, asymId: r.asymId}}), mode, operation);
+        this.viewer.select(selection.map(r=>({modelId: this.getModelId(r.modelId), label_asym_id: r.asymId, label_seq_range:{beg:r.begin, end: r.end}})), mode, operation);
         this.innerSelectionFlag = false;
     }
+
     public clearSelection(mode:'select'|'hover', option?:{modelId:string; labelAsymId:string;}): void {
         if(mode === 'select') {
-            this.plugin.clearFocus();
+            this.viewer.clearFocus();
             this.innerSelectionFlag = true;
         }
         if(option != null)
-            this.plugin.clearSelection(mode, {modelId: this.getModelId(option.modelId), labelAsymId: option.labelAsymId});
+            this.viewer.clearSelection(mode, {modelId: this.getModelId(option.modelId), label_asym_id: option.labelAsymId});
         else
-            this.plugin.clearSelection(mode);
+            this.viewer.clearSelection(mode);
         this.innerSelectionFlag = false;
     }
 
     public setFocus(modelId: string, asymId: string, begin: number, end: number): void{
-        this.plugin.setFocus(this.getModelId(modelId), asymId, begin, end);
+        this.viewer.setFocus({modelId: this.getModelId(modelId), label_asym_id: asymId, label_seq_range:{beg:begin, end: end}});
     }
     public clearFocus(): void {
-        this.plugin.clearFocus();
+        this.viewer.clearFocus();
     }
 
     public cameraFocus(modelId: string, asymId: string, positions:Array<number>): void;
@@ -202,7 +203,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         }
     }
     private focusPositions(modelId: string, asymId: string, positions:Array<number>): void{
-        const data: Structure | undefined = getStructureWithModelId(this.plugin.getPlugin().managers.structure.hierarchy.current.structures, this.getModelId(modelId));
+        const data: Structure | undefined = getStructureWithModelId(this.viewer.plugin.managers.structure.hierarchy.current.structures, this.getModelId(modelId));
         if (data == null) return;
         const sel: StructureSelection = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
             'chain-test': Q.core.rel.eq([asymId, MolScriptBuilder.ammp('label_asym_id')]),
@@ -210,9 +211,9 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         }), data);
         const loci: Loci = StructureSelection.toLociWithSourceUnits(sel);
         if(!StructureElement.Loci.isEmpty(loci))
-            this.plugin.getPlugin().managers.camera.focusLoci(loci);
+            this.viewer.plugin.managers.camera.focusLoci(loci);
         else
-            this.plugin.getPlugin().managers.camera.reset();
+            this.viewer.plugin.managers.camera.reset();
     }
     private focusRange(modelId: string, asymId: string, begin: number, end: number): void{
         const seqIds: Array<number> = new Array<number>();
@@ -230,14 +231,24 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         this.removeComponent(args[0]);
         this.componentVisibility.set(args[0], true);
         this.componentSet.add(args[0]);
-        if(args.length === 4)
-            await this.plugin.createComponent(args[0], this.getModelId(args[1]), args[2], args[3]);
-        else if(args.length === 6)
-            await this.plugin.createComponent(args[0], this.getModelId(args[1]), args[2], args[3], args[4], args[5]);
+        if(args.length === 4){
+            if( args[2] instanceof Array && args[2].length > 0 ) {
+                if(typeof args[2][0].position === "number"){
+                    await this.viewer.createComponent(args[0], args[2].map(r=>({modelId: this.getModelId(args[1]), label_asym_id: r.asymId, label_seq_id: r.position})), args[3]);
+                }else{
+                    await this.viewer.createComponent(args[0], args[2].map(r=>({modelId: this.getModelId(args[1]), label_asym_id: r.asymId, label_seq_range:{beg:r.begin, end: r.end}})), args[3]);
+                }
+            }else{
+                await this.viewer.createComponent(args[0], {modelId: this.getModelId(args[1]), label_asym_id:args[2]}, args[3]);
+            }
+        }
+        else if(args.length === 6){
+            await this.viewer.createComponent(args[0], {modelId: this.getModelId(args[1]), label_asym_id: args[2], label_seq_range:{beg:args[3], end:args[4]}}, args[5]);
+        }
     }
 
     public isComponent(componentLabel: string): boolean{
-        for(const c of this.plugin.getPlugin().managers.structure.hierarchy.currentComponentGroups){
+        for(const c of this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups){
             for(const comp of c){
                 if(comp.cell.obj?.label === componentLabel) {
                     return true;
@@ -248,10 +259,10 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     }
 
     public async colorComponent(componentLabel: string, color: ColorTheme.BuiltIn): Promise<void>{
-        for(const c of this.plugin.getPlugin().managers.structure.hierarchy.currentComponentGroups){
+        for(const c of this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups){
             for(const comp of c){
                 if(comp.cell.obj?.label === componentLabel) {
-                    await this.plugin.getPlugin().managers.structure.component.updateRepresentationsTheme([comp], { color: color });
+                    await this.viewer.plugin.managers.structure.component.updateRepresentationsTheme([comp], { color: color });
                     return;
                 }
             }
@@ -260,7 +271,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
 
     public getComponentSet(): Set<string>{
         const out: Set<string> = new Set<string>();
-        this.plugin.getPlugin().managers.structure.hierarchy.currentComponentGroups.forEach(c=>{
+        this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups.forEach((c)=>{
             for(const comp of c){
                 if(comp.cell.obj?.label != null && out.has(comp.cell.obj?.label)) {
                     break;
@@ -275,12 +286,12 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     public removeComponent(componentLabel?: string): void{
         if(componentLabel == null){
             this.componentSet.forEach(id=>{
-                this.plugin.removeComponent(id);
+                this.viewer.removeComponent(id);
             })
             this.componentSet.clear();
             this.componentVisibility.clear();
         }else{
-            this.plugin.removeComponent(componentLabel);
+            this.viewer.removeComponent(componentLabel);
             this.componentSet.delete(componentLabel);
             this.componentVisibility.delete(componentLabel);
         }
@@ -298,11 +309,11 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         if(this.isComponent(componentLabel) && !this.componentVisibility.has(componentLabel))
             this.componentVisibility.set(componentLabel, true);
         if(this.componentVisibility.get(componentLabel) != visibilityFlag) {
-            for (const c of this.plugin.getPlugin().managers.structure.hierarchy.currentComponentGroups) {
+            for (const c of this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups) {
                 for (const comp of c) {
                     if (comp.cell.obj?.label === componentLabel) {
                         if(this.getComponentDisplay(componentLabel) != visibilityFlag)
-                            this.plugin.getPlugin().managers.structure.component.toggleVisibility([comp]);
+                            this.viewer.plugin.managers.structure.component.toggleVisibility([comp]);
                         return void 0;
                     }
                 }
@@ -310,7 +321,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         }
     }
     private getComponentDisplay(componentLabel: string): boolean{
-        for (const c of this.plugin.getPlugin().managers.structure.hierarchy.currentComponentGroups) {
+        for (const c of this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups) {
             for (const comp of c) {
                 if (comp.cell.obj?.label === componentLabel) {
                     return this.componentVisibility.get(componentLabel) ?? false;
@@ -321,7 +332,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     }
 
     public setRepresentationChangeCallback(g:()=>void){
-        this.plugin.getPlugin().state.events.cell.stateUpdated.subscribe(o=>{
+        this.viewer.plugin.state.events.cell.stateUpdated.subscribe((o)=>{
             if(o.cell.obj?.type.name === "Structure" && this.componentSet.has(o.cell.obj?.label)){
                 if(o.cell.state.isHidden != null) {
                     this.componentVisibility.set(o.cell.obj?.label, !o.cell.state.isHidden);
@@ -331,9 +342,9 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     }
 
     public setHoverCallback(g:()=>void){
-        this.plugin.getPlugin().behaviors.interaction.hover.subscribe((r: InteractivityManager.HoverEvent)=>{
+        this.viewer.plugin.behaviors.interaction.hover.subscribe((r)=>{
             const sequenceData: Array<ResidueSelectionInterface> = new Array<ResidueSelectionInterface>();
-            const loci: Loci = r.current.loci;
+            const loci:Loci = r.current.loci;
             if(StructureElement.Loci.is(loci)){
                 const loc = StructureElement.Location.create(loci.structure);
                 for (const e of loci.elements) {
@@ -357,12 +368,12 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     }
 
     public setSelectCallback(g:(flag?:boolean)=>void){
-        this.selectCallbackSubs = this.plugin.getPlugin().managers.structure.selection.events.changed.subscribe(()=>{
+        this.selectCallbackSubs = this.viewer.plugin.managers.structure.selection.events.changed.subscribe(()=>{
             if(this.innerSelectionFlag) {
                 return;
             }
-            if(this.plugin.getPlugin().managers.structure.selection.additionsHistory.length > 0) {
-                const currentLoci: Loci = this.plugin.getPlugin().managers.structure.selection.additionsHistory[0].loci;
+            if(this.viewer.plugin.managers.structure.selection.additionsHistory.length > 0) {
+                const currentLoci: Loci = this.viewer.plugin.managers.structure.selection.additionsHistory[0].loci;
                 const loc: StructureElement.Location = StructureElement.Location.create(currentLoci.structure);
                 StructureElement.Location.set(
                     loc,
@@ -387,7 +398,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
                         this.innerSelectionFlag = true;
                         const sel: StructureSelection = StructureQuery.run(query, currentLoci.structure);
                         const surroundingsLoci: Loci = StructureSelection.toLociWithSourceUnits(sel);
-                        this.plugin.getPlugin().managers.structure.selection.fromLoci('add', surroundingsLoci);
+                        this.viewer.plugin.managers.structure.selection.fromLoci('add', surroundingsLoci);
                         const surroundingsLoc = StructureElement.Location.create(surroundingsLoci.structure);
                         for (const e of surroundingsLoci.elements) {
                             StructureElement.Location.set(surroundingsLoc, surroundingsLoci.structure, e.unit, e.unit.elements[0]);
@@ -415,10 +426,10 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
                 this.selection.setLastSelection('select', null);
             }
             const sequenceData: Array<ResidueSelectionInterface> = new Array<ResidueSelectionInterface>();
-            for(const structure of this.plugin.getPlugin().managers.structure.hierarchy.current.structures){
+            for(const structure of this.viewer.plugin.managers.structure.hierarchy.current.structures){
                 const data: Structure | undefined = structure.cell.obj?.data;
                 if(data == null) return;
-                const loci: Loci = this.plugin.getPlugin().managers.structure.selection.getLoci(data);
+                const loci: Loci = this.viewer.plugin.managers.structure.selection.getLoci(data);
                 if(StructureElement.Loci.is(loci)){
                     const loc = StructureElement.Location.create(loci.structure);
                     for (const e of loci.elements) {
@@ -443,12 +454,12 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     }
 
     public pluginCall(f: (plugin: PluginContext) => void){
-        this.plugin.pluginCall(f);
+        this.viewer.pluginCall(f);
     }
 
     public setModelChangeCallback(f:(modelMap:SaguaroPluginModelMapType)=>void){
         this.modelChangeCallback = f;
-        this.modelChangeCallbackSubs = this.plugin.getPlugin().state.events.object.updated.subscribe((o)=>{
+        this.modelChangeCallbackSubs = this.viewer.plugin.state.events.object.updated.subscribe((o:{obj: StateObject, action: "in-place" | "recreate"})=>{
             if(this.loadingFlag)
                 return;
             if(o.obj.type.name === "Behavior" && o.action === "in-place") {
@@ -460,10 +471,10 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     }
 
     private getChains(): SaguaroPluginModelMapType{
-        const structureRefList = getStructureOptions(this.plugin.getPlugin());
+        const structureRefList = getStructureOptions(this.viewer.plugin);
         const out: SaguaroPluginModelMapType = new Map<string, {entryId: string; chains: Array<{label:string;auth:string;entityId:string;title:string;type:ChainType;}>}>();
         structureRefList.forEach((structureRef,i)=>{
-            const structure = getStructure(structureRef[0], this.plugin.getPlugin().state.data);
+            const structure = getStructure(structureRef[0], this.viewer.plugin.state.data);
             let modelEntityId = getModelEntityOptions(structure)[0][0];
             const chains: [{modelId:string;entryId:string},{auth:string;label:string;entityId:string;title:string;type:ChainType;}[]] = getChainValues(structure, modelEntityId);
             out.set(this.getModelId(chains[0].modelId),{entryId:chains[0].entryId, chains: chains[1]});
@@ -473,9 +484,9 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
 
     private mapModels(loadParams: LoadParams | Array<LoadParams>): void{
         const loadParamList: Array<LoadParams> = loadParams instanceof Array ? loadParams : [loadParams];
-        const structureRefList = getStructureOptions(this.plugin.getPlugin());
+        const structureRefList = getStructureOptions(this.viewer.plugin);
         structureRefList.forEach((structureRef,i)=>{
-            const structure = getStructure(structureRef[0], this.plugin.getPlugin().state.data);
+            const structure = getStructure(structureRef[0], this.viewer.plugin.state.data);
             let modelEntityId = getModelEntityOptions(structure)[0][0];
             const chains: [{modelId:string, entryId:string},{auth:string,label:string;entityId:string;title:string;type:ChainType;}[]] = getChainValues(structure, modelEntityId);
             this.modelMap.set(chains[0].modelId,loadParamList[i].id);
@@ -494,7 +505,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     }
 
     public resetCamera(): void {
-        this.plugin.getPlugin().managers.camera.reset();
+        this.viewer.plugin.managers.camera.reset();
     }
 
 }

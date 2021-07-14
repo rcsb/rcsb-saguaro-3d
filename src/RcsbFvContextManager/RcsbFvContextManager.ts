@@ -1,6 +1,6 @@
 import {Subject, Subscription} from 'rxjs';
-import {StructureViewInterface} from "../RcsbFvStructure/RcsbFvStructure";
-import {SequenceViewInterface} from "../RcsbFvSequence/RcsbFvSequence";
+import {RcsbFvStructureInterface} from "../RcsbFvStructure/RcsbFvStructure";
+import {RcsbFvSequenceInterface} from "../RcsbFvSequence/RcsbFvSequence";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 
 /**Main Event Data Object Interface*/
@@ -16,8 +16,8 @@ export enum EventType {
 }
 
 export interface UpdateConfigInterface {
-    structurePanelConfig?:StructureViewInterface;
-    sequencePanelConfig?:SequenceViewInterface;
+    structurePanelConfig?:RcsbFvStructureInterface;
+    sequencePanelConfig?:RcsbFvSequenceInterface;
 }
 
 /**rxjs Event Handler Object. It allows objects to subscribe methods and then, get(send) events to(from) other objects*/

@@ -5,8 +5,8 @@ import {MolstarPlugin} from '../RcsbFvStructure/StructurePlugins/MolstarPlugin';
 import {SaguaroPluginInterface} from '../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface';
 
 import '../styles/RcsbFvMolstarStyle.module.scss';
-import {RcsbFvSequence, SequenceViewInterface} from "../RcsbFvSequence/RcsbFvSequence";
-import {RcsbFvStructure, StructureViewInterface} from "../RcsbFvStructure/RcsbFvStructure";
+import {RcsbFvSequence, RcsbFvSequenceInterface} from "../RcsbFvSequence/RcsbFvSequence";
+import {RcsbFvStructure, RcsbFvStructureInterface} from "../RcsbFvStructure/RcsbFvStructure";
 import {
     EventType,
     RcsbFvContextManager,
@@ -19,8 +19,8 @@ import {RcsbFvSelection} from "../RcsbFvSelection/RcsbFvSelection";
 import {CSSProperties} from "react";
 
 export interface RcsbFv3DComponentInterface {
-    structurePanelConfig:StructureViewInterface;
-    sequencePanelConfig: SequenceViewInterface;
+    structurePanelConfig:RcsbFvStructureInterface;
+    sequencePanelConfig: RcsbFvSequenceInterface;
     id: string;
     ctxManager: RcsbFvContextManager;
     cssConfig?:{
@@ -32,14 +32,14 @@ export interface RcsbFv3DComponentInterface {
     fullScreen: boolean;
 }
 
-export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterface, {structurePanelConfig:StructureViewInterface, sequencePanelConfig:SequenceViewInterface}> {
+export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterface, {structurePanelConfig:RcsbFvStructureInterface, sequencePanelConfig:RcsbFvSequenceInterface}> {
 
     private readonly pfvScreenFraction = 0.55;
     private readonly plugin: SaguaroPluginInterface;
     private readonly selection: RcsbFvSelection = new RcsbFvSelection();
     private subscription: Subscription;
 
-    readonly state: {structurePanelConfig:StructureViewInterface, sequencePanelConfig:SequenceViewInterface} = {
+    readonly state: {structurePanelConfig:RcsbFvStructureInterface, sequencePanelConfig:RcsbFvSequenceInterface} = {
         structurePanelConfig: this.props.structurePanelConfig,
         sequencePanelConfig: this.props.sequencePanelConfig
     }
@@ -116,8 +116,8 @@ export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterfa
     }
 
     private updateConfig(config:UpdateConfigInterface){
-        const structureConfig: StructureViewInterface | undefined = config.structurePanelConfig;
-        const sequenceConfig: SequenceViewInterface | undefined = config.sequencePanelConfig;
+        const structureConfig: RcsbFvStructureInterface | undefined = config.structurePanelConfig;
+        const sequenceConfig: RcsbFvSequenceInterface | undefined = config.sequencePanelConfig;
         if(structureConfig != null && sequenceConfig != null){
             this.setState({structurePanelConfig:structureConfig, sequencePanelConfig:sequenceConfig});
         }else if(structureConfig != null){
