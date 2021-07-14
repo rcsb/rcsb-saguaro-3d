@@ -52,7 +52,6 @@ export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterfa
     render(): JSX.Element {
         return (
             <div style={RcsbFv3DComponent.mainDivCssConfig(this.props.cssConfig?.rootPanel)} className={ this.props.fullScreen ? classes.fullScreen+" "+classes.rcsbFvMain : classes.rcsbFvMain} >
-                <div>
                     <div style={this.structureCssConfig(this.props.cssConfig?.structurePanel)} className={classes.rcsbFvCell}>
                         <RcsbFvStructure
                             {...this.state.structurePanelConfig}
@@ -73,7 +72,6 @@ export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterfa
                             unmount={this.props.unmount}
                         />
                     </div>
-                </div>
             </div>
         );
     }
@@ -87,11 +85,17 @@ export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterfa
     }
 
     private structureCssConfig(css: CSSProperties | undefined): CSSProperties{
-        return {...{width:Math.round((1-this.pfvScreenFraction)*100).toString()+"%", height:"100%", zIndex:100}, ...css };
+        const widthFr: number = Math.round((1-this.pfvScreenFraction)*100);
+        const cssWidth: string = widthFr.toString()+"%";
+        const cssHeight: string = "100%";
+        return {...{width:cssWidth, height:cssHeight, zIndex:100}, ...css };
     }
 
     private sequenceCssConfig(css: CSSProperties | undefined): CSSProperties{
-        return {...{width:Math.round((this.pfvScreenFraction)*100).toString()+"%", height:"100%", overflow:"auto", paddingBottom:5}, ...css };
+        const widthFr: number = Math.round((this.pfvScreenFraction)*100);
+        const cssWidth: string = widthFr.toString()+"%";
+        const cssHeight: string = "100%";
+        return {...{width:cssWidth, height:cssHeight, overflow:"auto", paddingBottom:5}, ...css };
     }
 
     private static mainDivCssConfig(css: CSSProperties | undefined): CSSProperties{
