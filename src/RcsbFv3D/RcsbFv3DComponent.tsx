@@ -16,7 +16,7 @@ import {
 import {Subscription} from "rxjs";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {RcsbFvSelection} from "../RcsbFvSelection/RcsbFvSelection";
-import {CSSProperties} from "react";
+import {CSSProperties, MouseEvent} from "react";
 
 export interface RcsbFv3DComponentInterface {
     structurePanelConfig:RcsbFvStructureInterface;
@@ -32,16 +32,23 @@ export interface RcsbFv3DComponentInterface {
     fullScreen: boolean;
 }
 
-export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterface, {structurePanelConfig:RcsbFvStructureInterface, sequencePanelConfig:RcsbFvSequenceInterface}> {
+interface RcsbFv3DComponentState {
+    structurePanelConfig:RcsbFvStructureInterface;
+    sequencePanelConfig:RcsbFvSequenceInterface;
+    pfvScreenFraction: number;
+}
 
-    private readonly pfvScreenFraction = 0.55;
+export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterface, RcsbFv3DComponentState> {
+
     private readonly plugin: SaguaroPluginInterface;
     private readonly selection: RcsbFvSelection = new RcsbFvSelection();
     private subscription: Subscription;
+    private readonly ROOT_DIV_ID: string = "rootPanel";
 
-    readonly state: {structurePanelConfig:RcsbFvStructureInterface, sequencePanelConfig:RcsbFvSequenceInterface} = {
+    readonly state: RcsbFv3DComponentState = {
         structurePanelConfig: this.props.structurePanelConfig,
-        sequencePanelConfig: this.props.sequencePanelConfig
+        sequencePanelConfig: this.props.sequencePanelConfig,
+        pfvScreenFraction: 0.55
     }
 
     constructor(props: RcsbFv3DComponentInterface) {
@@ -51,7 +58,8 @@ export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterfa
 
     render(): JSX.Element {
         return (
-            <div style={RcsbFv3DComponent.mainDivCssConfig(this.props.cssConfig?.rootPanel)} className={ this.props.fullScreen ? classes.fullScreen+" "+classes.rcsbFvMain : classes.rcsbFvMain} >
+            <div style={RcsbFv3DComponent.mainDivCssConfig(this.props.cssConfig?.rootPanel)} className={ this.props.fullScreen ? classes.fullScreen : ""} >
+                <div id={this.ROOT_DIV_ID} className={classes.rcsbFvMain} onMouseMove={(evt: MouseEvent<HTMLDivElement>)=>{this.mouseMove(evt)}} onMouseUp={ (e)=>{this.splitPanelMouseUp()} }>
                     <div style={this.structureCssConfig(this.props.cssConfig?.structurePanel)} className={classes.rcsbFvCell}>
                         <RcsbFvStructure
                             {...this.state.structurePanelConfig}
@@ -72,6 +80,12 @@ export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterfa
                             unmount={this.props.unmount}
                         />
                     </div>
+                    <div
+                        onMouseDown={ ()=>{this.splitPanelMouseDown()} }
+                        className={classes.rcsbFvSplitPanel}
+                        style={{right:Math.round((1-this.state.pfvScreenFraction)*100)+"%"}}
+                    />
+                </div>
             </div>
         );
     }
@@ -85,17 +99,17 @@ export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterfa
     }
 
     private structureCssConfig(css: CSSProperties | undefined): CSSProperties{
-        const widthFr: number = Math.round((1-this.pfvScreenFraction)*100);
+        const widthFr: number = Math.round((1-this.state.pfvScreenFraction)*100);
         const cssWidth: string = widthFr.toString()+"%";
         const cssHeight: string = "100%";
         return {...{width:cssWidth, height:cssHeight, zIndex:100}, ...css };
     }
 
     private sequenceCssConfig(css: CSSProperties | undefined): CSSProperties{
-        const widthFr: number = Math.round((this.pfvScreenFraction)*100);
+        const widthFr: number = Math.round((this.state.pfvScreenFraction)*100);
         const cssWidth: string = widthFr.toString()+"%";
         const cssHeight: string = "100%";
-        return {...{width:cssWidth, height:cssHeight, overflow:"auto", paddingBottom:5}, ...css };
+        return {...{width:cssWidth, height:cssHeight, overflowY:"auto", overflowX:"hidden", paddingBottom:5}, ...css };
     }
 
     private static mainDivCssConfig(css: CSSProperties | undefined): CSSProperties{
@@ -130,5 +144,35 @@ export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterfa
             this.setState({sequencePanelConfig: sequenceConfig});
         }
     }
+
+    private splitPanelMouseDown(): void {
+        const element: HTMLElement | null = document.getElementById(this.ROOT_DIV_ID);
+        if(!element)return;
+        element.style.cursor = "ew-resize";
+        document.body.classList.add(classes.disableTextSelection);
+        this.resize = (evt: MouseEvent<HTMLDivElement>)=>{
+            const rect: DOMRect | undefined = element.getBoundingClientRect();
+            const x: number = evt.clientX - rect.left;
+            this.setState({pfvScreenFraction:x/rect.width});
+        };
+    }
+
+    private splitPanelMouseUp(): void {
+        if(typeof this.resize === "function") {
+            const element: HTMLElement | null = document.getElementById(this.ROOT_DIV_ID);
+            if (!element) return;
+            element.style.cursor = "auto";
+            document.body.classList.remove(classes.disableTextSelection);
+            window.dispatchEvent(new Event('resize'));
+            this.resize = null;
+        }
+    }
+
+    private mouseMove(evt: MouseEvent<HTMLDivElement>): void{
+        if(typeof this.resize === "function")
+            this.resize(evt);
+    }
+
+    private resize: null | ((evt: MouseEvent<HTMLDivElement>)=>void) = null;
 
 }
