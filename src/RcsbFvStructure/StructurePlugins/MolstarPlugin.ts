@@ -2,8 +2,7 @@ import {Viewer, ViewerProps} from '@rcsb/rcsb-molstar/build/src/viewer';
 import {PresetProps} from '@rcsb/rcsb-molstar/build/src/viewer/helpers/preset';
 import {
     SaguaroPluginInterface,
-    SaguaroPluginModelMapType,
-    SaguaroPluginPublicInterface
+    SaguaroPluginModelMapType
 } from "./SaguaroPluginInterface";
 
 import {PluginContext} from "molstar/lib/mol-plugin/context";
@@ -12,7 +11,6 @@ import {Mat4} from "molstar/lib/mol-math/linear-algebra";
 import {BuiltInTrajectoryFormat} from "molstar/lib/mol-plugin-state/formats/trajectory";
 import {PluginState} from "molstar/lib/mol-plugin/state";
 import {
-    ResidueIndex,
     Structure,
     StructureElement,
     StructureProperties as SP,
@@ -23,17 +21,15 @@ import {
 import {OrderedSet} from "molstar/lib/mol-data/int";
 import { PluginStateObject as PSO } from 'molstar/lib/mol-plugin-state/objects';
 import {State, StateObject} from "molstar/lib/mol-state";
-import {StructureComponentRef, StructureRef} from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
+import {StructureRef} from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
 import {RcsbFvSelection, ResidueSelectionInterface} from "../../RcsbFvSelection/RcsbFvSelection";
 import {AbstractPlugin} from "./AbstractPlugin";
 import {Subscription} from "rxjs";
-import {InteractivityManager} from "molstar/lib/mol-plugin-state/manager/interactivity";
 import {Script} from "molstar/lib/mol-script/script";
 import {MolScriptBuilder} from "molstar/lib/mol-script/language/builder";
 import {SetUtils} from "molstar/lib/mol-util/set";
 import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/registry";
 import {ColorTheme} from "molstar/lib/mol-theme/color";
-import {StateObjectCell} from "molstar/lib/mol-state/object";
 
 export enum LoadMethod {
     loadPdbId = "loadPdbId",
@@ -156,21 +152,21 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         if(mode == null || mode === 'select') {
             this.innerSelectionFlag = true;
         }
-        this.viewer.select({modelId:this.getModelId(modelId), label_asym_id: asymId, label_seq_range:{beg: begin, end:end}}, mode,operation);
+        this.viewer.select({modelId:this.getModelId(modelId), labelAsymId: asymId, labelSeqRange:{beg: begin, end:end}}, mode,operation);
         this.innerSelectionFlag = false;
     }
     private selectSet(selection: Array<{modelId:string; asymId: string; position: number;}>, mode: 'select'|'hover', operation:'add'|'set'): void {
         if(mode == null || mode === 'select') {
             this.innerSelectionFlag = true;
         }
-        this.viewer.select(selection.map(r=>({modelId: this.getModelId(r.modelId), label_seq_id:r.position, label_asym_id: r.asymId})), mode, operation);
+        this.viewer.select(selection.map(r=>({modelId: this.getModelId(r.modelId), labelSeqId:r.position, labelAsymId: r.asymId})), mode, operation);
         this.innerSelectionFlag = false;
     }
     private selectMultipleRanges(selection: Array<{modelId:string; asymId: string; begin: number; end:number;}>, mode: 'select'|'hover', operation:'add'|'set'): void {
         if(mode == null || mode === 'select') {
             this.innerSelectionFlag = true;
         }
-        this.viewer.select(selection.map(r=>({modelId: this.getModelId(r.modelId), label_asym_id: r.asymId, label_seq_range:{beg:r.begin, end: r.end}})), mode, operation);
+        this.viewer.select(selection.map(r=>({modelId: this.getModelId(r.modelId), labelAsymId: r.asymId, labelSeqRange:{beg:r.begin, end: r.end}})), mode, operation);
         this.innerSelectionFlag = false;
     }
 
@@ -180,14 +176,14 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
             this.innerSelectionFlag = true;
         }
         if(option != null)
-            this.viewer.clearSelection(mode, {modelId: this.getModelId(option.modelId), label_asym_id: option.labelAsymId});
+            this.viewer.clearSelection(mode, {modelId: this.getModelId(option.modelId), labelAsymId: option.labelAsymId});
         else
             this.viewer.clearSelection(mode);
         this.innerSelectionFlag = false;
     }
 
     public setFocus(modelId: string, asymId: string, begin: number, end: number): void{
-        this.viewer.setFocus({modelId: this.getModelId(modelId), label_asym_id: asymId, label_seq_range:{beg:begin, end: end}});
+        this.viewer.setFocus({modelId: this.getModelId(modelId), labelAsymId: asymId, labelSeqRange:{beg:begin, end: end}});
     }
     public clearFocus(): void {
         this.viewer.clearFocus();
@@ -234,16 +230,16 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         if(args.length === 4){
             if( args[2] instanceof Array && args[2].length > 0 ) {
                 if(typeof args[2][0].position === "number"){
-                    await this.viewer.createComponent(args[0], args[2].map(r=>({modelId: this.getModelId(args[1]), label_asym_id: r.asymId, label_seq_id: r.position})), args[3]);
+                    await this.viewer.createComponent(args[0], args[2].map(r=>({modelId: this.getModelId(args[1]), labelAsymId: r.asymId, labelSeqId: r.position})), args[3]);
                 }else{
-                    await this.viewer.createComponent(args[0], args[2].map(r=>({modelId: this.getModelId(args[1]), label_asym_id: r.asymId, label_seq_range:{beg:r.begin, end: r.end}})), args[3]);
+                    await this.viewer.createComponent(args[0], args[2].map(r=>({modelId: this.getModelId(args[1]), labelAsymId: r.asymId, labelSeqRange:{beg:r.begin, end: r.end}})), args[3]);
                 }
             }else{
-                await this.viewer.createComponent(args[0], {modelId: this.getModelId(args[1]), label_asym_id:args[2]}, args[3]);
+                await this.viewer.createComponent(args[0], {modelId: this.getModelId(args[1]), labelAsymId:args[2]}, args[3]);
             }
         }
         else if(args.length === 6){
-            await this.viewer.createComponent(args[0], {modelId: this.getModelId(args[1]), label_asym_id: args[2], label_seq_range:{beg:args[3], end:args[4]}}, args[5]);
+            await this.viewer.createComponent(args[0], {modelId: this.getModelId(args[1]), labelAsymId: args[2], labelSeqRange:{beg:args[3], end:args[4]}}, args[5]);
         }
     }
 
