@@ -19,8 +19,8 @@ export class MultipleEntries {
             elementId:"test",
             structurePanelConfig:{
                 loadConfig: {
-                    method: LoadMethod.loadPdbIds,
-                    params: []
+                    loadMethod: LoadMethod.loadPdbIds,
+                    loadParams: []
                 }
             },
             sequencePanelConfig:{

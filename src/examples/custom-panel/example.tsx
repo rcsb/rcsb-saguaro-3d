@@ -173,8 +173,8 @@ const sequenceConfig = {
 
 const structureConfig:RcsbFvStructureInterface = {
     loadConfig: {
-        method: LoadMethod.loadPdbIds,
-        params: [{
+        loadMethod: LoadMethod.loadPdbIds,
+        loadParams: [{
             pdbId: "101m",
             id:"model_1"
         },{

@@ -29,7 +29,7 @@ export class RcsbFvContextManager {
     public next( obj: RcsbFvContextManagerInterface ):void {
         this.subject.next(obj);
     }
-    /**Subscribe method
+    /**Subscribe loadMethod
      * @return Subscription
      * */
     public subscribe(f:(x:RcsbFvContextManagerInterface)=>void):Subscription {

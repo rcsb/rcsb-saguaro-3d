@@ -315,7 +315,7 @@ function processMultipleGaps(modelId: string, asymId: string, list: Array<RcsbFv
 }
 
 async function createComponents(plugin: SaguaroPluginInterface, modelMap:SaguaroPluginModelMapType): Promise<void> {
-    await plugin.displayComponent("Water", false);
+    plugin.displayComponent("Water", false);
     await plugin.colorComponent("Polymer", 'chain-id');
     const chains: Array<{modelId: string; auth: string; label: string;}> = new Array<{modelId: string; auth: string; label: string;}>();
     modelMap.forEach((entry, modelId)=>{

@@ -21,7 +21,7 @@ import {
 import {OrderedSet} from "molstar/lib/mol-data/int";
 import { PluginStateObject as PSO } from 'molstar/lib/mol-plugin-state/objects';
 import {State, StateObject} from "molstar/lib/mol-state";
-import {StructureRef} from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
+import {StructureComponentRef, StructureRef} from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
 import {RcsbFvSelection, ResidueSelectionInterface} from "../../RcsbFvSelection/RcsbFvSelection";
 import {AbstractPlugin} from "./AbstractPlugin";
 import {Subscription} from "rxjs";
@@ -30,6 +30,7 @@ import {MolScriptBuilder} from "molstar/lib/mol-script/language/builder";
 import {SetUtils} from "molstar/lib/mol-util/set";
 import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/registry";
 import {ColorTheme} from "molstar/lib/mol-theme/color";
+import {TrajectoryHierarchyPresetProvider} from "molstar/lib/mol-plugin-state/builder/structure/hierarchy-preset";
 
 export enum LoadMethod {
     loadPdbId = "loadPdbId",
@@ -40,11 +41,11 @@ export enum LoadMethod {
 }
 
 export interface LoadMolstarInterface {
-    method: LoadMethod;
-    params: LoadParams | Array<LoadParams>;
+    loadMethod: LoadMethod;
+    loadParams: LoadParams | Array<LoadParams>;
 }
 
-interface LoadParams {
+interface LoadParams<P=any,S={}> {
     pdbId?: string;
     props?: PresetProps;
     matrix?: Mat4;
@@ -54,6 +55,8 @@ interface LoadParams {
     type?: PluginState.SnapshotType,
     data?: string | number[]
     id?:string;
+    reprProvider?: TrajectoryHierarchyPresetProvider<P,S>;
+    params?:P;
 }
 
 export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterface {
@@ -64,8 +67,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     private modelChangeCallback: (chainMap:SaguaroPluginModelMapType)=>void;
     private modelChangeCallbackSubs: Subscription;
     private modelMap: Map<string,string|undefined> = new Map<string, string>();
-    private readonly componentSet: Set<string> = new Set<string>();
-    private readonly componentVisibility: Map<string,boolean> = new Map<string, boolean>();
+    private readonly componentMap: Map<string, StructureComponentRef> = new Map<string, StructureComponentRef>();
 
     constructor(props: RcsbFvSelection) {
         super(props);
@@ -82,53 +84,53 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     async load(loadConfig: LoadMolstarInterface): Promise<void>{
         this.loadingFlag = true;
         if(MolstarPlugin.checkLoadData(loadConfig)) {
-            if (loadConfig.method == LoadMethod.loadPdbId) {
-                const config: LoadParams = loadConfig.params as LoadParams;
-                await this.viewer.loadPdbId(config.pdbId!, config.props, config.matrix);
-            } else if (loadConfig.method == LoadMethod.loadPdbIds) {
-                const config: Array<LoadParams> = loadConfig.params as Array<LoadParams>;
+            if (loadConfig.loadMethod == LoadMethod.loadPdbId) {
+                const config: LoadParams = loadConfig.loadParams as LoadParams;
+                await this.viewer.loadPdbId(config.pdbId!, {props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params});
+            } else if (loadConfig.loadMethod == LoadMethod.loadPdbIds) {
+                const config: Array<LoadParams> = loadConfig.loadParams as Array<LoadParams>;
                 await this.viewer.loadPdbIds(config.map((d) => {
-                    return {pdbId: d.pdbId!, props: d.props, matrix: d.matrix}
+                    return {pdbId: d.pdbId!, config:{props: d.props, matrix: d.matrix, reprProvider: d.reprProvider, params: d.params}}
                 }));
-            } else if (loadConfig.method == LoadMethod.loadStructureFromUrl) {
-                const config: LoadParams = loadConfig.params as LoadParams;
-                await this.viewer.loadStructureFromUrl(config.url!, config.format!, config.isBinary!);
-            } else if (loadConfig.method == LoadMethod.loadSnapshotFromUrl) {
-                const config: LoadParams = loadConfig.params as LoadParams;
+            } else if (loadConfig.loadMethod == LoadMethod.loadStructureFromUrl) {
+                const config: LoadParams = loadConfig.loadParams as LoadParams;
+                await this.viewer.loadStructureFromUrl(config.url!, config.format!, config.isBinary!,{props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params});
+            } else if (loadConfig.loadMethod == LoadMethod.loadSnapshotFromUrl) {
+                const config: LoadParams = loadConfig.loadParams as LoadParams;
                 await this.viewer.loadSnapshotFromUrl(config.url!, config.type!);
-            } else if (loadConfig.method == LoadMethod.loadStructureFromData) {
-                const config: LoadParams = loadConfig.params as LoadParams;
-                await this.viewer.loadStructureFromData(config.data!, config.format!, config.isBinary!);
+            } else if (loadConfig.loadMethod == LoadMethod.loadStructureFromData) {
+                const config: LoadParams = loadConfig.loadParams as LoadParams;
+                await this.viewer.loadStructureFromData(config.data!, config.format!, config.isBinary!, {props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params});
             }
         }
         this.viewer.plugin.selectionMode = true;
         this.loadingFlag = false;
-        this.mapModels(loadConfig.params);
+        this.mapModels(loadConfig.loadParams);
         this.modelChangeCallback(this.getChains());
     }
 
     private static checkLoadData(loadConfig: LoadMolstarInterface): boolean{
-        const method: LoadMethod = loadConfig.method;
-        const params: LoadParams | Array<LoadParams> = loadConfig.params;
+        const method: LoadMethod = loadConfig.loadMethod;
+        const params: LoadParams | Array<LoadParams> = loadConfig.loadParams;
         if( method == LoadMethod.loadPdbId ){
             if(params instanceof Array || params.pdbId == null)
-                throw loadConfig.method+": missing pdbId";
+                throw loadConfig.loadMethod+": missing pdbId";
         }else if( method == LoadMethod.loadPdbIds ){
             if(!(params instanceof Array))
-                throw loadConfig.method+": Array object spected";
+                throw loadConfig.loadMethod+": Array object spected";
             for(const d of params){
                 if(d.pdbId == null)
-                    throw loadConfig.method+": missing pdbId"
+                    throw loadConfig.loadMethod+": missing pdbId"
             }
         }else if( method == LoadMethod.loadStructureFromUrl ){
             if(params instanceof Array || params.url == null || params.isBinary == null || params.format == null)
-                throw loadConfig.method+": arguments needed url, format, isBinary"
+                throw loadConfig.loadMethod+": arguments needed url, format, isBinary"
         }else if( method == LoadMethod.loadSnapshotFromUrl ){
             if(params instanceof Array || params.url == null || params.type == null)
-                throw loadConfig.method+": arguments needed url, type"
+                throw loadConfig.loadMethod+": arguments needed url, type"
         }else if( method == LoadMethod.loadStructureFromData ){
             if(params instanceof Array || params.data == null || params.format == null || params.isBinary == null)
-                throw loadConfig.method+": arguments needed data, format, isBinary"
+                throw loadConfig.loadMethod+": arguments needed data, format, isBinary"
         }
         return true;
     }
@@ -225,8 +227,6 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     public async createComponent(componentLabel: string, modelId:string, residues: Array<{asymId: string; begin: number; end: number;}>, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
     public async createComponent(...args: any[]): Promise<void> {
         this.removeComponent(args[0]);
-        this.componentVisibility.set(args[0], true);
-        this.componentSet.add(args[0]);
         if(args.length === 4){
             if( args[2] instanceof Array && args[2].length > 0 ) {
                 if(typeof args[2][0].position === "number"){
@@ -241,6 +241,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         else if(args.length === 6){
             await this.viewer.createComponent(args[0], {modelId: this.getModelId(args[1]), labelAsymId: args[2], labelSeqRange:{beg:args[3], end:args[4]}}, args[5]);
         }
+        this.componentMap.set(args[0], this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups[this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups.length-1][0]);
     }
 
     public isComponent(componentLabel: string): boolean{
@@ -281,15 +282,13 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
 
     public removeComponent(componentLabel?: string): void{
         if(componentLabel == null){
-            this.componentSet.forEach(id=>{
+            this.componentMap.forEach((comp, id)=>{
                 this.viewer.removeComponent(id);
+                this.componentMap.delete(id);
             })
-            this.componentSet.clear();
-            this.componentVisibility.clear();
         }else{
             this.viewer.removeComponent(componentLabel);
-            this.componentSet.delete(componentLabel);
-            this.componentVisibility.delete(componentLabel);
+            this.componentMap.delete(componentLabel);
         }
     }
 
@@ -302,39 +301,28 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
             return this.getComponentDisplay(componentLabel);
     }
     private changeComponentDisplay(componentLabel: string, visibilityFlag: boolean): void{
-        if(this.isComponent(componentLabel) && !this.componentVisibility.has(componentLabel))
-            this.componentVisibility.set(componentLabel, true);
-        if(this.componentVisibility.get(componentLabel) != visibilityFlag) {
+        if(this.componentMap.has(componentLabel) && this.getComponentDisplay(componentLabel) != visibilityFlag) {
+            this.viewer.plugin.managers.structure.component.toggleVisibility([this.componentMap.get(componentLabel)!]);
+        }else if(!this.componentMap.has(componentLabel)){
             for (const c of this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups) {
                 for (const comp of c) {
-                    if (comp.cell.obj?.label === componentLabel) {
-                        if(this.getComponentDisplay(componentLabel) != visibilityFlag)
-                            this.viewer.plugin.managers.structure.component.toggleVisibility([comp]);
-                        return void 0;
+                    if(comp.cell.obj?.label === componentLabel) {
+                        if(!comp.cell.state.isHidden != visibilityFlag) {
+                            this.viewer.plugin.managers.structure.component.toggleVisibility(c);
+                            return void 0;
+                        }
                     }
                 }
             }
         }
     }
-    private getComponentDisplay(componentLabel: string): boolean{
-        for (const c of this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups) {
-            for (const comp of c) {
-                if (comp.cell.obj?.label === componentLabel) {
-                    return this.componentVisibility.get(componentLabel) ?? false;
-                }
-            }
+    private getComponentDisplay(componentLabel: string): boolean | undefined{
+        if(this.componentMap.has(componentLabel)) {
+            return !this.componentMap.get(componentLabel)!.cell.state.isHidden!;
         }
-        return false;
     }
 
     public setRepresentationChangeCallback(g:()=>void){
-        this.viewer.plugin.state.events.cell.stateUpdated.subscribe((o)=>{
-            if(o.cell.obj?.type.name === "Structure" && this.componentSet.has(o.cell.obj?.label)){
-                if(o.cell.state.isHidden != null) {
-                    this.componentVisibility.set(o.cell.obj?.label, !o.cell.state.isHidden);
-                }
-            }
-        });
     }
 
     public setHoverCallback(g:()=>void){
@@ -506,9 +494,9 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
 
 }
 
-type ChainType = "polymer"|"water"|"branched"|"non-polymer"|"macrolide";
+export type ChainType = "polymer"|"water"|"branched"|"non-polymer"|"macrolide";
 
-function getStructureOptions(plugin: PluginContext): [string,string][] {
+export function getStructureOptions(plugin: PluginContext): [string,string][] {
     const options: [string, string][] = [];
     plugin.managers.structure.hierarchy.current.structures.forEach(s=>{
         options.push([s.cell.transform.ref, s.cell.obj!.data.label]);
@@ -516,7 +504,7 @@ function getStructureOptions(plugin: PluginContext): [string,string][] {
     return options;
 }
 
-function getChainValues(structure: Structure, modelEntityId: string): [{modelId:string, entryId:string},{auth:string;label:string;entityId:string;title:string;type:ChainType;}[]] {
+export function getChainValues(structure: Structure, modelEntityId: string): [{modelId:string, entryId:string},{auth:string;label:string;entityId:string;title:string;type:ChainType;}[]] {
     const options: {auth:string;label:string;entityId:string;title:string;type:ChainType;}[] = [];
     const l = StructureElement.Location.create(structure);
     const seen = new Set<number>();
@@ -547,13 +535,13 @@ function getStructureWithModelId(structures: StructureRef[], modelId: string): S
     }
 }
 
-function getStructure(ref: string, state: State) {
+export function getStructure(ref: string, state: State) {
     const cell = state.select(ref)[0];
     if (!ref || !cell || !cell.obj) return Structure.Empty;
     return (cell.obj as PSO.Molecule.Structure).data;
 }
 
-function getModelEntityOptions(structure: Structure):[string, string][] {
+export function getModelEntityOptions(structure: Structure):[string, string][] {
     const options: [string, string][] = [];
     const l = StructureElement.Location.create(structure);
     const seen = new Set<string>();
