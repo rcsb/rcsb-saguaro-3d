@@ -31,6 +31,7 @@ export interface AssemblyViewInterface {
     entryId: string;
     rcsbFvInstanceBuilder: (elementFvId: string, elementSelectId: string, entryId: string, config?: InstanceSequenceConfig)=> Promise<RcsbFvModulePublicInterface>;
     resolveFvCallback?: (rcsbFv: RcsbFv, saguaroPlugin: SaguaroPluginPublicInterface)=>void;
+    defaultInstanceId?: string;
 }
 
 export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractViewInterface, AssemblyViewInterface & AbstractViewInterface>{
@@ -43,10 +44,12 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
     private innerSelectionFlag: boolean = false;
     private currentSelectedComponentId: string;
     private currentModelMap:SaguaroPluginModelMapType;
+    private defaultInstanceId: string | undefined = undefined;
     //private readonly componentSet = new Map<string, {current: Set<string>, previous: Set<string>}>();
 
     constructor(props: AssemblyViewInterface & AbstractViewInterface) {
         super(props);
+        this.defaultInstanceId = this.props.defaultInstanceId;
     }
 
     protected additionalContent(): JSX.Element {
@@ -232,7 +235,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID,
                 entryId,
                 {
-                    defaultValue: defaultAuthId,
+                    defaultValue: defaultAuthId ?? this.defaultInstanceId,
                     onChangeCallback: onChangeCallback.get(entryId),
                     filterInstances: filterInstances.get(entryId),
                     selectButtonOptionProps:(props:OptionProps<OptionPropsInterface>)=>(components.Option && <div style={{display:'flex'}}>
@@ -253,6 +256,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
             });
         if(!defaultAuthId)
             await this.createComponents(modelMap);
+        this.defaultInstanceId = undefined;
     }
 
     protected updateDimensions(): void{

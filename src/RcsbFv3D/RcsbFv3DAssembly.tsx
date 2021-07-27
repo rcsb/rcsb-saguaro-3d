@@ -6,11 +6,12 @@ import {SaguaroPluginPublicInterface} from "../RcsbFvStructure/StructurePlugins/
 
 export interface RcsbFv3DAssemblyInterface extends RcsbFv3DAbstractInterface {
    config: {
-        entryId: string;
-        type: "rcsb" | "tcga";
-        title?: string;
-        subtitle?: string;
-        resolveFvCallback?: (rcsbFv: RcsbFv, saguaroPlugin: SaguaroPluginPublicInterface)=>void;
+       entryId: string;
+       type: "rcsb" | "tcga";
+       title?: string;
+       subtitle?: string;
+       resolveFvCallback?: (rcsbFv: RcsbFv, saguaroPlugin: SaguaroPluginPublicInterface)=>void;
+       defaultInstanceId?: string;
     };
 }
 
@@ -40,7 +41,8 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract{
             config:{
                 entryId:assemblyData.config.entryId,
                 rcsbFvInstanceBuilder: assemblyData.config.type === "rcsb" ? buildInstanceSequenceFv : buildInstanceTcgaFv,
-                resolveFvCallback: assemblyData.config.resolveFvCallback
+                resolveFvCallback: assemblyData.config.resolveFvCallback,
+                defaultInstanceId: assemblyData.config.defaultInstanceId
             },
             title: assemblyData.config.title,
             subtitle: assemblyData.config.subtitle
