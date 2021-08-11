@@ -38,7 +38,7 @@ export const RcsbRepresentationPreset: TrajectoryHierarchyPresetProvider = Traje
         for (const c of plugin.managers.structure.hierarchy.currentComponentGroups) {
             for (const comp of c) {
                 if(comp.cell.obj?.label === "Polymer") {
-                    this.viewer.plugin.managers.structure.component.updateRepresentationsTheme([comp], { color: 'chain-id' });
+                    plugin.managers.structure.component.updateRepresentationsTheme([comp], { color: 'chain-id' });
                     break components;
                 }
             }
