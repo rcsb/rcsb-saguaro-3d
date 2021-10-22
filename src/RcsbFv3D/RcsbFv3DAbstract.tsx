@@ -1,20 +1,15 @@
 import * as React from "react";
 import * as ReactDom from "react-dom";
-import {RcsbFv3DComponent} from './RcsbFv3DComponent';
+import {RcsbFv3DComponent, RcsbFv3DCssConfig} from './RcsbFv3DComponent';
 import {RcsbFvStructureInterface} from "../RcsbFvStructure/RcsbFvStructure";
 import {RcsbFvSequenceInterface} from "../RcsbFvSequence/RcsbFvSequence";
 import {EventType, RcsbFvContextManager} from "../RcsbFvContextManager/RcsbFvContextManager";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {CSSProperties} from "react";
 
-
 export interface RcsbFv3DAbstractInterface {
     elementId: string;
-    cssConfig?:{
-        rootPanel?: CSSProperties,
-        structurePanel?: CSSProperties,
-        sequencePanel?: CSSProperties
-    }
+    cssConfig?: RcsbFv3DCssConfig;
 }
 
 export abstract class RcsbFv3DAbstract {
@@ -47,7 +42,6 @@ export abstract class RcsbFv3DAbstract {
             this.fullScreenFlag = true;
             document.body.style.overflow = "hidden";
         }
-
         ReactDom.render(
             <RcsbFv3DComponent
                 structurePanelConfig={this.structureConfig}

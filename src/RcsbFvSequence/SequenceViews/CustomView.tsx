@@ -1,3 +1,5 @@
+import {asyncScheduler} from "rxjs";
+
 import {AbstractView, AbstractViewInterface} from "./AbstractView";
 import {
     RcsbFvBoardConfigInterface,
@@ -6,7 +8,7 @@ import {
     RcsbFvTrackDataElementInterface
 } from "@rcsb/rcsb-saguaro";
 import * as React from "react";
-import {RcsbFvSelection} from "../../RcsbFvSelection/RcsbFvSelection";
+import {RcsbFvSelectorManager} from "../../RcsbFvSelection/RcsbFvSelectorManager";
 import {
     SaguaroPluginModelMapType,
     SaguaroPluginPublicInterface
@@ -16,8 +18,9 @@ export type CustomViewStateInterface = Omit<CustomViewInterface, "modelChangeCal
 
 export interface CustomViewInterface {
     blockConfig: FeatureBlockInterface | Array<FeatureBlockInterface>;
-    additionalContent?: (select: BlockViewSelector) => JSX.Element;
-    modelChangeCallback?: (modelMap: SaguaroPluginModelMapType) => (void | CustomViewStateInterface);
+    blockSelectorElement?: (blockSelector: BlockSelectorManager) => JSX.Element;
+    modelChangeCallback?: (modelMap: SaguaroPluginModelMapType) => CustomViewStateInterface;
+    blockChangeCallback?: (plugin: SaguaroPluginPublicInterface, pfvList: Array<RcsbFv>, selection: RcsbFvSelectorManager) => void;
 }
 
 export interface FeatureBlockInterface {
@@ -31,14 +34,17 @@ export interface FeatureViewInterface {
     boardId?:string;
     boardConfig: RcsbFvBoardConfigInterface;
     rowConfig: Array<RcsbFvRowConfigInterface>;
-    sequenceSelectionCallback: (plugin: SaguaroPluginPublicInterface, selection: RcsbFvSelection, d: RcsbFvTrackDataElementInterface) => void;
-    structureSelectionCallback: (pfv: RcsbFv, selection: RcsbFvSelection) => void;
+    sequenceSelectionChangeCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => void;
+    sequenceElementClickCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, d: RcsbFvTrackDataElementInterface) => void;
+    sequenceHoverCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, hoverRegion: Array<RcsbFvTrackDataElementInterface>) => void;
+    structureSelectionCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => void;
+    structureHoverCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => void;
 }
 
-export class BlockViewSelector {
+export class BlockSelectorManager {
     private blockId: string;
     private previousBlockId: string;
-    private blockChangeCallback: ()=>void = ()=>{};
+    private readonly blockChangeCallback: ()=>void = ()=>{};
     constructor(f:()=>void){
         this.blockChangeCallback = f;
     }
@@ -57,22 +63,22 @@ export class BlockViewSelector {
 
 export class CustomView extends AbstractView<CustomViewInterface & AbstractViewInterface, CustomViewStateInterface> {
 
-    private blockViewSelector: BlockViewSelector = new BlockViewSelector( this.blockChange.bind(this) );
+    private blockViewSelector: BlockSelectorManager = new BlockSelectorManager( this.blockChange.bind(this) );
     private boardMap: Map<string, FeatureViewInterface> = new Map<string, FeatureViewInterface>();
     private blockMap: Map<string, Array<string>> = new Map<string, Array<string>>();
     private rcsbFvMap: Map<string, RcsbFv> = new Map<string, RcsbFv>();
     private firstModelLoad: boolean = true;
+    private innerSelectionFlag: boolean = false;
 
     readonly state: CustomViewStateInterface = {
         blockConfig: this.props.blockConfig,
-        additionalContent: this.props.additionalContent
+        blockSelectorElement: this.props.blockSelectorElement,
+        blockChangeCallback: this.props.blockChangeCallback
     };
 
     constructor(props: CustomViewInterface & AbstractViewInterface) {
-        super({
-            ...props
-        });
-       this.mapBlocks(props.blockConfig);
+        super(props);
+        this.mapBlocks(props.blockConfig);
     }
 
     componentDidMount(): void {
@@ -104,8 +110,11 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
     private blockChange(): void{
         this.unmountBlockFv();
         this.buildBlockFv();
-        setTimeout(()=>{
-            this.structureSelectionCallback();
+        asyncScheduler.schedule(()=>{
+            if(typeof this.state.blockChangeCallback === "function")
+                this.state.blockChangeCallback(this.props.plugin, Array.from(this.blockMap.get(this.blockViewSelector.getActiveBlock())!.values()).map(boardId=>(this.rcsbFvMap.get(boardId)!)), this.props.selectorManager);
+            else
+                this.structureSelectionCallback();
         },1000);
     }
 
@@ -126,17 +135,26 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
                 return;
             const div: HTMLDivElement = document.createElement<"div">("div");
             div.setAttribute("id", "boardDiv_"+boardId);
-            div.style.marginBottom = "25px";
             document.getElementById(this.componentDivId)?.append(div);
             const width: number = window.document.getElementById(this.componentDivId)?.getBoundingClientRect().width ?? 0;
             const trackWidth: number = width - (this.boardMap.get(boardId)!.boardConfig?.rowTitleWidth ?? 190) - 55;
             const rcsbFv: RcsbFv = new RcsbFv({
                 elementId: "boardDiv_"+boardId,
                 boardConfigData:{
-                    trackWidth:trackWidth,
+                    highlightHoverPosition:true,
+                    highlightHoverElement:true,
                     ...this.boardMap.get(boardId)!.boardConfig,
-                    elementClickCallBack:(d:RcsbFvTrackDataElementInterface)=>{
-                        this.boardMap.get(boardId)!.sequenceSelectionCallback(this.props.plugin, this.props.selection, d);
+                    trackWidth:this.boardMap.get(boardId)!.boardConfig?.trackWidth ? this.boardMap.get(boardId)!.boardConfig?.trackWidth!-4 : trackWidth,
+                    selectionChangeCallBack:(selection: RcsbFvTrackDataElementInterface[])=>{
+                        if(this.innerSelectionFlag)
+                            return;
+                        this.boardMap.get(boardId)!.sequenceSelectionChangeCallback(this.props.plugin, this.props.selectorManager, selection);
+                    },
+                    highlightHoverCallback:(elements:Array<RcsbFvTrackDataElementInterface>)=>{
+                        this.boardMap.get(boardId)!.sequenceHoverCallback(this.props.plugin, this.props.selectorManager, elements);
+                    },
+                    elementClickCallBack: (element: RcsbFvTrackDataElementInterface)=>{
+                        this.boardMap.get(boardId)!.sequenceElementClickCallback(this.props.plugin, this.props.selectorManager, element);
                     }
                 },
                 rowConfigData: this.boardMap.get(boardId)!.rowConfig
@@ -149,16 +167,23 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
     }
 
     structureSelectionCallback(): void {
+        this.innerSelectionFlag = true;
         this.blockMap.get(this.blockViewSelector.getActiveBlock())?.forEach(boardId=>{
             const pfv: RcsbFv | undefined = this.rcsbFvMap.get(boardId);
             if(pfv == null)
                 return;
-            this.boardMap.get(boardId)?.structureSelectionCallback(pfv, this.props.selection);
+            this.boardMap.get(boardId)?.structureSelectionCallback(this.props.plugin, pfv, this.props.selectorManager);
         });
+        this.innerSelectionFlag = false;
     }
 
     structureHoverCallback(): void{
-        //TODO;
+        this.blockMap.get(this.blockViewSelector.getActiveBlock())?.forEach(boardId=>{
+            const pfv: RcsbFv | undefined = this.rcsbFvMap.get(boardId);
+            if(pfv == null)
+                return;
+            this.boardMap.get(boardId)?.structureHoverCallback(this.props.plugin, pfv, this.props.selectorManager);
+        });
     }
 
     representationChangeCallback(): void{
@@ -166,9 +191,9 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
     }
 
     additionalContent(): JSX.Element {
-        if(this.state.additionalContent == null)
+        if(this.state.blockSelectorElement == null)
             return <></>;
-        return this.state.additionalContent(this.blockViewSelector);
+        return this.state.blockSelectorElement(this.blockViewSelector);
     }
 
     modelChangeCallback(modelMap:SaguaroPluginModelMapType): void {
@@ -177,15 +202,15 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
             return;
         }
         if(typeof this.props.modelChangeCallback === "function") {
-            let newConfig: CustomViewStateInterface | void = this.props.modelChangeCallback(modelMap);
-            if(newConfig != null && typeof newConfig !== "function"){
+            let newConfig: CustomViewStateInterface = this.props.modelChangeCallback(modelMap);
+            if(newConfig != null ){
                 newConfig = newConfig as CustomViewStateInterface;
-                if(newConfig.blockConfig != null && newConfig.additionalContent != null){
+                if(newConfig.blockConfig != null && newConfig.blockSelectorElement != null){
                     this.mapBlocks(newConfig.blockConfig);
-                    this.setState({blockConfig: newConfig.blockConfig, additionalContent: newConfig.additionalContent})
-                }else if(newConfig.blockConfig == null && newConfig.additionalContent != null){
-                    this.setState({additionalContent: newConfig.additionalContent})
-                }else if(newConfig.blockConfig != null && newConfig.additionalContent == null){
+                    this.setState({blockConfig: newConfig.blockConfig, blockSelectorElement: newConfig.blockSelectorElement})
+                }else if(newConfig.blockConfig == null && newConfig.blockSelectorElement != null){
+                    this.setState({blockSelectorElement: newConfig.blockSelectorElement})
+                }else if(newConfig.blockConfig != null && newConfig.blockSelectorElement == null){
                     this.mapBlocks(newConfig.blockConfig);
                     this.setState({blockConfig: newConfig.blockConfig})
                 }
@@ -200,7 +225,7 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
             return;
         this.rcsbFvMap.forEach((rcsbFv, boardId)=>{
             const trackWidth: number = width - (this.boardMap.get(boardId)!.boardConfig?.rowTitleWidth ?? 190) - 55;
-            rcsbFv.updateBoardConfig({boardConfigData:{trackWidth:trackWidth}});
+            rcsbFv.updateBoardConfig({boardConfigData:{trackWidth:this.boardMap.get(boardId)!.boardConfig?.trackWidth ? this.boardMap.get(boardId)!.boardConfig?.trackWidth!-4 : trackWidth}});
         });
     }
 

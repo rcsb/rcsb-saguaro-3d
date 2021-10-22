@@ -15,19 +15,22 @@ import {
 } from "../RcsbFvContextManager/RcsbFvContextManager";
 import {Subscription} from "rxjs";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
-import {RcsbFvSelection} from "../RcsbFvSelection/RcsbFvSelection";
+import {RcsbFvSelectorManager} from "../RcsbFvSelection/RcsbFvSelectorManager";
 import {CSSProperties, MouseEvent} from "react";
+
+export interface RcsbFv3DCssConfig {
+    overwriteCss?: boolean;
+    rootPanel?: CSSProperties;
+    structurePanel?: CSSProperties;
+    sequencePanel?: CSSProperties;
+}
 
 export interface RcsbFv3DComponentInterface {
     structurePanelConfig:RcsbFvStructureInterface;
     sequencePanelConfig: RcsbFvSequenceInterface;
     id: string;
     ctxManager: RcsbFvContextManager;
-    cssConfig?:{
-        rootPanel?: CSSProperties,
-        structurePanel?: CSSProperties,
-        sequencePanel?: CSSProperties
-    }
+    cssConfig?:RcsbFv3DCssConfig;
     unmount:(flag:boolean)=>void;
     fullScreen: boolean;
 }
@@ -41,9 +44,9 @@ interface RcsbFv3DComponentState {
 export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterface, RcsbFv3DComponentState> {
 
     private readonly plugin: SaguaroPluginInterface;
-    private readonly selection: RcsbFvSelection = new RcsbFvSelection();
+    private readonly selectorManager: RcsbFvSelectorManager = new RcsbFvSelectorManager();
     private subscription: Subscription;
-    private readonly ROOT_DIV_ID: string = "rootPanel";
+    private readonly ROOT_DIV_ID: string = "rootPanelDiv";
 
     readonly state: RcsbFv3DComponentState = {
         structurePanelConfig: this.props.structurePanelConfig,
@@ -53,38 +56,42 @@ export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterfa
 
     constructor(props: RcsbFv3DComponentInterface) {
         super(props);
-        this.plugin = new MolstarPlugin(this.selection);
+        this.plugin = new MolstarPlugin(this.selectorManager);
     }
 
     render(): JSX.Element {
         return (
-            <div style={RcsbFv3DComponent.mainDivCssConfig(this.props.cssConfig?.rootPanel)} className={ this.props.fullScreen ? classes.fullScreen : ""} >
-                <div id={this.ROOT_DIV_ID} className={classes.rcsbFvMain} onMouseMove={(evt: MouseEvent<HTMLDivElement>)=>{this.mouseMove(evt)}} onMouseUp={ (e)=>{this.splitPanelMouseUp()} }>
-                    <div style={this.structureCssConfig(this.props.cssConfig?.structurePanel)} className={classes.rcsbFvCell}>
+            <div  className={ this.props.fullScreen ? classes.fullScreen : ""} >
+                <div
+                    id={this.ROOT_DIV_ID}
+                    style={RcsbFv3DComponent.mainDivCssConfig(this.props.cssConfig?.rootPanel)}
+                    className={this.useDefaultCss() ? classes.rcsbFvMain : ""}
+                    onMouseMove={(evt: MouseEvent<HTMLDivElement>)=>{this.mouseMove(evt)}}
+                    onMouseUp={ (e)=>{this.splitPanelMouseUp()} }
+                >
+                    <div style={this.structureCssConfig(this.props.cssConfig?.structurePanel)} >
                         <RcsbFvStructure
                             {...this.state.structurePanelConfig}
                             componentId={this.props.id}
                             plugin={this.plugin}
-                            selection={this.selection}
+                            selectorManager={this.selectorManager}
                         />
                     </div>
-                    <div style={this.sequenceCssConfig(this.props.cssConfig?.sequencePanel)} className={classes.rcsbFvCell} >
+                    <div style={this.sequenceCssConfig(this.props.cssConfig?.sequencePanel)}  >
                         <RcsbFvSequence
                             type={this.state.sequencePanelConfig.type}
                             config={this.state.sequencePanelConfig.config}
                             componentId={this.props.id}
                             plugin={this.plugin}
-                            selection={this.selection}
+                            selectorManager={this.selectorManager}
                             title={this.state.sequencePanelConfig.title}
                             subtitle={this.state.sequencePanelConfig.subtitle}
                             unmount={this.props.unmount}
                         />
                     </div>
-                    <div
-                        onMouseDown={ ()=>{this.splitPanelMouseDown()} }
-                        className={classes.rcsbFvSplitPanel}
-                        style={{right:Math.round((1-this.state.pfvScreenFraction)*100)+"%"}}
-                    />
+                    {
+                        this.panelDelimiter()
+                    }
                 </div>
             </div>
         );
@@ -98,18 +105,32 @@ export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterfa
         this.unsubscribe();
     }
 
+    private useDefaultCss(): boolean {
+       return this.state.sequencePanelConfig.type === "assembly"  || !this.props.cssConfig?.overwriteCss;
+    }
+
+    private panelDelimiter(): JSX.Element {
+        return  this.useDefaultCss() ? <div
+            onMouseDown={() => {
+                this.splitPanelMouseDown()
+            }}
+            className={classes.rcsbFvSplitPanel}
+            style={{right: Math.round((1 - this.state.pfvScreenFraction) * 100) + "%"}}
+        /> : <></>;
+    }
+
     private structureCssConfig(css: CSSProperties | undefined): CSSProperties{
         const widthFr: number = Math.round((1-this.state.pfvScreenFraction)*100);
         const cssWidth: string = widthFr.toString()+"%";
         const cssHeight: string = "100%";
-        return {...{width:cssWidth, height:cssHeight, zIndex:100}, ...css };
+        return {...(this.useDefaultCss() ? {width:cssWidth, height:cssHeight, zIndex:100} : {}), ...css };
     }
 
     private sequenceCssConfig(css: CSSProperties | undefined): CSSProperties{
         const widthFr: number = Math.round((this.state.pfvScreenFraction)*100);
         const cssWidth: string = widthFr.toString()+"%";
         const cssHeight: string = "100%";
-        return {...{width:cssWidth, height:cssHeight, overflowY:"auto", overflowX:"hidden", paddingBottom:5}, ...css };
+        return {...(this.useDefaultCss() ? {width:cssWidth, height:cssHeight, overflowY:"auto", overflowX:"hidden", paddingBottom:5} : {}), ...css };
     }
 
     private static mainDivCssConfig(css: CSSProperties | undefined): CSSProperties{

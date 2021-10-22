@@ -1,9 +1,9 @@
-import {RcsbFvSelection} from "../../RcsbFvSelection/RcsbFvSelection";
+import {RcsbFvSelectorManager} from "../../RcsbFvSelection/RcsbFvSelectorManager";
 
 export class AbstractPlugin {
-    protected readonly selection: RcsbFvSelection;
+    protected readonly selection: RcsbFvSelectorManager;
 
-    constructor(selection: RcsbFvSelection) {
+    constructor(selection: RcsbFvSelectorManager) {
         this.selection = selection;
     }
 }

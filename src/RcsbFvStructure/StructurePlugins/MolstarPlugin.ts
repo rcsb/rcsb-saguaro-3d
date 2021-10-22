@@ -22,7 +22,7 @@ import {OrderedSet} from "molstar/lib/mol-data/int";
 import { PluginStateObject as PSO } from 'molstar/lib/mol-plugin-state/objects';
 import {State, StateObject} from "molstar/lib/mol-state";
 import {StructureComponentRef, StructureRef} from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
-import {RcsbFvSelection, ResidueSelectionInterface} from "../../RcsbFvSelection/RcsbFvSelection";
+import {RcsbFvSelectorManager, ResidueSelectionInterface} from "../../RcsbFvSelection/RcsbFvSelectorManager";
 import {AbstractPlugin} from "./AbstractPlugin";
 import {Subscription} from "rxjs";
 import {Script} from "molstar/lib/mol-script/script";
@@ -69,7 +69,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     private modelMap: Map<string,string|undefined> = new Map<string, string>();
     private readonly componentMap: Map<string, StructureComponentRef> = new Map<string, StructureComponentRef>();
 
-    constructor(props: RcsbFvSelection) {
+    constructor(props: RcsbFvSelectorManager) {
         super(props);
     }
 
@@ -138,37 +138,37 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     public setBackground(color: number) {
     }
 
-    public select(modelId:string, asymId: string, begin: number, end: number, mode: 'select'|'hover', operation:'add'|'set'): void;
-    public select(selection: Array<{modelId:string; asymId: string; position: number;}>, mode: 'select'|'hover', operation:'add'|'set'): void;
-    public select(selection: Array<{modelId:string; asymId: string; begin: number; end: number;}>, mode: 'select'|'hover', operation:'add'|'set'): void;
+    public select(modelId:string, labelAsymId: string, begin: number, end: number, mode: 'select'|'hover', operation:'add'|'set'): void;
+    public select(selection: Array<{modelId:string; labelAsymId: string; position: number;}>, mode: 'select'|'hover', operation:'add'|'set'): void;
+    public select(selection: Array<{modelId:string; labelAsymId: string; begin: number; end: number;}>, mode: 'select'|'hover', operation:'add'|'set'): void;
     public select(...args: any[]): void{
         if(args.length === 6){
             this.selectRange(args[0],args[1],args[2],args[3],args[4],args[5]);
-        }else if(args.length === 3 && (args[0] as Array<{modelId: string; asymId: string; position: number;}>).length > 0 && typeof (args[0] as Array<{modelId: string; asymId: string; position: number;}>)[0].position === 'number'){
+        }else if(args.length === 3 && (args[0] as Array<any>).length > 0 && typeof (args[0] as Array<any>)[0].position === 'number'){
             this.selectSet(args[0],args[1],args[2]);
-        }else if(args.length === 3 && (args[0] as Array<{modelId: string; asymId: string; begin: number; end: number;}>).length > 0 && typeof (args[0] as Array<{modelId: string; asymId: string; begin: number; end: number;}>)[0].begin === 'number'){
+        }else if(args.length === 3 && (args[0] as Array<any>).length > 0 && typeof (args[0] as Array<any>)[0].begin === 'number'){
             this.selectMultipleRanges(args[0],args[1],args[2]);
         }
     }
-    private selectRange(modelId:string, asymId: string, begin: number, end: number, mode: 'select'|'hover', operation:'add'|'set'): void {
+    private selectRange(modelId:string, labelAsymId: string, begin: number, end: number, mode: 'select'|'hover', operation:'add'|'set'): void {
         if(mode == null || mode === 'select') {
             this.innerSelectionFlag = true;
         }
-        this.viewer.select({modelId:this.getModelId(modelId), labelAsymId: asymId, labelSeqRange:{beg: begin, end:end}}, mode,operation);
+        this.viewer.select({modelId:this.getModelId(modelId), labelAsymId: labelAsymId, labelSeqRange:{beg: begin, end:end}}, mode,operation);
         this.innerSelectionFlag = false;
     }
-    private selectSet(selection: Array<{modelId:string; asymId: string; position: number;}>, mode: 'select'|'hover', operation:'add'|'set'): void {
+    private selectSet(selection: Array<{modelId:string; labelAsymId: string; position: number;}>, mode: 'select'|'hover', operation:'add'|'set'): void {
         if(mode == null || mode === 'select') {
             this.innerSelectionFlag = true;
         }
-        this.viewer.select(selection.map(r=>({modelId: this.getModelId(r.modelId), labelSeqId:r.position, labelAsymId: r.asymId})), mode, operation);
+        this.viewer.select(selection.map(r=>({modelId: this.getModelId(r.modelId), labelSeqId:r.position, labelAsymId: r.labelAsymId})), mode, operation);
         this.innerSelectionFlag = false;
     }
-    private selectMultipleRanges(selection: Array<{modelId:string; asymId: string; begin: number; end:number;}>, mode: 'select'|'hover', operation:'add'|'set'): void {
+    private selectMultipleRanges(selection: Array<{modelId:string; labelAsymId: string; begin: number; end:number;}>, mode: 'select'|'hover', operation:'add'|'set'): void {
         if(mode == null || mode === 'select') {
             this.innerSelectionFlag = true;
         }
-        this.viewer.select(selection.map(r=>({modelId: this.getModelId(r.modelId), labelAsymId: r.asymId, labelSeqRange:{beg:r.begin, end: r.end}})), mode, operation);
+        this.viewer.select(selection.map(r=>({modelId: this.getModelId(r.modelId), labelAsymId: r.labelAsymId, labelSeqRange:{beg:r.begin, end: r.end}})), mode, operation);
         this.innerSelectionFlag = false;
     }
 
@@ -184,27 +184,30 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         this.innerSelectionFlag = false;
     }
 
-    public setFocus(modelId: string, asymId: string, begin: number, end: number): void{
-        this.viewer.setFocus({modelId: this.getModelId(modelId), labelAsymId: asymId, labelSeqRange:{beg:begin, end: end}});
+    public setFocus(modelId: string, labelAsymId: string, begin: number, end: number): void{
+        this.viewer.setFocus({modelId: this.getModelId(modelId), labelAsymId: labelAsymId, labelSeqRange:{beg:begin, end: end}});
     }
     public clearFocus(): void {
         this.viewer.clearFocus();
     }
 
-    public cameraFocus(modelId: string, asymId: string, positions:Array<number>): void;
-    public cameraFocus(modelId: string, asymId: string, begin: number, end: number): void;
+    public cameraFocus(modelId: string, labelAsymId: string, positions:Array<number>): void;
+    public cameraFocus(modelId: string, labelAsymId: string, begin: number, end: number): void;
+    public cameraFocus(regions: {modelId: string; labelAsymId: string; begin: number; end: number;}[]): void;
     public cameraFocus(...args: any[]): void{
-        if(args.length === 3){
+        if(args.length === 1){
+            //TODO How to focus selections through multiple models
+        }else if(args.length === 3){
             this.focusPositions(args[0],args[1],args[2]);
         }else if(args.length === 4){
             this.focusRange(args[0],args[1],args[2],args[3]);
         }
     }
-    private focusPositions(modelId: string, asymId: string, positions:Array<number>): void{
+    private focusPositions(modelId: string, labelAsymId: string, positions:Array<number>): void{
         const data: Structure | undefined = getStructureWithModelId(this.viewer.plugin.managers.structure.hierarchy.current.structures, this.getModelId(modelId));
         if (data == null) return;
         const sel: StructureSelection = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
-            'chain-test': Q.core.rel.eq([asymId, MolScriptBuilder.ammp('label_asym_id')]),
+            'chain-test': Q.core.rel.eq([labelAsymId, MolScriptBuilder.ammp('label_asym_id')]),
             'residue-test': Q.core.set.has([MolScriptBuilder.set(...SetUtils.toArray(new Set(positions))), MolScriptBuilder.ammp('label_seq_id')])
         }), data);
         const loci: Loci = StructureSelection.toLociWithSourceUnits(sel);
@@ -213,26 +216,26 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         else
             this.viewer.plugin.managers.camera.reset();
     }
-    private focusRange(modelId: string, asymId: string, begin: number, end: number): void{
+    private focusRange(modelId: string, labelAsymId: string, begin: number, end: number): void{
         const seqIds: Array<number> = new Array<number>();
         for(let n = begin; n <= end; n++){
             seqIds.push(n);
         }
-        this.focusPositions(modelId, asymId, seqIds);
+        this.focusPositions(modelId, labelAsymId, seqIds);
     }
 
-    public async createComponent(componentLabel: string, modelId:string, asymId: string, begin: number, end : number, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
-    public async createComponent(componentLabel: string, modelId:string, asymId: string, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
-    public async createComponent(componentLabel: string, modelId:string, residues: Array<{asymId: string; position: number;}>, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
-    public async createComponent(componentLabel: string, modelId:string, residues: Array<{asymId: string; begin: number; end: number;}>, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
+    public async createComponent(componentLabel: string, modelId:string, labelAsymId: string, begin: number, end : number, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
+    public async createComponent(componentLabel: string, modelId:string, labelAsymId: string, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
+    public async createComponent(componentLabel: string, modelId:string, residues: Array<{labelAsymId: string; position: number;}>, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
+    public async createComponent(componentLabel: string, modelId:string, residues: Array<{labelAsymId: string; begin: number; end: number;}>, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
     public async createComponent(...args: any[]): Promise<void> {
         this.removeComponent(args[0]);
         if(args.length === 4){
             if( args[2] instanceof Array && args[2].length > 0 ) {
                 if(typeof args[2][0].position === "number"){
-                    await this.viewer.createComponent(args[0], args[2].map(r=>({modelId: this.getModelId(args[1]), labelAsymId: r.asymId, labelSeqId: r.position})), args[3]);
+                    await this.viewer.createComponent(args[0], args[2].map(r=>({modelId: this.getModelId(args[1]), labelAsymId: r.labelAsymId, labelSeqId: r.position})), args[3]);
                 }else{
-                    await this.viewer.createComponent(args[0], args[2].map(r=>({modelId: this.getModelId(args[1]), labelAsymId: r.asymId, labelSeqRange:{beg:r.begin, end: r.end}})), args[3]);
+                    await this.viewer.createComponent(args[0], args[2].map(r=>({modelId: this.getModelId(args[1]), labelAsymId: r.labelAsymId, labelSeqRange:{beg:r.begin, end: r.end}})), args[3]);
                 }
             }else{
                 await this.viewer.createComponent(args[0], {modelId: this.getModelId(args[1]), labelAsymId:args[2]}, args[3]);

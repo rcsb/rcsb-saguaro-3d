@@ -12,7 +12,7 @@ export interface RcsbFv3DCustomInterface extends RcsbFv3DAbstractInterface {
     };
 }
 
-export class RcsbFv3DCustomBuilder extends RcsbFv3DAbstract {
+export class RcsbFv3DCustom extends RcsbFv3DAbstract {
 
     constructor(config?: RcsbFv3DCustomInterface) {
         super(config);

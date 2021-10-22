@@ -1,11 +1,13 @@
 import * as React from "react";
 import * as classes from '../../styles/RcsbFvStyle.module.scss';
+import {asyncScheduler, Subscription} from "rxjs";
+
 import {RcsbFvDOMConstants} from "../../RcsbFvConstants/RcsbFvConstants";
 import {
     SaguaroPluginInterface,
     SaguaroPluginModelMapType
 } from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
-import {RcsbFvSelection, ResidueSelectionInterface} from "../../RcsbFvSelection/RcsbFvSelection";
+import {RcsbFvSelectorManager} from "../../RcsbFvSelection/RcsbFvSelectorManager";
 import {SequenceViewInterface} from "./SequenceViewInterface";
 
 export interface AbstractViewInterface {
@@ -13,7 +15,7 @@ export interface AbstractViewInterface {
     title?: string;
     subtitle?: string;
     plugin: SaguaroPluginInterface;
-    selection: RcsbFvSelection;
+    selectorManager: RcsbFvSelectorManager;
     unmount:(flag:boolean)=>void;
 }
 
@@ -21,7 +23,7 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
 
     protected readonly componentDivId: string;
     protected readonly rcsbFvDivId: string;
-    private updateDimTimeout: number = 0;
+    private updateDimTask: Subscription | null = null;
 
     constructor(props:P & AbstractViewInterface) {
         super(props);
@@ -56,8 +58,9 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
     }
 
     private resizeCallback: ()=>void =  () => {
-        window.clearTimeout(this.updateDimTimeout);
-        this.updateDimTimeout = window.setTimeout(()=> {
+        if(this.updateDimTask)
+            this.updateDimTask.unsubscribe();
+        this.updateDimTask = asyncScheduler.schedule(()=> {
             this.updateDimensions();
         },300);
     };

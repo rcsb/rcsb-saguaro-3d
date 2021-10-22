@@ -4,7 +4,7 @@ import {CustomView, CustomViewInterface} from "./SequenceViews/CustomView";
 import {SaguaroPluginInterface} from "../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {RcsbFv, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
-import {RcsbFvSelection} from "../RcsbFvSelection/RcsbFvSelection";
+import {RcsbFvSelectorManager} from "../RcsbFvSelection/RcsbFvSelectorManager";
 
 export interface RcsbFvSequenceInterface{
     type: "custom" | "assembly";
@@ -18,7 +18,7 @@ interface CallbackConfig {
     sequenceCallback?: (rcsbFv: RcsbFv)=>void;
 }
 
-export class RcsbFvSequence extends React.Component <RcsbFvSequenceInterface & CallbackConfig & {unmount:(flag:boolean)=>void, plugin: SaguaroPluginInterface, selection:RcsbFvSelection, componentId:string}, RcsbFvSequenceInterface > {
+export class RcsbFvSequence extends React.Component <RcsbFvSequenceInterface & CallbackConfig & {unmount:(flag:boolean)=>void, plugin: SaguaroPluginInterface, selectorManager:RcsbFvSelectorManager, componentId:string}, RcsbFvSequenceInterface > {
 
     render() {
         if(this.props.type == "custom"){
@@ -27,7 +27,7 @@ export class RcsbFvSequence extends React.Component <RcsbFvSequenceInterface & C
                 {...config}
                 componentId={this.props.componentId}
                 plugin={this.props.plugin}
-                selection={this.props.selection}
+                selectorManager={this.props.selectorManager}
                 title={this.props.title}
                 subtitle={this.props.subtitle}
                 unmount={this.props.unmount}
@@ -38,7 +38,7 @@ export class RcsbFvSequence extends React.Component <RcsbFvSequenceInterface & C
                 {...config}
                 componentId={this.props.componentId}
                 plugin={this.props.plugin}
-                selection={this.props.selection}
+                selectorManager={this.props.selectorManager}
                 title={this.props.title}
                 subtitle={this.props.subtitle}
                 unmount={this.props.unmount}

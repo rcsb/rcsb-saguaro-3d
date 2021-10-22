@@ -3,14 +3,14 @@ import {SaguaroPluginInterface} from "./StructurePlugins/SaguaroPluginInterface"
 import {RcsbFvDOMConstants} from "../RcsbFvConstants/RcsbFvConstants";
 import {ViewerProps} from "@rcsb/rcsb-molstar/build/src/viewer";
 import {LoadMolstarInterface} from "./StructurePlugins/MolstarPlugin";
-import {RcsbFvSelection} from "../RcsbFvSelection/RcsbFvSelection";
+import {RcsbFvSelectorManager} from "../RcsbFvSelection/RcsbFvSelectorManager";
 
 export interface RcsbFvStructureInterface {
     loadConfig: LoadMolstarInterface;
     pluginConfig?: Partial<ViewerProps>;
 }
 
-export class RcsbFvStructure extends React.Component <RcsbFvStructureInterface & {plugin: SaguaroPluginInterface, componentId: string, selection: RcsbFvSelection}, RcsbFvStructureInterface > {
+export class RcsbFvStructure extends React.Component <RcsbFvStructureInterface & {plugin: SaguaroPluginInterface, componentId: string, selectorManager: RcsbFvSelectorManager}, RcsbFvStructureInterface > {
 
     render():JSX.Element {
         return (
