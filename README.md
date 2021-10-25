@@ -303,10 +303,25 @@ and navigate to `localhost:PORT-NUMBER/build/examples/`
 
 ### Main Classes and Methods
 
+#### Assembly view
 Class **`RcsbFv3DAssembly`** (`src/RcsbFv3D/RcsbFv3DAssembly.tsx`) builds a predefined view for PDB entries. This method is used in the RCSB PDB web portal 
-to display 1D features on PDB entries (ex: [4hhb](https://www.rcsb.org/3d-sequence/4HHB)). Source code example can be found in `src/examples/assembly/index.ts`.
+to display 1D features on PDB entries (ex: [4hhb](https://www.rcsb.org/3d-sequence/4HHB)). Its configuration requires a single PDB ID. 
+In addition, `RcsbFvAdditionalConfig` allows to configure the feature viewer as describe in [rcsb-saguaro-app API]("https://rcsb.github.io/rcsb-saguaro-app/index.html")
+```typescript
+interface RcsbFv3DAssemblyInterface extends RcsbFv3DAbstractInterface {
+   config: {
+        entryId: string;
+        title?: string;
+        subtitle?: string;
+    };
+    additionalConfig?: RcsbFvAdditionalConfig;
+}
+```
+Source code example can be found in `src/examples/assembly/index.ts`.
+#### Custom view
 
 Class **`RcsbFv3DCustom`** file `src/RcsbFv3D/RcsbFv3DCustom.tsx` builds a customized view between one or more feature viewers and a single Molstar plugin.
+The configuration interface encodes the parameters needed for the feature viewers (`sequencePanelConfig`) and the molstar plugin (`structurePanelConfig`).
 
 ```typescript
 interface RcsbFv3DCustomInterface extends RcsbFv3DAbstractInterface {
@@ -318,7 +333,55 @@ interface RcsbFv3DCustomInterface extends RcsbFv3DAbstractInterface {
     };
 }
 ```
-![Alt text](.github/img/config_img.png?raw=true "Custom config schema")
+
+![Alt text](https://raw.githubusercontent.com/rcsb/rcsb-saguaro-3d/master/.github/img/config_img.png "Custom config schema")
+
+Information in the sequence panels is organized in blocks where each block contains the parameter 
+(`blockConfig`) to display one or more feature viewers. The optional parameter `blockSelectorElement` defines a React component 
+that renders the html element used to change the displayed block. The class `BlockSelectorManager` is used to select which block is 
+displayed. For example, `blockSelectorManager.setActiveBlock("myBlock")` will display the feature viewers defined in the block 
+with `blockId` `"myBlock"` (see `FeatureBlockInterface`). Additionally, `blockChangeCallback` defines a function that will be executed 
+when the displayed block changes.
+
+```typescript
+interface CustomViewInterface {
+    blockConfig: FeatureBlockInterface | Array<FeatureBlockInterface>;
+    blockSelectorElement?: (blockSelector: BlockSelectorManager) => JSX.Element;
+    blockChangeCallback?: (plugin: SaguaroPluginPublicInterface, pfvList: Array<RcsbFv>, selection: RcsbFvSelectorManager) => void;
+}
+``` 
+
+Source code example can be found in `src/examples/multiple-chain/index.ts`.
+
+Each block must contain a unique block identifier (`blockId`) and the configuration for all the feature viewers that will be rendered
+when the block is activated (`featureViewConfig`).
+```typescript
+interface FeatureBlockInterface {
+    blockId:string;
+    featureViewConfig: Array<FeatureViewInterface> | FeatureViewInterface;
+}
+```
+
+The interface fo each feature viewer defines its dynamic interaction with the molstar plugin through different event callbacks
+
+- `sequenceSelectionChangeCallback` defines how the molstar plugin reacts when the feature viewer selection changes
+- `sequenceElementClickCallback` defines how the molstar plugin reacts when a feature viewer element (positional annotation) is clicked
+- `sequenceHoverCallback` defines how the molstar plugin reacts when the mouse hovers the feature viewer or any element
+- `structureSelectionCallback` defines how the protein feature viewer reacts when the molstar plugin selection changes
+- `structureHoverCallback` defines how the protein feature viewer reacts when displayed models on the molstar plugin are hovered
+
+```typescript
+export interface FeatureViewInterface {
+    boardId?:string;
+    boardConfig: RcsbFvBoardConfigInterface;
+    rowConfig: Array<RcsbFvRowConfigInterface>;
+    sequenceSelectionChangeCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => void;
+    sequenceElementClickCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, d: RcsbFvTrackDataElementInterface) => void;
+    sequenceHoverCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, hoverRegion: Array<RcsbFvTrackDataElementInterface>) => void;
+    structureSelectionCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => void;
+    structureHoverCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => void;
+}
+```
 
 Contributing
 ---

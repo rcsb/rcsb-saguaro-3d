@@ -369,9 +369,26 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				<a href="#main-classes-and-methods" id="main-classes-and-methods" style="color: inherit; text-decoration: none;">
 					<h3>Main Classes and Methods</h3>
 				</a>
+				<a href="#assembly-view" id="assembly-view" style="color: inherit; text-decoration: none;">
+					<h4>Assembly view</h4>
+				</a>
 				<p>Class <strong><code>RcsbFv3DAssembly</code></strong> (<code>src/RcsbFv3D/RcsbFv3DAssembly.tsx</code>) builds a predefined view for PDB entries. This method is used in the RCSB PDB web portal
-				to display 1D features on PDB entries (ex: <a href="https://www.rcsb.org/3d-sequence/4HHB">4hhb</a>). Source code example can be found in <code>src/examples/assembly/index.ts</code>.</p>
-				<p>Class <strong><code>RcsbFv3DCustom</code></strong> file <code>src/RcsbFv3D/RcsbFv3DCustom.tsx</code> builds a customized view between one or more feature viewers and a single Molstar plugin.</p>
+					to display 1D features on PDB entries (ex: <a href="https://www.rcsb.org/3d-sequence/4HHB">4hhb</a>). Its configuration requires a single PDB ID.
+				In addition, <code>RcsbFvAdditionalConfig</code> allows to configure the feature viewer as describe in <a href="%22https://rcsb.github.io/rcsb-saguaro-app/index.html%22">rcsb-saguaro-app API</a></p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> RcsbFv3DAssemblyInterface <span class="hljs-keyword">extends</span> RcsbFv3DAbstractInterface {
+   <span class="hljs-attr">config</span>: {
+        <span class="hljs-attr">entryId</span>: <span class="hljs-built_in">string</span>;
+        title?: <span class="hljs-built_in">string</span>;
+        subtitle?: <span class="hljs-built_in">string</span>;
+    };
+    additionalConfig?: RcsbFvAdditionalConfig;
+}</code></pre>
+				<p>Source code example can be found in <code>src/examples/assembly/index.ts</code>.</p>
+				<a href="#custom-view" id="custom-view" style="color: inherit; text-decoration: none;">
+					<h4>Custom view</h4>
+				</a>
+				<p>Class <strong><code>RcsbFv3DCustom</code></strong> file <code>src/RcsbFv3D/RcsbFv3DCustom.tsx</code> builds a customized view between one or more feature viewers and a single Molstar plugin.
+				The configuration interface encodes the parameters needed for the feature viewers (<code>sequencePanelConfig</code>) and the molstar plugin (<code>structurePanelConfig</code>).</p>
 				<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> RcsbFv3DCustomInterface <span class="hljs-keyword">extends</span> RcsbFv3DAbstractInterface {
     <span class="hljs-attr">structurePanelConfig</span>: RcsbFvStructureInterface;
     sequencePanelConfig: {
@@ -380,7 +397,43 @@ document.addEventListener("DOMContentLoaded", function (event) {
         subtitle?: <span class="hljs-built_in">string</span>;
     };
 }</code></pre>
-				<p><img src=".github/img/config_img.png?raw=true" alt="Alt text" title="Custom config schema"></p>
+				<p><img src="https://raw.githubusercontent.com/rcsb/rcsb-saguaro-3d/master/.github/img/config_img.png" alt="Alt text" title="Custom config schema"></p>
+				<p>Information in the sequence panels is organized in blocks where each block contains the parameter
+					(<code>blockConfig</code>) to display one or more feature viewers. The optional parameter <code>blockSelectorElement</code> defines a React component
+					that renders the html element used to change the displayed block. The class <code>BlockSelectorManager</code> is used to select which block is
+					displayed. For example, <code>blockSelectorManager.setActiveBlock(&quot;myBlock&quot;)</code> will display the feature viewers defined in the block
+					with <code>blockId</code> <code>&quot;myBlock&quot;</code> (see <code>FeatureBlockInterface</code>). Additionally, <code>blockChangeCallback</code> defines a function that will be executed
+				when the displayed block changes.</p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> CustomViewInterface {
+    <span class="hljs-attr">blockConfig</span>: FeatureBlockInterface | <span class="hljs-built_in">Array</span>&lt;FeatureBlockInterface&gt;;
+    blockSelectorElement?: <span class="hljs-function">(<span class="hljs-params">blockSelector: BlockSelectorManager</span>) =&gt;</span> JSX.Element;
+    blockChangeCallback?: <span class="hljs-function">(<span class="hljs-params">plugin: SaguaroPluginPublicInterface, pfvList: <span class="hljs-built_in">Array</span>&lt;RcsbFv&gt;, selection: RcsbFvSelectorManager</span>) =&gt;</span> <span class="hljs-built_in">void</span>;
+}</code></pre>
+				<p>Source code example can be found in <code>src/examples/multiple-chain/index.ts</code>.</p>
+				<p>Each block must contain a unique block identifier (<code>blockId</code>) and the configuration for all the feature viewers that will be rendered
+				when the block is activated (<code>featureViewConfig</code>).</p>
+				<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> FeatureBlockInterface {
+    <span class="hljs-attr">blockId</span>:<span class="hljs-built_in">string</span>;
+    featureViewConfig: <span class="hljs-built_in">Array</span>&lt;FeatureViewInterface&gt; | FeatureViewInterface;
+}</code></pre>
+				<p>The interface fo each feature viewer defines its dynamic interaction with the molstar plugin through different event callbacks</p>
+				<ul>
+					<li><code>sequenceSelectionChangeCallback</code> defines how the molstar plugin reacts when the feature viewer selection changes</li>
+					<li><code>sequenceElementClickCallback</code> defines how the molstar plugin reacts when a feature viewer element (positional annotation) is clicked</li>
+					<li><code>sequenceHoverCallback</code> defines how the molstar plugin reacts when the mouse hovers the feature viewer or any element</li>
+					<li><code>structureSelectionCallback</code> defines how the protein feature viewer reacts when the molstar plugin selection changes</li>
+					<li><code>structureHoverCallback</code> defines how the protein feature viewer reacts when displayed models on the molstar plugin are hovered</li>
+				</ul>
+				<pre><code class="language-typescript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">interface</span> FeatureViewInterface {
+    boardId?:<span class="hljs-built_in">string</span>;
+    boardConfig: RcsbFvBoardConfigInterface;
+    rowConfig: <span class="hljs-built_in">Array</span>&lt;RcsbFvRowConfigInterface&gt;;
+    sequenceSelectionChangeCallback: <span class="hljs-function">(<span class="hljs-params">plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, sequenceRegion: <span class="hljs-built_in">Array</span>&lt;RcsbFvTrackDataElementInterface&gt;</span>) =&gt;</span> <span class="hljs-built_in">void</span>;
+    sequenceElementClickCallback: <span class="hljs-function">(<span class="hljs-params">plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, d: RcsbFvTrackDataElementInterface</span>) =&gt;</span> <span class="hljs-built_in">void</span>;
+    sequenceHoverCallback: <span class="hljs-function">(<span class="hljs-params">plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, hoverRegion: <span class="hljs-built_in">Array</span>&lt;RcsbFvTrackDataElementInterface&gt;</span>) =&gt;</span> <span class="hljs-built_in">void</span>;
+    structureSelectionCallback: <span class="hljs-function">(<span class="hljs-params">plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager</span>) =&gt;</span> <span class="hljs-built_in">void</span>;
+    structureHoverCallback: <span class="hljs-function">(<span class="hljs-params">plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager</span>) =&gt;</span> <span class="hljs-built_in">void</span>;
+}</code></pre>
 				<a href="#contributing" id="contributing" style="color: inherit; text-decoration: none;">
 					<h2>Contributing</h2>
 				</a>
