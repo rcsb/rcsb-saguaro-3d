@@ -1,9 +1,10 @@
 # rcsb-saguaro-3D
 
 RCSB Saguaro Web 3D is an open-source library built on the top of the [RCSB Saguaro 1D Feature Viewer](https://rcsb.github.io/rcsb-saguaro)
-and [RCSB Molstar](https://github.com/rcsb/rcsb-molstar) designed to display protein features at the [RCSB Web Site](https://www.rcsb.org). The package collects protein annotations from the 
-[1D Coordinate Server](https://1d-coordinates.rcsb.org) and the main [RCSB Data API](https://data.rcsb.org) and generates Protein 
-Feature Summaries. The package allows access to RCSB Saguaro and Molstar methods to add or change displayed data. 
+and [RCSB Molstar](https://github.com/rcsb/rcsb-molstar) designed to display protein features at the [RCSB Web Site](https://www.rcsb.org). 
+The package collects protein annotations from the [1D Coordinate Server](https://1d-coordinates.rcsb.org) 
+and the main [RCSB Data API](https://data.rcsb.org) and generates Protein Feature Summaries. 
+The package allows access to RCSB Saguaro and Molstar methods to add or change the displayed data. 
 <!---
 <div id="pfv"></div>
 <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
@@ -302,10 +303,22 @@ and navigate to `localhost:PORT-NUMBER/build/examples/`
 
 ### Main Classes and Methods
 
-Class **`RcsbFv3DAssembly`** file `src/RcsbFv3D/RcsbFv3DAssembly.tsx` builds a predefined view for PDB entries. This is the methods used in the RCSB PDB web portal 
-(ex: [4hhb](https://www.rcsb.org/3d-sequence/4HHB)). Source code example can be found in `src/examples/assembly/index.ts`.
+Class **`RcsbFv3DAssembly`** (`src/RcsbFv3D/RcsbFv3DAssembly.tsx`) builds a predefined view for PDB entries. This method is used in the RCSB PDB web portal 
+to display 1D features on PDB entries (ex: [4hhb](https://www.rcsb.org/3d-sequence/4HHB)). Source code example can be found in `src/examples/assembly/index.ts`.
 
 Class **`RcsbFv3DCustom`** file `src/RcsbFv3D/RcsbFv3DCustom.tsx` builds a customized view between one or more feature viewers and a single Molstar plugin.
+
+```typescript
+interface RcsbFv3DCustomInterface extends RcsbFv3DAbstractInterface {
+    structurePanelConfig: RcsbFvStructureInterface;
+    sequencePanelConfig: {
+        config: CustomViewInterface;
+        title?: string;
+        subtitle?: string;
+    };
+}
+```
+![Alt text](.github/img/config_img.png?raw=true "Custom config schema")
 
 Contributing
 ---

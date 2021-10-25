@@ -22,7 +22,7 @@
     "copyExample_3": "ncp src/examples/assembly/index.html build/src/examples/assembly/index.html",
     "copyExample_4": "ncp src/examples/multiple-chain/index.html build/src/examples/multiple-chain/index.html",
     "copyExample_5": "ncp src/examples/css-config/index.html build/src/examples/css-config/index.html",
-    "buildDoc": "npx typedoc --mode file --out docs --exclude src/examples src",
+    "buildDoc": "npx typedoc --mode file --out docs --exclude src/examples src && sed -i '' '/---/d' docs/index.html",
     "clean": "del-cli build/src",
     "cleanAll": "npm run clean && del-cli build/dist",
     "cleanExamples": "del-cli build/examples",
