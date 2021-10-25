@@ -18,12 +18,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
         return result;
     }
 
-    const args: {pdbId:string} = getJsonFromUrl() ?? {pdbId:"4hhb"};
+    const args: {pdbId:string} = getJsonFromUrl().pdbId ? getJsonFromUrl() : {pdbId:"4hhb"};
 
     const sequenceConfig = {
-        entryId:args.pdbId,
-        title: args.pdbId,
-        subtitle: "Subtitle for "+args.pdbId
+        entryId: args.pdbId,
+        title: "Title " + args.pdbId,
+        subtitle: "Subtitle for " + args.pdbId
     };
 
     const panel3d = new RcsbFv3DAssembly({

@@ -41,18 +41,17 @@ const commonConfig = {
 const appConfig = {
     ...commonConfig,
     entry: {
-        'RcsbFv3DCustom':'./build/src/RcsbFv3D/RcsbFv3DCustom.js',
-        'rcsb-saguaro-3d':'./build/src/RcsbSaguaro3D.js'
+        'app':'./build/src/RcsbSaguaro3D.js'
     },
-    mode: "development",
+    mode: "production",
     output: {
         filename: '[name].js',
         library: 'RcsbFv3D',
         libraryTarget: 'umd',
         umdNamedDefine: true,
         path: path.resolve(__dirname, 'build/dist')
-    },
-    devtool: 'source-map'
+    }
+    //, devtool: 'source-map'
 }
 
 module.exports = [appConfig];

@@ -95,6 +95,7 @@ const fvConfigChainA: FeatureViewInterface = {
     rowConfig: rowConfigChainA,
     sequenceSelectionChangeCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => {
         selectorManager.clearSelection("select", {modelId:"1acb_board", labelAsymId:"A"});
+        plugin.clearSelection("select", {modelId: "1acb_board", labelAsymId: "A"})
         if(sequenceRegion.length > 0) {
             const regions = sequenceRegion.map(r => ({
                 modelId: "1acb_board",
@@ -108,7 +109,6 @@ const fvConfigChainA: FeatureViewInterface = {
                 end: r.region.end
             })), "select", "add");
         }else{
-            plugin.clearSelection("select", {modelId: "1acb_board", labelAsymId: "A"})
             plugin.resetCamera();
         }
     },
@@ -158,6 +158,7 @@ const fvConfigChainB: FeatureViewInterface = {
     rowConfig: rowConfigChainB,
     sequenceSelectionChangeCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => {
         selectorManager.clearSelection("select", {modelId:"1acb_board", labelAsymId:"B"});
+        plugin.clearSelection("select", {modelId: "1acb_board", labelAsymId: "B"})
         if(sequenceRegion.length > 0) {
             const regions = sequenceRegion.map(r => ({
                 modelId: "1acb_board",
@@ -171,7 +172,6 @@ const fvConfigChainB: FeatureViewInterface = {
                 end: r.region.end
             })), "select", "add");
         }else{
-            plugin.clearSelection("select", {modelId: "1acb_board", labelAsymId: "B"})
             plugin.resetCamera();
         }
     },

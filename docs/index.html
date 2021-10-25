@@ -71,6 +71,273 @@
 					and <a href="https://github.com/rcsb/rcsb-molstar">RCSB Molstar</a> designed to display protein features at the <a href="https://www.rcsb.org">RCSB Web Site</a>. The package collects protein annotations from the
 					<a href="https://1d-coordinates.rcsb.org">1D Coordinate Server</a> and the main <a href="https://data.rcsb.org">RCSB Data API</a> and generates Protein
 				Feature Summaries. The package allows access to RCSB Saguaro and Molstar methods to add or change displayed data. </p>
+<div id="pfv"></div>
+<script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/@rcsb/rcsb-saguaro-3d@1.0.1-beta/build/dist/app.js"></script>
+<script type="text/javascript">
+var rowConfigChainA = [
+    {
+        trackId: "sequenceTrack",
+        trackHeight: 20,
+        trackColor: "#F9F9F9",
+        displayType: "sequence" /* SEQUENCE */,
+        nonEmptyDisplay: true,
+        rowTitle: "CHAIN A",
+        trackData: [
+            {
+                begin: 1,
+                value: "CGVPAIQPVLSGLSRIVNGEEAVPGSWPWQVSLQDKTGFHFCGGSLINENWVVTAAHCGVTTSDVVVAGEFDQGSSSEKIQKLKIAKVFKNSKYNSLTINNDITLLKLSTAASFSQTVSAVCLPSASDDFAAGTTCVTTGWGLTRYTNANTPDRLQQASLPLLSNTNCKKYWGTKIKDAMICAGASGVSSCMGDSGGPLVCKKNGAWTLVGIVSWGSSTCSTSTPGVYARVTALVNWVQQTLAAN"
+            }
+        ]
+    }, {
+        trackId: "blockTrack",
+        trackHeight: 20,
+        trackColor: "#F9F9F9",
+        displayType: "block" /* BLOCK */,
+        displayColor: "#76ae91",
+        rowTitle: "FEATURE",
+        trackData: [{
+            begin: 20,
+            end: 25
+        }, {
+            begin: 150,
+            end: 160
+        }]
+    }
+];
+var rowConfigChainB = [
+    {
+        trackId: "sequenceTrack",
+        trackHeight: 20,
+        trackColor: "#F9F9F9",
+        displayType: "sequence" /* SEQUENCE */,
+        nonEmptyDisplay: true,
+        rowTitle: "CHAIN B",
+        trackData: [
+            {
+                begin: 1,
+                value: "TEFGSELKSFPEVVGKTVDQAREYFTLHYPQYDVYFLPEGSPVTLDLRYNRVRVFYNPGTNVVNHVPHVG"
+            }
+        ]
+    }, {
+        trackId: "blockTrack",
+        trackHeight: 20,
+        trackColor: "#F9F9F9",
+        displayType: "block" /* BLOCK */,
+        displayColor: "#f17070",
+        rowTitle: "FEATURE",
+        trackData: [{
+            begin: 20,
+            end: 50
+        }]
+    }
+];
+var fvConfigChainA = {
+    boardId: "1acb.A_board",
+    boardConfig: {
+        range: {
+            min: 1,
+            max: 245
+        },
+        disableMenu:true,
+        rowTitleWidth: 80,
+        trackWidth: 620,
+        includeAxis: true
+    },
+    rowConfig: rowConfigChainA,
+    sequenceSelectionChangeCallback: function (plugin, selectorManager, sequenceRegion) {
+        selectorManager.clearSelection("select", { modelId: "1acb_board", labelAsymId: "A" });
+        plugin.clearSelection("select", { modelId: "1acb_board", labelAsymId: "A" });
+        if (sequenceRegion.length > 0) {
+            var regions = sequenceRegion.map(function (r) {
+                var _a;
+                return ({
+                    modelId: "1acb_board",
+                    labelAsymId: "A",
+                    region: { begin: r.begin, end: (_a = r.end) !== null && _a !== void 0 ? _a : r.begin, source: "sequence" }
+                });
+            });
+            selectorManager.addSelectionFromMultipleRegions(regions, "select");
+            plugin.select(regions.map(function (r) { return (__assign(__assign({}, r), { begin: r.region.begin, end: r.region.end })); }), "select", "add");
+        }
+        else {
+            plugin.resetCamera();
+        }
+    },
+    sequenceElementClickCallback: function (plugin, selectorManager, d) {
+        var _a;
+        if (d != null)
+            plugin.cameraFocus("1acb_board", "A", d.begin, (_a = d.end) !== null && _a !== void 0 ? _a : d.begin);
+    },
+    sequenceHoverCallback: function (plugin, selectorManager, elements) {
+        if (elements == null || elements.length == 0)
+            plugin.clearSelection("hover");
+        else
+            plugin.select(elements.map(function (e) {
+                var _a;
+                return ({
+                    modelId: "1acb_board",
+                    labelAsymId: "A",
+                    begin: e.begin,
+                    end: (_a = e.end) !== null && _a !== void 0 ? _a : e.begin
+                });
+            }), "hover", "set");
+    },
+    structureSelectionCallback: function (plugin, pfv, selection) {
+        var sel = selection.getSelectionWithCondition("1acb_board", "A", "select");
+        if (sel == null) {
+            pfv.clearSelection("select");
+            plugin.resetCamera();
+        }
+        else {
+            pfv.setSelection({ elements: sel.regions, mode: "select" });
+        }
+    },
+    structureHoverCallback: function (plugin, pfv, selection) {
+        var sel = selection.getSelectionWithCondition("1acb_board", "A", "hover");
+        if (sel == null)
+            pfv.clearSelection("hover");
+        else
+            pfv.setSelection({ elements: sel.regions, mode: "hover" });
+    }
+};
+var fvConfigChainB = {
+    boardId: "1acb.B_board",
+    boardConfig: {
+        range: {
+            min: 1,
+            max: 70
+        },
+        disableMenu:true,
+        rowTitleWidth: 80,
+        trackWidth: 620,
+        includeAxis: true
+    },
+    rowConfig: rowConfigChainB,
+    sequenceSelectionChangeCallback: function (plugin, selectorManager, sequenceRegion) {
+        selectorManager.clearSelection("select", { modelId: "1acb_board", labelAsymId: "B" });
+        plugin.clearSelection("select", { modelId: "1acb_board", labelAsymId: "B" });
+        if (sequenceRegion.length > 0) {
+            var regions = sequenceRegion.map(function (r) {
+                var _a;
+                return ({
+                    modelId: "1acb_board",
+                    labelAsymId: "B",
+                    region: { begin: r.begin, end: (_a = r.end) !== null && _a !== void 0 ? _a : r.begin, source: "sequence" }
+                });
+            });
+            selectorManager.addSelectionFromMultipleRegions(regions, "select");
+            plugin.select(regions.map(function (r) { return (__assign(__assign({}, r), { begin: r.region.begin, end: r.region.end })); }), "select", "add");
+        }
+        else {
+            plugin.resetCamera();
+        }
+    },
+    sequenceElementClickCallback: function (plugin, selectorManager, d) {
+        var _a;
+        if (d != null)
+            plugin.cameraFocus("1acb_board", "B", d.begin, (_a = d.end) !== null && _a !== void 0 ? _a : d.begin);
+    },
+    sequenceHoverCallback: function (plugin, selectorManager, elements) {
+        if (elements == null || elements.length == 0)
+            plugin.clearSelection("hover");
+        else
+            plugin.select(elements.map(function (e) {
+                var _a;
+                return ({
+                    modelId: "1acb_board",
+                    labelAsymId: "B",
+                    begin: e.begin,
+                    end: (_a = e.end) !== null && _a !== void 0 ? _a : e.begin
+                });
+            }), "hover", "set");
+    },
+    structureSelectionCallback: function (plugin, pfv, selection) {
+        var sel = selection.getSelectionWithCondition("1acb_board", "B", "select");
+        if (sel == null) {
+            pfv.clearSelection("select");
+            plugin.resetCamera();
+        }
+        else {
+            pfv.setSelection({ elements: sel.regions, mode: "select" });
+        }
+    },
+    structureHoverCallback: function (plugin, pfv, selection) {
+        var sel = selection.getSelectionWithCondition("1acb_board", "B", "hover");
+        if (sel == null)
+            pfv.clearSelection("hover");
+        else
+            pfv.setSelection({ elements: sel.regions, mode: "hover" });
+    }
+};
+var blockChainA = {
+    blockId: "chainA",
+    featureViewConfig: [fvConfigChainA]
+};
+var blockChainB = {
+    blockId: "chainB",
+    featureViewConfig: [fvConfigChainB]
+};
+var blockSelectorElement = function (blockSelectorManager) {
+    return (React.createElement("div", null,
+        React.createElement("select", { onChange: function (e) {
+                    blockSelectorManager.setActiveBlock(e.target.value);
+                } },
+            React.createElement("option", { value: "chainA" }, "Chain A"),
+            React.createElement("option", { value: "chainB" }, "Chain B"))));
+};
+var customConfig = {
+    blockConfig: [blockChainA, blockChainB],
+    blockSelectorElement: blockSelectorElement
+};
+var sequenceConfig = {
+    title: undefined,
+    subtitle: undefined,
+    config: customConfig
+};
+var molstarConfig = {
+    loadConfig: {
+        loadMethod: "loadPdbIds",
+        loadParams: [{
+            pdbId: "1acb",
+            id: "1acb_board"
+        }]
+    },
+    pluginConfig: {
+        showImportControls: true,
+        showSessionControls: false
+    },
+};
+
+document.addEventListener("DOMContentLoaded", function (event) {
+    var panel3d = new RcsbFv3D.custom({
+        elementId: "pfv",
+        structurePanelConfig: molstarConfig,
+        sequencePanelConfig: sequenceConfig,
+        cssConfig: {
+            overwriteCss:true,
+            rootPanel:{
+                display:"flex",
+                flexDirection:"column-reverse"
+            },
+            structurePanel:{
+                width: 700,
+                height: 700
+            },
+            sequencePanel:{
+                width:700,
+                marginBottom:5
+            }
+        },
+    });
+    panel3d.render();
+});
+</script>
+				<a href="#cdn-javascript" id="cdn-javascript" style="color: inherit; text-decoration: none;">
+					<h3>CDN JavaScript</h3>
+				</a>
+				<p><code>&lt;script src=&quot;https://cdn.jsdelivr.net/npm/@rcsb/rcsb-saguaro-3d@1.0.0/build/dist/app.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;</code></p>
 				<a href="#node-module-instalation" id="node-module-instalation" style="color: inherit; text-decoration: none;">
 					<h3>Node Module Instalation</h3>
 				</a>
@@ -82,22 +349,18 @@
 					<h3>Build app</h3>
 				</a>
 				<pre><code><span class="hljs-built_in">npm</span> install
-<span class="hljs-built_in">npm</span> run buildOnlyApp</code></pre>
+<span class="hljs-built_in">npm</span> run buildApp</code></pre>
 				<a href="#build-examples" id="build-examples" style="color: inherit; text-decoration: none;">
 					<h3>Build examples</h3>
 				</a>
-				<pre><code>npm <span class="hljs-builtin-name">run</span> buildOnlyExamples</code></pre><p>From the root of the project:</p>
-				<pre><code>http-server -p PORT-<span class="hljs-built_in">NUMBER</span></code></pre><p>and navigate to <code>localhost:PORT-NUMBER/build/dist/examples/</code></p>
+				<pre><code>npm <span class="hljs-builtin-name">run</span> buildExamples</code></pre><p>From the root of the project:</p>
+				<pre><code>http-server -p PORT-<span class="hljs-built_in">NUMBER</span></code></pre><p>and navigate to <code>localhost:PORT-NUMBER/build/examples/</code></p>
 				<a href="#main-classes-and-methods" id="main-classes-and-methods" style="color: inherit; text-decoration: none;">
 					<h3>Main Classes and Methods</h3>
 				</a>
 				<p>Class <strong><code>RcsbFv3DAssembly</code></strong> file <code>src/RcsbFv3D/RcsbFv3DAssembly.tsx</code> builds a predefined view for PDB entries. This is the methods used in the RCSB PDB web portal
-				(ex: <a href="https://www.rcsb.org/3d-sequence/4HHB">4hhb</a>). Soruce code example can be found in <code>src/examples/assembly/index.ts</code>.</p>
+				(ex: <a href="https://www.rcsb.org/3d-sequence/4HHB">4hhb</a>). Source code example can be found in <code>src/examples/assembly/index.ts</code>.</p>
 				<p>Class <strong><code>RcsbFv3DCustom</code></strong> file <code>src/RcsbFv3D/RcsbFv3DCustom.tsx</code> builds a customized view between one or more feature viewers and a single Molstar plugin.</p>
-				<a href="#cdn-javascript" id="cdn-javascript" style="color: inherit; text-decoration: none;">
-					<h3>CDN JavaScript</h3>
-				</a>
-				<p><code>&lt;script src=&quot;https://cdn.jsdelivr.net/npm/@rcsb/rcsb-saguaro-app@3.0.0/build/dist/app.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;</code></p>
 				<a href="#contributing" id="contributing" style="color: inherit; text-decoration: none;">
 					<h2>Contributing</h2>
 				</a>

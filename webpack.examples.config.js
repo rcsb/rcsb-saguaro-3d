@@ -1,6 +1,7 @@
 const path = require('path');
 
 const commonConfig = {
+    mode:"production",
     module: {
       rules: [
           {
@@ -37,6 +38,7 @@ const commonConfig = {
     }
 };
 
+const out_path = "build/examples";
 const example_1 = {
     ...commonConfig,
     entry: {
@@ -44,9 +46,8 @@ const example_1 = {
     },
     output: {
         filename: '[name].js',
-        path: path.resolve(__dirname, 'build/dist/examples/single-chain/')
-    },
-    devtool: 'source-map'
+        path: path.resolve(__dirname, out_path+'/single-chain/')
+    }
 }
 
 const example_2 = {
@@ -56,9 +57,8 @@ const example_2 = {
     },
     output: {
         filename: '[name].js',
-        path: path.resolve(__dirname, 'build/dist/examples/structural-alignment/')
-    },
-    devtool: 'source-map'
+        path: path.resolve(__dirname, out_path+'/structural-alignment/')
+    }
 }
 
 const example_3 = {
@@ -68,9 +68,8 @@ const example_3 = {
     },
     output: {
         filename: '[name].js',
-        path: path.resolve(__dirname, 'build/dist/examples/assembly/')
-    },
-    devtool: 'source-map'
+        path: path.resolve(__dirname, out_path+'/assembly/')
+    }
 }
 
 const example_4 = {
@@ -80,9 +79,8 @@ const example_4 = {
     },
     output: {
         filename: '[name].js',
-        path: path.resolve(__dirname, 'build/dist/examples/multiple-chain/')
-    },
-    devtool: 'source-map'
+        path: path.resolve(__dirname, out_path+'/multiple-chain/')
+    }
 }
 
 const example_5 = {
@@ -92,9 +90,8 @@ const example_5 = {
     },
     output: {
         filename: '[name].js',
-        path: path.resolve(__dirname, 'build/dist/examples/css-config/')
-    },
-    devtool: 'source-map'
+        path: path.resolve(__dirname, out_path+'/css-config/')
+    }
 }
 
 module.exports = [example_1, example_2, example_3, example_4, example_5];
