@@ -1,3 +1,15 @@
+"use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var rowConfigChainA = [
     {
         trackId: "sequenceTrack",
@@ -64,7 +76,7 @@ var fvConfigChainA = {
         },
         disableMenu:true,
         rowTitleWidth: 80,
-        trackWidth: 620,
+        trackWidth: 670,
         includeAxis: true
     },
     rowConfig: rowConfigChainA,
@@ -133,7 +145,7 @@ var fvConfigChainB = {
         },
         disableMenu:true,
         rowTitleWidth: 80,
-        trackWidth: 620,
+        trackWidth: 670,
         includeAxis: true
     },
     rowConfig: rowConfigChainB,
@@ -231,7 +243,6 @@ var molstarConfig = {
         showSessionControls: false
     },
 };
-
 document.addEventListener("DOMContentLoaded", function (event) {
     var panel3d = new RcsbFv3D.custom({
         elementId: "pfv",
@@ -244,11 +255,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
                 flexDirection:"column-reverse"
             },
             structurePanel:{
-                width: 700,
+                width: 750,
                 height: 700
             },
             sequencePanel:{
-                width:700,
+                width:750,
                 marginBottom:5
             }
         },
