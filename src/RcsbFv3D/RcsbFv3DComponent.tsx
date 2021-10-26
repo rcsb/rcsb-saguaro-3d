@@ -61,7 +61,7 @@ export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterfa
 
     render(): JSX.Element {
         return (
-            <div  className={ this.props.fullScreen ? classes.fullScreen : ""} >
+            <div className={this.props.fullScreen ? classes.fullScreen : classes.fullHeight} >
                 <div
                     id={this.ROOT_DIV_ID}
                     style={RcsbFv3DComponent.mainDivCssConfig(this.props.cssConfig?.rootPanel)}
