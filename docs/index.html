@@ -379,8 +379,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				<p>Class <strong><code>RcsbFv3DAssembly</code></strong> (<code>src/RcsbFv3D/RcsbFv3DAssembly.tsx</code>) builds a predefined 1D/3D view for PDB assemblies. This method is used in the RCSB PDB web portal
 					to display 1D positional features of PDB models (ex: <a href="https://www.rcsb.org/3d-sequence/4HHB">4hhb</a>). Its configuration requires a single PDB Id.
 					In addition, <code>additionalConfig</code> allows to configure the feature viewer as describe in rcsb-saguaro-app <a href="%22https://rcsb.github.io/rcsb-saguaro-app/interfaces/rcsbfvadditionalconfig.html%22">API</a>.
-				This parameter exposes the board configuration through the attribute <code>boardConfig</code> (<a href="%22https://rcsb.github.io/rcsb-saguaro/interfaces/rcsbfvboardconfiginterface.html%22">ref</a>).  </p>
+					This parameter exposes the board configuration through the attribute <code>boardConfig</code> (<a href="%22https://rcsb.github.io/rcsb-saguaro/interfaces/rcsbfvboardconfiginterface.html%22">ref</a>).
+					The component will be mounted in the html element with id <code>elementId</code>. If there is no html element in the current document,
+				a new div element will be added, and the component will be displayed in full screen mode. </p>
 				<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> RcsbFv3DAssemblyInterface <span class="hljs-keyword">extends</span> RcsbFv3DAbstractInterface {
+   <span class="hljs-attr">elementId</span>: <span class="hljs-string">&quot;htmlElement&quot;</span>,
    <span class="hljs-attr">config</span>: {
         <span class="hljs-attr">entryId</span>: <span class="hljs-built_in">string</span>;
         title?: <span class="hljs-built_in">string</span>;
@@ -396,6 +399,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 					The configuration interface encodes the parameters for the feature viewers (<code>sequencePanelConfig</code>), the Molstar plugin (<code>structurePanelConfig</code>) and
 				their dynamic interaction.</p>
 				<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> RcsbFv3DCustomInterface <span class="hljs-keyword">extends</span> RcsbFv3DAbstractInterface {
+   <span class="hljs-attr">elementId</span>: <span class="hljs-string">&quot;htmlElement&quot;</span>,
     <span class="hljs-attr">structurePanelConfig</span>: RcsbFvStructureInterface;
     sequencePanelConfig: {
         <span class="hljs-attr">config</span>: CustomViewInterface;

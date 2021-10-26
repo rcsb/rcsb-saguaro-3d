@@ -310,9 +310,13 @@ TypeScript full classes documentation can be found [here](https://rcsb.github.io
 Class **`RcsbFv3DAssembly`** (`src/RcsbFv3D/RcsbFv3DAssembly.tsx`) builds a predefined 1D/3D view for PDB assemblies. This method is used in the RCSB PDB web portal 
 to display 1D positional features of PDB models (ex: [4hhb](https://www.rcsb.org/3d-sequence/4HHB)). Its configuration requires a single PDB Id. 
 In addition, `additionalConfig` allows to configure the feature viewer as describe in rcsb-saguaro-app [API]("https://rcsb.github.io/rcsb-saguaro-app/interfaces/rcsbfvadditionalconfig.html").
-This parameter exposes the board configuration through the attribute `boardConfig` ([ref]("https://rcsb.github.io/rcsb-saguaro/interfaces/rcsbfvboardconfiginterface.html")).  
+This parameter exposes the board configuration through the attribute `boardConfig` ([ref]("https://rcsb.github.io/rcsb-saguaro/interfaces/rcsbfvboardconfiginterface.html")).
+The component will be mounted in the html element with id `elementId`. If there is no html element in the current document,
+a new div element will be added, and the component will be displayed in full screen mode. 
+
 ```typescript
 interface RcsbFv3DAssemblyInterface extends RcsbFv3DAbstractInterface {
+   elementId: "htmlElement",
    config: {
         entryId: string;
         title?: string;
@@ -330,6 +334,7 @@ their dynamic interaction.
 
 ```typescript
 interface RcsbFv3DCustomInterface extends RcsbFv3DAbstractInterface {
+   elementId: "htmlElement",
     structurePanelConfig: RcsbFvStructureInterface;
     sequencePanelConfig: {
         config: CustomViewInterface;

@@ -10,7 +10,7 @@
     "tsc": "tsc --incremental",
     "tscExamples": "tsc --project ./tsconfig.examples.json",
     "build": "webpack --config ./webpack.config.js",
-    "buildAll": "npm run cleanAll && npm run tsc && npm run cpStyles && npm run copyConfig && npm run build && npm run buildExamples",
+    "buildAll": "npm run cleanAll && npm run tsc && npm run cpStyles && npm run copyConfig && npm run build && npm run buildExamples && npm run buildDoc",
     "buildApp": "npm run cleanAll && npm run tsc && npm run cpStyles && npm run copyConfig && npm run build && npm run clean",
     "packExamples": "webpack --config ./webpack.examples.config.js",
     "buildExamples": "npm run cleanExamples && npm run tscExamples && npm run cpStyles && npm run copyExample && npm run packExamples && npm run clean",
