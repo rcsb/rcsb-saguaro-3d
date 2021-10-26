@@ -37,8 +37,8 @@ export interface FeatureViewInterface {
     sequenceSelectionChangeCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => void;
     sequenceElementClickCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, d: RcsbFvTrackDataElementInterface) => void;
     sequenceHoverCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, hoverRegion: Array<RcsbFvTrackDataElementInterface>) => void;
-    structureSelectionCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => void;
-    structureHoverCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => void;
+    structureSelectionCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selectorManager: RcsbFvSelectorManager) => void;
+    structureHoverCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selectorManager: RcsbFvSelectorManager) => void;
 }
 
 export class BlockSelectorManager {

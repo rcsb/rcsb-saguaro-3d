@@ -301,12 +301,16 @@ From the root of the project:
     
 and navigate to `localhost:PORT-NUMBER/build/examples/`
 
-### Main Classes and Methods
+### Library Documentation
+TypeScript full classes documentation can be found [here](https://rcsb.github.io/rcsb-saguaro-3d/globals.html).
+
+### Main Classes and Interfaces
 
 #### Assembly view
-Class **`RcsbFv3DAssembly`** (`src/RcsbFv3D/RcsbFv3DAssembly.tsx`) builds a predefined view for PDB entries. This method is used in the RCSB PDB web portal 
+Class **`RcsbFv3DAssembly`** (`src/RcsbFv3D/RcsbFv3DAssembly.tsx`) builds a predefined 1D/3D view for PDB entries. This method is used in the RCSB PDB web portal 
 to display 1D features on PDB entries (ex: [4hhb](https://www.rcsb.org/3d-sequence/4HHB)). Its configuration requires a single PDB ID. 
-In addition, `RcsbFvAdditionalConfig` allows to configure the feature viewer as describe in [rcsb-saguaro-app API]("https://rcsb.github.io/rcsb-saguaro-app/index.html")
+In addition, `additionalConfig` allows to configure the feature viewer as describe in rcsb-saguaro-app [API]("https://rcsb.github.io/rcsb-saguaro-app/interfaces/rcsbfvadditionalconfig.html").
+This parameter exposes the board configuration through the attribute `boardConfig` ([ref]("https://rcsb.github.io/rcsb-saguaro/interfaces/rcsbfvboardconfiginterface.html")).  
 ```typescript
 interface RcsbFv3DAssemblyInterface extends RcsbFv3DAbstractInterface {
    config: {
@@ -378,10 +382,18 @@ export interface FeatureViewInterface {
     sequenceSelectionChangeCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => void;
     sequenceElementClickCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, d: RcsbFvTrackDataElementInterface) => void;
     sequenceHoverCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, hoverRegion: Array<RcsbFvTrackDataElementInterface>) => void;
-    structureSelectionCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => void;
-    structureHoverCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => void;
+    structureSelectionCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selectorManager: RcsbFvSelectorManager) => void;
+    structureHoverCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selectorManager: RcsbFvSelectorManager) => void;
 }
 ```
+
+`plugin: SaguaroPluginPublicInterface` exposes the interface to interact with the molstar plugin
+and change model representations ([ref]("https://rcsb.github.io/rcsb-saguaro-3d/interfaces/saguaropluginpublicinterface.html")). 
+It provides multiple methods such as hide, display or select to modify how structural data is displayed. The parameter `pfv: RcsbFv` 
+allows to access the feature viewer API ([ref]("https://rcsb.github.io/rcsb-saguaro/classes/rcsbfv.html")). It exposes methods to modify 
+selections, change board configuration, zoom or adding new tracks.
+ 
+Source code example can be found in `src/examples/single-chain/index.tsx`
 
 Contributing
 ---
