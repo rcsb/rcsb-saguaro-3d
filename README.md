@@ -309,8 +309,8 @@ TypeScript full classes documentation can be found [here](https://rcsb.github.io
 #### Assembly view
 Class **`RcsbFv3DAssembly`** (`src/RcsbFv3D/RcsbFv3DAssembly.tsx`) builds a predefined 1D/3D view for PDB assemblies. This method is used in the RCSB PDB web portal 
 to display 1D positional features of PDB models (ex: [4hhb](https://www.rcsb.org/3d-sequence/4HHB)). Its configuration requires a single PDB Id. 
-In addition, `additionalConfig` allows to configure the feature viewer as describe in rcsb-saguaro-app [API]("https://rcsb.github.io/rcsb-saguaro-app/interfaces/rcsbfvadditionalconfig.html").
-This parameter exposes the board configuration through the attribute `boardConfig` ([ref]("https://rcsb.github.io/rcsb-saguaro/interfaces/rcsbfvboardconfiginterface.html")).
+In addition, `additionalConfig` allows to configure the feature viewer as describe in rcsb-saguaro-app [API](https://rcsb.github.io/rcsb-saguaro-app/interfaces/rcsbfvadditionalconfig.html).
+This parameter exposes the board configuration through the attribute `boardConfig` ([ref](https://rcsb.github.io/rcsb-saguaro/interfaces/rcsbfvboardconfiginterface.html)).
 The component will be mounted in the html element with id `elementId`. If there is no html element in the current document,
 a new div element will be added, and the component will be displayed in full screen mode. 
 
@@ -349,7 +349,7 @@ interface RcsbFv3DCustomInterface extends RcsbFv3DAbstractInterface {
 ##### Structural Panel
 
 The structural panel configuration `structurePanelConfig: RcsbFvStructureInterface` includes the loading configuration for the 3D structural data
-and the Molstar plugin. A full description of the structural panel configuration can be found [here]("https://rcsb.github.io/rcsb-saguaro-3d/interfaces/rcsbfvstructureinterface.html").  
+and the Molstar plugin. A full description of the structural panel configuration can be found [here](https://rcsb.github.io/rcsb-saguaro-3d/interfaces/rcsbfvstructureinterface.html).  
 
 ```typescript
 interface RcsbFvStructureInterface {
@@ -433,9 +433,9 @@ export interface FeatureViewInterface {
 ```
 
 `plugin: SaguaroPluginPublicInterface` exposes the interface to interact with the Molstar plugin
-and change model representations ([ref]("https://rcsb.github.io/rcsb-saguaro-3d/interfaces/saguaropluginpublicinterface.html")). 
+and change model representations ([ref](https://rcsb.github.io/rcsb-saguaro-3d/interfaces/saguaropluginpublicinterface.html)). 
 It provides multiple methods such as hide, display or select to modify how structural data is displayed. The parameter `pfv: RcsbFv` 
-allows to access the feature viewer API ([ref]("https://rcsb.github.io/rcsb-saguaro/classes/rcsbfv.html")). It exposes methods to modify 
+allows to access the feature viewer API ([ref](https://rcsb.github.io/rcsb-saguaro/classes/rcsbfv.html)). It exposes methods to modify 
 selections, change board configuration, zoom or adding new tracks.
  
 Source code example can be found in `src/examples/single-chain/index.tsx`

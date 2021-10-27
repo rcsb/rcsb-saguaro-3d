@@ -378,8 +378,8 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				</a>
 				<p>Class <strong><code>RcsbFv3DAssembly</code></strong> (<code>src/RcsbFv3D/RcsbFv3DAssembly.tsx</code>) builds a predefined 1D/3D view for PDB assemblies. This method is used in the RCSB PDB web portal
 					to display 1D positional features of PDB models (ex: <a href="https://www.rcsb.org/3d-sequence/4HHB">4hhb</a>). Its configuration requires a single PDB Id.
-					In addition, <code>additionalConfig</code> allows to configure the feature viewer as describe in rcsb-saguaro-app <a href="%22https://rcsb.github.io/rcsb-saguaro-app/interfaces/rcsbfvadditionalconfig.html%22">API</a>.
-					This parameter exposes the board configuration through the attribute <code>boardConfig</code> (<a href="%22https://rcsb.github.io/rcsb-saguaro/interfaces/rcsbfvboardconfiginterface.html%22">ref</a>).
+					In addition, <code>additionalConfig</code> allows to configure the feature viewer as describe in rcsb-saguaro-app <a href="https://rcsb.github.io/rcsb-saguaro-app/interfaces/rcsbfvadditionalconfig.html">API</a>.
+					This parameter exposes the board configuration through the attribute <code>boardConfig</code> (<a href="https://rcsb.github.io/rcsb-saguaro/interfaces/rcsbfvboardconfiginterface.html">ref</a>).
 					The component will be mounted in the html element with id <code>elementId</code>. If there is no html element in the current document,
 				a new div element will be added, and the component will be displayed in full screen mode. </p>
 				<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> RcsbFv3DAssemblyInterface <span class="hljs-keyword">extends</span> RcsbFv3DAbstractInterface {
@@ -412,7 +412,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 					<h5>Structural Panel</h5>
 				</a>
 				<p>The structural panel configuration <code>structurePanelConfig: RcsbFvStructureInterface</code> includes the loading configuration for the 3D structural data
-				and the Molstar plugin. A full description of the structural panel configuration can be found <a href="%22https://rcsb.github.io/rcsb-saguaro-3d/interfaces/rcsbfvstructureinterface.html%22">here</a>.  </p>
+				and the Molstar plugin. A full description of the structural panel configuration can be found <a href="https://rcsb.github.io/rcsb-saguaro-3d/interfaces/rcsbfvstructureinterface.html">here</a>.  </p>
 				<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> RcsbFvStructureInterface {
     <span class="hljs-attr">loadConfig</span>: LoadMolstarInterface;
     pluginConfig?: Partial&lt;ViewerProps&gt;;
@@ -476,9 +476,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
     structureHoverCallback: <span class="hljs-function">(<span class="hljs-params">plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selectorManager: RcsbFvSelectorManager</span>) =&gt;</span> <span class="hljs-built_in">void</span>;
 }</code></pre>
 				<p><code>plugin: SaguaroPluginPublicInterface</code> exposes the interface to interact with the Molstar plugin
-					and change model representations (<a href="%22https://rcsb.github.io/rcsb-saguaro-3d/interfaces/saguaropluginpublicinterface.html%22">ref</a>).
+					and change model representations (<a href="https://rcsb.github.io/rcsb-saguaro-3d/interfaces/saguaropluginpublicinterface.html">ref</a>).
 					It provides multiple methods such as hide, display or select to modify how structural data is displayed. The parameter <code>pfv: RcsbFv</code>
-					allows to access the feature viewer API (<a href="%22https://rcsb.github.io/rcsb-saguaro/classes/rcsbfv.html%22">ref</a>). It exposes methods to modify
+					allows to access the feature viewer API (<a href="https://rcsb.github.io/rcsb-saguaro/classes/rcsbfv.html">ref</a>). It exposes methods to modify
 				selections, change board configuration, zoom or adding new tracks.</p>
 				<p>Source code example can be found in <code>src/examples/single-chain/index.tsx</code></p>
 				<a href="#contributing" id="contributing" style="color: inherit; text-decoration: none;">
