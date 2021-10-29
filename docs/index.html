@@ -429,13 +429,15 @@ document.addEventListener("DOMContentLoaded", function (event) {
   loadStructureFromUrl = <span class="hljs-string">&quot;loadStructureFromUrl&quot;</span>
 }</code></pre>
 					</li>
-					<li><code>loadParams: LoadParams | Array&lt;LoadParams&gt;</code> encode the parameters needed to collect and load the data<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> LoadParams {
-  pdbId?: <span class="hljs-built_in">string</span>;
-  url?: <span class="hljs-built_in">string</span>,
-  isBinary?: <span class="hljs-built_in">boolean</span>
-}</code></pre>
-					</li>
+					<li><code>loadParams: LoadParams | Array&lt;LoadParams&gt;</code> encode the parameters needed to collect and load the data. If <code>id</code> is provided, it can be used to identify the 3D models
+					in the methods defined by <code>SaguaroPluginPublicInterface</code></li>
 				</ul>
+				<pre><code class="language-typescript"><span class="hljs-keyword">interface</span> LoadParams {
+    id?: <span class="hljs-built_in">string</span>;
+    pdbId?: <span class="hljs-built_in">string</span>;
+    url?: <span class="hljs-built_in">string</span>,
+    isBinary?: <span class="hljs-built_in">boolean</span>
+}</code></pre>
 				<a href="#sequence-panel" id="sequence-panel" style="color: inherit; text-decoration: none;">
 					<h5>Sequence panel</h5>
 				</a>

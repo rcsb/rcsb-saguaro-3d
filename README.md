@@ -374,9 +374,12 @@ enum LoadMethod {
     loadStructureFromUrl = "loadStructureFromUrl"
 }
 ```
-- `loadParams: LoadParams | Array<LoadParams>` encode the parameters needed to collect and load the data
+- `loadParams: LoadParams | Array<LoadParams>` encode the parameters needed to collect and load the data. If `id` is provided, it can be used to identify the 3D models
+in the methods defined by `SaguaroPluginPublicInterface`
+
 ```typescript
 interface LoadParams {
+    id?: string;
     pdbId?: string;
     url?: string,
     isBinary?: boolean
