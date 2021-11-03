@@ -17,6 +17,8 @@ export interface ChainSelectionInterface {
     regions: Array<RegionSelectionInterface>;
 }
 
+//TODO this class should be interfaced
+//TODO Check how lastSelection is used. It is not linked to selection. Only label asymId is used when the value is get
 export class RcsbFvSelectorManager {
 
     private lastSelection: ChainSelectionInterface | null = null;
