@@ -162,9 +162,9 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         const filterInstances: Map<string, Set<string>> = new Map<string, Set<string>>();
         modelMap.forEach((v,k)=>{
             onChangeCallback.set(v.entryId,(x)=>{
-                this.currentEntryId = v.entryId;
+                this.currentEntryId = x.pdbId;
                 this.currentLabelAsymId = x.asymId;
-                this.currentModelId = k;
+                this.currentModelId = x.pdbId;
                 asyncScheduler.schedule(()=>{
                     this.props.selectorManager.setLastSelection('select', null);
                     this.structureSelectionCallback();
@@ -188,7 +188,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                     filterInstances: filterInstances.get(this.currentEntryId),
                     selectButtonOptionProps: (props: OptionProps<OptionPropsInterface>) => (components.Option &&
                         <div style={{display: 'flex'}}>
-                            <ChainDisplay plugin={this.props.plugin} label={props.data.label}/>
+                            <ChainDisplay plugin={this.props.plugin} label={this.currentModelId+":"+props.data.label}/>
                             <components.Option {...props}/>
                         </div>)
                 },

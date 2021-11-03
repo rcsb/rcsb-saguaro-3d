@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     //const args: {pdbId:string} = getJsonFromUrl().pdbId ? getJsonFromUrl() : {pdbId:"4hhb"};
 
     const sequenceConfig = {
-        entryId: ["101m", "1ash"],
+        entryId: ["101M", "1ASH"],
         title: "Title " + " multiple",
         subtitle: "Subtitle for " + " multiple"
     };
