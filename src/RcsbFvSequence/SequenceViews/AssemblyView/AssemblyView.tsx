@@ -3,7 +3,7 @@ import * as React from "react";
 
 import {RcsbFvDOMConstants} from "../../../RcsbFvConstants/RcsbFvConstants";
 import {
-    buildInstanceSequenceFv,
+    buildInstanceSequenceFv, buildMultipleInstanceSequenceFv,
     unmount
 } from "@rcsb/rcsb-saguaro-app";
 import {AbstractView, AbstractViewInterface} from "../AbstractView";
@@ -26,7 +26,6 @@ import {
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 
 export interface AssemblyViewInterface {
-    entryId: string;
     additionalConfig?: RcsbFvAdditionalConfig;
 }
 
@@ -49,6 +48,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
             <div style={{marginTop:10}}>
                 <div>
                     <div id={RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID} style={{display:"inline-block"}}/>
+                    <div id={RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID+"_bis"} style={{display:"inline-block"}}/>
                     <div style={{display:"inline-block", marginLeft:25}}>
                         <a href={"/docs/sequence-viewers/protein-feature-view"} target={"_blank"}>Help</a>
                     </div>
@@ -173,16 +173,17 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
             filterInstances.set(v.entryId,new Set<string>(v.chains.map(d=>d.label)));
         });
         this.unmountRcsbFv();
-        const entryId: string = Array.from(modelMap.values()).map(d=>d.entryId)[0];
-        if(entryId != null) {
-            this.rcsbFvModule = await buildInstanceSequenceFv(
+        this.currentEntryId = Array.from(modelMap.values()).map(d=>d.entryId)[0];
+        if(this.currentEntryId != null) {
+            this.rcsbFvModule = await buildMultipleInstanceSequenceFv(
                 this.rcsbFvDivId,
                 RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID,
-                entryId,
+                RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID+"_bis",
+                Array.from(modelMap.values()).map(d=>d.entryId),
                 {
                     defaultValue: defaultAuthId,
-                    onChangeCallback: onChangeCallback.get(entryId),
-                    filterInstances: filterInstances.get(entryId),
+                    onChangeCallback: onChangeCallback.get(this.currentEntryId),
+                    filterInstances: filterInstances.get(this.currentEntryId),
                     selectButtonOptionProps: (props: OptionProps<OptionPropsInterface>) => (components.Option &&
                         <div style={{display: 'flex'}}>
                             <ChainDisplay plugin={this.props.plugin} label={props.data.label}/>

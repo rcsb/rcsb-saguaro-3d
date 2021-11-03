@@ -5,7 +5,7 @@ import {RcsbFvAdditionalConfig} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWe
 
 export interface RcsbFv3DAssemblyInterface extends RcsbFv3DAbstractInterface {
    config: {
-        entryId: string;
+        entryId: Array<string>;
         title?: string;
         subtitle?: string;
     };
@@ -22,22 +22,21 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract{
         this.elementId = assemblyData.elementId ?? "RcsbFv3D_mainDiv_"+Math.random().toString(36).substr(2);
         this.structureConfig = {
             loadConfig: {
-                loadMethod: LoadMethod.loadPdbId,
-                loadParams: {
-                    pdbId:assemblyData.config.entryId,
-                    id:assemblyData.config.entryId,
+                loadMethod: LoadMethod.loadPdbIds,
+                loadParams: assemblyData.config.entryId.map(e=>({
+                    pdbId:e,
+                    id:e,
                     props: {
                         kind:'standard',
                         assemblyId:'1'
                     },
                     reprProvider: RcsbRepresentationPreset
-                }
+                }))
             }
         };
         this.sequenceConfig = {
             type:"assembly",
             config: {
-                entryId:assemblyData.config.entryId,
                 additionalConfig: assemblyData.additionalConfig
             },
             title: assemblyData.config.title,
