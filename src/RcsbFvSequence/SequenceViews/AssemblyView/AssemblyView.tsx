@@ -169,11 +169,13 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                     this.props.selectorManager.setLastSelection('select', null);
                     this.structureSelectionCallback();
                 },1000);
+
             });
             filterInstances.set(v.entryId,new Set<string>(v.chains.map(d=>d.label)));
         });
         this.unmountRcsbFv();
         this.currentEntryId = Array.from(modelMap.values()).map(d=>d.entryId)[0];
+        this.currentModelId = Array.from(modelMap.keys())[0];
         if(this.currentEntryId != null) {
             this.rcsbFvModule = await buildMultipleInstanceSequenceFv(
                 this.rcsbFvDivId,
@@ -342,8 +344,8 @@ async function createComponents(plugin: SaguaroPluginInterface, modelMap:Saguaro
     plugin.clearFocus();
     for(const ch of chains) {
         const label: string = ch.auth === ch.label ? ch.label : `${ch.label} [auth ${ch.auth}]`;
-        await plugin.createComponent(label, ch.modelId, ch.label, 'cartoon');
-        await plugin.colorComponent(label, 'chain-id');
+        await plugin.createComponent(ch.modelId+":"+label, ch.modelId, ch.label, 'cartoon');
+        await plugin.colorComponent(ch.modelId+":"+label, 'chain-id');
     }
     await plugin.removeComponent("Polymer");
 }
