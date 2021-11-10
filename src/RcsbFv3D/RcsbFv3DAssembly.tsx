@@ -2,6 +2,7 @@ import {LoadMethod} from "../RcsbFvStructure/StructurePlugins/MolstarPlugin";
 import {RcsbFv3DAbstract, RcsbFv3DAbstractInterface} from "./RcsbFv3DAbstract";
 import {RcsbRepresentationPreset} from "../RcsbFvStructure/StructurePlugins/StructureRepresentation";
 import {RcsbFvAdditionalConfig} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
+import {InstanceSequenceConfig} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
 
 export interface RcsbFv3DAssemblyInterface extends RcsbFv3DAbstractInterface {
    config: {
@@ -10,6 +11,7 @@ export interface RcsbFv3DAssemblyInterface extends RcsbFv3DAbstractInterface {
         subtitle?: string;
     };
     additionalConfig?: RcsbFvAdditionalConfig;
+    instanceSequenceConfig?: InstanceSequenceConfig;
 }
 
 export class RcsbFv3DAssembly extends RcsbFv3DAbstract{
@@ -38,7 +40,8 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract{
             type:"assembly",
             config: {
                 entryId:assemblyData.config.entryId,
-                additionalConfig: assemblyData.additionalConfig
+                additionalConfig: assemblyData.additionalConfig,
+                instanceSequenceConfig: assemblyData.instanceSequenceConfig
             },
             title: assemblyData.config.title,
             subtitle: assemblyData.config.subtitle

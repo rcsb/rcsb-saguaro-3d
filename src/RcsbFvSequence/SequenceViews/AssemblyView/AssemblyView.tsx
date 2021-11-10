@@ -7,7 +7,10 @@ import {
     unmount
 } from "@rcsb/rcsb-saguaro-app";
 import {AbstractView, AbstractViewInterface} from "../AbstractView";
-import {InstanceSequenceOnchangeInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
+import {
+    InstanceSequenceConfig,
+    InstanceSequenceOnchangeInterface
+} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
 import {RcsbFvBoardConfigInterface, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {ChainSelectionInterface} from "../../../RcsbFvSelection/RcsbFvSelectorManager";
 import {
@@ -28,6 +31,7 @@ import {
 export interface AssemblyViewInterface {
     entryId: string;
     additionalConfig?: RcsbFvAdditionalConfig;
+    instanceSequenceConfig?: InstanceSequenceConfig;
 }
 
 export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractViewInterface, {}>{
@@ -180,6 +184,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID,
                 entryId,
                 {
+                    ...this.props.instanceSequenceConfig,
                     defaultValue: defaultAuthId,
                     onChangeCallback: onChangeCallback.get(entryId),
                     filterInstances: filterInstances.get(entryId),

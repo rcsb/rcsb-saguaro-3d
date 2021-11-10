@@ -9,7 +9,7 @@ The package allows access to RCSB Saguaro and Molstar methods to add or change t
 <div id="pfv"></div>
 <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
-<script crossorigin src="https://cdn.jsdelivr.net/npm/@rcsb/rcsb-saguaro-3d@1.0.1/build/dist/app.js"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/@rcsb/rcsb-saguaro-3d@1.1.0/build/dist/app.js"></script>
 <script type="text/javascript">
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
@@ -281,7 +281,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 --->
 ### CDN JavaScript
-`<script src="https://cdn.jsdelivr.net/npm/@rcsb/rcsb-saguaro-3d@1.0.1/build/dist/app.js" type="text/javascript"></script>`
+`<script src="https://cdn.jsdelivr.net/npm/@rcsb/rcsb-saguaro-3d@1.1.0/build/dist/app.js" type="text/javascript"></script>`
 
 ### Node Module Instalation
 `npm install @rcsb/rcsb-saguaro-3d`

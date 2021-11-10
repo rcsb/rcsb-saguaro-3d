@@ -34,6 +34,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
     const panel3d = new RcsbFv3DAssembly({
         elementId: "pfv",
         config: sequenceConfig,
+        instanceSequenceConfig:{
+            dropdownTitle: "CHAIN"
+        },
         additionalConfig: {
             boardConfig: {
                 elementClickCallBack: (e) => {
