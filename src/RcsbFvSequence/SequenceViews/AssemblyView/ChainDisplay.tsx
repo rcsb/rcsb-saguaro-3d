@@ -1,5 +1,5 @@
 import * as React from "react";
-import {SaguaroPluginInterface} from "../../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
+import {SaguaroPluginInterface} from "../../../RcsbFvStructure/SaguaroPluginInterface";
 
 interface ChainDisplayInterface {
     plugin: SaguaroPluginInterface;

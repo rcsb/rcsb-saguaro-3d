@@ -1,9 +1,5 @@
+import {SaguaroChain, SaguaroRange, SaguaroRegionList, SaguaroSet} from "../RcsbFvStructure/SaguaroPluginInterface";
 
-export interface ResidueSelectionInterface {
-    modelId: string;
-    labelAsymId: string;
-    seqIds: Set<number>;
-}
 export interface RegionSelectionInterface{
     begin:number;
     end:number;
@@ -11,45 +7,39 @@ export interface RegionSelectionInterface{
     source:'structure'|'sequence';
 }
 
-export interface ChainSelectionInterface {
-    modelId: string;
-    labelAsymId: string;
-    regions: Array<RegionSelectionInterface>;
-}
-
 //TODO this class should be interfaced
-//TODO Check how lastSelection is used. It is not linked to selection. Only label asymId is used when the value is get
+//TODO Check how lastSelection is used. It is not linked to selection. Only label asymId is used when the value is got
 export class RcsbFvSelectorManager {
 
-    private lastSelection: ChainSelectionInterface | null = null;
-    private selection: Array<ChainSelectionInterface> = new Array<ChainSelectionInterface>();
-    private hover: Array<ChainSelectionInterface> = new Array<ChainSelectionInterface>();
+    private lastSelection: SaguaroRegionList | null = null;
+    private selection: Array<SaguaroRegionList> = new Array<SaguaroRegionList>();
+    private hover: Array<SaguaroRegionList> = new Array<SaguaroRegionList>();
 
-    public setSelectionFromRegion(modelId: string, labelAsymId: string, region: RegionSelectionInterface, mode:'select'|'hover'): void {
+    public setSelectionFromRegion(modelId: string, labelAsymId: string, region: RegionSelectionInterface, mode:'select'|'hover', operatorName?: string): void {
         this.clearSelection(mode);
-        this.addSelectionFromRegion(modelId, labelAsymId, region, mode);
+        this.addSelectionFromRegion(modelId, labelAsymId, region, mode, operatorName);
     }
 
-    public addSelectionFromRegion(modelId: string, labelAsymId: string, region: RegionSelectionInterface, mode:'select'|'hover'): void {
+    public addSelectionFromRegion(modelId: string, labelAsymId: string, region: RegionSelectionInterface, mode:'select'|'hover', operatorName?: string): void {
         if(mode === 'select'){
-            this.selection.push({modelId:modelId, labelAsymId:labelAsymId, regions:[region]});
+            this.selection.push({modelId:modelId, labelAsymId:labelAsymId, regions:[region], operatorName: operatorName});
         }else{
-            this.hover.push({modelId:modelId, labelAsymId:labelAsymId, regions:[region]});
+            this.hover.push({modelId:modelId, labelAsymId:labelAsymId, regions:[region], operatorName: operatorName});
         }
     }
 
-    public setSelectionFromMultipleRegions(regions: {modelId: string, labelAsymId: string, region: RegionSelectionInterface}[], mode:'select'|'hover'): void {
+    public setSelectionFromMultipleRegions(regions: {modelId: string, labelAsymId: string, region: RegionSelectionInterface, operatorName?: string}[], mode:'select'|'hover'): void {
         this.clearSelection(mode);
         this.addSelectionFromMultipleRegions(regions, mode);
     }
 
-    public addSelectionFromMultipleRegions(regions: {modelId: string, labelAsymId: string, region: RegionSelectionInterface}[], mode:'select'|'hover'): void {
+    public addSelectionFromMultipleRegions(regions: (SaguaroChain & {region: RegionSelectionInterface})[], mode:'select'|'hover'): void {
         regions.forEach(r=>{
-            this.addSelectionFromRegion(r.modelId, r.labelAsymId, r.region, mode);
+            this.addSelectionFromRegion(r.modelId, r.labelAsymId, r.region, mode, r.operatorName);
         });
     }
 
-    public setSelectionFromResidueSelection(res: Array<ResidueSelectionInterface>, mode:'select'|'hover', source: 'structure'|'sequence'): void {
+    public setSelectionFromResidueSelection(res: Array<SaguaroSet>, mode:'select'|'hover', source: 'structure'|'sequence'): void {
         if(mode==='select'){
             this.selection = selectionFromResidueSelection(res, mode, source);
         }else{
@@ -57,35 +47,35 @@ export class RcsbFvSelectorManager {
         }
     }
 
-    public getSelection(mode:'select'|'hover'): Array<ChainSelectionInterface> {
+    public getSelection(mode:'select'|'hover'): Array<SaguaroRegionList> {
         if(mode === 'select')
             return this.selection;
         else
             return this.hover;
     }
 
-    public getLastSelection(mode:'select'|'hover'): ChainSelectionInterface | null{
+    public getLastSelection(mode:'select'|'hover'): SaguaroRegionList | null{
        return this.lastSelection;
     }
 
-    public setLastSelection(mode:'select'|'hover', selection: ChainSelectionInterface | null): void {
+    public setLastSelection(mode:'select'|'hover', selection: SaguaroRegionList | null): void {
         this.lastSelection = selection;
     }
 
-    public getSelectionWithCondition(modelId: string, labelAsymId: string, mode:'select'|'hover'): ChainSelectionInterface | undefined{
-        const sel: Array<ChainSelectionInterface> = mode === 'select' ?
-            this.selection.filter(d=>(d.modelId===modelId && d.labelAsymId === labelAsymId)) :
-            this.hover.filter(d=>(d.modelId===modelId && d.labelAsymId === labelAsymId));
+    public getSelectionWithCondition(modelId: string, labelAsymId: string, mode:'select'|'hover', operatorName?: string): SaguaroRegionList | undefined {
+        const sel: Array<SaguaroRegionList> = mode === 'select' ?
+            this.selection.filter(d=>(d.modelId===modelId && d.labelAsymId === labelAsymId && (d.operatorName === operatorName || !operatorName))) :
+            this.hover.filter(d=>(d.modelId===modelId && d.labelAsymId === labelAsymId && (d.operatorName === operatorName || !operatorName)));
         if(sel.length > 0)
-            return {modelId: sel[0].modelId, labelAsymId: sel[0].labelAsymId, regions:[].concat.apply([],sel.map(s=>s.regions))};
+            return {modelId: sel[0].modelId, labelAsymId: sel[0].labelAsymId, operatorName: operatorName, regions:[].concat.apply([],sel.map(s=>s.regions))};
     }
 
-    public clearSelection(mode:'select'|'hover', selection?:{modelId?:string, labelAsymId?: string}): void {
+    public clearSelection(mode:'select'|'hover', selection?:Partial<SaguaroChain>): void {
         if(!selection)
             if(mode === 'select')
-                this.selection = new Array<ChainSelectionInterface>();
+                this.selection = new Array<SaguaroRegionList>();
             else
-                this.hover = new Array<ChainSelectionInterface>();
+                this.hover = new Array<SaguaroRegionList>();
         else
             if(selection.labelAsymId || selection.modelId)
                 if(mode === 'select')
@@ -94,7 +84,8 @@ export class RcsbFvSelectorManager {
                     this.hover = this.hover.filter(r=>selectionFilter(r, selection));
     }
 
-    public selectionSource(mode:'select'|'hover', region:{modelId:string;labelAsymId:string;begin:number;end:number;}): 'structure'|'sequence'|undefined{
+    //TODO missing operatorName case
+    public selectionSource(mode:'select'|'hover', region:SaguaroChain & SaguaroRange): 'structure'|'sequence'|undefined{
         if(mode === 'select')
             return this.selection
                 .filter(r=>(r.modelId === region.modelId && r.labelAsymId === region.labelAsymId))[0]?.regions
@@ -104,23 +95,36 @@ export class RcsbFvSelectorManager {
                 .filter(r=>(r.modelId === region.modelId && r.labelAsymId === region.labelAsymId))[0]?.regions
                 .filter(r=>(r.begin === region. begin && r.end === region.end))[0]?.source;
     }
+
 }
 
-function selectionFromResidueSelection(res: Array<ResidueSelectionInterface>, mode:'select'|'hover', source: 'structure'|'sequence'): Array<ChainSelectionInterface> {
-    const selMap: Map<string,Map<string,Set<number>>> = new Map<string, Map<string, Set<number>>>();
+function selectionFromResidueSelection(res: Array<SaguaroSet>, mode:'select'|'hover', source: 'structure'|'sequence'): Array<SaguaroRegionList> {
+    const none:"none" = "none";
+    const selMap: Map<string,Map<string,Map<string,Set<number>>>> = new Map<string, Map<string,Map<string,Set<number>>>>();
     res.forEach(r=>{
         if(!selMap.has(r.modelId))
-            selMap.set(r.modelId,new Map<string, Set<number>>());
+            selMap.set(r.modelId,new Map<string, Map<string,Set<number>>>());
         if(!selMap.get(r.modelId)!.has(r.labelAsymId))
-            selMap.get(r.modelId)!.set(r.labelAsymId, new Set<number>());
+            selMap.get(r.modelId)!.set(r.labelAsymId, new Map<string,Set<number>>());
+        if(r.operatorName && !selMap.get(r.modelId)!.get(r.labelAsymId)!.has(r.operatorName))
+            selMap.get(r.modelId)!.get(r.labelAsymId)!.set(r.operatorName, new Set<number>());
+        else
+            selMap.get(r.modelId)!.get(r.labelAsymId)!.set(none, new Set<number>());
         r.seqIds.forEach(s=>{
-            selMap.get(r.modelId)!.get(r.labelAsymId)!.add(s);
-        })
+            selMap.get(r.modelId)!.get(r.labelAsymId)!.get(r.operatorName ?? none)!.add(s);
+        });
     });
-    const selection = new Array<ChainSelectionInterface>();
+    const selection = new Array<SaguaroRegionList>();
     selMap.forEach((labelMap, modelId)=>{
-        labelMap.forEach((seqSet,labelId)=>{
-            selection.push({modelId:modelId, labelAsymId: labelId, regions:buildIntervals(seqSet, source)});
+        labelMap.forEach((operatorMap,labelId)=>{
+            operatorMap.forEach((seqSet, operatorId)=>{
+                selection.push({
+                    modelId: modelId,
+                    labelAsymId: labelId,
+                    operatorName: operatorId!=none ? operatorId : undefined,
+                    regions: buildIntervals(seqSet, source)
+                });
+            });
         });
     });
     return selection;
@@ -144,13 +148,9 @@ function buildIntervals(ids: Set<number>, source: 'structure'|'sequence'): Array
     return out;
 }
 
-function selectionFilter(r:ChainSelectionInterface, selection:{modelId?:string, labelAsymId?: string}): boolean{
-    if(selection.modelId && selection.labelAsymId)
-        return (r.modelId != selection.modelId || r.labelAsymId != selection.labelAsymId);
-    else if(selection.modelId)
-        return (r.modelId != selection.modelId);
-    else if(selection.labelAsymId)
-        return (r.labelAsymId != selection.labelAsymId);
-    else
-        return false;
+function selectionFilter(r:SaguaroRegionList, selection:Partial<SaguaroChain>): boolean{
+    return (typeof selection.modelId === "string" && r.modelId != selection.modelId) ||
+           (typeof selection.labelAsymId === "string" && r.labelAsymId != selection.labelAsymId) ||
+           (typeof selection.operatorName === "string" && r.operatorName != selection.operatorName);
+
 }

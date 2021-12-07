@@ -1,5 +1,5 @@
 import * as React from "react";
-import {SaguaroPluginInterface} from "./StructurePlugins/SaguaroPluginInterface";
+import {SaguaroPluginInterface} from "./SaguaroPluginInterface";
 import {RcsbFvDOMConstants} from "../RcsbFvConstants/RcsbFvConstants";
 import {ViewerProps} from "@rcsb/rcsb-molstar/build/src/viewer";
 import {LoadMolstarInterface} from "./StructurePlugins/MolstarPlugin";

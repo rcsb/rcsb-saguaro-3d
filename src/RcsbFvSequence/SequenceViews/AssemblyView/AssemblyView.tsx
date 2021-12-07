@@ -12,11 +12,11 @@ import {
     InstanceSequenceOnchangeInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
 import {RcsbFvBoardConfigInterface, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
-import {ChainSelectionInterface} from "../../../RcsbFvSelection/RcsbFvSelectorManager";
 import {
+    ChainInfo,
     SaguaroPluginInterface,
-    SaguaroPluginModelMapType
-} from "../../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
+    SaguaroPluginModelMapType, SaguaroRange, SaguaroRegionList
+} from "../../../RcsbFvStructure/SaguaroPluginInterface";
 import {OptionPropsInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/WebTools/SelectButton";
 
 import {OptionProps} from "react-select/src/components/Option";
@@ -27,11 +27,13 @@ import {
     RcsbFvAdditionalConfig,
     RcsbFvModulePublicInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
+import {RcsbFvUI} from "@rcsb/rcsb-saguaro-app";
 
 export interface AssemblyViewInterface {
     entryId: string;
     additionalConfig?: RcsbFvAdditionalConfig;
     instanceSequenceConfig?: InstanceSequenceConfig;
+    useOperatorsFlag?:boolean;
 }
 
 export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractViewInterface, {}>{
@@ -39,6 +41,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
     private currentLabelAsymId: string;
     private currentEntryId: string;
     private currentModelId: string;
+    private currentOpName: string | undefined = undefined;
     private currentModelNumber: string;
     private createComponentThreshold: number = 3;
     private innerSelectionFlag: boolean = false;
@@ -136,22 +139,20 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         if(mode === 'select' && this.currentSelectedComponentId != null){
             this.props.plugin.removeComponent(this.currentSelectedComponentId);
         }
-        const allSel: Array<ChainSelectionInterface> | undefined = this.props.selectorManager.getSelection(mode);
+        const allSel: Array<SaguaroRegionList> | undefined = this.props.selectorManager.getSelection(mode);
         if(allSel == null || allSel.length ===0) {
             this.rcsbFvModule?.getFv().clearSelection(mode);
-            if(mode === 'select')
-                this.resetPluginView();
         }else if(mode === 'select' && this.props.selectorManager.getLastSelection('select')?.labelAsymId != null && this.props.selectorManager.getLastSelection('select')?.labelAsymId != this.currentLabelAsymId){
             const authId: string | undefined = this.currentModelMap
                 .get(this.currentModelId)?.chains
                 .filter(ch=>(ch.label===this.props.selectorManager.getLastSelection('select')?.labelAsymId))[0]?.auth;
-            await this.modelChangeCallback(this.currentModelMap, authId);
+            await this.modelChangeCallback(this.currentModelMap, authId, this.props.selectorManager.getLastSelection('select')?.operatorName);
         }else{
-            const sel: ChainSelectionInterface | undefined = this.props.selectorManager.getSelectionWithCondition(this.currentModelId, this.currentLabelAsymId, mode);
+            if(mode === 'select' && this.props.selectorManager.getLastSelection('select')?.operatorName && this.props.selectorManager.getLastSelection('select')?.operatorName != this.currentOpName)
+                this.addOperatorButton(this.props.selectorManager.getLastSelection('select')?.operatorName);
+            const sel: SaguaroRegionList | undefined = this.props.selectorManager.getSelectionWithCondition(this.currentModelId, this.currentLabelAsymId, mode, this.currentOpName);
             if (sel == null) {
                 this.rcsbFvModule?.getFv().clearSelection(mode);
-                if(mode === 'select')
-                    this.resetPluginView();
             } else {
                 this.rcsbFvModule?.getFv().setSelection({elements: sel.regions, mode: mode});
             }
@@ -159,8 +160,9 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         this.innerSelectionFlag = false;
     }
 
-    async modelChangeCallback(modelMap:SaguaroPluginModelMapType, defaultAuthId?: string): Promise<void> {
+    async modelChangeCallback(modelMap:SaguaroPluginModelMapType, defaultAuthId?: string, defaultOperatorName?:string): Promise<void> {
         this.currentModelMap = modelMap;
+        this.currentOpName = undefined;
         this.props.plugin.clearFocus();
         const onChangeCallback: Map<string, (x: InstanceSequenceOnchangeInterface)=>void> = new Map<string, (x: InstanceSequenceOnchangeInterface) => {}>();
         const filterInstances: Map<string, Set<string>> = new Map<string, Set<string>>();
@@ -171,8 +173,9 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 this.currentModelId = k;
                 asyncScheduler.schedule(()=>{
                     this.props.selectorManager.setLastSelection('select', null);
-                    this.structureSelectionCallback();
+                    this.instanceChangeCallback();
                 },1000);
+                this.addOperatorButton(defaultOperatorName);
             });
             filterInstances.set(v.entryId,new Set<string>(v.chains.map(d=>d.label)));
         });
@@ -204,6 +207,36 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
             await createComponents(this.props.plugin, modelMap);
     }
 
+    private async instanceChangeCallback(): Promise<void>{
+        this.resetPluginView();
+        await this.pluginSelectCallback('select');
+    }
+
+    private addOperatorButton(operatorName?:string): void{
+        const currentChainInfo: ChainInfo|undefined = this.currentModelMap.get(this.currentModelId)?.chains.find(ch=>ch.label===this.currentLabelAsymId);
+        if(this.props.useOperatorsFlag && currentChainInfo && currentChainInfo.operators.length >1 ){
+            this.currentOpName = operatorName ?? currentChainInfo.operators[0].name;
+            RcsbFvUI.addSelectButton(
+                this.rcsbFvDivId,
+                RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID,
+                currentChainInfo.operators.map(op=>({
+                    label:op.name,
+                    optId:op.name,
+                    onChange:()=>{
+                        this.currentOpName = op.name;
+                        asyncScheduler.schedule(()=>{
+                            this.props.selectorManager.setLastSelection('select', null);
+                            this.structureSelectionCallback();
+                        },300);
+                    }
+                })),
+                {
+                    defaultValue: this.currentOpName
+                }
+            );
+        }
+    }
+
     private unmountRcsbFv(): void {
         this.rcsbFvModule = null;
         unmount(this.rcsbFvDivId);
@@ -212,15 +245,15 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
     private highlightHoverCallback(selection: RcsbFvTrackDataElementInterface[]): void {
         if(selection != null && selection.length > 0) {
             if(selection[0].isEmpty){
-                const selectionList = [{modelId: this.currentModelId, labelAsymId: this.currentLabelAsymId, position: selection[0].begin}];
-                if(selection[0].end != null) selectionList.push({modelId: this.currentModelId, labelAsymId: this.currentLabelAsymId, position: selection[0].end})
+                const selectionList = [{modelId: this.currentModelId, labelAsymId: this.currentLabelAsymId, position: selection[0].begin, operatorName: this.currentOpName}];
+                if(selection[0].end != null) selectionList.push({modelId: this.currentModelId, labelAsymId: this.currentLabelAsymId, position: selection[0].end, operatorName: this.currentOpName})
                 this.props.plugin.select(
                     selectionList,
                     'hover',
                     'set'
                 );
             }else {
-                this.props.plugin.select(processMultipleGaps(this.currentModelId, this.currentLabelAsymId, selection), 'hover', 'set');
+                this.props.plugin.select(processMultipleGaps(this.currentModelId, this.currentLabelAsymId, selection, this.currentOpName), 'hover', 'set');
             }
         }else{
             this.props.plugin.clearSelection('hover');
@@ -230,8 +263,8 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
     private selectionChangeCallback(selection: Array<RcsbFvTrackDataElementInterface>): void {
         if(this.innerSelectionFlag)
             return;
-        this.props.plugin.clearSelection('select', {modelId: this.currentModelId, labelAsymId: this.currentLabelAsymId});
-        this.props.selectorManager.clearSelection('select', {labelAsymId: this.currentLabelAsymId});
+        this.props.plugin.clearSelection('select', {modelId: this.currentModelId, labelAsymId: this.currentLabelAsymId, operatorName: this.currentOpName});
+        this.props.selectorManager.clearSelection('select', {labelAsymId: this.currentLabelAsymId, operatorName: this.currentOpName});
         if(selection == null || selection.length === 0) {
             this.resetPluginView();
         }else{
@@ -245,13 +278,13 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
             const y = e.end ?? e.begin;
             if(e.isEmpty){
                 this.props.plugin.select(
-                    [{modelId: this.currentModelId, labelAsymId: this.currentLabelAsymId, position: x},{modelId: this.currentModelId, labelAsymId: this.currentLabelAsymId, position: y}], 'select',
+                    [{modelId: this.currentModelId, labelAsymId: this.currentLabelAsymId, position: x, operatorName: this.currentOpName},{modelId: this.currentModelId, labelAsymId: this.currentLabelAsymId, position: y, operatorName: this.currentOpName}], 'select',
                     'add'
                 );
-                this.props.selectorManager.addSelectionFromRegion(this.currentModelId, this.currentLabelAsymId, {begin:x, end:y, isEmpty: true, source: 'sequence'}, 'select');
+                this.props.selectorManager.addSelectionFromRegion(this.currentModelId, this.currentLabelAsymId, {begin:x, end:y, isEmpty: true, source: 'sequence'}, 'select', this.currentOpName);
             }else{
-                this.props.plugin.select(processGaps(this.currentModelId, this.currentLabelAsymId, e), 'select', 'add');
-                this.props.selectorManager.addSelectionFromRegion(this.currentModelId, this.currentLabelAsymId, {begin:x, end:y, source: 'sequence'}, 'select');
+                this.props.plugin.select(processGaps(this.currentModelId, this.currentLabelAsymId, e, this.currentOpName), 'select', 'add');
+                this.props.selectorManager.addSelectionFromRegion(this.currentModelId, this.currentLabelAsymId, {begin:x, end:y, source: 'sequence'}, 'select', this.currentOpName);
             }
         });
     }
@@ -265,35 +298,36 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         const x = e.begin;
         const y = e.end ?? e.begin;
         if(e.isEmpty){
-            this.props.plugin.cameraFocus(this.currentModelId, this.currentLabelAsymId, [x,y]);
+            this.props.plugin.cameraFocus(this.currentModelId, this.currentLabelAsymId, [x,y], this.currentOpName);
             this.currentSelectedComponentId = this.currentLabelAsymId +":"+ ((x === y) ? x.toString() : x.toString()+","+y.toString());
             asyncScheduler.schedule(async ()=>{
                 await this.props.plugin.createComponent(
                     this.currentSelectedComponentId,
-                    this.currentModelId,
-                    [{labelAsymId: this.currentLabelAsymId, position: x}, {labelAsymId: this.currentLabelAsymId, position: y}],
+                    [
+                        {modelId: this.currentModelId, labelAsymId: this.currentLabelAsymId, position: x, operatorName: this.currentOpName},
+                        {modelId: this.currentModelId, labelAsymId: this.currentLabelAsymId, position: y, operatorName: this.currentOpName}
+                        ],
                     'ball-and-stick'
                 )
                 if(x === y)
                     asyncScheduler.schedule(()=>{
-                        this.props.plugin.setFocus(this.currentModelId, this.currentLabelAsymId, x, y);
+                        this.props.plugin.setFocus(this.currentModelId, this.currentLabelAsymId, x, y, this.currentOpName);
                     },200);
             },100);
 
         }else{
-            this.props.plugin.cameraFocus(this.currentModelId, this.currentLabelAsymId, x, y);
+            this.props.plugin.cameraFocus(this.currentModelId, this.currentLabelAsymId, x, y, this.currentOpName);
             if((y-x)<this.createComponentThreshold){
                 this.currentSelectedComponentId = this.currentLabelAsymId +":"+ (x === y ? x.toString() : x.toString()+"-"+y.toString());
                 asyncScheduler.schedule(async ()=>{
                     await this.props.plugin.createComponent(
                         this.currentSelectedComponentId,
-                        this.currentModelId,
-                        processGaps(this.currentModelId, this.currentLabelAsymId, e),
+                        processGaps(this.currentModelId, this.currentLabelAsymId, e, this.currentOpName),
                         'ball-and-stick'
                     )
                     if(x === y)
                         asyncScheduler.schedule(()=>{
-                            this.props.plugin.setFocus(this.currentModelId, this.currentLabelAsymId, x, y);
+                            this.props.plugin.setFocus(this.currentModelId, this.currentLabelAsymId, x, y, this.currentOpName);
                         },200);
                 },100);
             }
@@ -302,15 +336,16 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
 
 }
 
-function processGaps(modelId: string, labelAsymId: string, e: RcsbFvTrackDataElementInterface): Array<{modelId: string; labelAsymId: string; begin: number; end: number;}>{
-    const regions: Array<{modelId: string; labelAsymId: string; begin: number; end: number;}> = new Array<{modelId: string; labelAsymId: string; begin: number; end: number}>();
+function processGaps(modelId: string, labelAsymId: string, e: RcsbFvTrackDataElementInterface, operatorName?:string): Array<SaguaroRange>{
+    const regions: Array<SaguaroRange> = new Array<SaguaroRange>();
     let lastIndex: number = e.begin;
     e.gaps?.forEach((g)=>{
         regions.push({
             modelId: modelId,
             labelAsymId: labelAsymId,
             begin: lastIndex,
-            end: g.begin
+            end: g.begin,
+            operatorName: operatorName
         });
         lastIndex = g.end;
     });
@@ -318,15 +353,16 @@ function processGaps(modelId: string, labelAsymId: string, e: RcsbFvTrackDataEle
         modelId: modelId,
         labelAsymId: labelAsymId,
         begin: lastIndex,
-        end: e.end ?? e.begin
+        end: e.end ?? e.begin,
+        operatorName: operatorName
     });
     return regions;
 }
 
-function processMultipleGaps(modelId: string, labelAsymId: string, list: Array<RcsbFvTrackDataElementInterface>): Array<{modelId: string; labelAsymId: string; begin: number; end: number;}>{
-    let regions: Array<{modelId: string; labelAsymId: string; begin: number; end: number;}> = new Array<{modelId: string; labelAsymId: string; begin: number; end: number}>();
+function processMultipleGaps(modelId: string, labelAsymId: string, list: Array<RcsbFvTrackDataElementInterface>, operatorName?:string): Array<SaguaroRange>{
+    let regions: Array<SaguaroRange> = new Array<SaguaroRange>();
     list.forEach(e=>{
-        regions = regions.concat(processGaps(modelId, labelAsymId, e));
+        regions = regions.concat(processGaps(modelId, labelAsymId, e, operatorName));
     });
     return regions;
 }

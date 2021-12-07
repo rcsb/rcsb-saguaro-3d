@@ -32,36 +32,20 @@ const commonConfig = {
             'node_modules',
             path.resolve(__dirname, 'build/src/')
         ],
-    },
-    node: {
-        fs: "empty"
+        fallback: {
+            fs: false,
+            buffer: require.resolve('buffer'),
+            crypto: require.resolve('crypto-browserify'),
+            path: require.resolve('path-browserify'),
+            stream: require.resolve('stream-browserify')
+        }
     }
 };
 
 const out_path = "build/examples";
-const example_1 = {
-    ...commonConfig,
-    entry: {
-        "index": './build/src/examples/single-chain/index.js'
-    },
-    output: {
-        filename: '[name].js',
-        path: path.resolve(__dirname, out_path+'/single-chain/')
-    }
-}
+const examples = [];
 
-const example_2 = {
-    ...commonConfig,
-    entry: {
-        "index": './build/src/examples/structural-alignment/index.js'
-    },
-    output: {
-        filename: '[name].js',
-        path: path.resolve(__dirname, out_path+'/structural-alignment/')
-    }
-}
-
-const example_3 = {
+examples.push({
     ...commonConfig,
     entry: {
         "index": './build/src/examples/assembly/index.js'
@@ -70,9 +54,31 @@ const example_3 = {
         filename: '[name].js',
         path: path.resolve(__dirname, out_path+'/assembly/')
     }
-}
+});
 
-const example_4 = {
+examples.push({
+    ...commonConfig,
+    entry: {
+        "index": './build/src/examples/single-chain/index.js'
+    },
+    output: {
+        filename: '[name].js',
+        path: path.resolve(__dirname, out_path+'/single-chain/')
+    }
+});
+
+examples.push({
+    ...commonConfig,
+    entry: {
+        "index": './build/src/examples/structural-alignment/index.js'
+    },
+    output: {
+        filename: '[name].js',
+        path: path.resolve(__dirname, out_path+'/structural-alignment/')
+    }
+});
+
+examples.push({
     ...commonConfig,
     entry: {
         "index": './build/src/examples/multiple-chain/index.js'
@@ -81,9 +87,9 @@ const example_4 = {
         filename: '[name].js',
         path: path.resolve(__dirname, out_path+'/multiple-chain/')
     }
-}
+});
 
-const example_5 = {
+examples.push({
     ...commonConfig,
     entry: {
         "index": './build/src/examples/css-config/index.js'
@@ -92,6 +98,6 @@ const example_5 = {
         filename: '[name].js',
         path: path.resolve(__dirname, out_path+'/css-config/')
     }
-}
+});
 
-module.exports = [example_1, example_2, example_3, example_4, example_5];
+module.exports = examples;

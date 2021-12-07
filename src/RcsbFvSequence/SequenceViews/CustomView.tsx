@@ -12,7 +12,7 @@ import {RcsbFvSelectorManager} from "../../RcsbFvSelection/RcsbFvSelectorManager
 import {
     SaguaroPluginModelMapType,
     SaguaroPluginPublicInterface
-} from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
+} from "../../RcsbFvStructure/SaguaroPluginInterface";
 
 export type CustomViewStateInterface = Omit<CustomViewInterface, "modelChangeCallback">;
 

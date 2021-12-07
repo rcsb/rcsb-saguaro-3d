@@ -1,12 +1,12 @@
 import * as React from "react";
-import * as classes from '../../styles/RcsbFvStyle.module.scss';
+import classes from '../../styles/RcsbFvStyle.module.scss';
 import {asyncScheduler, Subscription} from "rxjs";
 
 import {RcsbFvDOMConstants} from "../../RcsbFvConstants/RcsbFvConstants";
 import {
     SaguaroPluginInterface,
     SaguaroPluginModelMapType
-} from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
+} from "../../RcsbFvStructure/SaguaroPluginInterface";
 import {RcsbFvSelectorManager} from "../../RcsbFvSelection/RcsbFvSelectorManager";
 import {SequenceViewInterface} from "./SequenceViewInterface";
 

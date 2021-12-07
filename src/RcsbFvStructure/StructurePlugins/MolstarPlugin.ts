@@ -1,9 +1,10 @@
 import {Viewer, ViewerProps} from '@rcsb/rcsb-molstar/build/src/viewer';
 import {PresetProps} from '@rcsb/rcsb-molstar/build/src/viewer/helpers/preset';
 import {
+    ChainInfo, OperatorInfo, SaguaroChain,
     SaguaroPluginInterface,
-    SaguaroPluginModelMapType
-} from "./SaguaroPluginInterface";
+    SaguaroPluginModelMapType, SaguaroPosition, SaguaroRange, SaguaroSet
+} from "../SaguaroPluginInterface";
 
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {Loci} from "molstar/lib/mol-model/loci";
@@ -22,15 +23,18 @@ import {OrderedSet} from "molstar/lib/mol-data/int";
 import { PluginStateObject as PSO } from 'molstar/lib/mol-plugin-state/objects';
 import {State, StateObject} from "molstar/lib/mol-state";
 import {StructureComponentRef, StructureRef} from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
-import {RcsbFvSelectorManager, ResidueSelectionInterface} from "../../RcsbFvSelection/RcsbFvSelectorManager";
+import {
+    RcsbFvSelectorManager
+} from "../../RcsbFvSelection/RcsbFvSelectorManager";
 import {AbstractPlugin} from "./AbstractPlugin";
 import {Subscription} from "rxjs";
 import {Script} from "molstar/lib/mol-script/script";
-import {MolScriptBuilder} from "molstar/lib/mol-script/language/builder";
+import {MolScriptBuilder as MS} from "molstar/lib/mol-script/language/builder";
 import {SetUtils} from "molstar/lib/mol-util/set";
 import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/registry";
 import {ColorTheme} from "molstar/lib/mol-theme/color";
 import {TrajectoryHierarchyPresetProvider} from "molstar/lib/mol-plugin-state/builder/structure/hierarchy-preset";
+import {Expression} from "molstar/lib/commonjs/mol-script/language/expression";
 
 export enum LoadMethod {
     loadPdbId = "loadPdbId",
@@ -138,11 +142,11 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     public setBackground(color: number) {
     }
 
-    public select(modelId:string, labelAsymId: string, begin: number, end: number, mode: 'select'|'hover', operation:'add'|'set'): void;
-    public select(selection: Array<{modelId:string; labelAsymId: string; position: number;}>, mode: 'select'|'hover', operation:'add'|'set'): void;
-    public select(selection: Array<{modelId:string; labelAsymId: string; begin: number; end: number;}>, mode: 'select'|'hover', operation:'add'|'set'): void;
+    public select(modelId:string, labelAsymId: string, begin: number, end: number, mode: 'select'|'hover', operation:'add'|'set', operatorName?:string): void;
+    public select(selection: Array<SaguaroPosition>, mode: 'select'|'hover', operation:'add'|'set'): void;
+    public select(selection: Array<SaguaroRange>, mode: 'select'|'hover', operation:'add'|'set'): void;
     public select(...args: any[]): void{
-        if(args.length === 6){
+        if(args.length >= 6){
             this.selectRange(args[0],args[1],args[2],args[3],args[4],args[5]);
         }else if(args.length === 3 && (args[0] as Array<any>).length > 0 && typeof (args[0] as Array<any>)[0].position === 'number'){
             this.selectSet(args[0],args[1],args[2]);
@@ -150,99 +154,98 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
             this.selectMultipleRanges(args[0],args[1],args[2]);
         }
     }
-    private selectRange(modelId:string, labelAsymId: string, begin: number, end: number, mode: 'select'|'hover', operation:'add'|'set'): void {
+    private selectRange(modelId:string, labelAsymId: string, begin: number, end: number, mode: 'select'|'hover', operation:'add'|'set', operatorName?:string): void {
         if(mode == null || mode === 'select') {
             this.innerSelectionFlag = true;
         }
-        this.viewer.select({modelId:this.getModelId(modelId), labelAsymId: labelAsymId, labelSeqRange:{beg: begin, end:end}}, mode,operation);
+        this.viewer.select({modelId:this.getModelId(modelId), labelAsymId: labelAsymId, labelSeqRange:{beg: begin, end:end}, operatorName: operatorName}, mode,operation);
         this.innerSelectionFlag = false;
     }
-    private selectSet(selection: Array<{modelId:string; labelAsymId: string; position: number;}>, mode: 'select'|'hover', operation:'add'|'set'): void {
+    private selectSet(selection: Array<SaguaroPosition>, mode: 'select'|'hover', operation:'add'|'set'): void {
         if(mode == null || mode === 'select') {
             this.innerSelectionFlag = true;
         }
-        this.viewer.select(selection.map(r=>({modelId: this.getModelId(r.modelId), labelSeqId:r.position, labelAsymId: r.labelAsymId})), mode, operation);
+        this.viewer.select(selection.map(r=>({modelId: this.getModelId(r.modelId), labelSeqId:r.position, labelAsymId: r.labelAsymId, operatorName: r.operatorName})), mode, operation);
         this.innerSelectionFlag = false;
     }
-    private selectMultipleRanges(selection: Array<{modelId:string; labelAsymId: string; begin: number; end:number;}>, mode: 'select'|'hover', operation:'add'|'set'): void {
+    private selectMultipleRanges(selection: Array<SaguaroRange>, mode: 'select'|'hover', operation:'add'|'set'): void {
         if(mode == null || mode === 'select') {
             this.innerSelectionFlag = true;
         }
-        this.viewer.select(selection.map(r=>({modelId: this.getModelId(r.modelId), labelAsymId: r.labelAsymId, labelSeqRange:{beg:r.begin, end: r.end}})), mode, operation);
+        this.viewer.select(selection.map(r=>({modelId: this.getModelId(r.modelId), labelAsymId: r.labelAsymId, labelSeqRange:{beg:r.begin, end: r.end}, operatorName: r.operatorName})), mode, operation);
         this.innerSelectionFlag = false;
     }
 
-    public clearSelection(mode:'select'|'hover', option?:{modelId:string; labelAsymId:string;}): void {
+    public clearSelection(mode:'select'|'hover', option?:SaguaroChain): void {
         if(mode === 'select') {
             this.viewer.clearFocus();
             this.innerSelectionFlag = true;
         }
         if(option != null)
-            this.viewer.clearSelection(mode, {modelId: this.getModelId(option.modelId), labelAsymId: option.labelAsymId});
+            this.viewer.clearSelection(mode, {...option, modelId: this.getModelId(option.modelId)});
         else
             this.viewer.clearSelection(mode);
         this.innerSelectionFlag = false;
     }
 
-    public setFocus(modelId: string, labelAsymId: string, begin: number, end: number): void{
-        this.viewer.setFocus({modelId: this.getModelId(modelId), labelAsymId: labelAsymId, labelSeqRange:{beg:begin, end: end}});
+    public setFocus(modelId: string, labelAsymId: string, begin: number, end: number, operatorName?:string): void{
+        this.viewer.setFocus({modelId: this.getModelId(modelId), labelAsymId: labelAsymId, labelSeqRange:{beg:begin, end: end}, operatorName: operatorName});
     }
     public clearFocus(): void {
         this.viewer.clearFocus();
     }
 
-    public cameraFocus(modelId: string, labelAsymId: string, positions:Array<number>): void;
-    public cameraFocus(modelId: string, labelAsymId: string, begin: number, end: number): void;
-    public cameraFocus(regions: {modelId: string; labelAsymId: string; begin: number; end: number;}[]): void;
+    public cameraFocus(modelId: string, labelAsymId: string, positions:Array<number>, operatorName?:string): void;
+    public cameraFocus(modelId: string, labelAsymId: string, begin: number, end: number, operatorName?:string): void;
     public cameraFocus(...args: any[]): void{
-        if(args.length === 1){
-            //TODO How to focus selections through multiple models
-        }else if(args.length === 3){
-            this.focusPositions(args[0],args[1],args[2]);
-        }else if(args.length === 4){
-            this.focusRange(args[0],args[1],args[2],args[3]);
+        if(typeof args[3] === "number"){
+            this.focusRange(args[0],args[1],args[2],args[3],args[4]);
+        }else{
+            this.focusPositions(args[0],args[1],args[2],args[3]);
         }
     }
-    private focusPositions(modelId: string, labelAsymId: string, positions:Array<number>): void{
-        const data: Structure | undefined = getStructureWithModelId(this.viewer.plugin.managers.structure.hierarchy.current.structures, this.getModelId(modelId));
-        if (data == null) return;
+    private focusPositions(modelId: string, labelAsymId: string, positions:Array<number>, operatorName?:string): void{
+        const structure: Structure | undefined = getStructureWithModelId(this.viewer.plugin.managers.structure.hierarchy.current.structures, this.getModelId(modelId));
+        if (structure == null) return;
+        const chainTests: Expression[] = [MS.core.rel.eq([MS.ammp('label_asym_id'), labelAsymId])];
+        if(operatorName)
+            chainTests.push(MS.core.rel.eq([operatorName, MS.acp('operatorName')]));
         const sel: StructureSelection = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
-            'chain-test': Q.core.rel.eq([labelAsymId, MolScriptBuilder.ammp('label_asym_id')]),
-            'residue-test': Q.core.set.has([MolScriptBuilder.set(...SetUtils.toArray(new Set(positions))), MolScriptBuilder.ammp('label_seq_id')])
-        }), data);
+            'chain-test': Q.core.logic.and(chainTests),
+            'residue-test': Q.core.set.has([MS.set(...SetUtils.toArray(new Set(positions))), MS.ammp('label_seq_id')])
+        }), structure);
         const loci: Loci = StructureSelection.toLociWithSourceUnits(sel);
         if(!StructureElement.Loci.isEmpty(loci))
             this.viewer.plugin.managers.camera.focusLoci(loci);
         else
             this.viewer.plugin.managers.camera.reset();
     }
-    private focusRange(modelId: string, labelAsymId: string, begin: number, end: number): void{
+    private focusRange(modelId: string, labelAsymId: string, begin: number, end: number, operatorName?:string): void{
         const seqIds: Array<number> = new Array<number>();
         for(let n = begin; n <= end; n++){
             seqIds.push(n);
         }
-        this.focusPositions(modelId, labelAsymId, seqIds);
+        this.focusPositions(modelId, labelAsymId, seqIds, operatorName);
     }
 
-    public async createComponent(componentLabel: string, modelId:string, labelAsymId: string, begin: number, end : number, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
-    public async createComponent(componentLabel: string, modelId:string, labelAsymId: string, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
-    public async createComponent(componentLabel: string, modelId:string, residues: Array<{labelAsymId: string; position: number;}>, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
-    public async createComponent(componentLabel: string, modelId:string, residues: Array<{labelAsymId: string; begin: number; end: number;}>, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
+    public async createComponent(componentLabel: string, modelId:string, labelAsymId: string, begin: number, end : number, representationType: StructureRepresentationRegistry.BuiltIn, operatorName?:string): Promise<void>;
+    public async createComponent(componentLabel: string, modelId:string, labelAsymId: string, representationType: StructureRepresentationRegistry.BuiltIn, operatorName?:string): Promise<void>;
+    public async createComponent(componentLabel: string, residues: Array<SaguaroPosition>, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
+    public async createComponent(componentLabel: string, residues: Array<SaguaroRange>, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
     public async createComponent(...args: any[]): Promise<void> {
         this.removeComponent(args[0]);
-        if(args.length === 4){
-            if( args[2] instanceof Array && args[2].length > 0 ) {
-                if(typeof args[2][0].position === "number"){
-                    await this.viewer.createComponent(args[0], args[2].map(r=>({modelId: this.getModelId(args[1]), labelAsymId: r.labelAsymId, labelSeqId: r.position})), args[3]);
+        if(args.length === 3){
+            if( args[1] instanceof Array && args[1].length > 0 ) {
+                if(typeof args[1][0].position === "number"){
+                    await this.viewer.createComponent(args[0], args[1].map(r=>({modelId: this.getModelId(r.modelId), labelAsymId: r.labelAsymId, labelSeqId: r.position, operatorName: r.operatorName})), args[2]);
                 }else{
-                    await this.viewer.createComponent(args[0], args[2].map(r=>({modelId: this.getModelId(args[1]), labelAsymId: r.labelAsymId, labelSeqRange:{beg:r.begin, end: r.end}})), args[3]);
+                    await this.viewer.createComponent(args[0], args[1].map(r=>({modelId: this.getModelId(r.modelId), labelAsymId: r.labelAsymId, labelSeqRange:{beg:r.begin, end: r.end}, operatorName: r.operatorName})), args[2]);
                 }
-            }else{
-                await this.viewer.createComponent(args[0], {modelId: this.getModelId(args[1]), labelAsymId:args[2]}, args[3]);
             }
-        }
-        else if(args.length === 6){
-            await this.viewer.createComponent(args[0], {modelId: this.getModelId(args[1]), labelAsymId: args[2], labelSeqRange:{beg:args[3], end:args[4]}}, args[5]);
+        }else if(args.length >= 6){
+            await this.viewer.createComponent(args[0], {modelId: this.getModelId(args[1]), labelAsymId: args[2], labelSeqRange:{beg:args[3], end:args[4]}, operatorName: args[6]}, args[5]);
+        }else{
+            await this.viewer.createComponent(args[0], {modelId: this.getModelId(args[1]), labelAsymId:args[2], operatorName: args[4]}, args[3]);
         }
         this.componentMap.set(args[0], this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups[this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups.length-1][0]);
     }
@@ -330,7 +333,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
 
     public setHoverCallback(g:()=>void){
         this.viewer.plugin.behaviors.interaction.hover.subscribe((r)=>{
-            const sequenceData: Array<ResidueSelectionInterface> = new Array<ResidueSelectionInterface>();
+            const sequenceData: Array<SaguaroSet> = new Array<SaguaroSet>();
             const loci:Loci = r.current.loci;
             if(StructureElement.Loci.is(loci)){
                 const loc = StructureElement.Location.create(loci.structure);
@@ -345,6 +348,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
                     sequenceData.push({
                         modelId: this.getModelId(modelId),
                         labelAsymId: SP.chain.label_asym_id(loc),
+                        operatorName: SP.unit.operator_name(loc),
                         seqIds
                     });
                 }
@@ -390,20 +394,19 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
                         for (const e of surroundingsLoci.elements) {
                             StructureElement.Location.set(surroundingsLoc, surroundingsLoci.structure, e.unit, e.unit.elements[0]);
                             if(SP.entity.type(surroundingsLoc) === 'polymer'){
-                                const currentAsymId: string = SP.chain.label_asym_id(surroundingsLoc);
                                 this.selection.setLastSelection('select', {
                                     modelId: currentModelId,
-                                    labelAsymId: currentAsymId,
+                                    labelAsymId: SP.chain.label_asym_id(surroundingsLoc),
                                     regions: []
                                 });
                             }
                         }
                         this.innerSelectionFlag = false;
                     }else if( SP.entity.type(loc) === 'polymer' ) {
-                        const currentAsymId: string = SP.chain.label_asym_id(loc);
                         this.selection.setLastSelection('select', {
                             modelId: currentModelId,
-                            labelAsymId: currentAsymId,
+                            labelAsymId: SP.chain.label_asym_id(loc),
+                            operatorName: SP.unit.operator_name(loc),
                             regions: []
                         });
                     }else{
@@ -412,7 +415,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
             }else{
                 this.selection.setLastSelection('select', null);
             }
-            const sequenceData: Array<ResidueSelectionInterface> = new Array<ResidueSelectionInterface>();
+            const sequenceData: Array<SaguaroSet> = new Array<SaguaroSet>();
             for(const structure of this.viewer.plugin.managers.structure.hierarchy.current.structures){
                 const data: Structure | undefined = structure.cell.obj?.data;
                 if(data == null) return;
@@ -429,6 +432,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
                         sequenceData.push({
                             modelId: this.getModelId(data.model.id),
                             labelAsymId: SP.chain.label_asym_id(loc),
+                            operatorName: SP.unit.operator_name(loc),
                             seqIds
                         });
                     }
@@ -459,11 +463,11 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
 
     private getChains(): SaguaroPluginModelMapType{
         const structureRefList = getStructureOptions(this.viewer.plugin);
-        const out: SaguaroPluginModelMapType = new Map<string, {entryId: string; chains: Array<{label:string;auth:string;entityId:string;title:string;type:ChainType;}>}>();
+        const out: SaguaroPluginModelMapType = new Map<string, {entryId: string; chains: Array<ChainInfo>}>();
         structureRefList.forEach((structureRef,i)=>{
             const structure = getStructure(structureRef[0], this.viewer.plugin.state.data);
             let modelEntityId = getModelEntityOptions(structure)[0][0];
-            const chains: [{modelId:string;entryId:string},{auth:string;label:string;entityId:string;title:string;type:ChainType;}[]] = getChainValues(structure, modelEntityId);
+            const chains: [{modelId:string;entryId:string},ChainInfo[]] = getChainValues(structure, modelEntityId);
             out.set(this.getModelId(chains[0].modelId),{entryId:chains[0].entryId, chains: chains[1]});
         });
         return out;
@@ -475,7 +479,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         structureRefList.forEach((structureRef,i)=>{
             const structure = getStructure(structureRef[0], this.viewer.plugin.state.data);
             let modelEntityId = getModelEntityOptions(structure)[0][0];
-            const chains: [{modelId:string, entryId:string},{auth:string,label:string;entityId:string;title:string;type:ChainType;}[]] = getChainValues(structure, modelEntityId);
+            const chains: [{modelId:string, entryId:string},ChainInfo[]] = getChainValues(structure, modelEntityId);
             this.modelMap.set(chains[0].modelId,loadParamList[i].id);
             if(loadParamList[i].id!=null)
                 this.modelMap.set(loadParamList[i].id!,chains[0].modelId);
@@ -497,8 +501,6 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
 
 }
 
-export type ChainType = "polymer"|"water"|"branched"|"non-polymer"|"macrolide";
-
 export function getStructureOptions(plugin: PluginContext): [string,string][] {
     const options: [string, string][] = [];
     plugin.managers.structure.hierarchy.current.structures.forEach(s=>{
@@ -507,24 +509,22 @@ export function getStructureOptions(plugin: PluginContext): [string,string][] {
     return options;
 }
 
-export function getChainValues(structure: Structure, modelEntityId: string): [{modelId:string, entryId:string},{auth:string;label:string;entityId:string;title:string;type:ChainType;}[]] {
-    const options: {auth:string;label:string;entityId:string;title:string;type:ChainType;}[] = [];
+function getChainValues(structure: Structure, modelEntityId: string): [{modelId:string, entryId:string},ChainInfo[]] {
+    const chains: Map<number, ChainInfo> = new Map<number, ChainInfo>();
     const l = StructureElement.Location.create(structure);
-    const seen = new Set<number>();
     const [modelIdx, entityId] = splitModelEntityId(modelEntityId);
-
     for (const unit of structure.units) {
         StructureElement.Location.set(l, structure, unit, unit.elements[0]);
         if (structure.getModelIndex(unit.model) !== modelIdx) continue;
-
-        const id = unit.chainGroupId;
-        if(seen.has(id)) continue;
-
-        options.push({label:SP.chain.label_asym_id(l), auth:SP.chain.auth_asym_id(l), entityId: SP.entity.id(l), title: SP.entity.pdbx_description(l).join("|"), type: SP.entity.type(l)});
-        seen.add(id);
+        const chId: number = unit.chainGroupId;
+        if(chains.has(chId)){
+           chains.get(chId)!.operators.push(opKey(l))
+        }else{
+            chains.set(chId, {label:SP.chain.label_asym_id(l), auth:SP.chain.auth_asym_id(l), entityId: SP.entity.id(l), title: SP.entity.pdbx_description(l).join("|"), type: SP.entity.type(l), operators:[opKey(l)]});
+        }
     }
     const id: {modelId:string, entryId:string} = {modelId:l.unit?.model?.id, entryId: l.unit?.model?.entryId};
-    return [id,options];
+    return [id,Array.from(chains.values())];
 }
 
 function getStructureWithModelId(structures: StructureRef[], modelId: string): Structure|undefined{
@@ -538,13 +538,13 @@ function getStructureWithModelId(structures: StructureRef[], modelId: string): S
     }
 }
 
-export function getStructure(ref: string, state: State) {
+function getStructure(ref: string, state: State) {
     const cell = state.select(ref)[0];
     if (!ref || !cell || !cell.obj) return Structure.Empty;
     return (cell.obj as PSO.Molecule.Structure).data;
 }
 
-export function getModelEntityOptions(structure: Structure):[string, string][] {
+function getModelEntityOptions(structure: Structure):[string, string][] {
     const options: [string, string][] = [];
     const l = StructureElement.Location.create(structure);
     const seen = new Set<string>();
@@ -573,4 +573,13 @@ export function getModelEntityOptions(structure: Structure):[string, string][] {
 function splitModelEntityId(modelEntityId: string) {
     const [ modelIdx, entityId ] = modelEntityId.split('|');
     return [ parseInt(modelIdx), entityId ];
+}
+
+function opKey(l: StructureElement.Location): OperatorInfo {
+    const ids = SP.unit.pdbx_struct_oper_list_ids(l);
+    const ncs = SP.unit.struct_ncs_oper_id(l);
+    const hkl = SP.unit.hkl(l);
+    const spgrOp = SP.unit.spgrOp(l);
+    const name = SP.unit.operator_name(l);
+    return {ids:ids,name:name};
 }

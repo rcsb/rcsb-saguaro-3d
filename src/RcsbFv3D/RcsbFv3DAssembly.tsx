@@ -12,6 +12,7 @@ export interface RcsbFv3DAssemblyInterface extends RcsbFv3DAbstractInterface {
     };
     additionalConfig?: RcsbFvAdditionalConfig;
     instanceSequenceConfig?: InstanceSequenceConfig;
+    useOperatorsFlag?:boolean;
 }
 
 export class RcsbFv3DAssembly extends RcsbFv3DAbstract{
@@ -41,7 +42,8 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract{
             config: {
                 entryId:assemblyData.config.entryId,
                 additionalConfig: assemblyData.additionalConfig,
-                instanceSequenceConfig: assemblyData.instanceSequenceConfig
+                instanceSequenceConfig: assemblyData.instanceSequenceConfig,
+                useOperatorsFlag: assemblyData.useOperatorsFlag
             },
             title: assemblyData.config.title,
             subtitle: assemblyData.config.subtitle

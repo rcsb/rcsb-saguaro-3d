@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ResidueSelectionInterface | @rcsb/rcsb-saguaro-3d</title>
+	<title>SaguaroSet | @rcsb/rcsb-saguaro-3d</title>
 	<meta name="description" content="Documentation for @rcsb/rcsb-saguaro-3d">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="residueselectioninterface.html">ResidueSelectionInterface</a>
+					<a href="saguaroset.html">SaguaroSet</a>
 				</li>
 			</ul>
-			<h1>Interface ResidueSelectionInterface</h1>
+			<h1>Interface SaguaroSet</h1>
 		</div>
 	</div>
 </header>
@@ -70,7 +70,12 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">ResidueSelectionInterface</span>
+						<a href="saguarochain.html" class="tsd-signature-type">SaguaroChain</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">SaguaroSet</span>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -81,9 +86,10 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="residueselectioninterface.html#labelasymid" class="tsd-kind-icon">label<wbr>Asym<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="residueselectioninterface.html#modelid" class="tsd-kind-icon">model<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="residueselectioninterface.html#seqids" class="tsd-kind-icon">seq<wbr>Ids</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="saguaroset.html#labelasymid" class="tsd-kind-icon">label<wbr>Asym<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="saguaroset.html#modelid" class="tsd-kind-icon">model<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="saguaroset.html#operatorname" class="tsd-kind-icon">operator<wbr>Name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="saguaroset.html#seqids" class="tsd-kind-icon">seq<wbr>Ids</a></li>
 							</ul>
 						</section>
 					</div>
@@ -91,23 +97,36 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="labelasymid" class="tsd-anchor"></a>
 					<h3>label<wbr>Asym<wbr>Id</h3>
 					<div class="tsd-signature tsd-kind-icon">label<wbr>Asym<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="saguarochain.html">SaguaroChain</a>.<a href="saguarochain.html#labelasymid">labelAsymId</a></p>
 						<ul>
-							<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:4</li>
+							<li>Defined in src/RcsbFvStructure/SaguaroPluginInterface.ts:14</li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="modelid" class="tsd-anchor"></a>
 					<h3>model<wbr>Id</h3>
 					<div class="tsd-signature tsd-kind-icon">model<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="saguarochain.html">SaguaroChain</a>.<a href="saguarochain.html#modelid">modelId</a></p>
 						<ul>
-							<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:3</li>
+							<li>Defined in src/RcsbFvStructure/SaguaroPluginInterface.ts:13</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="operatorname" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> operator<wbr>Name</h3>
+					<div class="tsd-signature tsd-kind-icon">operator<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="saguarochain.html">SaguaroChain</a>.<a href="saguarochain.html#operatorname">operatorName</a></p>
+						<ul>
+							<li>Defined in src/RcsbFvStructure/SaguaroPluginInterface.ts:15</li>
 						</ul>
 					</aside>
 				</section>
@@ -117,7 +136,7 @@
 					<div class="tsd-signature tsd-kind-icon">seq<wbr>Ids<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:5</li>
+							<li>Defined in src/RcsbFvStructure/SaguaroPluginInterface.ts:28</li>
 						</ul>
 					</aside>
 				</section>
@@ -136,16 +155,19 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="residueselectioninterface.html" class="tsd-kind-icon">Residue<wbr>Selection<wbr>Interface</a>
+						<a href="saguaroset.html" class="tsd-kind-icon">Saguaro<wbr>Set</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="residueselectioninterface.html#labelasymid" class="tsd-kind-icon">label<wbr>Asym<wbr>Id</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="saguaroset.html#labelasymid" class="tsd-kind-icon">label<wbr>Asym<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="saguaroset.html#modelid" class="tsd-kind-icon">model<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+								<a href="saguaroset.html#operatorname" class="tsd-kind-icon">operator<wbr>Name</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="residueselectioninterface.html#modelid" class="tsd-kind-icon">model<wbr>Id</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="residueselectioninterface.html#seqids" class="tsd-kind-icon">seq<wbr>Ids</a>
+								<a href="saguaroset.html#seqids" class="tsd-kind-icon">seq<wbr>Ids</a>
 							</li>
 						</ul>
 					</li>

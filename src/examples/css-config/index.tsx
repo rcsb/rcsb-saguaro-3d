@@ -15,11 +15,10 @@ import {
     RcsbFvTrackDataElementInterface
 } from "@rcsb/rcsb-saguaro";
 import {
-    ChainSelectionInterface,
     RcsbFvSelectorManager,
     RegionSelectionInterface
 } from "../../RcsbFvSelection/RcsbFvSelectorManager";
-import {SaguaroPluginPublicInterface} from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
+import {SaguaroPluginPublicInterface, SaguaroRegionList} from "../../RcsbFvStructure/SaguaroPluginInterface";
 import {AlignmentManager} from "./AlignmentManager";
 import {Mat4} from "molstar/lib/mol-math/linear-algebra";
 
@@ -167,8 +166,8 @@ const fvConfig: FeatureViewInterface = {
         }
     },
     structureSelectionCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => {
-        const sel_1ash: ChainSelectionInterface | undefined = selection.getSelectionWithCondition("1ash_model", "A", "select");
-        const sel_101m: ChainSelectionInterface | undefined = selection.getSelectionWithCondition("101m_model", "A", "select");
+        const sel_1ash: SaguaroRegionList | undefined = selection.getSelectionWithCondition("1ash_model", "A", "select");
+        const sel_101m: SaguaroRegionList | undefined = selection.getSelectionWithCondition("101m_model", "A", "select");
         pfv.clearSelection("select");
         if(sel_1ash == null && sel_101m == null) {
             plugin.resetCamera();
@@ -184,8 +183,8 @@ const fvConfig: FeatureViewInterface = {
         }
     },
     structureHoverCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => {
-        const sel_1ash: ChainSelectionInterface | undefined = selection.getSelectionWithCondition("1ash_model", "A", "hover");
-        const sel_101m: ChainSelectionInterface | undefined = selection.getSelectionWithCondition("101m_model", "A", "hover");
+        const sel_1ash: SaguaroRegionList | undefined = selection.getSelectionWithCondition("1ash_model", "A", "hover");
+        const sel_101m: SaguaroRegionList | undefined = selection.getSelectionWithCondition("101m_model", "A", "hover");
         if(sel_1ash == null && sel_101m == null)
             pfv.clearSelection("hover");
         else if(sel_1ash)

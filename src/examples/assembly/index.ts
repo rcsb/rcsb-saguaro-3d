@@ -44,7 +44,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
                 }
             },
             externalTrackBuilder:externalTrackBuilder()
-        }
+        },
+        useOperatorsFlag: true
     });
     panel3d.render();
 

@@ -103,7 +103,6 @@
 								<li class="tsd-kind-interface"><a href="interfaces/callbackconfig.html" class="tsd-kind-icon">Callback<wbr>Config</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/chaindisplayinterface.html" class="tsd-kind-icon">Chain<wbr>Display<wbr>Interface</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/chaindisplaystate.html" class="tsd-kind-icon">Chain<wbr>Display<wbr>State</a></li>
-								<li class="tsd-kind-interface"><a href="interfaces/chainselectioninterface.html" class="tsd-kind-icon">Chain<wbr>Selection<wbr>Interface</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/customviewinterface.html" class="tsd-kind-icon">Custom<wbr>View<wbr>Interface</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/featureblockinterface.html" class="tsd-kind-icon">Feature<wbr>Block<wbr>Interface</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/featureviewinterface.html" class="tsd-kind-icon">Feature<wbr>View<wbr>Interface</a></li>
@@ -119,9 +118,13 @@
 								<li class="tsd-kind-interface"><a href="interfaces/rcsbfvsequenceinterface.html" class="tsd-kind-icon">Rcsb<wbr>FvSequence<wbr>Interface</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/rcsbfvstructureinterface.html" class="tsd-kind-icon">Rcsb<wbr>FvStructure<wbr>Interface</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/regionselectioninterface.html" class="tsd-kind-icon">Region<wbr>Selection<wbr>Interface</a></li>
-								<li class="tsd-kind-interface"><a href="interfaces/residueselectioninterface.html" class="tsd-kind-icon">Residue<wbr>Selection<wbr>Interface</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/saguarochain.html" class="tsd-kind-icon">Saguaro<wbr>Chain</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/saguaroplugininterface.html" class="tsd-kind-icon">Saguaro<wbr>Plugin<wbr>Interface</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/saguaropluginpublicinterface.html" class="tsd-kind-icon">Saguaro<wbr>Plugin<wbr>Public<wbr>Interface</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/saguaroposition.html" class="tsd-kind-icon">Saguaro<wbr>Position</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/saguarorange.html" class="tsd-kind-icon">Saguaro<wbr>Range</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/saguaroregionlist.html" class="tsd-kind-icon">Saguaro<wbr>Region<wbr>List</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/saguaroset.html" class="tsd-kind-icon">Saguaro<wbr>Set</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/sequenceviewinterface.html" class="tsd-kind-icon">Sequence<wbr>View<wbr>Interface</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/updateconfiginterface.html" class="tsd-kind-icon">Update<wbr>Config<wbr>Interface</a></li>
 							</ul>
@@ -129,8 +132,10 @@
 						<section class="tsd-index-section ">
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias"><a href="globals.html#chaininfo" class="tsd-kind-icon">Chain<wbr>Info</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#chaintype" class="tsd-kind-icon">Chain<wbr>Type</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#customviewstateinterface" class="tsd-kind-icon">Custom<wbr>View<wbr>State<wbr>Interface</a></li>
+								<li class="tsd-kind-type-alias"><a href="globals.html#operatorinfo" class="tsd-kind-icon">Operator<wbr>Info</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#saguaropluginmodelmaptype" class="tsd-kind-icon">Saguaro<wbr>Plugin<wbr>Model<wbr>Map<wbr>Type</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#structureobject" class="tsd-kind-icon">Structure<wbr>Object</a></li>
 							</ul>
@@ -152,6 +157,7 @@
 								<li class="tsd-kind-function"><a href="globals.html#getstructure" class="tsd-kind-icon">get<wbr>Structure</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#getstructureoptions" class="tsd-kind-icon">get<wbr>Structure<wbr>Options</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#getstructurewithmodelid" class="tsd-kind-icon">get<wbr>Structure<wbr>With<wbr>Model<wbr>Id</a></li>
+								<li class="tsd-kind-function"><a href="globals.html#opkey" class="tsd-kind-icon">op<wbr>Key</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#processgaps" class="tsd-kind-icon">process<wbr>Gaps</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#processmultiplegaps" class="tsd-kind-icon">process<wbr>Multiple<wbr>Gaps</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#selectionfilter" class="tsd-kind-icon">selection<wbr>Filter</a></li>
@@ -165,12 +171,45 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Type aliases</h2>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="chaininfo" class="tsd-anchor"></a>
+					<h3>Chain<wbr>Info</h3>
+					<div class="tsd-signature tsd-kind-icon">Chain<wbr>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>auth<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>entityId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>label<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>operators<span class="tsd-signature-symbol">: </span><a href="globals.html#operatorinfo" class="tsd-signature-type">OperatorInfo</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>title<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><a href="globals.html#chaintype" class="tsd-signature-type">ChainType</a><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/RcsbFvStructure/SaguaroPluginInterface.ts:9</li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>auth<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>entity<wbr>Id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>label<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>operators<span class="tsd-signature-symbol">: </span><a href="globals.html#operatorinfo" class="tsd-signature-type">OperatorInfo</a><span class="tsd-signature-symbol">[]</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>title<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>type<span class="tsd-signature-symbol">: </span><a href="globals.html#chaintype" class="tsd-signature-type">ChainType</a></h5>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="chaintype" class="tsd-anchor"></a>
 					<h3>Chain<wbr>Type</h3>
 					<div class="tsd-signature tsd-kind-icon">Chain<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"polymer"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"water"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"branched"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"non-polymer"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"macrolide"</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/RcsbFvStructure/StructurePlugins/MolstarPlugin.ts:500</li>
+							<li>Defined in src/RcsbFvStructure/SaguaroPluginInterface.ts:7</li>
 						</ul>
 					</aside>
 				</section>
@@ -185,12 +224,33 @@
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
-					<a name="saguaropluginmodelmaptype" class="tsd-anchor"></a>
-					<h3>Saguaro<wbr>Plugin<wbr>Model<wbr>Map<wbr>Type</h3>
-					<div class="tsd-signature tsd-kind-icon">Saguaro<wbr>Plugin<wbr>Model<wbr>Map<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">{ </span>chains<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>auth<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>entityId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>label<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>title<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"polymer"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"water"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"branched"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"non-polymer"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"macrolide"</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>entryId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="operatorinfo" class="tsd-anchor"></a>
+					<h3>Operator<wbr>Info</h3>
+					<div class="tsd-signature tsd-kind-icon">Operator<wbr>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>ids<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/RcsbFvStructure/StructurePlugins/SaguaroPluginInterface.ts:6</li>
+							<li>Defined in src/RcsbFvStructure/SaguaroPluginInterface.ts:8</li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>ids<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="saguaropluginmodelmaptype" class="tsd-anchor"></a>
+					<h3>Saguaro<wbr>Plugin<wbr>Model<wbr>Map<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">Saguaro<wbr>Plugin<wbr>Model<wbr>Map<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">{ </span>chains<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="globals.html#chaininfo" class="tsd-signature-type">ChainInfo</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>entryId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/RcsbFvStructure/SaguaroPluginInterface.ts:10</li>
 						</ul>
 					</aside>
 				</section>
@@ -240,7 +300,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:129</li>
+									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:133</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -266,7 +326,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyView.tsx:334</li>
+									<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyView.tsx:370</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -292,7 +352,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvStructure/StructurePlugins/MolstarPlugin.ts:510</li>
+									<li>Defined in src/RcsbFvStructure/StructurePlugins/MolstarPlugin.ts:512</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -367,7 +427,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvStructure/StructurePlugins/MolstarPlugin.ts:502</li>
+									<li>Defined in src/RcsbFvStructure/StructurePlugins/MolstarPlugin.ts:504</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -407,16 +467,39 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function">
-					<a name="processgaps" class="tsd-anchor"></a>
-					<h3>process<wbr>Gaps</h3>
+					<a name="opkey" class="tsd-anchor"></a>
+					<h3>op<wbr>Key</h3>
 					<ul class="tsd-signatures tsd-kind-function">
-						<li class="tsd-signature tsd-kind-icon">process<wbr>Gaps<span class="tsd-signature-symbol">(</span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, e<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RcsbFvTrackDataElementInterface</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>begin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>end<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">op<wbr>Key<span class="tsd-signature-symbol">(</span>l<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Location</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="globals.html#operatorinfo" class="tsd-signature-type">OperatorInfo</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyView.tsx:305</li>
+									<li>Defined in src/RcsbFvStructure/StructurePlugins/MolstarPlugin.ts:578</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>l: <span class="tsd-signature-type">Location</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="globals.html#operatorinfo" class="tsd-signature-type">OperatorInfo</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function">
+					<a name="processgaps" class="tsd-anchor"></a>
+					<h3>process<wbr>Gaps</h3>
+					<ul class="tsd-signatures tsd-kind-function">
+						<li class="tsd-signature tsd-kind-icon">process<wbr>Gaps<span class="tsd-signature-symbol">(</span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, e<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RcsbFvTrackDataElementInterface</span>, operatorName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/saguarorange.html" class="tsd-signature-type">SaguaroRange</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyView.tsx:339</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -430,8 +513,11 @@
 								<li>
 									<h5>e: <span class="tsd-signature-type">RcsbFvTrackDataElementInterface</span></h5>
 								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> operatorName: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>begin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>end<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/saguarorange.html" class="tsd-signature-type">SaguaroRange</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -439,13 +525,13 @@
 					<a name="processmultiplegaps" class="tsd-anchor"></a>
 					<h3>process<wbr>Multiple<wbr>Gaps</h3>
 					<ul class="tsd-signatures tsd-kind-function">
-						<li class="tsd-signature tsd-kind-icon">process<wbr>Multiple<wbr>Gaps<span class="tsd-signature-symbol">(</span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, list<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RcsbFvTrackDataElementInterface</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>begin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>end<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">process<wbr>Multiple<wbr>Gaps<span class="tsd-signature-symbol">(</span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, list<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RcsbFvTrackDataElementInterface</span><span class="tsd-signature-symbol">&gt;</span>, operatorName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/saguarorange.html" class="tsd-signature-type">SaguaroRange</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyView.tsx:326</li>
+									<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyView.tsx:362</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -459,8 +545,11 @@
 								<li>
 									<h5>list: <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RcsbFvTrackDataElementInterface</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> operatorName: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>begin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>end<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/saguarorange.html" class="tsd-signature-type">SaguaroRange</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -468,30 +557,22 @@
 					<a name="selectionfilter" class="tsd-anchor"></a>
 					<h3>selection<wbr>Filter</h3>
 					<ul class="tsd-signatures tsd-kind-function">
-						<li class="tsd-signature tsd-kind-icon">selection<wbr>Filter<span class="tsd-signature-symbol">(</span>r<span class="tsd-signature-symbol">: </span><a href="interfaces/chainselectioninterface.html" class="tsd-signature-type">ChainSelectionInterface</a>, selection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>labelAsymId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>modelId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+						<li class="tsd-signature tsd-kind-icon">selection<wbr>Filter<span class="tsd-signature-symbol">(</span>r<span class="tsd-signature-symbol">: </span><a href="interfaces/saguaroregionlist.html" class="tsd-signature-type">SaguaroRegionList</a>, selection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/saguarochain.html" class="tsd-signature-type">SaguaroChain</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:147</li>
+									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:151</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>r: <a href="interfaces/chainselectioninterface.html" class="tsd-signature-type">ChainSelectionInterface</a></h5>
+									<h5>r: <a href="interfaces/saguaroregionlist.html" class="tsd-signature-type">SaguaroRegionList</a></h5>
 								</li>
 								<li>
-									<h5>selection: <span class="tsd-signature-symbol">{ </span>labelAsymId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>modelId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></h5>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter">
-											<h5><span class="tsd-flag ts-flagOptional">Optional</span> label<wbr>Asym<wbr>Id<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
-										</li>
-										<li class="tsd-parameter">
-											<h5><span class="tsd-flag ts-flagOptional">Optional</span> model<wbr>Id<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
-										</li>
-									</ul>
+									<h5>selection: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/saguarochain.html" class="tsd-signature-type">SaguaroChain</a><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -502,19 +583,19 @@
 					<a name="selectionfromresidueselection" class="tsd-anchor"></a>
 					<h3>selection<wbr>From<wbr>Residue<wbr>Selection</h3>
 					<ul class="tsd-signatures tsd-kind-function">
-						<li class="tsd-signature tsd-kind-icon">selection<wbr>From<wbr>Residue<wbr>Selection<span class="tsd-signature-symbol">(</span>res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/residueselectioninterface.html" class="tsd-signature-type">ResidueSelectionInterface</a><span class="tsd-signature-symbol">&gt;</span>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span>, source<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"structure"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"sequence"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/chainselectioninterface.html" class="tsd-signature-type">ChainSelectionInterface</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">selection<wbr>From<wbr>Residue<wbr>Selection<span class="tsd-signature-symbol">(</span>res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/saguaroset.html" class="tsd-signature-type">SaguaroSet</a><span class="tsd-signature-symbol">&gt;</span>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span>, source<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"structure"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"sequence"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/saguaroregionlist.html" class="tsd-signature-type">SaguaroRegionList</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:109</li>
+									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:101</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>res: <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/residueselectioninterface.html" class="tsd-signature-type">ResidueSelectionInterface</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>res: <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/saguaroset.html" class="tsd-signature-type">SaguaroSet</a><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
 									<h5>mode: <span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span></h5>
@@ -523,7 +604,7 @@
 									<h5>source: <span class="tsd-signature-type">"structure"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"sequence"</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/chainselectioninterface.html" class="tsd-signature-type">ChainSelectionInterface</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="interfaces/saguaroregionlist.html" class="tsd-signature-type">SaguaroRegionList</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -632,9 +713,6 @@
 						<a href="interfaces/chaindisplaystate.html" class="tsd-kind-icon">Chain<wbr>Display<wbr>State</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/chainselectioninterface.html" class="tsd-kind-icon">Chain<wbr>Selection<wbr>Interface</a>
-					</li>
-					<li class=" tsd-kind-interface">
 						<a href="interfaces/customviewinterface.html" class="tsd-kind-icon">Custom<wbr>View<wbr>Interface</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -680,7 +758,7 @@
 						<a href="interfaces/regionselectioninterface.html" class="tsd-kind-icon">Region<wbr>Selection<wbr>Interface</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/residueselectioninterface.html" class="tsd-kind-icon">Residue<wbr>Selection<wbr>Interface</a>
+						<a href="interfaces/saguarochain.html" class="tsd-kind-icon">Saguaro<wbr>Chain</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/saguaroplugininterface.html" class="tsd-kind-icon">Saguaro<wbr>Plugin<wbr>Interface</a>
@@ -689,16 +767,34 @@
 						<a href="interfaces/saguaropluginpublicinterface.html" class="tsd-kind-icon">Saguaro<wbr>Plugin<wbr>Public<wbr>Interface</a>
 					</li>
 					<li class=" tsd-kind-interface">
+						<a href="interfaces/saguaroposition.html" class="tsd-kind-icon">Saguaro<wbr>Position</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/saguarorange.html" class="tsd-kind-icon">Saguaro<wbr>Range</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/saguaroregionlist.html" class="tsd-kind-icon">Saguaro<wbr>Region<wbr>List</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/saguaroset.html" class="tsd-kind-icon">Saguaro<wbr>Set</a>
+					</li>
+					<li class=" tsd-kind-interface">
 						<a href="interfaces/sequenceviewinterface.html" class="tsd-kind-icon">Sequence<wbr>View<wbr>Interface</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/updateconfiginterface.html" class="tsd-kind-icon">Update<wbr>Config<wbr>Interface</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#chaininfo" class="tsd-kind-icon">Chain<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#chaintype" class="tsd-kind-icon">Chain<wbr>Type</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#customviewstateinterface" class="tsd-kind-icon">Custom<wbr>View<wbr>State<wbr>Interface</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#operatorinfo" class="tsd-kind-icon">Operator<wbr>Info</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#saguaropluginmodelmaptype" class="tsd-kind-icon">Saguaro<wbr>Plugin<wbr>Model<wbr>Map<wbr>Type</a>
@@ -732,6 +828,9 @@
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#getstructurewithmodelid" class="tsd-kind-icon">get<wbr>Structure<wbr>With<wbr>Model<wbr>Id</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#opkey" class="tsd-kind-icon">op<wbr>Key</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#processgaps" class="tsd-kind-icon">process<wbr>Gaps</a>

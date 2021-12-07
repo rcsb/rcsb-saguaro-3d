@@ -14,13 +14,12 @@ import {
     RcsbFvTrackDataElementInterface
 } from "@rcsb/rcsb-saguaro";
 import {
-    ChainSelectionInterface,
     RcsbFvSelectorManager,
     RegionSelectionInterface
 } from "../../RcsbFvSelection/RcsbFvSelectorManager";
 import {
-    SaguaroPluginPublicInterface
-} from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
+    SaguaroPluginPublicInterface, SaguaroRegionList
+} from "../../RcsbFvStructure/SaguaroPluginInterface";
 
 const rowConfig: Array<RcsbFvRowConfigInterface> = [
     {
@@ -96,7 +95,7 @@ const fvConfig: FeatureViewInterface = {
             })), "hover", "set");
     },
     structureSelectionCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => {
-        const sel: ChainSelectionInterface | undefined = selection.getSelectionWithCondition("1ash_model", "A", "select");
+        const sel: SaguaroRegionList | undefined = selection.getSelectionWithCondition("1ash_model", "A", "select");
         if(sel == null) {
             pfv.clearSelection("select");
             plugin.resetCamera();
@@ -105,7 +104,7 @@ const fvConfig: FeatureViewInterface = {
         }
     },
     structureHoverCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => {
-        const sel: ChainSelectionInterface | undefined = selection.getSelectionWithCondition("1ash_model", "A", "hover");
+        const sel: SaguaroRegionList | undefined = selection.getSelectionWithCondition("1ash_model", "A", "hover");
         if(sel == null)
             pfv.clearSelection("hover");
         else

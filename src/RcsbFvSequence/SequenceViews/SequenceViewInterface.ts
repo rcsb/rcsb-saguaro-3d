@@ -1,4 +1,4 @@
-import {SaguaroPluginModelMapType} from "../../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
+import {SaguaroPluginModelMapType} from "../../RcsbFvStructure/SaguaroPluginInterface";
 
 export interface SequenceViewInterface {
     structureSelectionCallback(): void;

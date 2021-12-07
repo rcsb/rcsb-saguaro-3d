@@ -1,7 +1,7 @@
 import * as React from "react";
 import {AssemblyView, AssemblyViewInterface} from "./SequenceViews/AssemblyView/AssemblyView";
 import {CustomView, CustomViewInterface} from "./SequenceViews/CustomView";
-import {SaguaroPluginInterface} from "../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface";
+import {SaguaroPluginInterface} from "../RcsbFvStructure/SaguaroPluginInterface";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {RcsbFv, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {RcsbFvSelectorManager} from "../RcsbFvSelection/RcsbFvSelectorManager";

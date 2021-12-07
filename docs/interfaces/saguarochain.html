@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>LoadMolstarInterface | @rcsb/rcsb-saguaro-3d</title>
+	<title>SaguaroChain | @rcsb/rcsb-saguaro-3d</title>
 	<meta name="description" content="Documentation for @rcsb/rcsb-saguaro-3d">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="loadmolstarinterface.html">LoadMolstarInterface</a>
+					<a href="saguarochain.html">SaguaroChain</a>
 				</li>
 			</ul>
-			<h1>Interface LoadMolstarInterface</h1>
+			<h1>Interface SaguaroChain</h1>
 		</div>
 	</div>
 </header>
@@ -70,7 +70,21 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">LoadMolstarInterface</span>
+						<span class="target">SaguaroChain</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<a href="saguaroposition.html" class="tsd-signature-type">SaguaroPosition</a>
+							</li>
+							<li>
+								<a href="saguarorange.html" class="tsd-signature-type">SaguaroRange</a>
+							</li>
+							<li>
+								<a href="saguaroset.html" class="tsd-signature-type">SaguaroSet</a>
+							</li>
+							<li>
+								<a href="saguaroregionlist.html" class="tsd-signature-type">SaguaroRegionList</a>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -81,8 +95,9 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="loadmolstarinterface.html#loadmethod" class="tsd-kind-icon">load<wbr>Method</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="loadmolstarinterface.html#loadparams" class="tsd-kind-icon">load<wbr>Params</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="saguarochain.html#labelasymid" class="tsd-kind-icon">label<wbr>Asym<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="saguarochain.html#modelid" class="tsd-kind-icon">model<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="saguarochain.html#operatorname" class="tsd-kind-icon">operator<wbr>Name</a></li>
 							</ul>
 						</section>
 					</div>
@@ -91,22 +106,32 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="loadmethod" class="tsd-anchor"></a>
-					<h3>load<wbr>Method</h3>
-					<div class="tsd-signature tsd-kind-icon">load<wbr>Method<span class="tsd-signature-symbol">:</span> <a href="../enums/loadmethod.html" class="tsd-signature-type">LoadMethod</a></div>
+					<a name="labelasymid" class="tsd-anchor"></a>
+					<h3>label<wbr>Asym<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">label<wbr>Asym<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/RcsbFvStructure/StructurePlugins/MolstarPlugin.ts:48</li>
+							<li>Defined in src/RcsbFvStructure/SaguaroPluginInterface.ts:14</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="loadparams" class="tsd-anchor"></a>
-					<h3>load<wbr>Params</h3>
-					<div class="tsd-signature tsd-kind-icon">load<wbr>Params<span class="tsd-signature-symbol">:</span> <a href="loadparams.html" class="tsd-signature-type">LoadParams</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="loadparams.html" class="tsd-signature-type">LoadParams</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="modelid" class="tsd-anchor"></a>
+					<h3>model<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">model<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/RcsbFvStructure/StructurePlugins/MolstarPlugin.ts:49</li>
+							<li>Defined in src/RcsbFvStructure/SaguaroPluginInterface.ts:13</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="operatorname" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> operator<wbr>Name</h3>
+					<div class="tsd-signature tsd-kind-icon">operator<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/RcsbFvStructure/SaguaroPluginInterface.ts:15</li>
 						</ul>
 					</aside>
 				</section>
@@ -125,13 +150,16 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="loadmolstarinterface.html" class="tsd-kind-icon">Load<wbr>Molstar<wbr>Interface</a>
+						<a href="saguarochain.html" class="tsd-kind-icon">Saguaro<wbr>Chain</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="loadmolstarinterface.html#loadmethod" class="tsd-kind-icon">load<wbr>Method</a>
+								<a href="saguarochain.html#labelasymid" class="tsd-kind-icon">label<wbr>Asym<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="loadmolstarinterface.html#loadparams" class="tsd-kind-icon">load<wbr>Params</a>
+								<a href="saguarochain.html#modelid" class="tsd-kind-icon">model<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="saguarochain.html#operatorname" class="tsd-kind-icon">operator<wbr>Name</a>
 							</li>
 						</ul>
 					</li>

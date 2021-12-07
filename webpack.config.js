@@ -32,9 +32,13 @@ const commonConfig = {
             'node_modules',
             path.resolve(__dirname, 'build/src/')
         ],
-    },
-    node: {
-        fs: "empty"
+        fallback: {
+            fs: false,
+            buffer: require.resolve('buffer'),
+            crypto: require.resolve('crypto-browserify'),
+            path: require.resolve('path-browserify'),
+            stream: require.resolve('stream-browserify')
+        }
     }
 };
 

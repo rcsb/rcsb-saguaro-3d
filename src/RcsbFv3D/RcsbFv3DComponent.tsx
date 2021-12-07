@@ -1,8 +1,8 @@
 import * as React from "react";
-import * as classes from '../styles/RcsbFvStyle.module.scss';
+import classes from '../styles/RcsbFvStyle.module.scss';
 
 import {MolstarPlugin} from '../RcsbFvStructure/StructurePlugins/MolstarPlugin';
-import {SaguaroPluginInterface} from '../RcsbFvStructure/StructurePlugins/SaguaroPluginInterface';
+import {SaguaroPluginInterface} from '../RcsbFvStructure/SaguaroPluginInterface';
 
 import '../styles/RcsbFvMolstarStyle.module.scss';
 import {RcsbFvSequence, RcsbFvSequenceInterface} from "../RcsbFvSequence/RcsbFvSequence";

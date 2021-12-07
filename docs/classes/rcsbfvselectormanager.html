@@ -110,30 +110,30 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="hover" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> hover</h3>
-					<div class="tsd-signature tsd-kind-icon">hover<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/chainselectioninterface.html" class="tsd-signature-type">ChainSelectionInterface</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Array&lt;ChainSelectionInterface&gt;()</span></div>
+					<div class="tsd-signature tsd-kind-icon">hover<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/saguaroregionlist.html" class="tsd-signature-type">SaguaroRegionList</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Array&lt;SaguaroRegionList&gt;()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:26</li>
+							<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:16</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="lastselection" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> last<wbr>Selection</h3>
-					<div class="tsd-signature tsd-kind-icon">last<wbr>Selection<span class="tsd-signature-symbol">:</span> <a href="../interfaces/chainselectioninterface.html" class="tsd-signature-type">ChainSelectionInterface</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
+					<div class="tsd-signature tsd-kind-icon">last<wbr>Selection<span class="tsd-signature-symbol">:</span> <a href="../interfaces/saguaroregionlist.html" class="tsd-signature-type">SaguaroRegionList</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:24</li>
+							<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:14</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
 					<a name="selection" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagPrivate">Private</span> selection</h3>
-					<div class="tsd-signature tsd-kind-icon">selection<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/chainselectioninterface.html" class="tsd-signature-type">ChainSelectionInterface</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Array&lt;ChainSelectionInterface&gt;()</span></div>
+					<div class="tsd-signature tsd-kind-icon">selection<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/saguaroregionlist.html" class="tsd-signature-type">SaguaroRegionList</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> = new Array&lt;SaguaroRegionList&gt;()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:25</li>
+							<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:15</li>
 						</ul>
 					</aside>
 				</section>
@@ -144,19 +144,19 @@
 					<a name="addselectionfrommultipleregions" class="tsd-anchor"></a>
 					<h3>add<wbr>Selection<wbr>From<wbr>Multiple<wbr>Regions</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">add<wbr>Selection<wbr>From<wbr>Multiple<wbr>Regions<span class="tsd-signature-symbol">(</span>regions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>region<span class="tsd-signature-symbol">: </span><a href="../interfaces/regionselectioninterface.html" class="tsd-signature-type">RegionSelectionInterface</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Selection<wbr>From<wbr>Multiple<wbr>Regions<span class="tsd-signature-symbol">(</span>regions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><a href="../interfaces/saguarochain.html" class="tsd-signature-type">SaguaroChain</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>region<span class="tsd-signature-symbol">: </span><a href="../interfaces/regionselectioninterface.html" class="tsd-signature-type">RegionSelectionInterface</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:46</li>
+									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:36</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>regions: <span class="tsd-signature-symbol">{ </span>labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>region<span class="tsd-signature-symbol">: </span><a href="../interfaces/regionselectioninterface.html" class="tsd-signature-type">RegionSelectionInterface</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>regions: <span class="tsd-signature-symbol">(</span><a href="../interfaces/saguarochain.html" class="tsd-signature-type">SaguaroChain</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>region<span class="tsd-signature-symbol">: </span><a href="../interfaces/regionselectioninterface.html" class="tsd-signature-type">RegionSelectionInterface</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 								<li>
 									<h5>mode: <span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span></h5>
@@ -170,13 +170,13 @@
 					<a name="addselectionfromregion" class="tsd-anchor"></a>
 					<h3>add<wbr>Selection<wbr>From<wbr>Region</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">add<wbr>Selection<wbr>From<wbr>Region<span class="tsd-signature-symbol">(</span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, region<span class="tsd-signature-symbol">: </span><a href="../interfaces/regionselectioninterface.html" class="tsd-signature-type">RegionSelectionInterface</a>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Selection<wbr>From<wbr>Region<span class="tsd-signature-symbol">(</span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, region<span class="tsd-signature-symbol">: </span><a href="../interfaces/regionselectioninterface.html" class="tsd-signature-type">RegionSelectionInterface</a>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span>, operatorName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:33</li>
+									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:23</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -193,6 +193,9 @@
 								<li>
 									<h5>mode: <span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span></h5>
 								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> operatorName: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
@@ -202,13 +205,13 @@
 					<a name="clearselection" class="tsd-anchor"></a>
 					<h3>clear<wbr>Selection</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">clear<wbr>Selection<span class="tsd-signature-symbol">(</span>mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span>, selection<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>labelAsymId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>modelId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">clear<wbr>Selection<span class="tsd-signature-symbol">(</span>mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span>, selection<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/saguarochain.html" class="tsd-signature-type">SaguaroChain</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:83</li>
+									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:73</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -217,7 +220,7 @@
 									<h5>mode: <span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> selection: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>labelAsymId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>modelId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> selection: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/saguarochain.html" class="tsd-signature-type">SaguaroChain</a><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -228,13 +231,13 @@
 					<a name="getlastselection" class="tsd-anchor"></a>
 					<h3>get<wbr>Last<wbr>Selection</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Last<wbr>Selection<span class="tsd-signature-symbol">(</span>mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/chainselectioninterface.html" class="tsd-signature-type">ChainSelectionInterface</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Last<wbr>Selection<span class="tsd-signature-symbol">(</span>mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/saguaroregionlist.html" class="tsd-signature-type">SaguaroRegionList</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:67</li>
+									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:57</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -243,7 +246,7 @@
 									<h5>mode: <span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="../interfaces/chainselectioninterface.html" class="tsd-signature-type">ChainSelectionInterface</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/saguaroregionlist.html" class="tsd-signature-type">SaguaroRegionList</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -251,13 +254,13 @@
 					<a name="getselection" class="tsd-anchor"></a>
 					<h3>get<wbr>Selection</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Selection<span class="tsd-signature-symbol">(</span>mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/chainselectioninterface.html" class="tsd-signature-type">ChainSelectionInterface</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Selection<span class="tsd-signature-symbol">(</span>mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/saguaroregionlist.html" class="tsd-signature-type">SaguaroRegionList</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:60</li>
+									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:50</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -266,7 +269,7 @@
 									<h5>mode: <span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/chainselectioninterface.html" class="tsd-signature-type">ChainSelectionInterface</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/saguaroregionlist.html" class="tsd-signature-type">SaguaroRegionList</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -274,13 +277,13 @@
 					<a name="getselectionwithcondition" class="tsd-anchor"></a>
 					<h3>get<wbr>Selection<wbr>With<wbr>Condition</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Selection<wbr>With<wbr>Condition<span class="tsd-signature-symbol">(</span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/chainselectioninterface.html" class="tsd-signature-type">ChainSelectionInterface</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Selection<wbr>With<wbr>Condition<span class="tsd-signature-symbol">(</span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span>, operatorName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/saguaroregionlist.html" class="tsd-signature-type">SaguaroRegionList</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:75</li>
+									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:65</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -294,8 +297,11 @@
 								<li>
 									<h5>mode: <span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span></h5>
 								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> operatorName: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="../interfaces/chainselectioninterface.html" class="tsd-signature-type">ChainSelectionInterface</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/saguaroregionlist.html" class="tsd-signature-type">SaguaroRegionList</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -303,13 +309,13 @@
 					<a name="selectionsource" class="tsd-anchor"></a>
 					<h3>selection<wbr>Source</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">selection<wbr>Source<span class="tsd-signature-symbol">(</span>mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span>, region<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>begin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>end<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"structure"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"sequence"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
+						<li class="tsd-signature tsd-kind-icon">selection<wbr>Source<span class="tsd-signature-symbol">(</span>mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span>, region<span class="tsd-signature-symbol">: </span><a href="../interfaces/saguarochain.html" class="tsd-signature-type">SaguaroChain</a><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/saguarorange.html" class="tsd-signature-type">SaguaroRange</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"structure"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"sequence"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:97</li>
+									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:88</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -318,21 +324,7 @@
 									<h5>mode: <span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span></h5>
 								</li>
 								<li>
-									<h5>region: <span class="tsd-signature-symbol">{ </span>begin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>end<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></h5>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter">
-											<h5>begin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-										</li>
-										<li class="tsd-parameter">
-											<h5>end<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-										</li>
-										<li class="tsd-parameter">
-											<h5>label<wbr>Asym<wbr>Id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-										</li>
-										<li class="tsd-parameter">
-											<h5>model<wbr>Id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-										</li>
-									</ul>
+									<h5>region: <a href="../interfaces/saguarochain.html" class="tsd-signature-type">SaguaroChain</a><span class="tsd-signature-symbol"> &amp; </span><a href="../interfaces/saguarorange.html" class="tsd-signature-type">SaguaroRange</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">"structure"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"sequence"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
@@ -343,13 +335,13 @@
 					<a name="setlastselection" class="tsd-anchor"></a>
 					<h3>set<wbr>Last<wbr>Selection</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Last<wbr>Selection<span class="tsd-signature-symbol">(</span>mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span>, selection<span class="tsd-signature-symbol">: </span><a href="../interfaces/chainselectioninterface.html" class="tsd-signature-type">ChainSelectionInterface</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Last<wbr>Selection<span class="tsd-signature-symbol">(</span>mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span>, selection<span class="tsd-signature-symbol">: </span><a href="../interfaces/saguaroregionlist.html" class="tsd-signature-type">SaguaroRegionList</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:71</li>
+									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:61</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -358,7 +350,7 @@
 									<h5>mode: <span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span></h5>
 								</li>
 								<li>
-									<h5>selection: <a href="../interfaces/chainselectioninterface.html" class="tsd-signature-type">ChainSelectionInterface</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+									<h5>selection: <a href="../interfaces/saguaroregionlist.html" class="tsd-signature-type">SaguaroRegionList</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -369,19 +361,19 @@
 					<a name="setselectionfrommultipleregions" class="tsd-anchor"></a>
 					<h3>set<wbr>Selection<wbr>From<wbr>Multiple<wbr>Regions</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Selection<wbr>From<wbr>Multiple<wbr>Regions<span class="tsd-signature-symbol">(</span>regions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>region<span class="tsd-signature-symbol">: </span><a href="../interfaces/regionselectioninterface.html" class="tsd-signature-type">RegionSelectionInterface</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Selection<wbr>From<wbr>Multiple<wbr>Regions<span class="tsd-signature-symbol">(</span>regions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>operatorName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>region<span class="tsd-signature-symbol">: </span><a href="../interfaces/regionselectioninterface.html" class="tsd-signature-type">RegionSelectionInterface</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:41</li>
+									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:31</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>regions: <span class="tsd-signature-symbol">{ </span>labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>region<span class="tsd-signature-symbol">: </span><a href="../interfaces/regionselectioninterface.html" class="tsd-signature-type">RegionSelectionInterface</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>regions: <span class="tsd-signature-symbol">{ </span>labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>operatorName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>region<span class="tsd-signature-symbol">: </span><a href="../interfaces/regionselectioninterface.html" class="tsd-signature-type">RegionSelectionInterface</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 								<li>
 									<h5>mode: <span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span></h5>
@@ -395,13 +387,13 @@
 					<a name="setselectionfromregion" class="tsd-anchor"></a>
 					<h3>set<wbr>Selection<wbr>From<wbr>Region</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Selection<wbr>From<wbr>Region<span class="tsd-signature-symbol">(</span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, region<span class="tsd-signature-symbol">: </span><a href="../interfaces/regionselectioninterface.html" class="tsd-signature-type">RegionSelectionInterface</a>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Selection<wbr>From<wbr>Region<span class="tsd-signature-symbol">(</span>modelId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, labelAsymId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, region<span class="tsd-signature-symbol">: </span><a href="../interfaces/regionselectioninterface.html" class="tsd-signature-type">RegionSelectionInterface</a>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span>, operatorName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:28</li>
+									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:18</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -418,6 +410,9 @@
 								<li>
 									<h5>mode: <span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span></h5>
 								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> operatorName: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
@@ -427,19 +422,19 @@
 					<a name="setselectionfromresidueselection" class="tsd-anchor"></a>
 					<h3>set<wbr>Selection<wbr>From<wbr>Residue<wbr>Selection</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">set<wbr>Selection<wbr>From<wbr>Residue<wbr>Selection<span class="tsd-signature-symbol">(</span>res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/residueselectioninterface.html" class="tsd-signature-type">ResidueSelectionInterface</a><span class="tsd-signature-symbol">&gt;</span>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span>, source<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"structure"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"sequence"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Selection<wbr>From<wbr>Residue<wbr>Selection<span class="tsd-signature-symbol">(</span>res<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/saguaroset.html" class="tsd-signature-type">SaguaroSet</a><span class="tsd-signature-symbol">&gt;</span>, mode<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span>, source<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"structure"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"sequence"</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:52</li>
+									<li>Defined in src/RcsbFvSelection/RcsbFvSelectorManager.ts:42</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>res: <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/residueselectioninterface.html" class="tsd-signature-type">ResidueSelectionInterface</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>res: <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/saguaroset.html" class="tsd-signature-type">SaguaroSet</a><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
 									<h5>mode: <span class="tsd-signature-type">"select"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"hover"</span></h5>
