@@ -48,6 +48,18 @@ const examples = [];
 examples.push({
     ...commonConfig,
     entry: {
+        "index": './build/src/examples/assembly-interface/index.js'
+    },
+    output: {
+        filename: '[name].js',
+        path: path.resolve(__dirname, out_path+'/assembly-interface/')
+    }
+});
+
+/*
+examples.push({
+    ...commonConfig,
+    entry: {
         "index": './build/src/examples/assembly/index.js'
     },
     output: {
@@ -98,6 +110,6 @@ examples.push({
         filename: '[name].js',
         path: path.resolve(__dirname, out_path+'/css-config/')
     }
-});
+});*/
 
 module.exports = examples;

@@ -9,6 +9,8 @@ import {
 import {SequenceCollectorDataInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/SequenceCollector/SequenceCollector";
 import {RcsbFvDisplayTypes, RcsbFvRowConfigInterface} from "@rcsb/rcsb-saguaro";
 import {PolymerEntityInstanceInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/Translators/PolymerEntityInstancesCollector";
+import {RcsbFvContextManager} from "@rcsb/rcsb-saguaro-app";
+import {InterfaceInstanceTranslate} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbUtils/InterfaceInstanceTranslate";
 
 document.addEventListener("DOMContentLoaded", function(event) {
 
@@ -35,7 +37,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
         elementId: "pfv",
         config: sequenceConfig,
         instanceSequenceConfig:{
-            dropdownTitle: "CHAIN"
+            dropdownTitle: "CHAIN",
+            module: "interface"
         },
         additionalConfig: {
             boardConfig: {
@@ -90,9 +93,18 @@ function externalTrackBuilder(){
             })
         },
         filterFeatures(data: {annotations: Array<AnnotationFeatures>; rcsbContext:Partial<PolymerEntityInstanceInterface>}): Promise<Array<AnnotationFeatures>> {
-            return new Promise<Array<AnnotationFeatures>>(resolve => {
+            return new Promise<Array<AnnotationFeatures>>(async resolve => {
+                (await Promise.all(data.annotations.map(async ann=>{
+                    if(ann.target_id && data.rcsbContext?.asymId) {
+                        const interfaceToInstance: InterfaceInstanceTranslate = await RcsbFvContextManager.getInterfaceToInstance(ann.target_id);
+                        return interfaceToInstance.getOperatorIds(ann.target_id, data.rcsbContext.asymId);
+                    }
+                }))).forEach((value,index,array)=>{
+                    if(value)
+                        console.log(value);
+                });
                 resolve(data.annotations);
-            })
+            });
         }
     }
 }
