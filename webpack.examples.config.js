@@ -59,6 +59,17 @@ examples.push({
 examples.push({
     ...commonConfig,
     entry: {
+        "index": './build/src/examples/external-mapping/index.js'
+    },
+    output: {
+        filename: '[name].js',
+        path: path.resolve(__dirname, out_path+'/external-mapping/')
+    }
+});
+
+examples.push({
+    ...commonConfig,
+    entry: {
         "index": './build/src/examples/single-chain/index.js'
     },
     output: {

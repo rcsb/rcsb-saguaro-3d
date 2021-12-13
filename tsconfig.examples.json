@@ -13,6 +13,7 @@
   "include": [
     "src/custom.d.ts",
     "src/examples/single-chain/index.tsx",
+    "src/examples/external-mapping/index.tsx",
     "src/examples/multiple-chain/index.tsx",
     "src/examples/structural-alignment/index.tsx",
     "src/examples/css-config/index.tsx",

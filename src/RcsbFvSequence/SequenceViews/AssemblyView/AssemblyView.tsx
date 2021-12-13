@@ -142,6 +142,8 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         const allSel: Array<SaguaroRegionList> | undefined = this.props.selectorManager.getSelection(mode);
         if(allSel == null || allSel.length ===0) {
             this.rcsbFvModule?.getFv().clearSelection(mode);
+            if(mode === 'select')
+                this.resetPluginView();
         }else if(mode === 'select' && this.props.selectorManager.getLastSelection('select')?.labelAsymId != null && this.props.selectorManager.getLastSelection('select')?.labelAsymId != this.currentLabelAsymId){
             const authId: string | undefined = this.currentModelMap
                 .get(this.currentModelId)?.chains
@@ -153,6 +155,8 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
             const sel: SaguaroRegionList | undefined = this.props.selectorManager.getSelectionWithCondition(this.currentModelId, this.currentLabelAsymId, mode, this.currentOpName);
             if (sel == null) {
                 this.rcsbFvModule?.getFv().clearSelection(mode);
+                if(mode === 'select')
+                    this.resetPluginView();
             } else {
                 this.rcsbFvModule?.getFv().setSelection({elements: sel.regions, mode: mode});
             }

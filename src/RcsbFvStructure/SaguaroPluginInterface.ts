@@ -34,7 +34,7 @@ export interface SaguaroRegionList extends SaguaroChain{
 
 export interface SaguaroPluginInterface extends SaguaroPluginPublicInterface{
     init: (elementId: string, props?: any) => void;
-    load: (args: LoadMolstarInterface) => void;
+    load: (args: LoadMolstarInterface|Array<LoadMolstarInterface>) => void;
     pluginCall: (f:(plugin: PluginContext)=>void) => void;
     clear: () => void;
     setSelectCallback: (g:(flag?:boolean)=>void)=>void;
