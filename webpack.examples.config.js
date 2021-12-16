@@ -56,7 +56,6 @@ examples.push({
     }
 });
 
-/*
 examples.push({
     ...commonConfig,
     entry: {
@@ -110,6 +109,6 @@ examples.push({
         filename: '[name].js',
         path: path.resolve(__dirname, out_path+'/css-config/')
     }
-});*/
+});
 
 module.exports = examples;

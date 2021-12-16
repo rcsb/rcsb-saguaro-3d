@@ -3,14 +3,16 @@ import {RcsbFv3DAbstract, RcsbFv3DAbstractInterface} from "./RcsbFv3DAbstract";
 import {RcsbRepresentationPreset} from "../RcsbFvStructure/StructurePlugins/StructureRepresentation";
 import {RcsbFvAdditionalConfig} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {InstanceSequenceConfig} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
+import {OperatorInfo} from "../RcsbFvStructure/SaguaroPluginInterface";
 
+type RcsbFv3DAssemblyAdditionalConfig = RcsbFvAdditionalConfig & {operatorChangeCallback?:(operatorInfo: OperatorInfo)=>void};
 export interface RcsbFv3DAssemblyInterface extends RcsbFv3DAbstractInterface {
    config: {
         entryId: string;
         title?: string;
         subtitle?: string;
     };
-    additionalConfig?: RcsbFvAdditionalConfig;
+    additionalConfig?: RcsbFv3DAssemblyAdditionalConfig;
     instanceSequenceConfig?: InstanceSequenceConfig;
     useOperatorsFlag?:boolean;
 }

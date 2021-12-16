@@ -7,7 +7,7 @@ import {RegionSelectionInterface} from "../RcsbFvSelection/RcsbFvSelectorManager
 export type ChainType = "polymer"|"water"|"branched"|"non-polymer"|"macrolide";
 export type OperatorInfo = {ids:string[], name: string};
 export type ChainInfo = {auth:string;label:string;entityId:string;title:string;type:ChainType;operators:OperatorInfo[]};
-export type SaguaroPluginModelMapType = Map<string,{entryId: string; chains:Array<ChainInfo>;}>;
+export type SaguaroPluginModelMapType = Map<string,{entryId: string; assemblyId: string, chains:Array<ChainInfo>;}>;
 
 export interface SaguaroChain {
     modelId: string;
