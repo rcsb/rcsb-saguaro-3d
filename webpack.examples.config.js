@@ -48,22 +48,22 @@ const examples = [];
 examples.push({
     ...commonConfig,
     entry: {
-        "index": './build/src/examples/assembly-interface/index.js'
+        "index": './build/src/examples/assembly/index.js'
     },
     output: {
         filename: '[name].js',
-        path: path.resolve(__dirname, out_path+'/assembly-interface/')
+        path: path.resolve(__dirname, out_path+'/assembly/')
     }
 });
 
 examples.push({
     ...commonConfig,
     entry: {
-        "index": './build/src/examples/assembly/index.js'
+        "index": './build/src/examples/external-mapping/index.js'
     },
     output: {
         filename: '[name].js',
-        path: path.resolve(__dirname, out_path+'/assembly/')
+        path: path.resolve(__dirname, out_path+'/external-mapping/')
     }
 });
 

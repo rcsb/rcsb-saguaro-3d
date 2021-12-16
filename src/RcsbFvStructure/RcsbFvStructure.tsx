@@ -6,7 +6,7 @@ import {LoadMolstarInterface} from "./StructurePlugins/MolstarPlugin";
 import {RcsbFvSelectorManager} from "../RcsbFvSelection/RcsbFvSelectorManager";
 
 export interface RcsbFvStructureInterface {
-    loadConfig: LoadMolstarInterface;
+    loadConfig: LoadMolstarInterface | Array<LoadMolstarInterface>;
     pluginConfig?: Partial<ViewerProps>;
 }
 

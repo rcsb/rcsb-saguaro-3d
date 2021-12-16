@@ -85,31 +85,45 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
         this.viewer.clear();
     }
 
-    async load(loadConfig: LoadMolstarInterface): Promise<void>{
+    async load(loadConfig: LoadMolstarInterface|Array<LoadMolstarInterface>): Promise<void>{
         this.loadingFlag = true;
-        if(MolstarPlugin.checkLoadData(loadConfig)) {
-            if (loadConfig.loadMethod == LoadMethod.loadPdbId) {
-                const config: LoadParams = loadConfig.loadParams as LoadParams;
-                await this.viewer.loadPdbId(config.pdbId!, {props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params});
-            } else if (loadConfig.loadMethod == LoadMethod.loadPdbIds) {
-                const config: Array<LoadParams> = loadConfig.loadParams as Array<LoadParams>;
-                await this.viewer.loadPdbIds(config.map((d) => {
-                    return {pdbId: d.pdbId!, config:{props: d.props, matrix: d.matrix, reprProvider: d.reprProvider, params: d.params}}
-                }));
-            } else if (loadConfig.loadMethod == LoadMethod.loadStructureFromUrl) {
-                const config: LoadParams = loadConfig.loadParams as LoadParams;
-                await this.viewer.loadStructureFromUrl(config.url!, config.format!, config.isBinary!,{props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params});
-            } else if (loadConfig.loadMethod == LoadMethod.loadSnapshotFromUrl) {
-                const config: LoadParams = loadConfig.loadParams as LoadParams;
-                await this.viewer.loadSnapshotFromUrl(config.url!, config.type!);
-            } else if (loadConfig.loadMethod == LoadMethod.loadStructureFromData) {
-                const config: LoadParams = loadConfig.loadParams as LoadParams;
-                await this.viewer.loadStructureFromData(config.data!, config.format!, config.isBinary!, {props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params});
+        for (const lC of (Array.isArray(loadConfig) ? loadConfig : [loadConfig])) {
+            if(MolstarPlugin.checkLoadData(lC)) {
+                if (lC.loadMethod == LoadMethod.loadPdbId) {
+                    const config: LoadParams = lC.loadParams as LoadParams;
+                    await this.viewer.loadPdbId(config.pdbId!, {props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params});
+                } else if (lC.loadMethod == LoadMethod.loadPdbIds) {
+                    const config: Array<LoadParams> = lC.loadParams as Array<LoadParams>;
+                    await this.viewer.loadPdbIds(config.map((d) => {
+                        return {pdbId: d.pdbId!, config:{props: d.props, matrix: d.matrix, reprProvider: d.reprProvider, params: d.params}}
+                    }));
+                } else if (lC.loadMethod == LoadMethod.loadStructureFromUrl) {
+                    const config: LoadParams = lC.loadParams as LoadParams;
+                    await this.viewer.loadStructureFromUrl(config.url!, config.format!, config.isBinary!,{props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params});
+                } else if (lC.loadMethod == LoadMethod.loadSnapshotFromUrl) {
+                    const config: LoadParams = lC.loadParams as LoadParams;
+                    await this.viewer.loadSnapshotFromUrl(config.url!, config.type!);
+                } else if (lC.loadMethod == LoadMethod.loadStructureFromData) {
+                    const config: LoadParams = lC.loadParams as LoadParams;
+                    await this.viewer.loadStructureFromData(config.data!, config.format!, config.isBinary!, {props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params});
+                }
             }
+            this.viewer.plugin.selectionMode = true;
+            (Array.isArray(lC.loadParams) ? lC.loadParams : [lC.loadParams]).forEach(lP=>{
+                if(typeof lP.params?.getMap === "function") {
+                    const map: Map<string,string> = lP.params.getMap();
+                    if(typeof map?.forEach === "function")
+                        map.forEach((modelId: string, key: string) => {
+                            if (typeof modelId === "string" && typeof key === "string") {
+                                this.modelMap.set(key, modelId);
+                                this.modelMap.set(modelId, key);
+                            }
+                        })
+                }
+            });
+            this.mapModels(lC.loadParams);
         }
-        this.viewer.plugin.selectionMode = true;
         this.loadingFlag = false;
-        this.mapModels(loadConfig.loadParams);
         this.modelChangeCallback(this.getChains());
     }
 
@@ -476,14 +490,17 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     private mapModels(loadParams: LoadParams | Array<LoadParams>): void{
         const loadParamList: Array<LoadParams> = loadParams instanceof Array ? loadParams : [loadParams];
         const structureRefList = getStructureOptions(this.viewer.plugin);
-        structureRefList.forEach((structureRef,i)=>{
-            const structure = getStructure(structureRef[0], this.viewer.plugin.state.data);
-            let modelEntityId = getModelEntityOptions(structure)[0][0];
-            const chains: [{modelId:string, entryId:string},ChainInfo[]] = getChainValues(structure, modelEntityId);
-            this.modelMap.set(chains[0].modelId,loadParamList[i].id);
-            if(loadParamList[i].id!=null)
-                this.modelMap.set(loadParamList[i].id!,chains[0].modelId);
-        });
+        if(loadParamList.length == structureRefList.length )
+            structureRefList.forEach((structureRef,i)=>{
+                const structure = getStructure(structureRef[0], this.viewer.plugin.state.data);
+                let modelEntityId = getModelEntityOptions(structure)[0][0];
+                const chains: [{modelId:string, entryId:string},ChainInfo[]] = getChainValues(structure, modelEntityId);
+                if(!this.modelMap.has(chains[0].modelId)) {
+                    this.modelMap.set(chains[0].modelId, loadParamList[i].id);
+                    if (loadParamList[i].id != null)
+                        this.modelMap.set(loadParamList[i].id!, chains[0].modelId);
+                }
+            });
     }
 
     private getModelId(id: string): string{
@@ -501,7 +518,7 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
 
 }
 
-export function getStructureOptions(plugin: PluginContext): [string,string][] {
+function getStructureOptions(plugin: PluginContext): [string,string][] {
     const options: [string, string][] = [];
     plugin.managers.structure.hierarchy.current.structures.forEach(s=>{
         options.push([s.cell.transform.ref, s.cell.obj!.data.label]);

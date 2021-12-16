@@ -141,7 +141,21 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
         const allSel: Array<SaguaroRegionList> | undefined = this.props.selectorManager.getSelection(mode);
         if(allSel == null || allSel.length ===0) {
             this.rcsbFvModule?.getFv().clearSelection(mode);
-        }else if(mode === 'select' && this.props.selectorManager.getLastSelection('select')?.labelAsymId != null && this.props.selectorManager.getLastSelection('select')?.labelAsymId != this.ams.getString("labelAsymId")){
+            if(mode === 'select')
+                this.resetPluginView();
+        }else if(
+            mode === 'select' &&
+            this.props.selectorManager.getLastSelection('select')?.labelAsymId != null &&
+            this.props.selectorManager.getLastSelection('select')?.labelAsymId != this.ams.getString("labelAsymId")
+        ){
+            const authId: string | undefined = this.ams.getChainInfo(this.props.selectorManager.getLastSelection('select')?.labelAsymId!)?.auth;
+            await this.modelChangeCallback(this.ams.getMap(), authId, this.props.selectorManager.getLastSelection('select')?.operatorName);
+        }else if(
+            mode === 'select' &&
+            this.props.selectorManager.getLastSelection('select')?.labelAsymId != null &&
+            this.props.selectorManager.getLastSelection('select')?.operatorName != null &&
+            this.props.selectorManager.getLastSelection('select')?.operatorName != this.ams.getOperator()?.name
+        ){
             const authId: string | undefined = this.ams.getChainInfo(this.props.selectorManager.getLastSelection('select')?.labelAsymId!)?.auth;
             await this.modelChangeCallback(this.ams.getMap(), authId, this.props.selectorManager.getLastSelection('select')?.operatorName);
         }else{
@@ -155,6 +169,8 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
             );
             if (sel == null) {
                 this.rcsbFvModule?.getFv().clearSelection(mode);
+                if(mode === 'select')
+                    this.resetPluginView();
             } else {
                 this.rcsbFvModule?.getFv().setSelection({elements: sel.regions, mode: mode});
             }

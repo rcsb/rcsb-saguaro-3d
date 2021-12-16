@@ -1,6 +1,6 @@
 {
   "name": "@rcsb/rcsb-saguaro-3d",
-  "version": "1.3.0-interfaces.1",
+  "version": "1.3.0-interfaces.2",
   "description": "RCSB Molstar/Saguaro Web App",
   "main": "build/dist/app.js",
   "files": [
@@ -22,7 +22,7 @@
     "copyExample_3": "ncp src/examples/assembly/index.html build/src/examples/assembly/index.html",
     "copyExample_4": "ncp src/examples/multiple-chain/index.html build/src/examples/multiple-chain/index.html",
     "copyExample_5": "ncp src/examples/css-config/index.html build/src/examples/css-config/index.html",
-    "copyExample_6": "ncp src/examples/assembly-interface/index.html build/src/examples/assembly-interface/index.html",
+    "copyExample_6": "ncp src/examples/external-mapping/index.html build/src/examples/external-mapping/index.html",
     "buildDoc": "npx typedoc --mode file --out docs --exclude src/examples src && sed -i '' '/---/d' docs/index.html",
     "clean": "del-cli build/src",
     "cleanAll": "npm run clean && del-cli build/dist",
@@ -85,10 +85,10 @@
     "webpack-cli": "^4.9.1"
   },
   "dependencies": {
-    "@rcsb/rcsb-api-tools": "^2.2.1-interface.14",
+    "@rcsb/rcsb-api-tools": "^2.2.1-interface.15",
     "@rcsb/rcsb-molstar": "^2.0.0-dev.10",
     "@rcsb/rcsb-saguaro": "^2.0.0",
-    "@rcsb/rcsb-saguaro-app": "^4.0.0-interfaces.1",
+    "@rcsb/rcsb-saguaro-app": "^4.0.0-interfaces.2",
     "molstar": "^2.4.1",
     "react-select": "^3.0.8"
   },
