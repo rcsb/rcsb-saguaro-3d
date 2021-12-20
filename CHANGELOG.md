@@ -2,6 +2,10 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [1.2.1] - 2021-12-20
+### Dependency update
+- Update to rcsb-api-tools 2.2.1
+
 ## [1.2.0] - 2021-12-07
 ### Improvements
 - Support for assembly instance operators
