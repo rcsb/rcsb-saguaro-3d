@@ -48,6 +48,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
     private currentSelectedComponentId: string;
     private boardConfig: Partial<RcsbFvBoardConfigInterface>;
     private rcsbFvModule: RcsbFvModulePublicInterface | null;
+    private OPERATOR_DROPDOWN_TITLE: string = "Symmetry Partner";
     //private readonly componentSet = new Map<string, {current: Set<string>, previous: Set<string>}>();
 
     additionalContent(): JSX.Element {
@@ -214,9 +215,10 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                         if(typeof this.props.additionalConfig?.operatorChangeCallback === "function" && this.assemblyModelSate.getOperator()){
                                 this.props.additionalConfig.operatorChangeCallback(this.assemblyModelSate.getOperator()!);
                         }
-                        return {
-                            operatorIds: operator?.ids
-                        }
+                        if((this.assemblyModelSate.getChainInfo()?.operators?.length ?? 0) > 1)
+                            return {
+                                operatorIds: operator?.ids
+                            }
                     },
                     filterInstances: assemblyInstances.get(this.assemblyModelSate.getString("entryId")),
                     selectButtonOptionProps: (props: OptionProps<OptionPropsInterface>) => (components.Option &&
@@ -264,8 +266,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 })),
                 {
                     defaultValue: this.assemblyModelSate.getOperator()?.name,
-                    addTitle: true,
-                    dropdownTitle:"SYMMETRY"
+                    dropdownTitle:this.OPERATOR_DROPDOWN_TITLE
                 }
             );
         }

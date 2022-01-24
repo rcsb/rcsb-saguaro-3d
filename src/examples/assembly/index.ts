@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         elementId: "pfv",
         config: sequenceConfig,
         instanceSequenceConfig:{
-            dropdownTitle: "CHAIN",
+            dropdownTitle: "Chain",
             module: "interface"
         },
         additionalConfig: {
