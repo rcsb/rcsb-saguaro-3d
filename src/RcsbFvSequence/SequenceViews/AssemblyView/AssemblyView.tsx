@@ -2,10 +2,7 @@ import {asyncScheduler} from "rxjs";
 import * as React from "react";
 
 import {RcsbFvDOMConstants} from "../../../RcsbFvConstants/RcsbFvConstants";
-import {
-    buildInstanceSequenceFv, RcsbFvContextManager,
-    unmount
-} from "@rcsb/rcsb-saguaro-app";
+import {buildInstanceSequenceFv, FeatureType, RcsbFvContextManager, RcsbFvUI, unmount} from "@rcsb/rcsb-saguaro-app";
 import {AbstractView, AbstractViewInterface} from "../AbstractView";
 import {
     InstanceSequenceConfig,
@@ -13,9 +10,12 @@ import {
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
 import {RcsbFvBoardConfigInterface, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {
-    ChainInfo, OperatorInfo,
+    ChainInfo,
+    OperatorInfo,
     SaguaroPluginInterface,
-    SaguaroPluginModelMapType, SaguaroRange, SaguaroRegionList
+    SaguaroPluginModelMapType,
+    SaguaroRange,
+    SaguaroRegionList
 } from "../../../RcsbFvStructure/SaguaroPluginInterface";
 import {OptionPropsInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/WebTools/SelectButton";
 
@@ -27,10 +27,9 @@ import {
     RcsbFvAdditionalConfig,
     RcsbFvModulePublicInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
-import {RcsbFvUI} from "@rcsb/rcsb-saguaro-app";
 import {AnnotationFeatures, Source, Type} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {PolymerEntityInstanceInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/Translators/PolymerEntityInstancesCollector";
-import {InterfaceInstanceTranslate} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbUtils/InterfaceInstanceTranslate";
+import {InterfaceInstanceTranslate} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbUtils/Translators/InterfaceInstanceTranslate";
 import {AssemblyModelSate} from "./AssemblyModelSate";
 
 export interface AssemblyViewInterface {
@@ -403,11 +402,14 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                     if(typeof ann.target_identifiers?.interface_partner_index === "number" && ann.target_identifiers.assembly_id === this.assemblyModelSate.getString("assemblyId")) {
                         const operatorIds:string[][] = interfaceToInstance.getOperatorIds(ann.target_id)[ann.target_identifiers.interface_partner_index];
                         if(ann.features && this.assemblyModelSate.getOperator() && operatorIds.map(o=>o.join("|")).includes( this.assemblyModelSate.getOperator()!.ids.join("|") )){
-                            ann.features = ann.features.filter(f=>(f && f.type == Type.BurialFraction));
+                            ann.features = ann.features.filter(f=>(f && f.type == FeatureType.BurialFraction));
                             if(ann.features.length > 0)
                                 return ann;
                         }
                     }
+                }else if(ann.source == Source.PdbInstance && ann.features){
+                    ann.features = ann.features?.filter(f=>(f?.type!==Type.Asa));
+                    return ann;
                 }else if(ann.source != Source.PdbInterface){
                     return ann;
                 }
