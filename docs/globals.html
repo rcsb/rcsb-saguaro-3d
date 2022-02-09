@@ -80,6 +80,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-class"><a href="classes/abstractplugin.html" class="tsd-kind-icon">Abstract<wbr>Plugin</a></li>
 								<li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/abstractview.html" class="tsd-kind-icon">Abstract<wbr>View</a></li>
+								<li class="tsd-kind-class"><a href="classes/assemblymodelsate.html" class="tsd-kind-icon">Assembly<wbr>Model<wbr>Sate</a></li>
 								<li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/assemblyview.html" class="tsd-kind-icon">Assembly<wbr>View</a></li>
 								<li class="tsd-kind-class"><a href="classes/blockselectormanager.html" class="tsd-kind-icon">Block<wbr>Selector<wbr>Manager</a></li>
 								<li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/chaindisplay.html" class="tsd-kind-icon">Chain<wbr>Display</a></li>
@@ -99,6 +100,7 @@
 							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-interface"><a href="interfaces/abstractviewinterface.html" class="tsd-kind-icon">Abstract<wbr>View<wbr>Interface</a></li>
+								<li class="tsd-kind-interface"><a href="interfaces/assemblymodelstateinterface.html" class="tsd-kind-icon">Assembly<wbr>Model<wbr>State<wbr>Interface</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/assemblyviewinterface.html" class="tsd-kind-icon">Assembly<wbr>View<wbr>Interface</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/callbackconfig.html" class="tsd-kind-icon">Callback<wbr>Config</a></li>
 								<li class="tsd-kind-interface"><a href="interfaces/chaindisplayinterface.html" class="tsd-kind-icon">Chain<wbr>Display<wbr>Interface</a></li>
@@ -136,6 +138,7 @@
 								<li class="tsd-kind-type-alias"><a href="globals.html#chaintype" class="tsd-kind-icon">Chain<wbr>Type</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#customviewstateinterface" class="tsd-kind-icon">Custom<wbr>View<wbr>State<wbr>Interface</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#operatorinfo" class="tsd-kind-icon">Operator<wbr>Info</a></li>
+								<li class="tsd-kind-type-alias"><a href="globals.html#rcsbfv3dassemblyadditionalconfig" class="tsd-kind-icon">Rcsb<wbr>Fv3DAssembly<wbr>Additional<wbr>Config</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#saguaropluginmodelmaptype" class="tsd-kind-icon">Saguaro<wbr>Plugin<wbr>Model<wbr>Map<wbr>Type</a></li>
 								<li class="tsd-kind-type-alias"><a href="globals.html#structureobject" class="tsd-kind-icon">Structure<wbr>Object</a></li>
 							</ul>
@@ -154,6 +157,7 @@
 								<li class="tsd-kind-function"><a href="globals.html#createcomponents" class="tsd-kind-icon">create<wbr>Components</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#getchainvalues" class="tsd-kind-icon">get<wbr>Chain<wbr>Values</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#getmodelentityoptions" class="tsd-kind-icon">get<wbr>Model<wbr>Entity<wbr>Options</a></li>
+								<li class="tsd-kind-function"><a href="globals.html#getoperator" class="tsd-kind-icon">get<wbr>Operator</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#getstructure" class="tsd-kind-icon">get<wbr>Structure</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#getstructureoptions" class="tsd-kind-icon">get<wbr>Structure<wbr>Options</a></li>
 								<li class="tsd-kind-function"><a href="globals.html#getstructurewithmodelid" class="tsd-kind-icon">get<wbr>Structure<wbr>With<wbr>Model<wbr>Id</a></li>
@@ -245,9 +249,19 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
+					<a name="rcsbfv3dassemblyadditionalconfig" class="tsd-anchor"></a>
+					<h3>Rcsb<wbr>Fv3DAssembly<wbr>Additional<wbr>Config</h3>
+					<div class="tsd-signature tsd-kind-icon">Rcsb<wbr>Fv3DAssembly<wbr>Additional<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RcsbFvAdditionalConfig</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>operatorChangeCallback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>operatorInfo<span class="tsd-signature-symbol">: </span><a href="globals.html#operatorinfo" class="tsd-signature-type">OperatorInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/RcsbFv3D/RcsbFv3DAssembly.tsx:8</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="saguaropluginmodelmaptype" class="tsd-anchor"></a>
 					<h3>Saguaro<wbr>Plugin<wbr>Model<wbr>Map<wbr>Type</h3>
-					<div class="tsd-signature tsd-kind-icon">Saguaro<wbr>Plugin<wbr>Model<wbr>Map<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">{ </span>chains<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="globals.html#chaininfo" class="tsd-signature-type">ChainInfo</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>entryId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">Saguaro<wbr>Plugin<wbr>Model<wbr>Map<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-symbol">{ </span>assemblyId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>chains<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="globals.html#chaininfo" class="tsd-signature-type">ChainInfo</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>entryId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
 							<li>Defined in src/RcsbFvStructure/SaguaroPluginInterface.ts:10</li>
@@ -326,7 +340,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyView.tsx:374</li>
+									<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyView.tsx:457</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -378,7 +392,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvStructure/StructurePlugins/MolstarPlugin.ts:564</li>
+									<li>Defined in src/RcsbFvStructure/StructurePlugins/MolstarPlugin.ts:566</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -392,6 +406,46 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function">
+					<a name="getoperator" class="tsd-anchor"></a>
+					<h3>get<wbr>Operator</h3>
+					<ul class="tsd-signatures tsd-kind-function">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Operator<span class="tsd-signature-symbol">(</span>entryInfo<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>assemblyId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>chains<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="globals.html#chaininfo" class="tsd-signature-type">ChainInfo</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>entryId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span>, defaultAuthId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span>, defaultOperatorName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="globals.html#operatorinfo" class="tsd-signature-type">OperatorInfo</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyView.tsx:478</li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>entryInfo: <span class="tsd-signature-symbol">{ </span>assemblyId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>chains<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="globals.html#chaininfo" class="tsd-signature-type">ChainInfo</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>entryId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter">
+											<h5>assembly<wbr>Id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+										</li>
+										<li class="tsd-parameter">
+											<h5>chains<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><a href="globals.html#chaininfo" class="tsd-signature-type">ChainInfo</a><span class="tsd-signature-symbol">&gt;</span></h5>
+										</li>
+										<li class="tsd-parameter">
+											<h5>entry<wbr>Id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+										</li>
+									</ul>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> defaultAuthId: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> defaultOperatorName: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="globals.html#operatorinfo" class="tsd-signature-type">OperatorInfo</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function">
 					<a name="getstructure" class="tsd-anchor"></a>
 					<h3>get<wbr>Structure</h3>
 					<ul class="tsd-signatures tsd-kind-function">
@@ -401,7 +455,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvStructure/StructurePlugins/MolstarPlugin.ts:558</li>
+									<li>Defined in src/RcsbFvStructure/StructurePlugins/MolstarPlugin.ts:560</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -450,7 +504,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvStructure/StructurePlugins/MolstarPlugin.ts:547</li>
+									<li>Defined in src/RcsbFvStructure/StructurePlugins/MolstarPlugin.ts:549</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -476,7 +530,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvStructure/StructurePlugins/MolstarPlugin.ts:595</li>
+									<li>Defined in src/RcsbFvStructure/StructurePlugins/MolstarPlugin.ts:597</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -499,7 +553,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyView.tsx:343</li>
+									<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyView.tsx:426</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -531,7 +585,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyView.tsx:366</li>
+									<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyView.tsx:449</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -618,7 +672,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in src/RcsbFvStructure/StructurePlugins/MolstarPlugin.ts:590</li>
+									<li>Defined in src/RcsbFvStructure/StructurePlugins/MolstarPlugin.ts:592</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -657,6 +711,9 @@
 					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="classes/abstractview.html" class="tsd-kind-icon">Abstract<wbr>View</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/assemblymodelsate.html" class="tsd-kind-icon">Assembly<wbr>Model<wbr>Sate</a>
 					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="classes/assemblyview.html" class="tsd-kind-icon">Assembly<wbr>View</a>
@@ -699,6 +756,9 @@
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/abstractviewinterface.html" class="tsd-kind-icon">Abstract<wbr>View<wbr>Interface</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/assemblymodelstateinterface.html" class="tsd-kind-icon">Assembly<wbr>Model<wbr>State<wbr>Interface</a>
 					</li>
 					<li class=" tsd-kind-interface">
 						<a href="interfaces/assemblyviewinterface.html" class="tsd-kind-icon">Assembly<wbr>View<wbr>Interface</a>
@@ -797,6 +857,9 @@
 						<a href="globals.html#operatorinfo" class="tsd-kind-icon">Operator<wbr>Info</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#rcsbfv3dassemblyadditionalconfig" class="tsd-kind-icon">Rcsb<wbr>Fv3DAssembly<wbr>Additional<wbr>Config</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
 						<a href="globals.html#saguaropluginmodelmaptype" class="tsd-kind-icon">Saguaro<wbr>Plugin<wbr>Model<wbr>Map<wbr>Type</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
@@ -819,6 +882,9 @@
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#getmodelentityoptions" class="tsd-kind-icon">get<wbr>Model<wbr>Entity<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#getoperator" class="tsd-kind-icon">get<wbr>Operator</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="globals.html#getstructure" class="tsd-kind-icon">get<wbr>Structure</a>

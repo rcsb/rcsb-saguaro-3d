@@ -477,12 +477,12 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
 
     private getChains(): SaguaroPluginModelMapType{
         const structureRefList = getStructureOptions(this.viewer.plugin);
-        const out: SaguaroPluginModelMapType = new Map<string, {entryId: string; chains: Array<ChainInfo>}>();
+        const out: SaguaroPluginModelMapType = new Map<string, {entryId: string; chains: Array<ChainInfo>; assemblyId:string;}>();
         structureRefList.forEach((structureRef,i)=>{
-            const structure = getStructure(structureRef[0], this.viewer.plugin.state.data);
+            const structure: Structure = getStructure(structureRef[0], this.viewer.plugin.state.data);
             let modelEntityId = getModelEntityOptions(structure)[0][0];
-            const chains: [{modelId:string;entryId:string},ChainInfo[]] = getChainValues(structure, modelEntityId);
-            out.set(this.getModelId(chains[0].modelId),{entryId:chains[0].entryId, chains: chains[1]});
+            const chains: [{modelId:string;entryId:string;assemblyId:string;},ChainInfo[]] = getChainValues(structure, modelEntityId);
+            out.set(this.getModelId(chains[0].modelId),{entryId:chains[0].entryId, assemblyId:chains[0].assemblyId, chains: chains[1]});
         });
         return out;
     }
@@ -526,12 +526,14 @@ function getStructureOptions(plugin: PluginContext): [string,string][] {
     return options;
 }
 
-function getChainValues(structure: Structure, modelEntityId: string): [{modelId:string, entryId:string},ChainInfo[]] {
+function getChainValues(structure: Structure, modelEntityId: string): [{modelId:string; entryId:string; assemblyId:string;},ChainInfo[]] {
     const chains: Map<number, ChainInfo> = new Map<number, ChainInfo>();
     const l = StructureElement.Location.create(structure);
+    let assemblyId:string = "-";
     const [modelIdx, entityId] = splitModelEntityId(modelEntityId);
     for (const unit of structure.units) {
         StructureElement.Location.set(l, structure, unit, unit.elements[0]);
+        assemblyId = SP.unit.pdbx_struct_assembly_id(l);
         if (structure.getModelIndex(unit.model) !== modelIdx) continue;
         const chId: number = unit.chainGroupId;
         if(chains.has(chId)){
@@ -540,7 +542,7 @@ function getChainValues(structure: Structure, modelEntityId: string): [{modelId:
             chains.set(chId, {label:SP.chain.label_asym_id(l), auth:SP.chain.auth_asym_id(l), entityId: SP.entity.id(l), title: SP.entity.pdbx_description(l).join("|"), type: SP.entity.type(l), operators:[opKey(l)]});
         }
     }
-    const id: {modelId:string, entryId:string} = {modelId:l.unit?.model?.id, entryId: l.unit?.model?.entryId};
+    const id: {modelId:string; entryId:string; assemblyId:string;} = {modelId:l.unit?.model?.id, entryId: l.unit?.model?.entryId, assemblyId: assemblyId};
     return [id,Array.from(chains.values())];
 }
 

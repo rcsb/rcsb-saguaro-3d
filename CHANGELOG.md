@@ -2,6 +2,11 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [1.3.0] - 2022-02-08
+### Improvements
+- New class `AssemblyModelSate` to handle the assembly selection state in `RcsbFvSequence.SequenceViews.AssemblyView.AssemblyView` class
+- New callback `operatorChangeCallback` function attached to operator dropdown menu changes
+
 ## [1.2.1] - 2021-12-20
 ### Dependency update
 - Update to rcsb-api-tools 2.2.1

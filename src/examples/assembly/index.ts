@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         return result;
     }
 
-    const args: {pdbId:string} = getJsonFromUrl().pdbId ? getJsonFromUrl() : {pdbId:"4hhb"};
+    const args: {pdbId:string} = getJsonFromUrl().pdbId ? getJsonFromUrl() : {pdbId:"4HHB"};
 
     const sequenceConfig = {
         entryId: args.pdbId,
@@ -35,7 +35,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
         elementId: "pfv",
         config: sequenceConfig,
         instanceSequenceConfig:{
-            dropdownTitle: "CHAIN"
+            dropdownTitle: "Chain",
+            module: "interface"
         },
         additionalConfig: {
             boardConfig: {
@@ -63,27 +64,36 @@ function externalTrackBuilder(){
         trackData: []
     };
     return {
-        processAlignmentAndFeatures(data: { annotations?: Array<AnnotationFeatures>; alignments?: AlignmentResponse }): void {
-            myComputedTrack.trackData = [];
-            data.annotations?.forEach(a=>{
-                a.features?.forEach(f=>{
-                    if(f!=null && f.type === Type.Site){
-                        if(f.feature_positions)
-                           myComputedTrack.trackData?.push( ...f.feature_positions?.map(p=>({
-                               begin:p?.beg_seq_id ?? 0,
-                               end:p?.end_seq_id ?? undefined
-                           })))
-                    }
-                })
+        processAlignmentAndFeatures(data: { annotations?: Array<AnnotationFeatures>; alignments?: AlignmentResponse }): Promise<void> {
+            return new Promise<void>(resolve => {
+                myComputedTrack.trackData = [];
+                data.annotations?.forEach(a=>{
+                    a.features?.forEach(f=>{
+                        if(f!=null && f.type === Type.Site){
+                            if(f.feature_positions)
+                                myComputedTrack.trackData?.push( ...f.feature_positions?.map(p=>({
+                                    begin:p?.beg_seq_id ?? 0,
+                                    end:p?.end_seq_id ?? undefined
+                                })))
+                        }
+                    })
+                });
+                resolve(void 0);
+            })
+
+        },
+        addTo(tracks: { alignmentTracks?: SequenceCollectorDataInterface; annotationTracks?: Array<RcsbFvRowConfigInterface>; rcsbContext?: Partial<PolymerEntityInstanceInterface>; }): Promise<void> {
+            return new Promise<void>(resolve => {
+                if (tracks.rcsbContext?.asymId === "A" && myComputedTrack?.trackData && myComputedTrack.trackData.length > 0) {
+                    tracks.annotationTracks?.push(myComputedTrack);
+                }
+                resolve(void 0);
             })
         },
-        addTo(tracks: { alignmentTracks?: SequenceCollectorDataInterface; annotationTracks?: Array<RcsbFvRowConfigInterface>; rcsbContext?: Partial<PolymerEntityInstanceInterface>; }): void {
-            if(tracks.rcsbContext?.asymId === "A" && myComputedTrack?.trackData && myComputedTrack.trackData.length > 0) {
-                tracks.annotationTracks?.push(myComputedTrack);
-            }
-        },
-        filterFeatures(annotations: Array<AnnotationFeatures>): Array<AnnotationFeatures> {
-            return annotations;
+        filterFeatures(data: {annotations: Array<AnnotationFeatures>; rcsbContext:Partial<PolymerEntityInstanceInterface>}): Promise<Array<AnnotationFeatures>> {
+            return new Promise<Array<AnnotationFeatures>>(resolve => {
+                resolve(data.annotations);
+            })
         }
     }
 }

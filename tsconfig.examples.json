@@ -17,7 +17,8 @@
     "src/examples/multiple-chain/index.tsx",
     "src/examples/structural-alignment/index.tsx",
     "src/examples/css-config/index.tsx",
-    "src/examples/assembly/index.ts"
+    "src/examples/assembly/index.ts",
+    "src/examples/assembly-interface/index.ts"
   ],
   "exclude": [
     "node_modules"

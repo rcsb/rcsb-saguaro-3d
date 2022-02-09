@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>AssemblyViewInterface | @rcsb/rcsb-saguaro-3d</title>
+	<title>AssemblyModelStateInterface | @rcsb/rcsb-saguaro-3d</title>
 	<meta name="description" content="Documentation for @rcsb/rcsb-saguaro-3d">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="assemblyviewinterface.html">AssemblyViewInterface</a>
+					<a href="assemblymodelstateinterface.html">AssemblyModelStateInterface</a>
 				</li>
 			</ul>
-			<h1>Interface AssemblyViewInterface</h1>
+			<h1>Interface AssemblyModelStateInterface</h1>
 		</div>
 	</div>
 </header>
@@ -70,7 +70,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">AssemblyViewInterface</span>
+						<span class="target">AssemblyModelStateInterface</span>
 					</li>
 				</ul>
 			</section>
@@ -81,10 +81,11 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="assemblyviewinterface.html#additionalconfig" class="tsd-kind-icon">additional<wbr>Config</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="assemblyviewinterface.html#entryid" class="tsd-kind-icon">entry<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="assemblyviewinterface.html#instancesequenceconfig" class="tsd-kind-icon">instance<wbr>Sequence<wbr>Config</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="assemblyviewinterface.html#useoperatorsflag" class="tsd-kind-icon">use<wbr>Operators<wbr>Flag</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="assemblymodelstateinterface.html#assemblyid" class="tsd-kind-icon">assembly<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="assemblymodelstateinterface.html#entryid" class="tsd-kind-icon">entry<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="assemblymodelstateinterface.html#labelasymid" class="tsd-kind-icon">label<wbr>Asym<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="assemblymodelstateinterface.html#modelid" class="tsd-kind-icon">model<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="assemblymodelstateinterface.html#operator" class="tsd-kind-icon">operator</a></li>
 							</ul>
 						</section>
 					</div>
@@ -93,12 +94,12 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="additionalconfig" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> additional<wbr>Config</h3>
-					<div class="tsd-signature tsd-kind-icon">additional<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RcsbFvAdditionalConfig</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>operatorChangeCallback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>operatorInfo<span class="tsd-signature-symbol">: </span><a href="../globals.html#operatorinfo" class="tsd-signature-type">OperatorInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> }</span></div>
+					<a name="assemblyid" class="tsd-anchor"></a>
+					<h3>assembly<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">assembly<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyView.tsx:37</li>
+							<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyModelSate.ts:6</li>
 						</ul>
 					</aside>
 				</section>
@@ -108,27 +109,37 @@
 					<div class="tsd-signature tsd-kind-icon">entry<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyView.tsx:36</li>
+							<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyModelSate.ts:5</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="instancesequenceconfig" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> instance<wbr>Sequence<wbr>Config</h3>
-					<div class="tsd-signature tsd-kind-icon">instance<wbr>Sequence<wbr>Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">InstanceSequenceConfig</span></div>
+					<a name="labelasymid" class="tsd-anchor"></a>
+					<h3>label<wbr>Asym<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">label<wbr>Asym<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyView.tsx:38</li>
+							<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyModelSate.ts:7</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="useoperatorsflag" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> use<wbr>Operators<wbr>Flag</h3>
-					<div class="tsd-signature tsd-kind-icon">use<wbr>Operators<wbr>Flag<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
+					<a name="modelid" class="tsd-anchor"></a>
+					<h3>model<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">model<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyView.tsx:39</li>
+							<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyModelSate.ts:4</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="operator" class="tsd-anchor"></a>
+					<h3>operator</h3>
+					<div class="tsd-signature tsd-kind-icon">operator<span class="tsd-signature-symbol">:</span> <a href="../globals.html#operatorinfo" class="tsd-signature-type">OperatorInfo</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in src/RcsbFvSequence/SequenceViews/AssemblyView/AssemblyModelSate.ts:8</li>
 						</ul>
 					</aside>
 				</section>
@@ -147,19 +158,22 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="assemblyviewinterface.html" class="tsd-kind-icon">Assembly<wbr>View<wbr>Interface</a>
+						<a href="assemblymodelstateinterface.html" class="tsd-kind-icon">Assembly<wbr>Model<wbr>State<wbr>Interface</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="assemblyviewinterface.html#additionalconfig" class="tsd-kind-icon">additional<wbr>Config</a>
+								<a href="assemblymodelstateinterface.html#assemblyid" class="tsd-kind-icon">assembly<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="assemblyviewinterface.html#entryid" class="tsd-kind-icon">entry<wbr>Id</a>
+								<a href="assemblymodelstateinterface.html#entryid" class="tsd-kind-icon">entry<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="assemblyviewinterface.html#instancesequenceconfig" class="tsd-kind-icon">instance<wbr>Sequence<wbr>Config</a>
+								<a href="assemblymodelstateinterface.html#labelasymid" class="tsd-kind-icon">label<wbr>Asym<wbr>Id</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="assemblyviewinterface.html#useoperatorsflag" class="tsd-kind-icon">use<wbr>Operators<wbr>Flag</a>
+								<a href="assemblymodelstateinterface.html#modelid" class="tsd-kind-icon">model<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="assemblymodelstateinterface.html#operator" class="tsd-kind-icon">operator</a>
 							</li>
 						</ul>
 					</li>

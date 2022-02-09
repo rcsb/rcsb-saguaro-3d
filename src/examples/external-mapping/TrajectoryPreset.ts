@@ -17,6 +17,9 @@ export const RcsbRepresentationPreset: TrajectoryHierarchyPresetProvider<{id:str
     display: {
         name: 'Feature View 3D'
     },
+    /*params(a: PluginStateObject.Molecule.Trajectory | undefined, plugin: PluginContext): ParamDefinition.For<{id:string, mapStructure: (key: string, structure: PluginStateObject.Molecule.Structure)=>void}> {
+         return {id: undefined, mapStructure: undefined};
+    },*/
     async apply(trajectory, params, plugin) {
         const builder = plugin.builders.structure;
         const model = await builder.createModel(trajectory, {modelIndex: 0});
