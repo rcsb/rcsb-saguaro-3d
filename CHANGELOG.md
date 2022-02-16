@@ -2,6 +2,10 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [1.3.1] - 2021-02-16
+### Dependency update
+- Updated multiple dependencies
+
 ## [1.3.0] - 2022-02-08
 ### Improvements
 - New class `AssemblyModelSate` to handle the assembly selection state in `RcsbFvSequence.SequenceViews.AssemblyView.AssemblyView` class

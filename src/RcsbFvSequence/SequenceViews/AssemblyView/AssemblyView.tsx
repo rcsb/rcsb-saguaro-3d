@@ -17,10 +17,7 @@ import {
     SaguaroRange,
     SaguaroRegionList
 } from "../../../RcsbFvStructure/SaguaroPluginInterface";
-import {OptionPropsInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/WebTools/SelectButton";
 
-import {OptionProps} from "react-select/src/components/Option";
-import {components} from 'react-select';
 import {ChainDisplay} from "./ChainDisplay";
 
 import {
@@ -31,6 +28,7 @@ import {AnnotationFeatures, Source, Type} from "@rcsb/rcsb-api-tools/build/RcsbG
 import {PolymerEntityInstanceInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/Translators/PolymerEntityInstancesCollector";
 import {InterfaceInstanceTranslate} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbUtils/Translators/InterfaceInstanceTranslate";
 import {AssemblyModelSate} from "./AssemblyModelSate";
+import {SelectOptionProps} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/WebTools/SelectButton";
 
 export interface AssemblyViewInterface {
     entryId: string;
@@ -220,10 +218,10 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                             }
                     },
                     filterInstances: assemblyInstances.get(this.assemblyModelSate.getString("entryId")),
-                    selectButtonOptionProps: (props: OptionProps<OptionPropsInterface>) => (components.Option &&
+                    selectButtonOptionProps: (props: SelectOptionProps) => (
                         <div style={{display: 'flex'}}>
                             <ChainDisplay plugin={this.props.plugin} label={props.data.label}/>
-                            <components.Option {...props}/>
+                            {props.children}
                         </div>)
                 },
                 {
