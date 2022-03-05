@@ -78,7 +78,16 @@ export class MolstarPlugin extends AbstractPlugin implements SaguaroPluginInterf
     }
 
     public init(target: string | HTMLElement, props?: Partial<ViewerProps>) {
-        this.viewer = new Viewer(target, {layoutShowControls:false, layoutShowSequence: true, ...props});
+        this.viewer = new Viewer(target, {
+            ...props,
+            layoutShowControls:false,
+            layoutShowSequence: true,
+            canvas3d: {
+                multiSample: {
+                    mode: 'off'
+                }
+            }
+        });
     }
 
     public clear(): void{

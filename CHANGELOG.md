@@ -2,7 +2,11 @@
 
 [Semantic Versioning](https://semver.org/)
 
-## [1.3.1] - 2021-02-16
+## [1.3.2] - 2022-03-04
+### Configuration improvement
+- `RcsbFv3DAssemblyInterface` configuration exposes a new optional parameter`assemblyId` to select the assembly that is being displayed
+
+## [1.3.1] - 2022-02-16
 ### Dependency update
 - Updated multiple dependencies
 

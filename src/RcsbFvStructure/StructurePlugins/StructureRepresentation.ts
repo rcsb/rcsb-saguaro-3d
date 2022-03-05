@@ -2,6 +2,7 @@ import {
     PresetStructureRepresentations,
     StructureRepresentationPresetProvider
 } from "molstar/lib/mol-plugin-state/builder/structure/representation-preset";
+import { ParamDefinition as PD } from 'molstar/lib/mol-util/param-definition';
 import {TrajectoryHierarchyPresetProvider} from "molstar/lib/mol-plugin-state/builder/structure/hierarchy-preset";
 import {StateObjectSelector} from "molstar/lib/mol-state";
 import {PluginStateObject} from "molstar/lib/mol-plugin-state/objects";
@@ -10,18 +11,25 @@ import {StateTransformer} from "molstar/lib/mol-state/transformer";
 
 type StructureObject = StateObjectSelector<PluginStateObject.Molecule.Structure, StateTransformer<StateObject<any, StateObject.Type<any>>, StateObject<any, StateObject.Type<any>>, any>>
 
+const RcsbParams = () => ({
+    preset: PD.Value<{assemblyId:string;}>({ assemblyId: '1' })
+});
+
 export const RcsbRepresentationPreset: TrajectoryHierarchyPresetProvider = TrajectoryHierarchyPresetProvider({
     id: "rcsb-saguaro-3d",
     display: {
         name: 'Feature View 3D'
     },
-    params: () => ({
-    }),
+    params: RcsbParams,
     async apply(trajectory, params, plugin) {
         const builder = plugin.builders.structure;
         const model = await builder.createModel(trajectory, {modelIndex: 0});
         const modelProperties = await builder.insertModelProperties(model);
-        const structure: StructureObject = await builder.createStructure(modelProperties);
+        const assemblyId: string = params.preset.assemblyId;
+        const structure: StructureObject = await builder.createStructure(
+            modelProperties,
+            (assemblyId != "" && assemblyId != "0") ? {name: 'assembly', params:{id:assemblyId}} : {name:"model", params:{}}
+        );
         const structureProperties: StructureObject = await builder.insertStructureProperties(structure);
         const unitcell: StateObjectSelector | undefined = await builder.tryCreateUnitcell(modelProperties, undefined, { isHidden: true });
         const representation: StructureRepresentationPresetProvider.Result | undefined = await plugin.builders.structure.representation.applyPreset(structureProperties, PresetStructureRepresentations.auto);

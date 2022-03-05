@@ -8,13 +8,14 @@ import {OperatorInfo} from "../RcsbFvStructure/SaguaroPluginInterface";
 type RcsbFv3DAssemblyAdditionalConfig = RcsbFvAdditionalConfig & {operatorChangeCallback?:(operatorInfo: OperatorInfo)=>void};
 export interface RcsbFv3DAssemblyInterface extends RcsbFv3DAbstractInterface {
    config: {
-        entryId: string;
-        title?: string;
-        subtitle?: string;
-    };
-    additionalConfig?: RcsbFv3DAssemblyAdditionalConfig;
-    instanceSequenceConfig?: InstanceSequenceConfig;
-    useOperatorsFlag?:boolean;
+       entryId: string;
+       assemblyId?: string;
+       title?: string;
+       subtitle?: string;
+   };
+   additionalConfig?: RcsbFv3DAssemblyAdditionalConfig;
+   instanceSequenceConfig?: InstanceSequenceConfig;
+   useOperatorsFlag?:boolean;
 }
 
 export class RcsbFv3DAssembly extends RcsbFv3DAbstract{
@@ -24,18 +25,19 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract{
     }
 
     init(assemblyData: RcsbFv3DAssemblyInterface) {
-        this.elementId = assemblyData.elementId ?? "RcsbFv3D_mainDiv_"+Math.random().toString(36).substr(2);
+        this.elementId = assemblyData.elementId ?? "RcsbFv3D_mainDiv_"+Math.random().toString(36).substring(2);
         this.structureConfig = {
             loadConfig: {
                 loadMethod: LoadMethod.loadPdbId,
                 loadParams: {
                     pdbId:assemblyData.config.entryId,
                     id:assemblyData.config.entryId,
-                    props: {
-                        kind:'standard',
-                        assemblyId:'1'
-                    },
-                    reprProvider: RcsbRepresentationPreset
+                    reprProvider: RcsbRepresentationPreset,
+                    params:{
+                        preset:{
+                            assemblyId: assemblyData.config.assemblyId ?? '1'
+                        }
+                    }
                 }
             }
         };
