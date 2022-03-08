@@ -2,6 +2,14 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [1.3.4] - 2022-03-07
+### Bug fixes
+- NMR model change bug fix. New strategy to find the right `modeId` filtering the `assemblyModelSate`
+
+## [1.3.3] - 2022-03-07
+### Error publishing
+- No changes, only examples were build
+
 ## [1.3.2] - 2022-03-04
 ### Configuration improvement
 - `RcsbFv3DAssemblyInterface` configuration exposes a new optional parameter`assemblyId` to select the assembly that is being displayed
