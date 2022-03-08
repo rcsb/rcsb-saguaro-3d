@@ -49,6 +49,9 @@ export class AssemblyModelSate {
         this.modelMap.forEach((v,k)=>f(v,k));
     }
 
+    public entries(): IterableIterator<[string,{entryId: string; assemblyId: string; chains:Array<ChainInfo>;}]>{
+        return this.modelMap.entries();
+    }
 
     public setOperator(asymId?:string, opName?:string) {
         const currentChainInfo: ChainInfo|undefined = this.getChainInfo(asymId??this.state.labelAsymId);

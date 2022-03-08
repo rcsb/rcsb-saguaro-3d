@@ -204,8 +204,11 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                     onChangeCallback: onChangeCallback.get(this.assemblyModelSate.getString("entryId")),
                     beforeChangeCallback: (x: InstanceSequenceOnchangeInterface)=>{
                         this.assemblyModelSate.set({entryId:x.pdbId, labelAsymId: x.asymId});
-                        //TODO this will only work when modelId is equal to pdbId
-                        const operator: OperatorInfo|undefined = getOperator(this.assemblyModelSate.getMap().get(x.pdbId)!, defaultAuthId, operatorNameContainer.operatorName);
+                        const entryMap:[string, {entryId: string, assemblyId: string, chains: ChainInfo[]}] | undefined = Array.from(this.assemblyModelSate.entries()).find((e)=>(e[1].entryId === x.pdbId));
+                        if(!entryMap){
+                            throw `Error: no modelId was found for ${x.pdbId}`;
+                        }
+                        const operator: OperatorInfo|undefined = getOperator(this.assemblyModelSate.getMap().get(entryMap[0])!, defaultAuthId, operatorNameContainer.operatorName);
                         this.addOperatorButton(operator?.name);
                         this.assemblyModelSate.setOperator(x.asymId,operator?.name);
                         operatorNameContainer.operatorName = undefined;
