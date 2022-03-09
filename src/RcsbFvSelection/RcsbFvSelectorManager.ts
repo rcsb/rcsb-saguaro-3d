@@ -96,6 +96,23 @@ export class RcsbFvSelectorManager {
                 .filter(r=>(r.begin === region. begin && r.end === region.end))[0]?.source;
     }
 
+    public test(mode:'select'|'hover', key:"labelAsymId"|"operatorName", value: string|undefined, not:boolean=false): boolean {
+        switch (key){
+            case "operatorName":
+                return(
+                    this.getLastSelection(mode)?.labelAsymId != null &&
+                    this.getLastSelection(mode)?.operatorName != null &&
+                    ((!not && this.getLastSelection(mode)?.operatorName == value) || (not && this.getLastSelection(mode)?.operatorName != value))
+                );
+            case "labelAsymId":
+                return(
+                    this.getLastSelection(mode)?.labelAsymId != null &&
+                    ((!not && this.getLastSelection(mode)?.labelAsymId == value) || (not && this.getLastSelection(mode)?.labelAsymId != value))
+                );
+            default:
+                return false;
+        }
+    }
 }
 
 function selectionFromResidueSelection(res: Array<SaguaroSet>, mode:'select'|'hover', source: 'structure'|'sequence'): Array<SaguaroRegionList> {

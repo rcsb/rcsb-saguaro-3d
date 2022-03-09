@@ -141,23 +141,14 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
             this.rcsbFvModule?.getFv().clearSelection(mode);
             if(mode === 'select')
                 this.resetPluginView();
-        }else if(
-            mode === 'select' &&
-            this.props.selectorManager.getLastSelection('select')?.labelAsymId != null &&
-            this.props.selectorManager.getLastSelection('select')?.labelAsymId != this.assemblyModelSate.getString("labelAsymId")
-        ){
+        }else if(this.props.selectorManager.test("select", "labelAsymId", this.assemblyModelSate.getString("labelAsymId"), true)){
             const authId: string | undefined = this.assemblyModelSate.getChainInfo(this.props.selectorManager.getLastSelection('select')?.labelAsymId!)?.auth;
             await this.modelChangeCallback(this.assemblyModelSate.getMap(), authId, this.props.selectorManager.getLastSelection('select')?.operatorName);
-        }else if(
-            mode === 'select' &&
-            this.props.selectorManager.getLastSelection('select')?.labelAsymId != null &&
-            this.props.selectorManager.getLastSelection('select')?.operatorName != null &&
-            this.props.selectorManager.getLastSelection('select')?.operatorName != this.assemblyModelSate.getOperator()?.name
-        ){
+        }else if(this.props.selectorManager.test("select", "operatorName",  this.assemblyModelSate.getOperator()?.name, true)){
             const authId: string | undefined = this.assemblyModelSate.getChainInfo(this.props.selectorManager.getLastSelection('select')?.labelAsymId!)?.auth;
             await this.modelChangeCallback(this.assemblyModelSate.getMap(), authId, this.props.selectorManager.getLastSelection('select')?.operatorName);
         }else{
-            if(mode === 'select' && this.props.selectorManager.getLastSelection('select')?.operatorName && this.props.selectorManager.getLastSelection('select')?.operatorName != this.assemblyModelSate.getOperator()?.name)
+            if(this.props.selectorManager.test("select", "operatorName", this.assemblyModelSate.getOperator()?.name,true))
                 this.addOperatorButton(this.props.selectorManager.getLastSelection('select')?.operatorName);
             const sel: SaguaroRegionList | undefined = this.props.selectorManager.getSelectionWithCondition(
                 this.assemblyModelSate.getString("modelId"),
@@ -188,7 +179,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                 asyncScheduler.schedule(()=>{
                     this.props.selectorManager.setLastSelection('select', null);
                     this.instanceChangeCallback();
-                },1000);
+                },300);
             });
         });
         this.unmountRcsbFv();
