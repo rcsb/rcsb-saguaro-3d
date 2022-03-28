@@ -69,6 +69,7 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
     private rcsbFvMap: Map<string, RcsbFv> = new Map<string, RcsbFv>();
     private firstModelLoad: boolean = true;
     private innerSelectionFlag: boolean = false;
+    private updateContext:"state-change"|null = null;
 
     readonly state: CustomViewStateInterface = {
         blockConfig: this.props.blockConfig,
@@ -93,7 +94,22 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
         });
     }
 
+    componentDidUpdate(prevProps: Readonly<CustomViewInterface & AbstractViewInterface>, prevState: Readonly<CustomViewStateInterface>, snapshot?: any) {
+        if(this.updateContext != "state-change") {
+            this.updateContext = "state-change";
+            this.mapBlocks(this.props.blockConfig);
+            this.setState( {
+                blockConfig: this.props.blockConfig,
+                blockSelectorElement: this.props.blockSelectorElement,
+                blockChangeCallback: this.props.blockChangeCallback
+            });
+        }
+    }
+
     private mapBlocks(config: FeatureBlockInterface | Array<FeatureBlockInterface>){
+        this.rcsbFvMap.forEach((pfv, id) => {
+            pfv.unmount();
+        });
         this.blockMap.clear();
         this.boardMap.clear();
         ( config instanceof Array ? config : [config]).forEach(block=>{
@@ -204,7 +220,7 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
         if(typeof this.props.modelChangeCallback === "function") {
             let newConfig: CustomViewStateInterface = this.props.modelChangeCallback(modelMap);
             if(newConfig != null ){
-                newConfig = newConfig as CustomViewStateInterface;
+                this.updateContext = "state-change";
                 if(newConfig.blockConfig != null && newConfig.blockSelectorElement != null){
                     this.mapBlocks(newConfig.blockConfig);
                     this.setState({blockConfig: newConfig.blockConfig, blockSelectorElement: newConfig.blockSelectorElement})
@@ -216,6 +232,14 @@ export class CustomView extends AbstractView<CustomViewInterface & AbstractViewI
                 }
             }
         }
+    }
+
+    setState<K extends keyof CustomViewStateInterface>(state: ((prevState: Readonly<CustomViewStateInterface>, props: Readonly<CustomViewInterface & AbstractViewInterface>) => (Pick<CustomViewStateInterface, K> | CustomViewStateInterface | null)) | Pick<CustomViewStateInterface, K> | CustomViewStateInterface | null, callback?: () => void) {
+        super.setState(state, ()=>{
+            this.blockViewSelector.setActiveBlock( (this.state.blockConfig instanceof Array ? this.state.blockConfig : [this.state.blockConfig])[0].blockId! )
+            if(typeof callback === "function") callback();
+            this.updateContext = null
+        });
     }
 
     updateDimensions(): void {

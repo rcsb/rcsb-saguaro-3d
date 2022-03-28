@@ -61,7 +61,9 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
                     <a style={{textDecoration:"none", color:"#337ab7", cursor:"pointer", marginRight:15}} target={"_blank"} href={"/docs/sequence-viewers/3d-protein-feature-view"}>
                         Help
                     </a>
-                    <a style={{textDecoration:"none", color: "#337ab7", cursor:"pointer"}} onClick={()=>{this.props.unmount(true)}}>
+                    <a style={{textDecoration:"none", color: "#337ab7", cursor:"pointer"}} onClick={()=>{this.props.unmount(true, ()=>{
+                        window.history.back();
+                    })}}>
                         Back
                     </a>
                 </div>

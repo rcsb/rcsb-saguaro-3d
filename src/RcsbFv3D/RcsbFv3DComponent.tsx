@@ -155,14 +155,14 @@ export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterfa
     }
 
     private updateConfig(config:UpdateConfigInterface){
-        const structureConfig: RcsbFvStructureInterface | undefined = config.structurePanelConfig;
-        const sequenceConfig: RcsbFvSequenceInterface | undefined = config.sequencePanelConfig;
+        const structureConfig: Partial<RcsbFvStructureInterface> | undefined = config.structurePanelConfig;
+        const sequenceConfig: Partial<RcsbFvSequenceInterface> | undefined = config.sequencePanelConfig;
         if(structureConfig != null && sequenceConfig != null){
-            this.setState({structurePanelConfig:structureConfig, sequencePanelConfig:sequenceConfig});
+            this.setState({structurePanelConfig:{...this.state.structurePanelConfig, ...structureConfig}, sequencePanelConfig:{...this.state.sequencePanelConfig, ...sequenceConfig}});
         }else if(structureConfig != null){
-            this.setState({structurePanelConfig:structureConfig});
+            this.setState({structurePanelConfig:{...this.state.structurePanelConfig, ...structureConfig}});
         }else if(sequenceConfig != null){
-            this.setState({sequencePanelConfig: sequenceConfig});
+            this.setState({sequencePanelConfig:{...this.state.sequencePanelConfig, ...sequenceConfig}});
         }
     }
 

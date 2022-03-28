@@ -16,8 +16,8 @@ export enum EventType {
 }
 
 export interface UpdateConfigInterface {
-    structurePanelConfig?:RcsbFvStructureInterface;
-    sequencePanelConfig?:RcsbFvSequenceInterface;
+    structurePanelConfig?:Partial<RcsbFvStructureInterface>;
+    sequencePanelConfig?:Partial<RcsbFvSequenceInterface>;
 }
 
 /**rxjs Event Handler Object. It allows objects to subscribe methods and then, get(send) events to(from) other objects*/

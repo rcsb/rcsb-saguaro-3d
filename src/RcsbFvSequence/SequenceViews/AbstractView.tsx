@@ -16,7 +16,7 @@ export interface AbstractViewInterface {
     subtitle?: string;
     plugin: SaguaroPluginInterface;
     selectorManager: RcsbFvSelectorManager;
-    unmount:(flag:boolean)=>void;
+    unmount:(flag:boolean,callback:()=>void)=>void;
 }
 
 export abstract class AbstractView<P,S> extends React.Component <P & AbstractViewInterface, S> implements SequenceViewInterface {

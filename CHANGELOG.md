@@ -2,6 +2,13 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [1.3.5] - 2022-03-28
+### Improvements
+- `RcsbFv3DAbstract.updateConfig` method accepts partial states (`Partial<RcsbFvStructureInterface>` and `Partial<RcsbFvSequenceInterface>`)
+- `RcsbFv3DAbstract.unmount` method includes an optional callback executed after when the component is unmounted
+  - Assembly view `Back` link action has been refactored using the unmount-callback
+- Minor code refactoring
+
 ## [1.3.4] - 2022-03-07
 ### Bug fixes
 - NMR model change bug fix. New strategy to find the right `modeId` filtering the `assemblyModelSate`

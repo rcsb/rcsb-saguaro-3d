@@ -19,6 +19,7 @@ export abstract class RcsbFv3DAbstract {
     protected sequenceConfig: RcsbFvSequenceInterface;
     protected ctxManager: RcsbFvContextManager = new RcsbFvContextManager();
     private fullScreenFlag: boolean = false;
+    private overflowStyle: string = "";
     protected cssConfig:{
         rootPanel?: CSSProperties,
         structurePanel?: CSSProperties,
@@ -39,8 +40,7 @@ export abstract class RcsbFv3DAbstract {
         if(element.getAttribute("id") == null) {
             element.setAttribute("id", this.elementId);
             document.body.append(element);
-            this.fullScreenFlag = true;
-            document.body.style.overflow = "hidden";
+            this.fullScreen("on");
         }
         ReactDom.render(
             <RcsbFv3DComponent
@@ -56,24 +56,40 @@ export abstract class RcsbFv3DAbstract {
         );
     }
 
-    public unmount(removeHtmlElement?:boolean): void{
+    public unmount(removeHtmlElement?:boolean, unmountCallback?:()=>{}): void{
         const element: HTMLElement | null = document.getElementById(this.elementId);
         if(element != null) {
             ReactDom.unmountComponentAtNode(element);
             if(removeHtmlElement) {
                 element.remove();
-                document.body.style.overflow = "visible";
             }
-            window.history.back();
+            if(typeof unmountCallback === "function")
+                unmountCallback();
+            this.fullScreen("off")
         }
     }
 
-    public updateConfig(config: {structurePanelConfig?: RcsbFvStructureInterface; sequencePanelConfig?: RcsbFvSequenceInterface;}){
+    public updateConfig(config: {structurePanelConfig?: Partial<RcsbFvStructureInterface>; sequencePanelConfig?: Partial<RcsbFvSequenceInterface>;}){
         this.ctxManager.next({eventType: EventType.UPDATE_CONFIG, eventData:config});
     }
 
     public pluginCall(f: (plugin: PluginContext) => void){
         this.ctxManager.next({eventType: EventType.PLUGIN_CALL, eventData:f});
+    }
+
+    private fullScreen(mode: "on" | "off"): void {
+        switch (mode){
+            case "on":
+                this.fullScreenFlag = true;
+                this.overflowStyle = document.body.style.overflow;
+                document.body.style.overflow = "hidden";
+                break;
+            case "off":
+                this.fullScreenFlag = false;
+                document.body.style.overflow = this.overflowStyle;
+                break;
+        }
+
     }
 
 }
