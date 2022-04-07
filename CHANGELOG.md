@@ -2,6 +2,12 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [1.3.6] - 2022-04-07
+### Dependency update
+- rcsb-saguaro update 2.0.4
+- rcsb-saguaro-app update 4.0.7
+- rcsb-api-tools update 3.0.2
+
 ## [1.3.5] - 2022-03-28
 ### Improvements
 - `RcsbFv3DAbstract.updateConfig` method accepts partial states (`Partial<RcsbFvStructureInterface>` and `Partial<RcsbFvSequenceInterface>`)
