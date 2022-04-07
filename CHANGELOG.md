@@ -2,6 +2,10 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [1.3.7] - 2022-04-07
+### Bug fixes
+- `assymId` empty string bug fixed
+
 ## [1.3.6] - 2022-04-07
 ### Dependency update
 - rcsb-saguaro update 2.0.4

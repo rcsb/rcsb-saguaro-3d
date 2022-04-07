@@ -25,6 +25,7 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract{
     }
 
     init(assemblyData: RcsbFv3DAssemblyInterface) {
+        console.log(assemblyData);
         this.elementId = assemblyData.elementId ?? "RcsbFv3D_mainDiv_"+Math.random().toString(36).substring(2);
         this.structureConfig = {
             loadConfig: {
@@ -35,7 +36,7 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract{
                     reprProvider: RcsbRepresentationPreset,
                     params:{
                         preset:{
-                            assemblyId: assemblyData.config.assemblyId ?? '1'
+                            assemblyId: typeof (assemblyData.config.assemblyId) === "string" &&  assemblyData.config.assemblyId?.length > 0 ? assemblyData.config.assemblyId : '1'
                         }
                     }
                 }
