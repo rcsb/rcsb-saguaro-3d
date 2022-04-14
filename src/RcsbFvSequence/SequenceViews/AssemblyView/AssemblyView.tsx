@@ -2,7 +2,7 @@ import {asyncScheduler} from "rxjs";
 import * as React from "react";
 
 import {RcsbFvDOMConstants} from "../../../RcsbFvConstants/RcsbFvConstants";
-import {buildInstanceSequenceFv, FeatureType, RcsbFvContextManager, RcsbFvUI, unmount} from "@rcsb/rcsb-saguaro-app";
+import {buildInstanceSequenceFv, FeatureType, RcsbRequestContextManager, RcsbFvUI, unmount} from "@rcsb/rcsb-saguaro-app";
 import {AbstractView, AbstractViewInterface} from "../AbstractView";
 import {
     InstanceSequenceConfig,
@@ -25,7 +25,7 @@ import {
     RcsbFvModulePublicInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {AnnotationFeatures, Source, Type} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
-import {PolymerEntityInstanceInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/Translators/PolymerEntityInstancesCollector";
+import {PolymerEntityInstanceInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
 import {InterfaceInstanceTranslate} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbUtils/Translators/InterfaceInstanceTranslate";
 import {AssemblyModelSate} from "./AssemblyModelSate";
 import {SelectOptionProps} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/WebTools/SelectButton";
@@ -401,7 +401,7 @@ export class AssemblyView extends AbstractView<AssemblyViewInterface & AbstractV
             let annotations: Array<AnnotationFeatures> = [];
             (await Promise.all(data.annotations.map(async ann=>{
                 if(ann.source == Source.PdbInterface && ann.target_id && data.rcsbContext?.asymId) {
-                    const interfaceToInstance: InterfaceInstanceTranslate = await RcsbFvContextManager.getInterfaceToInstance(ann.target_id);
+                    const interfaceToInstance: InterfaceInstanceTranslate = await RcsbRequestContextManager.getInterfaceToInstance(ann.target_id);
                     if(typeof ann.target_identifiers?.interface_partner_index === "number" && ann.target_identifiers.assembly_id === this.assemblyModelSate.getString("assemblyId")) {
                         const operatorIds:string[][] = interfaceToInstance.getOperatorIds(ann.target_id)[ann.target_identifiers.interface_partner_index];
                         if(ann.features && this.assemblyModelSate.getOperator() && operatorIds.map(o=>o.join("|")).includes( this.assemblyModelSate.getOperator()!.ids.join("|") )){

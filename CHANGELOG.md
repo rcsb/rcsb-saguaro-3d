@@ -2,6 +2,13 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [1.3.8] - 2022-04-13
+### Dependency update
+- rcsb-api-tools v4.0.0
+- rcsb-saguaro v2.0.5
+- rcsb-saguaro-app v4.1.0
+- removed http-server module (3 high severity vulnerabilities)
+
 ## [1.3.7] - 2022-04-07
 ### Bug fixes
 - `assymId` empty string bug fixed

@@ -8,7 +8,7 @@ import {
 } from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {SequenceCollectorDataInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/SequenceCollector/SequenceCollector";
 import {RcsbFvDisplayTypes, RcsbFvRowConfigInterface} from "@rcsb/rcsb-saguaro";
-import {PolymerEntityInstanceInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/Translators/PolymerEntityInstancesCollector";
+import {PolymerEntityInstanceInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
 
 document.addEventListener("DOMContentLoaded", function(event) {
 
