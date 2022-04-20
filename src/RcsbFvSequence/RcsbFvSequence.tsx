@@ -1,14 +1,14 @@
 import * as React from "react";
-import {AssemblyView, AssemblyViewInterface} from "./SequenceViews/AssemblyView/AssemblyView";
-import {CustomView, CustomViewInterface} from "./SequenceViews/CustomView";
+import {CustomView, CustomViewInterface} from "./SequenceViews/CustomView/CustomView";
 import {SaguaroPluginInterface} from "../RcsbFvStructure/SaguaroPluginInterface";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {RcsbFv, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {RcsbFvSelectorManager} from "../RcsbFvSelection/RcsbFvSelectorManager";
+import {RcsbView, RcsbViewInterface} from "./SequenceViews/RcsbView/RcsbView";
 
-export interface RcsbFvSequenceInterface{
-    type: "custom" | "assembly";
-    config: AssemblyViewInterface | CustomViewInterface;
+export interface RcsbFvSequenceInterface<T extends {}>{
+    type: "custom" | "rcsb";
+    config: RcsbViewInterface<T> | CustomViewInterface;
     title?: string;
     subtitle?: string;
 }
@@ -18,7 +18,7 @@ interface CallbackConfig {
     sequenceCallback?: (rcsbFv: RcsbFv)=>void;
 }
 
-export class RcsbFvSequence extends React.Component <RcsbFvSequenceInterface & CallbackConfig & {unmount:(flag:boolean)=>void, plugin: SaguaroPluginInterface, selectorManager:RcsbFvSelectorManager, componentId:string}, RcsbFvSequenceInterface > {
+export class RcsbFvSequence<T extends {}> extends React.Component <RcsbFvSequenceInterface<T> & CallbackConfig & {unmount:(flag:boolean)=>void, plugin: SaguaroPluginInterface, selectorManager:RcsbFvSelectorManager, componentId:string}, RcsbFvSequenceInterface<T> > {
 
     render() {
         if(this.props.type == "custom"){
@@ -32,9 +32,9 @@ export class RcsbFvSequence extends React.Component <RcsbFvSequenceInterface & C
                 subtitle={this.props.subtitle}
                 unmount={this.props.unmount}
             />)
-        }else if(this.props.type == "assembly"){
-            const config: AssemblyViewInterface = this.props.config as AssemblyViewInterface;
-            return (<AssemblyView
+        }else if(this.props.type == "rcsb"){
+            const config: RcsbViewInterface<T> = this.props.config as RcsbViewInterface<T>;
+            return (<RcsbView<T>
                 {...config}
                 componentId={this.props.componentId}
                 plugin={this.props.plugin}
@@ -44,6 +44,7 @@ export class RcsbFvSequence extends React.Component <RcsbFvSequenceInterface & C
                 unmount={this.props.unmount}
             />)
         }
+
     }
 
 }

@@ -2,6 +2,10 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [1.4.0] - 2022-04-20
+### Improvement
+- General 1D panel configuration to extend the 1D-3D visualization to any rcsb-saguaro-app PFV builder
+
 ## [1.3.10] - 2022-04-14
 ### Dependency update
 - rcsb-api-tools v4.0.1

@@ -5,7 +5,7 @@ import {LoadMethod} from "../../RcsbFvStructure/StructurePlugins/MolstarPlugin";
 import {
     CustomViewInterface,
     FeatureBlockInterface
-} from "../../RcsbFvSequence/SequenceViews/CustomView";
+} from "../../RcsbFvSequence/SequenceViews/CustomView/CustomView";
 import * as React from "react";
 import {RcsbRepresentationPreset} from "./TrajectoryPreset";
 import {PluginStateObject} from "molstar/lib/mol-plugin-state/objects";

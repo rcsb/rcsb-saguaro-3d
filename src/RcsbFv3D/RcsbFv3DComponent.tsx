@@ -25,36 +25,36 @@ export interface RcsbFv3DCssConfig {
     sequencePanel?: CSSProperties;
 }
 
-export interface RcsbFv3DComponentInterface {
+export interface RcsbFv3DComponentInterface<T extends {}> {
     structurePanelConfig:RcsbFvStructureInterface;
-    sequencePanelConfig: RcsbFvSequenceInterface;
+    sequencePanelConfig: RcsbFvSequenceInterface<T>;
     id: string;
-    ctxManager: RcsbFvContextManager;
+    ctxManager: RcsbFvContextManager<T>;
     cssConfig?:RcsbFv3DCssConfig;
     unmount:(flag:boolean)=>void;
     fullScreen: boolean;
 }
 
-interface RcsbFv3DComponentState {
+interface RcsbFv3DComponentState<T extends {}> {
     structurePanelConfig:RcsbFvStructureInterface;
-    sequencePanelConfig:RcsbFvSequenceInterface;
+    sequencePanelConfig:RcsbFvSequenceInterface<T>;
     pfvScreenFraction: number;
 }
 
-export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterface, RcsbFv3DComponentState> {
+export class RcsbFv3DComponent<T extends {}> extends React.Component <RcsbFv3DComponentInterface<T>, RcsbFv3DComponentState<T>> {
 
     private readonly plugin: SaguaroPluginInterface;
     private readonly selectorManager: RcsbFvSelectorManager = new RcsbFvSelectorManager();
     private subscription: Subscription;
     private readonly ROOT_DIV_ID: string = "rootPanelDiv";
 
-    readonly state: RcsbFv3DComponentState = {
+    readonly state: RcsbFv3DComponentState<T> = {
         structurePanelConfig: this.props.structurePanelConfig,
         sequencePanelConfig: this.props.sequencePanelConfig,
         pfvScreenFraction: 0.55
     }
 
-    constructor(props: RcsbFv3DComponentInterface) {
+    constructor(props: RcsbFv3DComponentInterface<T>) {
         super(props);
         this.plugin = new MolstarPlugin(this.selectorManager);
     }
@@ -78,7 +78,7 @@ export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterfa
                         />
                     </div>
                     <div style={this.sequenceCssConfig(this.props.cssConfig?.sequencePanel)}  >
-                        <RcsbFvSequence
+                        <RcsbFvSequence<T>
                             type={this.state.sequencePanelConfig.type}
                             config={this.state.sequencePanelConfig.config}
                             componentId={this.props.id}
@@ -106,7 +106,7 @@ export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterfa
     }
 
     private useDefaultCss(): boolean {
-       return this.state.sequencePanelConfig.type === "assembly"  || !this.props.cssConfig?.overwriteCss;
+       return this.state.sequencePanelConfig.type === "rcsb"  || !this.props.cssConfig?.overwriteCss;
     }
 
     private panelDelimiter(): JSX.Element {
@@ -140,9 +140,9 @@ export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterfa
     }
 
     private subscribe(): Subscription{
-        return this.props.ctxManager.subscribe((obj:RcsbFvContextManagerInterface)=>{
+        return this.props.ctxManager.subscribe((obj:RcsbFvContextManagerInterface<T>)=>{
             if(obj.eventType == EventType.UPDATE_CONFIG){
-                this.updateConfig(obj.eventData as UpdateConfigInterface)
+                this.updateConfig(obj.eventData as UpdateConfigInterface<T>)
             }else if(obj.eventType == EventType.PLUGIN_CALL){
                 this.plugin.pluginCall(obj.eventData as ((f:PluginContext)=>void));
             }
@@ -154,9 +154,9 @@ export class RcsbFv3DComponent extends React.Component <RcsbFv3DComponentInterfa
         this.subscription.unsubscribe();
     }
 
-    private updateConfig(config:UpdateConfigInterface){
+    private updateConfig(config:UpdateConfigInterface<T>){
         const structureConfig: Partial<RcsbFvStructureInterface> | undefined = config.structurePanelConfig;
-        const sequenceConfig: Partial<RcsbFvSequenceInterface> | undefined = config.sequencePanelConfig;
+        const sequenceConfig: Partial<RcsbFvSequenceInterface<T>> | undefined = config.sequencePanelConfig;
         if(structureConfig != null && sequenceConfig != null){
             this.setState({structurePanelConfig:{...this.state.structurePanelConfig, ...structureConfig}, sequencePanelConfig:{...this.state.sequencePanelConfig, ...sequenceConfig}});
         }else if(structureConfig != null){

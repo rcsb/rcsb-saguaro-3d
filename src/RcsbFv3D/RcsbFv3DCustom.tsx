@@ -1,6 +1,6 @@
 
 import {RcsbFvStructureInterface} from "../RcsbFvStructure/RcsbFvStructure";
-import {CustomViewInterface} from "../RcsbFvSequence/SequenceViews/CustomView";
+import {CustomViewInterface} from "../RcsbFvSequence/SequenceViews/CustomView/CustomView";
 import {RcsbFv3DAbstract, RcsbFv3DAbstractInterface} from "./RcsbFv3DAbstract";
 
 export interface RcsbFv3DCustomInterface extends RcsbFv3DAbstractInterface {
@@ -12,7 +12,7 @@ export interface RcsbFv3DCustomInterface extends RcsbFv3DAbstractInterface {
     };
 }
 
-export class RcsbFv3DCustom extends RcsbFv3DAbstract {
+export class RcsbFv3DCustom extends RcsbFv3DAbstract<{}> {
 
     constructor(config?: RcsbFv3DCustomInterface) {
         super(config);

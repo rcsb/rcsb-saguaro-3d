@@ -12,12 +12,12 @@ export interface RcsbFv3DAbstractInterface {
     cssConfig?: RcsbFv3DCssConfig;
 }
 
-export abstract class RcsbFv3DAbstract {
+export abstract class RcsbFv3DAbstract<T extends {}> {
 
     protected elementId: string;
     protected structureConfig: RcsbFvStructureInterface;
-    protected sequenceConfig: RcsbFvSequenceInterface;
-    protected ctxManager: RcsbFvContextManager = new RcsbFvContextManager();
+    protected sequenceConfig: RcsbFvSequenceInterface<T>;
+    protected ctxManager: RcsbFvContextManager<T> = new RcsbFvContextManager<T>();
     private fullScreenFlag: boolean = false;
     private overflowStyle: string = "";
     protected cssConfig:{
@@ -69,7 +69,7 @@ export abstract class RcsbFv3DAbstract {
         }
     }
 
-    public updateConfig(config: {structurePanelConfig?: Partial<RcsbFvStructureInterface>; sequencePanelConfig?: Partial<RcsbFvSequenceInterface>;}){
+    public updateConfig(config: {structurePanelConfig?: Partial<RcsbFvStructureInterface>; sequencePanelConfig?: Partial<RcsbFvSequenceInterface<T>>;}){
         this.ctxManager.next({eventType: EventType.UPDATE_CONFIG, eventData:config});
     }
 

@@ -4,6 +4,7 @@ import {RcsbRepresentationPreset} from "../RcsbFvStructure/StructurePlugins/Stru
 import {RcsbFvAdditionalConfig} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {InstanceSequenceConfig} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
 import {OperatorInfo} from "../RcsbFvStructure/SaguaroPluginInterface";
+import {AssemblyPfvFactory} from "../RcsbFvSequence/SequenceViews/RcsbView/PfvFactoryImplementation/AssemblyPfvFactory";
 
 type RcsbFv3DAssemblyAdditionalConfig = RcsbFvAdditionalConfig & {operatorChangeCallback?:(operatorInfo: OperatorInfo)=>void};
 export interface RcsbFv3DAssemblyInterface extends RcsbFv3DAbstractInterface {
@@ -18,14 +19,13 @@ export interface RcsbFv3DAssemblyInterface extends RcsbFv3DAbstractInterface {
    useOperatorsFlag?:boolean;
 }
 
-export class RcsbFv3DAssembly extends RcsbFv3DAbstract{
+export class RcsbFv3DAssembly extends RcsbFv3DAbstract<{instanceSequenceConfig?: InstanceSequenceConfig}>{
 
     constructor(config?: RcsbFv3DAssemblyInterface) {
             super(config);
     }
 
     init(assemblyData: RcsbFv3DAssemblyInterface) {
-        console.log(assemblyData);
         this.elementId = assemblyData.elementId ?? "RcsbFv3D_mainDiv_"+Math.random().toString(36).substring(2);
         this.structureConfig = {
             loadConfig: {
@@ -43,11 +43,12 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract{
             }
         };
         this.sequenceConfig = {
-            type:"assembly",
+            type:"rcsb",
             config: {
-                entryId:assemblyData.config.entryId,
+                rcsbId:assemblyData.config.entryId,
                 additionalConfig: assemblyData.additionalConfig,
-                instanceSequenceConfig: assemblyData.instanceSequenceConfig,
+                pfvFactory:AssemblyPfvFactory,
+                pfvParams:{instanceSequenceConfig: assemblyData.instanceSequenceConfig},
                 useOperatorsFlag: assemblyData.useOperatorsFlag
             },
             title: assemblyData.config.title,
