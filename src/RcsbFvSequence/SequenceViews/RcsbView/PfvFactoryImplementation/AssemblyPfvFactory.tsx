@@ -91,7 +91,7 @@ export class AssemblyPfvFactory extends PfvAbstractFactory<{instanceSequenceConf
         if(this.assemblyModelSate.get("entryId") != null) {
             module = await buildInstanceSequenceFv(
                 this.rcsbFvDivId,
-                RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID,
+                RcsbFvDOMConstants.SELECT_BUTTON_PFV_ID,
                 this.assemblyModelSate.getString("entryId"),
                 {
                     ...this.instanceSequenceConfig,
@@ -142,7 +142,7 @@ export class AssemblyPfvFactory extends PfvAbstractFactory<{instanceSequenceConf
             this.assemblyModelSate.setOperator(undefined,operatorName);
             RcsbFvUI.addSelectButton(
                 this.rcsbFvDivId,
-                RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID,
+                RcsbFvDOMConstants.SELECT_BUTTON_PFV_ID,
                 currentChainInfo.operators.map(op=>({
                     label:`${op.ids.join("-")} (${op.name})`,
                     optId:op.name,

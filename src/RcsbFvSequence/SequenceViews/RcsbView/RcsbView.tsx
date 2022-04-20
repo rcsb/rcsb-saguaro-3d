@@ -58,7 +58,7 @@ export class RcsbView<T extends {}> extends AbstractView<RcsbViewInterface<T> & 
         return (
             <div style={{marginTop:10}}>
                 <div>
-                    <div id={RcsbFvDOMConstants.SELECT_INSTANCE_PFV_ID} style={{display:"inline-block"}}/>
+                    <div id={RcsbFvDOMConstants.SELECT_BUTTON_PFV_ID} style={{display:"inline-block"}}/>
                     <div style={{display:"inline-block", marginLeft:25}}>
                         <a href={"/docs/sequence-viewers/protein-feature-view"} target={"_blank"}>Help</a>
                     </div>
