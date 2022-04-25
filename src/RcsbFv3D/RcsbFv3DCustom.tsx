@@ -2,6 +2,7 @@
 import {RcsbFvStructureInterface} from "../RcsbFvStructure/RcsbFvStructure";
 import {CustomViewInterface} from "../RcsbFvSequence/SequenceViews/CustomView/CustomView";
 import {RcsbFv3DAbstract, RcsbFv3DAbstractInterface} from "./RcsbFv3DAbstract";
+import uniqid from "uniqid";
 
 export interface RcsbFv3DCustomInterface extends RcsbFv3DAbstractInterface {
     structurePanelConfig: RcsbFvStructureInterface;
@@ -19,7 +20,7 @@ export class RcsbFv3DCustom extends RcsbFv3DAbstract<{}> {
     }
 
     init(config: RcsbFv3DCustomInterface) {
-        this.elementId = config.elementId ?? "RcsbFv3D_mainDiv_"+Math.random().toString(36).substr(2);
+        this.elementId = config.elementId ?? "RcsbFv3D_mainDiv_"+uniqid();
         this.structureConfig = config.structurePanelConfig;
         this.sequenceConfig = {
             ...config.sequencePanelConfig,

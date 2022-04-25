@@ -5,6 +5,8 @@ import {RcsbFvAdditionalConfig} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWe
 import {InstanceSequenceConfig} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
 import {OperatorInfo} from "../RcsbFvStructure/SaguaroPluginInterface";
 import {AssemblyPfvFactory} from "../RcsbFvSequence/SequenceViews/RcsbView/PfvFactoryImplementation/AssemblyPfvFactory";
+import uniqid from "uniqid";
+import {AssemblyCallbackManager} from "../RcsbFvSequence/SequenceViews/RcsbView/CallbackManagerImplementation/AssemblyCallbackManager";
 
 type RcsbFv3DAssemblyAdditionalConfig = RcsbFvAdditionalConfig & {operatorChangeCallback?:(operatorInfo: OperatorInfo)=>void};
 export interface RcsbFv3DAssemblyInterface extends RcsbFv3DAbstractInterface {
@@ -26,7 +28,7 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract<{instanceSequenceConfig?:
     }
 
     init(assemblyData: RcsbFv3DAssemblyInterface) {
-        this.elementId = assemblyData.elementId ?? "RcsbFv3D_mainDiv_"+Math.random().toString(36).substring(2);
+        this.elementId = assemblyData.elementId ?? "RcsbFv3D_mainDiv_"+uniqid();
         this.structureConfig = {
             loadConfig: {
                 loadMethod: LoadMethod.loadPdbId,
@@ -49,7 +51,8 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract<{instanceSequenceConfig?:
                 additionalConfig: assemblyData.additionalConfig,
                 pfvFactory:AssemblyPfvFactory,
                 pfvParams:{instanceSequenceConfig: assemblyData.instanceSequenceConfig},
-                useOperatorsFlag: assemblyData.useOperatorsFlag
+                useOperatorsFlag: assemblyData.useOperatorsFlag,
+                callbackManager: AssemblyCallbackManager
             },
             title: assemblyData.config.title,
             subtitle: assemblyData.config.subtitle

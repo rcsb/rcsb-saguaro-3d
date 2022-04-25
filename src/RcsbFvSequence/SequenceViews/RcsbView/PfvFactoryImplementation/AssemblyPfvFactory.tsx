@@ -1,17 +1,13 @@
 import {
-    RcsbFvAdditionalConfig,
     RcsbFvModulePublicInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
-import {RcsbFvSelectorManager} from "../../../../RcsbFvSelection/RcsbFvSelectorManager";
-import {AssemblyModelSate} from "../AssemblyModelSate";
 import {
     ChainInfo, OperatorInfo,
     SaguaroPluginInterface,
     SaguaroPluginModelMapType
 } from "../../../../RcsbFvStructure/SaguaroPluginInterface";
 import {
-    InstanceSequenceConfig,
-    InstanceSequenceOnchangeInterface
+    InstanceSequenceConfig
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
 import {asyncScheduler} from "rxjs";
 import {buildInstanceSequenceFv, FeatureType, RcsbFvUI, RcsbRequestContextManager} from "@rcsb/rcsb-saguaro-app";
@@ -19,7 +15,6 @@ import {RcsbFvDOMConstants} from "../../../../RcsbFvConstants/RcsbFvConstants";
 import {SelectOptionProps} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/WebTools/SelectButton";
 import {ChainDisplay} from "./ChainDisplay";
 import * as React from "react";
-import {RcsbFvBoardConfigInterface} from "@rcsb/rcsb-saguaro";
 import {AnnotationFeatures, Source, Type} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {
     PolymerEntityInstanceInterface
@@ -28,53 +23,29 @@ import {
     InterfaceInstanceTranslate
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbUtils/Translators/InterfaceInstanceTranslate";
 import {DataContainer} from "../../../../Utils/DataContainer";
-import {PfvAbstractFactory} from "../PfvFactoryInterface";
+import {BuildPfvInterface, PfvAbstractFactory, PfvFactoryConfigInterface} from "../PfvFactoryInterface";
 
-interface AssemblyPfvFactoryInterface {
-    rcsbFvDivId: string;
-    rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
-    selectorManager: RcsbFvSelectorManager;
-    assemblyModelSate: AssemblyModelSate;
-    plugin: SaguaroPluginInterface;
-    boardConfigContainer: DataContainer<Partial<RcsbFvBoardConfigInterface>>;
-    pfvChangeCallback(): Promise<void>;
-    additionalConfig: RcsbFvAdditionalConfig & {operatorChangeCallback?:(operatorInfo: OperatorInfo)=>void} | undefined;
+interface AssemblyPfvFactoryInterface extends PfvFactoryConfigInterface{
     useOperatorsFlag:boolean | undefined;
     instanceSequenceConfig: InstanceSequenceConfig | undefined;
 }
 
 export class AssemblyPfvFactory extends PfvAbstractFactory<{instanceSequenceConfig: InstanceSequenceConfig|undefined}> {
 
-    private readonly rcsbFvDivId: string;
-    private readonly rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
-    private readonly selectorManager: RcsbFvSelectorManager;
-    private readonly assemblyModelSate: AssemblyModelSate;
-    private readonly plugin: SaguaroPluginInterface;
-    private readonly boardConfigContainer: DataContainer<Partial<RcsbFvBoardConfigInterface>>;
-    private readonly pfvChangeCallback: ()=>Promise<void>;
     private readonly instanceSequenceConfig: InstanceSequenceConfig|undefined;
-    private readonly additionalConfig: RcsbFvAdditionalConfig & {operatorChangeCallback?:(operatorInfo: OperatorInfo)=>void} | undefined;
     private readonly useOperatorsFlag:boolean | undefined;
     private readonly OPERATOR_DROPDOWN_TITLE: string = "Symmetry Partner";
 
     constructor(config: AssemblyPfvFactoryInterface) {
         super(config);
-        this.rcsbFvDivId = config.rcsbFvDivId;
-        this.rcsbFvContainer = config.rcsbFvContainer;
-        this.selectorManager = config.selectorManager;
-        this.assemblyModelSate = config.assemblyModelSate;
-        this.plugin = config.plugin;
         this.instanceSequenceConfig = config.instanceSequenceConfig;
-        this.additionalConfig = config.additionalConfig;
-        this.boardConfigContainer = config.boardConfigContainer;
         this.useOperatorsFlag = config.useOperatorsFlag;
-        this.pfvChangeCallback = config.pfvChangeCallback;
     }
 
-    async buildPfv(modelMap:SaguaroPluginModelMapType, defaultAuthId?: string, defaultOperatorName?:string): Promise<RcsbFvModulePublicInterface | undefined> {
-        this.assemblyModelSate.setMap(modelMap);
+    async getPfv(config: BuildPfvInterface): Promise<RcsbFvModulePublicInterface | undefined> {
+        this.assemblyModelSate.setMap(config.modelMap);
         this.plugin.clearFocus();
-        const onChangeCallback: Map<string, (x: InstanceSequenceOnchangeInterface)=>void> = new Map<string, (x: InstanceSequenceOnchangeInterface) => {}>();
+        const onChangeCallback: Map<string, (x: PolymerEntityInstanceInterface)=>void> = new Map<string, (x: PolymerEntityInstanceInterface) => {}>();
         const assemblyInstances: Map<string, Set<string>> = new Map<string, Set<string>>();
         this.assemblyModelSate.forEach((v,k)=>{
             assemblyInstances.set(v.entryId,new Set<string>(v.chains.map(d=>d.label)));
@@ -86,7 +57,7 @@ export class AssemblyPfvFactory extends PfvAbstractFactory<{instanceSequenceConf
                 },1000);
             });
         });
-        const operatorNameContainer: DataContainer<string> = new DataContainer<string>(defaultOperatorName);
+        const operatorNameContainer: DataContainer<string> = new DataContainer<string>(config.defaultOperatorName);
         let module: RcsbFvModulePublicInterface | undefined = undefined;
         if(this.assemblyModelSate.get("entryId") != null) {
             module = await buildInstanceSequenceFv(
@@ -95,15 +66,15 @@ export class AssemblyPfvFactory extends PfvAbstractFactory<{instanceSequenceConf
                 this.assemblyModelSate.getString("entryId"),
                 {
                     ...this.instanceSequenceConfig,
-                    defaultValue: defaultAuthId,
+                    defaultValue: config.defaultAuthId,
                     onChangeCallback: onChangeCallback.get(this.assemblyModelSate.getString("entryId")),
-                    beforeChangeCallback: (x: InstanceSequenceOnchangeInterface)=>{
-                        this.assemblyModelSate.set({entryId:x.pdbId, labelAsymId: x.asymId});
-                        const entryMap:[string, {entryId: string, assemblyId: string, chains: ChainInfo[]}] | undefined = Array.from(this.assemblyModelSate.entries()).find((e)=>(e[1].entryId === x.pdbId));
+                    beforeChangeCallback: (x: PolymerEntityInstanceInterface)=>{
+                        this.assemblyModelSate.set({entryId:x.entryId, labelAsymId: x.asymId});
+                        const entryMap:[string, {entryId: string, assemblyId: string, chains: ChainInfo[]}] | undefined = Array.from(this.assemblyModelSate.entries()).find((e)=>(e[1].entryId === x.entryId));
                         if(!entryMap){
-                            throw `Error: no modelId was found for ${x.pdbId}`;
+                            throw `Error: no modelId was found for ${x.entryId}`;
                         }
-                        const operator: OperatorInfo|undefined = getOperator(this.assemblyModelSate.getMap().get(entryMap[0])!, defaultAuthId, operatorNameContainer.get());
+                        const operator: OperatorInfo|undefined = getOperator(this.assemblyModelSate.getMap().get(entryMap[0])!, config.defaultAuthId, operatorNameContainer.get());
                         this.addOperatorButton(operator?.name);
                         this.assemblyModelSate.setOperator(x.asymId,operator?.name);
                         operatorNameContainer.set(undefined);
@@ -131,7 +102,7 @@ export class AssemblyPfvFactory extends PfvAbstractFactory<{instanceSequenceConf
                 }
             );
         }
-        if(!defaultAuthId)
+        if(!config.defaultAuthId)
             await createComponents(this.plugin, this.assemblyModelSate.getMap());
         return module;
     }
@@ -148,11 +119,11 @@ export class AssemblyPfvFactory extends PfvAbstractFactory<{instanceSequenceConf
                     optId:op.name,
                     onChange: async ()=>{
                         this.assemblyModelSate.set({operator:op});
-                        await this.buildPfv(
-                            this.assemblyModelSate.getMap(),
-                            this.assemblyModelSate.getChainInfo()?.auth,
-                            op.name
-                        )
+                        await this.getPfv({
+                            modelMap: this.assemblyModelSate.getMap(),
+                            defaultAuthId: this.assemblyModelSate.getChainInfo()?.auth,
+                            defaultOperatorName: op.name
+                        })
                     }
                 })),
                 {

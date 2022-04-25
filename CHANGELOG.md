@@ -4,7 +4,10 @@
 
 ## [1.4.0] - 2022-04-20
 ### Improvement
-- General 1D panel configuration to extend the 1D-3D visualization to any rcsb-saguaro-app PFV builder
+- Extending 1D-3D display to any rcsb-saguaro-app PFV methods
+  - `PfvFactoryInterface` defines how the PFV is created 
+  - `CallbackManagerInterface` defines the callbacks between the 1D and 3D panels
+  - Current implementations: assembly and uniprot (partial implementation)
 
 ## [1.3.10] - 2022-04-14
 ### Dependency update

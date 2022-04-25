@@ -48,6 +48,17 @@ const examples = [];
 examples.push({
     ...commonConfig,
     entry: {
+        "index": './build/src/examples/uniprot/index.js'
+    },
+    output: {
+        filename: '[name].js',
+        path: path.resolve(__dirname, out_path+'/uniprot/')
+    }
+});
+
+examples.push({
+    ...commonConfig,
+    entry: {
         "index": './build/src/examples/assembly/index.js'
     },
     output: {

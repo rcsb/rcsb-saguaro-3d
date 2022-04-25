@@ -8,39 +8,33 @@ import {RcsbFvBoardConfigInterface, RcsbFvTrackDataElementInterface} from "@rcsb
 import {OperatorInfo, SaguaroPluginModelMapType} from "../../../RcsbFvStructure/SaguaroPluginInterface";
 import {RcsbFvAdditionalConfig, RcsbFvModulePublicInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {AssemblyModelSate} from "./AssemblyModelSate";
-import {CallbackHelper} from "./CallbackHelper";
+import {AssemblyCallbackManager} from "./CallbackManagerImplementation/AssemblyCallbackManager";
 import {AssemblyPfvFactory} from "./PfvFactoryImplementation/AssemblyPfvFactory";
 import {DataContainer} from "../../../Utils/DataContainer";
-import {PfvAbstractFactory, PfvFactoryInterface} from "./PfvFactoryInterface";
+import {PfvAbstractFactory, PfvFactoryConfigInterface, PfvFactoryInterface} from "./PfvFactoryInterface";
+import {AbstractCallbackManager, CallbackConfigInterface, CallbackManagerInterface} from "./CallbackManagerInterface";
 
 export interface RcsbViewInterface<T extends {}> {
     rcsbId: string;
     additionalConfig?: RcsbFvAdditionalConfig & {operatorChangeCallback?:(operatorInfo: OperatorInfo)=>void};
     useOperatorsFlag?:boolean;
     pfvParams:T;
-    pfvFactory: new(config:PfvFactoryInterface & T) => PfvAbstractFactory<T>;
+    pfvFactory: new(config:PfvFactoryConfigInterface & T) => PfvFactoryInterface;
+    callbackManager: new(config: CallbackConfigInterface) => CallbackManagerInterface;
+    buildPfvOnMount?: boolean;
 }
 
 export class RcsbView<T extends {}> extends AbstractView<RcsbViewInterface<T> & AbstractViewInterface, {}>{
 
     private readonly assemblyModelSate: AssemblyModelSate = new AssemblyModelSate();
-    private innerSelectionFlag: boolean = false;
     private boardConfigContainer: DataContainer<Partial<RcsbFvBoardConfigInterface>> = new DataContainer();
     private rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface> = new DataContainer<RcsbFvModulePublicInterface>();
-    private readonly callbackHelper: CallbackHelper;
-    private readonly pfvFactory: PfvAbstractFactory<T>;
+    private readonly callbackManager: CallbackManagerInterface;
+    private readonly pfvFactory: PfvFactoryInterface;
 
     constructor(props:RcsbViewInterface<T> & AbstractViewInterface) {
         super(props);
-        this.callbackHelper = new CallbackHelper({
-            rcsbFvContainer: this.rcsbFvContainer,
-            selectorManager: this.props.selectorManager,
-            plugin: this.props.plugin,
-            modelChangeCallback: this.modelChangeCallback.bind(this),
-            assemblyModelSate: this.assemblyModelSate
-        });
-        const pfvFactory = this.props.pfvFactory;
-        this.pfvFactory = new pfvFactory({
+        this.pfvFactory = new (this.props.pfvFactory)({
             ...this.props.pfvParams,
             rcsbFvContainer: this.rcsbFvContainer,
             selectorManager: this.props.selectorManager,
@@ -48,9 +42,16 @@ export class RcsbView<T extends {}> extends AbstractView<RcsbViewInterface<T> & 
             assemblyModelSate: this.assemblyModelSate,
             boardConfigContainer: this.boardConfigContainer,
             rcsbFvDivId: this.rcsbFvDivId,
-            pfvChangeCallback: this.instanceChangeCallback.bind(this),
+            pfvChangeCallback: this.pfvChangeCallback.bind(this),
             additionalConfig: this.props.additionalConfig,
             useOperatorsFlag: this.props.useOperatorsFlag
+        });
+        this.callbackManager = new (this.props.callbackManager)({
+            rcsbFvContainer: this.rcsbFvContainer,
+            selectorManager: this.props.selectorManager,
+            plugin: this.props.plugin,
+            assemblyModelSate: this.assemblyModelSate,
+            pfvFactory: this.pfvFactory
         });
     }
 
@@ -77,7 +78,7 @@ export class RcsbView<T extends {}> extends AbstractView<RcsbViewInterface<T> & 
         );
     }
 
-    componentDidMount (): void {
+    async componentDidMount (): Promise<void> {
         super.componentDidMount();
         const width: number | undefined = document.getElementById(this.componentDivId)?.getBoundingClientRect().width;
         if(width == null)
@@ -104,6 +105,8 @@ export class RcsbView<T extends {}> extends AbstractView<RcsbViewInterface<T> & 
                     this.props.additionalConfig?.boardConfig.highlightHoverCallback(selection);
             },
         });
+        if(this.props.buildPfvOnMount)
+            this.rcsbFvContainer.set(await this.pfvFactory.getPfv());
     }
 
     componentWillUnmount() {
@@ -132,40 +135,28 @@ export class RcsbView<T extends {}> extends AbstractView<RcsbViewInterface<T> & 
         return void 0;
     }
 
-    private resetPluginView(): void {
-        this.props.plugin.clearFocus();
-        this.props.plugin.resetCamera();
+    async modelChangeCallback(modelMap:SaguaroPluginModelMapType, defaultAuthId?: string, defaultOperatorName?:string): Promise<void> {
+        await this.callbackManager.modelChangeCallback(modelMap, defaultAuthId, defaultOperatorName);
     }
 
     private async pluginSelectCallback(mode:'select'|'hover'): Promise<void> {
-        if(this.rcsbFvContainer.get() == null)
-            return;
-        this.innerSelectionFlag = true;
-        await this.callbackHelper.pluginSelectCallback(mode);
-        this.innerSelectionFlag = false;
+        await this.callbackManager.pluginSelectCallback(mode);
     }
 
-    async modelChangeCallback(modelMap:SaguaroPluginModelMapType, defaultAuthId?: string, defaultOperatorName?:string): Promise<void> {
-        this.rcsbFvContainer.set(await this.pfvFactory.buildPfv(modelMap, defaultAuthId, defaultOperatorName));
-    }
-
-    private async instanceChangeCallback(): Promise<void>{
-        this.resetPluginView();
-        await this.pluginSelectCallback('select');
+    private async pfvChangeCallback(...context: unknown[]): Promise<void>{
+        await this.callbackManager.pfvChangeCallback(...context);
     }
 
     private highlightHoverCallback(selection: RcsbFvTrackDataElementInterface[]): void {
-        this.callbackHelper.highlightHoverCallback(selection);
+        this.callbackManager.highlightHoverCallback(selection);
     }
 
     private selectionChangeCallback(selection: Array<RcsbFvTrackDataElementInterface>): void {
-        if(this.innerSelectionFlag)
-            return;
-        this.callbackHelper.selectionChangeCallback(selection);
+        this.callbackManager.selectionChangeCallback(selection);
     }
 
     private elementClickCallback(e:RcsbFvTrackDataElementInterface): void {
-        this.callbackHelper.elementClickCallback(e);
+        this.callbackManager.elementClickCallback(e);
     }
 
 }

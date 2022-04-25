@@ -1,73 +1,14 @@
 import {
-    RcsbFvModulePublicInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
-import {RcsbFvSelectorManager} from "../../../RcsbFvSelection/RcsbFvSelectorManager";
-import {AssemblyModelSate} from "./AssemblyModelSate";
-import {
-    SaguaroPluginInterface,
     SaguaroPluginModelMapType, SaguaroRange,
     SaguaroRegionList
-} from "../../../RcsbFvStructure/SaguaroPluginInterface";
+} from "../../../../RcsbFvStructure/SaguaroPluginInterface";
 import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {asyncScheduler} from "rxjs";
-import {DataContainer} from "../../../Utils/DataContainer";
+import {AbstractCallbackManager} from "../CallbackManagerInterface";
 
-interface CallbackHelperInterface {
-    rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
-    selectorManager: RcsbFvSelectorManager;
-    assemblyModelSate: AssemblyModelSate;
-    plugin: SaguaroPluginInterface;
-    modelChangeCallback(modelMap:SaguaroPluginModelMapType, defaultAuthId?: string, defaultOperatorName?:string): Promise<void>;
-}
+export class AssemblyCallbackManager extends AbstractCallbackManager {
 
-export class CallbackHelper {
-
-    private readonly rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
-    private readonly selectorManager: RcsbFvSelectorManager;
-    private readonly assemblyModelSate: AssemblyModelSate;
-    private selectedComponentId: string|undefined;
-    private readonly plugin: SaguaroPluginInterface;
-    private readonly modelChangeCallback: (modelMap:SaguaroPluginModelMapType, defaultAuthId?: string, defaultOperatorName?:string)=> Promise<void>;
     private readonly CREATE_COMPONENT_THR: number = 3;
-
-    constructor(config: CallbackHelperInterface) {
-        this.rcsbFvContainer = config.rcsbFvContainer;
-        this.selectorManager = config.selectorManager;
-        this.assemblyModelSate = config.assemblyModelSate;
-        this.plugin = config.plugin;
-        this.modelChangeCallback = config.modelChangeCallback;
-    }
-
-    public async pluginSelectCallback(mode:'select'|'hover'): Promise<void> {
-        const allSel: Array<SaguaroRegionList> | undefined = this.selectorManager.getSelection(mode);
-        const lastSel: SaguaroRegionList|null = this.selectorManager.getLastSelection('select');
-        const modelId: string = this.assemblyModelSate.getString("modelId");
-        const labelAsymId: string = this.assemblyModelSate.getString("labelAsymId");
-        const operatorName: string|undefined = this.assemblyModelSate.getOperator()?.name;
-
-        if(mode === 'select') this.removeComponent();
-
-        if(allSel == null || allSel.length ===0) {
-            this.rcsbFvContainer.get()?.getFv().clearSelection(mode);
-            if(mode === 'select') this.resetPluginView();
-        }else if( mode === 'select' && lastSel?.labelAsymId && (lastSel?.labelAsymId != labelAsymId || lastSel?.operatorName != operatorName) ){
-            const authId: string | undefined = this.assemblyModelSate.getChainInfo(lastSel?.labelAsymId!)?.auth;
-            await this.modelChangeCallback(this.assemblyModelSate.getMap(), authId, lastSel?.operatorName);
-        }else{
-            const sel: SaguaroRegionList | undefined = this.selectorManager.getSelectionWithCondition(
-                modelId,
-                labelAsymId,
-                mode,
-                operatorName
-            );
-            if (sel == null) {
-                this.rcsbFvContainer.get()?.getFv().clearSelection(mode);
-                if(mode === 'select') this.resetPluginView();
-            } else {
-                this.rcsbFvContainer.get()?.getFv().setSelection({elements: sel.regions, mode: mode});
-            }
-        }
-    }
 
     public elementClickCallback(e:RcsbFvTrackDataElementInterface): void {
         this.plugin.clearFocus();
@@ -155,7 +96,47 @@ export class CallbackHelper {
         }
     }
 
-    public selectionChangeCallback(selection: Array<RcsbFvTrackDataElementInterface>): void {
+    public async modelChangeCallback(modelMap:SaguaroPluginModelMapType, defaultAuthId?: string, defaultOperatorName?:string): Promise<void> {
+        this.rcsbFvContainer.set(await this.pfvFactory.getPfv({modelMap, defaultAuthId, defaultOperatorName}));
+    }
+
+    public async pfvChangeCallback(): Promise<void>{
+        this.resetPluginView();
+        await this.pluginSelectCallback("select");
+    }
+
+    protected async innerPluginSelect(mode:'select'|'hover'): Promise<void> {
+        const allSel: Array<SaguaroRegionList> | undefined = this.selectorManager.getSelection(mode);
+        const lastSel: SaguaroRegionList|null = this.selectorManager.getLastSelection('select');
+        const modelId: string = this.assemblyModelSate.getString("modelId");
+        const labelAsymId: string = this.assemblyModelSate.getString("labelAsymId");
+        const operatorName: string|undefined = this.assemblyModelSate.getOperator()?.name;
+
+        if(mode === 'select') this.removeComponent();
+
+        if(allSel == null || allSel.length ===0) {
+            this.rcsbFvContainer.get()?.getFv().clearSelection(mode);
+            if(mode === 'select') this.resetPluginView();
+        }else if( mode === 'select' && lastSel?.labelAsymId && (lastSel?.labelAsymId != labelAsymId || lastSel?.operatorName != operatorName) ){
+            const authId: string | undefined = this.assemblyModelSate.getChainInfo(lastSel?.labelAsymId!)?.auth;
+            await this.modelChangeCallback(this.assemblyModelSate.getMap(), authId, lastSel?.operatorName);
+        }else{
+            const sel: SaguaroRegionList | undefined = this.selectorManager.getSelectionWithCondition(
+                modelId,
+                labelAsymId,
+                mode,
+                operatorName
+            );
+            if (sel == null) {
+                this.rcsbFvContainer.get()?.getFv().clearSelection(mode);
+                if(mode === 'select') this.resetPluginView();
+            } else {
+                this.rcsbFvContainer.get()?.getFv().setSelection({elements: sel.regions, mode: mode});
+            }
+        }
+    }
+
+    protected innerSelectionChange(selection: Array<RcsbFvTrackDataElementInterface>): void {
         const modelId: string = this.assemblyModelSate.getString("modelId");
         const labelAsymId: string = this.assemblyModelSate.getString("labelAsymId");
         const operatorName: string|undefined = this.assemblyModelSate.getOperator()?.name;

@@ -10,7 +10,8 @@
     "declaration": true,
     "sourceMap": true,
     "strictNullChecks": true,
-    "declarationDir": "./build/dist"
+    "declarationDir": "./build/dist",
+    "esModuleInterop": true
   },
   "include": [ "src/*", "src/**/*", "src/**/**/*", "src/**/**/**/*" ],
   "exclude": [

@@ -6,7 +6,7 @@ import {LoadMolstarInterface} from "./StructurePlugins/MolstarPlugin";
 import {RcsbFvSelectorManager} from "../RcsbFvSelection/RcsbFvSelectorManager";
 
 export interface RcsbFvStructureInterface {
-    loadConfig: LoadMolstarInterface | Array<LoadMolstarInterface>;
+    loadConfig?: LoadMolstarInterface | Array<LoadMolstarInterface>;
     pluginConfig?: Partial<ViewerProps>;
 }
 
@@ -23,7 +23,7 @@ export class RcsbFvStructure extends React.Component <RcsbFvStructureInterface &
     componentDidMount() {
         this.updateDimensions();
         this.props.plugin.init(this.props.componentId+"_"+RcsbFvDOMConstants.MOLSTAR_APP_ID, this.props.pluginConfig);
-        this.props.plugin.load(this.props.loadConfig);
+        if(this.props.loadConfig) this.props.plugin.load(this.props.loadConfig);
         window.addEventListener('resize', this.updateDimensions.bind(this));
     }
 
