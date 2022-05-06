@@ -2,6 +2,10 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [1.4.1] - 2022-05-05
+### Dependency update
+- rcsb-saguaro-app v4.3.2
+
 ## [1.4.0] - 2022-04-20
 ### Improvement
 - Extending 1D-3D display to any rcsb-saguaro-app PFV methods
