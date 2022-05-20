@@ -5,7 +5,5 @@ import {RcsbFv3DUniprot as uniprot} from "./RcsbFv3D/RcsbFv3DUniprot";
 export {custom, assembly, uniprot};
 
 export {
-    initializeYosemiteClient,
-    initializeBorregoClient,
-    initializeArchesClient
+    RcsbRequestContextManager
 } from "@rcsb/rcsb-saguaro-app";
