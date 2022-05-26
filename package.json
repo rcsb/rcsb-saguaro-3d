@@ -1,6 +1,6 @@
 {
   "name": "@rcsb/rcsb-saguaro-3d",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "RCSB Molstar/Saguaro Web App",
   "main": "build/dist/app.js",
   "files": [
@@ -87,10 +87,10 @@
     "webpack-cli": "^4.9.1"
   },
   "dependencies": {
-    "@rcsb/rcsb-api-tools": "^4.0.4",
+    "@rcsb/rcsb-api-tools": "^4.0.5",
     "@rcsb/rcsb-molstar": "^2.3.0",
     "@rcsb/rcsb-saguaro": "^2.0.6",
-    "@rcsb/rcsb-saguaro-app": "^4.3.5",
+    "@rcsb/rcsb-saguaro-app": "^4.3.6",
     "molstar": "^3.6.1"
   },
   "bugs": {
