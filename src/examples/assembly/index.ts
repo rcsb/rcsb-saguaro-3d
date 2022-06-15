@@ -1,12 +1,10 @@
 
-import './index.html';
 import {RcsbFv3DAssembly} from "../../RcsbFv3D/RcsbFv3DAssembly";
 import {
     AlignmentResponse,
     AnnotationFeatures,
     Type
 } from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
-import {SequenceCollectorDataInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/SequenceCollector/SequenceCollector";
 import {RcsbFvDisplayTypes, RcsbFvRowConfigInterface} from "@rcsb/rcsb-saguaro";
 import {PolymerEntityInstanceInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
 
@@ -14,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     function getJsonFromUrl() {
         const url = location.search;
-        var query = url.substr(1);
+        var query = url.substring(1);
         var result: any = {};
         query.split("&").forEach(function(part) {
             var item = part.split("=");
@@ -32,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     };
 
     const panel3d = new RcsbFv3DAssembly({
-        elementId: "pfv",
+        elementId: "null",
         config: sequenceConfig,
         instanceSequenceConfig:{
             dropdownTitle: "Chain",
@@ -82,7 +80,7 @@ function externalTrackBuilder(){
             })
 
         },
-        addTo(tracks: { alignmentTracks?: SequenceCollectorDataInterface; annotationTracks?: Array<RcsbFvRowConfigInterface>; rcsbContext?: Partial<PolymerEntityInstanceInterface>; }): Promise<void> {
+        addTo(tracks: { alignmentTracks?: Array<RcsbFvRowConfigInterface>; annotationTracks?: Array<RcsbFvRowConfigInterface>; rcsbContext?: Partial<PolymerEntityInstanceInterface>; }): Promise<void> {
             return new Promise<void>(resolve => {
                 if (tracks.rcsbContext?.asymId === "A" && myComputedTrack?.trackData && myComputedTrack.trackData.length > 0) {
                     tracks.annotationTracks?.push(myComputedTrack);

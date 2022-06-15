@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as ReactDom from "react-dom";
+import {createRoot, Root} from "react-dom/client";
 import {RcsbFv3DComponent, RcsbFv3DCssConfig} from './RcsbFv3DComponent';
 import {RcsbFvStructureInterface} from "../RcsbFvStructure/RcsbFvStructure";
 import {RcsbFvSequenceInterface} from "../RcsbFvSequence/RcsbFvSequence";
@@ -15,6 +15,7 @@ export interface RcsbFv3DAbstractInterface {
 export abstract class RcsbFv3DAbstract<T extends {}> {
 
     protected elementId: string;
+    private reactRoot: Root;
     protected structureConfig: RcsbFvStructureInterface;
     protected sequenceConfig: RcsbFvSequenceInterface<T>;
     protected ctxManager: RcsbFvContextManager<T> = new RcsbFvContextManager<T>();
@@ -26,7 +27,7 @@ export abstract class RcsbFv3DAbstract<T extends {}> {
         sequencePanel?: CSSProperties
     } | undefined;
 
-    constructor(config?: any) {
+    protected constructor(config?: any) {
         if(config != null)
             this.init(config);
     }
@@ -42,7 +43,8 @@ export abstract class RcsbFv3DAbstract<T extends {}> {
             document.body.append(element);
             this.fullScreen("on");
         }
-        ReactDom.render(
+        this.reactRoot = createRoot(element);
+        this.reactRoot.render(
             <RcsbFv3DComponent
                 structurePanelConfig={this.structureConfig}
                 sequencePanelConfig={this.sequenceConfig}
@@ -51,15 +53,13 @@ export abstract class RcsbFv3DAbstract<T extends {}> {
                 cssConfig={this.cssConfig}
                 unmount={this.unmount.bind(this)}
                 fullScreen={this.fullScreenFlag}
-            />,
-            element
-        );
+            />);
     }
 
     public unmount(removeHtmlElement?:boolean, unmountCallback?:()=>{}): void{
         const element: HTMLElement | null = document.getElementById(this.elementId);
         if(element != null) {
-            ReactDom.unmountComponentAtNode(element);
+            this.reactRoot.unmount();
             if(removeHtmlElement) {
                 element.remove();
             }

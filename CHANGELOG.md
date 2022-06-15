@@ -2,6 +2,16 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [1.5.0-models] - 2022-06-15
+### Dependency update
+- rcsb-saguaro-app v4.4.0-models
+- rcsb-saguaro v2.1.2
+- rcsb-api-tools v4.1.0-models
+- rcsb-molstar v2.4.1
+- molstar v3.8.1
+- React v18
+- Updated multiple dependencies
+
 ## [1.4.4] - 2022-05-26
 ### Dependency update
 - rcsb-saguaro-app v4.3.6

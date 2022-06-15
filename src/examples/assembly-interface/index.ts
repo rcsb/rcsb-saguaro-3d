@@ -1,12 +1,11 @@
 
-import './index.html';
 import {RcsbFv3DAssembly} from "../../RcsbFv3D/RcsbFv3DAssembly";
 
 document.addEventListener("DOMContentLoaded", function(event) {
 
     function getJsonFromUrl() {
         const url = location.search;
-        var query = url.substr(1);
+        var query = url.substring(1);
         var result: any = {};
         query.split("&").forEach(function(part) {
             var item = part.split("=");

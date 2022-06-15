@@ -1,4 +1,3 @@
-import './index.html';
 import {RcsbFv3DCustom, RcsbFv3DCustomInterface} from "../../RcsbFv3D/RcsbFv3DCustom";
 import {RcsbFvStructureInterface} from "../../RcsbFvStructure/RcsbFvStructure";
 import {LoadMethod} from "../../RcsbFvStructure/StructurePlugins/MolstarPlugin";

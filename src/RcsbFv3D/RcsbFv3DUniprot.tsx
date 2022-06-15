@@ -2,7 +2,6 @@ import {RcsbFv3DAbstract, RcsbFv3DAbstractInterface} from "./RcsbFv3DAbstract";
 import {RcsbFvAdditionalConfig} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import uniqid from "uniqid";
 import {UniprotPfvFactory} from "../RcsbFvSequence/SequenceViews/RcsbView/PfvFactoryImplementation/UniprotPfvFactory";
-import {AssemblyCallbackManager} from "../RcsbFvSequence/SequenceViews/RcsbView/CallbackManagerImplementation/AssemblyCallbackManager";
 import {
     UniprotCallbackManager
 } from "../RcsbFvSequence/SequenceViews/RcsbView/CallbackManagerImplementation/UniprotCallbackManager";
