@@ -24,6 +24,8 @@ import {
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbUtils/Translators/InterfaceInstanceTranslate";
 import {DataContainer} from "../../../../Utils/DataContainer";
 import {BuildPfvInterface, PfvAbstractFactory, PfvFactoryConfigInterface} from "../PfvFactoryInterface";
+import {ColorTheme} from "molstar/lib/mol-theme/color";
+import {PLDDTConfidenceColorThemeProvider} from "molstar/lib/extensions/model-archive/quality-assessment/color/plddt";
 
 interface AssemblyPfvFactoryInterface extends PfvFactoryConfigInterface{
     useOperatorsFlag:boolean | undefined;
@@ -177,10 +179,12 @@ async function createComponents(plugin: SaguaroPluginInterface, modelMap:Saguaro
     });
     plugin.removeComponent();
     plugin.clearFocus();
+    //TODO improve colorTheme condition (PLDDTConfidenceColorThemeProvider.isApplicable)
+    const colorTheme: ColorTheme.BuiltIn = (chains.length === 1 && chains[0].modelId.includes("AF_AF")) ? PLDDTConfidenceColorThemeProvider.name as ColorTheme.BuiltIn : "chain-id";
     for(const ch of chains) {
         const label: string = ch.auth === ch.label ? ch.label : `${ch.label} [auth ${ch.auth}]`;
         await plugin.createComponent(label, ch.modelId, ch.label, 'cartoon');
-        await plugin.colorComponent(label, 'chain-id');
+        await plugin.colorComponent(label, colorTheme);
     }
     await plugin.removeComponent("Polymer");
 }
