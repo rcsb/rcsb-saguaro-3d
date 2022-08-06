@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         return result;
     }
 
-    const args: {pdbId:string} = getJsonFromUrl().pdbId ? getJsonFromUrl() : {pdbId:"4HHB"};
+    const args: {pdbId:string} = getJsonFromUrl().pdbId ? getJsonFromUrl() : {pdbId:"1A6D"};
 
     const sequenceConfig = {
         entryId: args.pdbId,
