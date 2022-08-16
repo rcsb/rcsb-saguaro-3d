@@ -4,28 +4,28 @@ import {asyncScheduler, Subscription} from "rxjs";
 
 import {RcsbFvDOMConstants} from "../../RcsbFvConstants/RcsbFvConstants";
 import {
-    SaguaroPluginInterface,
-    SaguaroPluginModelMapType
-} from "../../RcsbFvStructure/SaguaroPluginInterface";
+    StructureViewerInterface,
+    SaguaroPluginModelMapType, ViewerCallbackManagerInterface, ViewerActionManagerInterface
+} from "../../RcsbFvStructure/StructureViewerInterface";
 import {RcsbFvSelectorManager} from "../../RcsbFvSelection/RcsbFvSelectorManager";
 import {SequenceViewInterface} from "./SequenceViewInterface";
 
-export interface AbstractViewInterface {
+export interface AbstractViewInterface<R> {
     componentId: string;
     title?: string;
     subtitle?: string;
-    plugin: SaguaroPluginInterface;
+    plugin: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
     selectorManager: RcsbFvSelectorManager;
     unmount:(flag:boolean,callback:()=>void)=>void;
 }
 
-export abstract class AbstractView<P,S> extends React.Component <P & AbstractViewInterface, S> implements SequenceViewInterface {
+export abstract class AbstractView<P,S,R> extends React.Component <P & AbstractViewInterface<R>, S> implements SequenceViewInterface {
 
     protected readonly componentDivId: string;
     protected readonly rcsbFvDivId: string;
     private updateDimTask: Subscription | null = null;
 
-    constructor(props:P & AbstractViewInterface) {
+    constructor(props:P & AbstractViewInterface<R>) {
         super(props);
         this.componentDivId = props.componentId+"_"+RcsbFvDOMConstants.PFV_DIV;
         this.rcsbFvDivId = props.componentId+"_"+RcsbFvDOMConstants.PFV_APP_ID;

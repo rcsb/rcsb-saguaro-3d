@@ -1,12 +1,12 @@
 import * as React from "react";
 import classes from '../styles/RcsbFvStyle.module.scss';
 
-import {MolstarPlugin} from '../RcsbFvStructure/StructurePlugins/MolstarPlugin';
-import {SaguaroPluginInterface} from '../RcsbFvStructure/SaguaroPluginInterface';
+import {StructureViewer} from '../RcsbFvStructure/StructureViewers/StructureViewer';
+import {StructureViewerInterface} from '../RcsbFvStructure/StructureViewerInterface';
 
 import '../styles/RcsbFvMolstarStyle.module.scss';
 import {RcsbFvSequence, RcsbFvSequenceInterface} from "../RcsbFvSequence/RcsbFvSequence";
-import {RcsbFvStructure, RcsbFvStructureInterface} from "../RcsbFvStructure/RcsbFvStructure";
+import {RcsbFvStructure, RcsbFvStructureConfigInterface} from "../RcsbFvStructure/RcsbFvStructure";
 import {
     EventType,
     RcsbFvContextManager,
@@ -25,38 +25,33 @@ export interface RcsbFv3DCssConfig {
     sequencePanel?: CSSProperties;
 }
 
-export interface RcsbFv3DComponentInterface<T extends {}> {
-    structurePanelConfig:RcsbFvStructureInterface;
-    sequencePanelConfig: RcsbFvSequenceInterface<T>;
+export interface RcsbFv3DComponentInterface<T,R,S,U> {
+    structurePanelConfig:RcsbFvStructureConfigInterface<R,S>;
+    sequencePanelConfig: RcsbFvSequenceInterface<T,R,U>;
     id: string;
-    ctxManager: RcsbFvContextManager<T>;
+    ctxManager: RcsbFvContextManager<T,R,S,U>;
     cssConfig?:RcsbFv3DCssConfig;
     unmount:(flag:boolean)=>void;
     fullScreen: boolean;
+    structureViewer: StructureViewerInterface<R,S>;
 }
 
-interface RcsbFv3DComponentState<T extends {}> {
-    structurePanelConfig:RcsbFvStructureInterface;
-    sequencePanelConfig:RcsbFvSequenceInterface<T>;
+interface RcsbFv3DComponentState<T,R,S,U> {
+    structurePanelConfig:RcsbFvStructureConfigInterface<R,S>;
+    sequencePanelConfig:RcsbFvSequenceInterface<T,R,U>;
     pfvScreenFraction: number;
 }
 
-export class RcsbFv3DComponent<T extends {}> extends React.Component <RcsbFv3DComponentInterface<T>, RcsbFv3DComponentState<T>> {
+export class RcsbFv3DComponent<T,R,S,U> extends React.Component <RcsbFv3DComponentInterface<T,R,S,U>, RcsbFv3DComponentState<T,R,S,U>> {
 
-    private readonly plugin: SaguaroPluginInterface;
     private readonly selectorManager: RcsbFvSelectorManager = new RcsbFvSelectorManager();
     private subscription: Subscription;
     private readonly ROOT_DIV_ID: string = "rootPanelDiv";
 
-    readonly state: RcsbFv3DComponentState<T> = {
+    readonly state: RcsbFv3DComponentState<T,R,S,U> = {
         structurePanelConfig: this.props.structurePanelConfig,
         sequencePanelConfig: this.props.sequencePanelConfig,
         pfvScreenFraction: 0.55
-    }
-
-    constructor(props: RcsbFv3DComponentInterface<T>) {
-        super(props);
-        this.plugin = new MolstarPlugin(this.selectorManager);
     }
 
     render(): JSX.Element {
@@ -70,19 +65,19 @@ export class RcsbFv3DComponent<T extends {}> extends React.Component <RcsbFv3DCo
                     onMouseUp={ (e)=>{this.splitPanelMouseUp()} }
                 >
                     <div style={this.structureCssConfig(this.props.cssConfig?.structurePanel)} >
-                        <RcsbFvStructure
+                        <RcsbFvStructure<R,S>
                             {...this.state.structurePanelConfig}
                             componentId={this.props.id}
-                            plugin={this.plugin}
+                            plugin={this.props.structureViewer}
                             selectorManager={this.selectorManager}
                         />
                     </div>
                     <div style={this.sequenceCssConfig(this.props.cssConfig?.sequencePanel)}  >
-                        <RcsbFvSequence<T>
+                        <RcsbFvSequence<T,R,U>
                             type={this.state.sequencePanelConfig.type}
                             config={this.state.sequencePanelConfig.config}
                             componentId={this.props.id}
-                            plugin={this.plugin}
+                            plugin={this.props.structureViewer}
                             selectorManager={this.selectorManager}
                             title={this.state.sequencePanelConfig.title}
                             subtitle={this.state.sequencePanelConfig.subtitle}
@@ -140,11 +135,11 @@ export class RcsbFv3DComponent<T extends {}> extends React.Component <RcsbFv3DCo
     }
 
     private subscribe(): Subscription{
-        return this.props.ctxManager.subscribe((obj:RcsbFvContextManagerInterface<T>)=>{
+        return this.props.ctxManager.subscribe((obj:RcsbFvContextManagerInterface<T,R,S,U>)=>{
             if(obj.eventType == EventType.UPDATE_CONFIG){
-                this.updateConfig(obj.eventData as UpdateConfigInterface<T>)
+                this.updateConfig(obj.eventData as UpdateConfigInterface<T,R,S,U>)
             }else if(obj.eventType == EventType.PLUGIN_CALL){
-                this.plugin.pluginCall(obj.eventData as ((f:PluginContext)=>void));
+                this.props.structureViewer.pluginCall(obj.eventData as ((f:PluginContext)=>void));
             }
         });
     }
@@ -154,9 +149,9 @@ export class RcsbFv3DComponent<T extends {}> extends React.Component <RcsbFv3DCo
         this.subscription.unsubscribe();
     }
 
-    private updateConfig(config:UpdateConfigInterface<T>){
-        const structureConfig: Partial<RcsbFvStructureInterface> | undefined = config.structurePanelConfig;
-        const sequenceConfig: Partial<RcsbFvSequenceInterface<T>> | undefined = config.sequencePanelConfig;
+    private updateConfig(config:UpdateConfigInterface<T,R,S,U>){
+        const structureConfig: Partial<RcsbFvStructureConfigInterface<R,S>> | undefined = config.structurePanelConfig;
+        const sequenceConfig: Partial<RcsbFvSequenceInterface<T,R,U>> | undefined = config.sequencePanelConfig;
         if(structureConfig != null && sequenceConfig != null){
             this.setState({structurePanelConfig:{...this.state.structurePanelConfig, ...structureConfig}, sequencePanelConfig:{...this.state.sequencePanelConfig, ...sequenceConfig}});
         }else if(structureConfig != null){

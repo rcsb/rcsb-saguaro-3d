@@ -13,3 +13,7 @@ export class DataContainer<T> {
         this.data = data;
     }
 }
+
+export interface DataContainerReader<T> {
+    get(): T | undefined;
+}

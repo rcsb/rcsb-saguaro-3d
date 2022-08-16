@@ -1,4 +1,4 @@
-import {SaguaroChain, SaguaroRange, SaguaroRegionList, SaguaroSet} from "../RcsbFvStructure/SaguaroPluginInterface";
+import {SaguaroChain, SaguaroRange, SaguaroRegionList, SaguaroSet} from "../RcsbFvStructure/StructureViewerInterface";
 
 export interface RegionSelectionInterface{
     begin:number;

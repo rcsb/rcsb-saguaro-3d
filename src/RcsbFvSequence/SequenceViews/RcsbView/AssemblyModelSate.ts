@@ -1,4 +1,4 @@
-import {ChainInfo, OperatorInfo, SaguaroPluginModelMapType} from "../../../RcsbFvStructure/SaguaroPluginInterface";
+import {ChainInfo, OperatorInfo, SaguaroPluginModelMapType} from "../../../RcsbFvStructure/StructureViewerInterface";
 
 interface AssemblyModelStateInterface {
     modelId: string;

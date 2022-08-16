@@ -1,29 +1,28 @@
 import * as React from "react";
-import {SaguaroPluginInterface} from "./SaguaroPluginInterface";
+import {StructureViewerInterface} from "./StructureViewerInterface";
 import {RcsbFvDOMConstants} from "../RcsbFvConstants/RcsbFvConstants";
-import {ViewerProps} from "@rcsb/rcsb-molstar/build/src/viewer";
-import {LoadMolstarInterface} from "./StructurePlugins/MolstarPlugin";
 import {RcsbFvSelectorManager} from "../RcsbFvSelection/RcsbFvSelectorManager";
 
-export interface RcsbFvStructureInterface {
-    loadConfig?: LoadMolstarInterface | Array<LoadMolstarInterface>;
-    pluginConfig?: Partial<ViewerProps>;
+export interface RcsbFvStructureConfigInterface<R,S> {
+    loadConfig: R | Array<R>;
+    pluginConfig: S;
 }
 
-export class RcsbFvStructure extends React.Component <RcsbFvStructureInterface & {plugin: SaguaroPluginInterface, componentId: string, selectorManager: RcsbFvSelectorManager}, RcsbFvStructureInterface > {
+export class RcsbFvStructure<R,S> extends React.Component <RcsbFvStructureConfigInterface<R,S> & {plugin: StructureViewerInterface<R,S>, componentId: string, selectorManager: RcsbFvSelectorManager}, RcsbFvStructureConfigInterface<R,S> > {
 
     render():JSX.Element {
         return (
             <div id={this.props.componentId+"_"+RcsbFvDOMConstants.MOLSTAR_DIV} >
-                <div id={this.props.componentId+"_"+RcsbFvDOMConstants.MOLSTAR_APP_ID} style={{position:"absolute"}}/>
+                <div id={RcsbFvStructure.componentId(this.props.componentId)} style={{position:"absolute"}}/>
             </div>
         );
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this.updateDimensions();
-        this.props.plugin.init(this.props.componentId+"_"+RcsbFvDOMConstants.MOLSTAR_APP_ID, this.props.pluginConfig);
-        if(this.props.loadConfig) this.props.plugin.load(this.props.loadConfig);
+        this.props.plugin.init(this.props.selectorManager, this.props.pluginConfig);
+        if(this.props.loadConfig)
+            await this.props.plugin.load(this.props.loadConfig);
         window.addEventListener('resize', this.updateDimensions.bind(this));
     }
 
@@ -43,6 +42,10 @@ export class RcsbFvStructure extends React.Component <RcsbFvStructureInterface &
             return;
         element.style.width = rect.width+"px";
         element.style.height = rect.height+"px";
+    }
+
+    public static componentId(id:string): string {
+        return `${id}_${RcsbFvDOMConstants.MOLSTAR_APP_ID}`;
     }
 
 }

@@ -9,7 +9,7 @@ import {PluginStateObject} from "molstar/lib/mol-plugin-state/objects";
 import {StateObject} from "molstar/lib/mol-state/object";
 import {StateTransformer} from "molstar/lib/mol-state/transformer";
 import {Structure, StructureElement, StructureProperties as SP} from "molstar/lib/mol-model/structure";
-import {ChainInfo} from "../SaguaroPluginInterface";
+import {ChainInfo} from "../../StructureViewerInterface";
 
 type StructureObject = StateObjectSelector<PluginStateObject.Molecule.Structure, StateTransformer<StateObject<any, StateObject.Type<any>>, StateObject<any, StateObject.Type<any>>, any>>
 

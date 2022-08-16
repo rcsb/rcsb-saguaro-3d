@@ -3,9 +3,8 @@ import {
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {
     ChainInfo, OperatorInfo,
-    SaguaroPluginInterface,
-    SaguaroPluginModelMapType
-} from "../../../../RcsbFvStructure/SaguaroPluginInterface";
+    SaguaroPluginModelMapType, ViewerActionManagerInterface
+} from "../../../../RcsbFvStructure/StructureViewerInterface";
 import {
     InstanceSequenceConfig
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
@@ -23,28 +22,41 @@ import {
     InterfaceInstanceTranslate
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbUtils/Translators/InterfaceInstanceTranslate";
 import {DataContainer} from "../../../../Utils/DataContainer";
-import {BuildPfvInterface, PfvAbstractFactory, PfvFactoryConfigInterface} from "../PfvFactoryInterface";
+import {
+    BuildPfvInterface,
+    AbstractPfvManager,
+    PfvManagerFactoryConfigInterface,
+    PfvManagerInterface,
+    PfvManagerFactoryInterface
+} from "../PfvManagerFactoryInterface";
 import {ColorTheme} from "molstar/lib/mol-theme/color";
 import {PLDDTConfidenceColorThemeProvider} from "molstar/lib/extensions/model-archive/quality-assessment/color/plddt";
 
-interface AssemblyPfvFactoryInterface extends PfvFactoryConfigInterface{
-    useOperatorsFlag:boolean | undefined;
+interface AssemblyPfvManagerInterface<R> extends PfvManagerFactoryConfigInterface<R,undefined>{
+    useOperatorsFlag: boolean | undefined;
     instanceSequenceConfig: InstanceSequenceConfig | undefined;
 }
 
-export class AssemblyPfvFactory extends PfvAbstractFactory<{instanceSequenceConfig: InstanceSequenceConfig|undefined}> {
+export class AssemblyPfvManagerFactory<R> implements PfvManagerFactoryInterface<{instanceSequenceConfig: InstanceSequenceConfig|undefined;useOperatorsFlag: boolean | undefined;},R,undefined> {
+    public getPfvManager(config:  AssemblyPfvManagerInterface<R>): PfvManagerInterface {
+        return new AssemblyPfvManager<R>(config);
+    }
+}
+
+class AssemblyPfvManager<R> extends AbstractPfvManager<{instanceSequenceConfig: InstanceSequenceConfig|undefined;useOperatorsFlag: boolean | undefined;},R,undefined> {
 
     private readonly instanceSequenceConfig: InstanceSequenceConfig|undefined;
     private readonly useOperatorsFlag:boolean | undefined;
     private readonly OPERATOR_DROPDOWN_TITLE: string = "Symmetry Partner";
+    private module: RcsbFvModulePublicInterface | undefined = undefined;
 
-    constructor(config: AssemblyPfvFactoryInterface) {
+    constructor(config: AssemblyPfvManagerInterface<R>) {
         super(config);
         this.instanceSequenceConfig = config.instanceSequenceConfig;
         this.useOperatorsFlag = config.useOperatorsFlag;
     }
 
-    async getPfv(config: BuildPfvInterface): Promise<RcsbFvModulePublicInterface | undefined> {
+    public async create(config: BuildPfvInterface): Promise<RcsbFvModulePublicInterface | undefined> {
         this.assemblyModelSate.setMap(config.modelMap);
         this.plugin.clearFocus();
         const onChangeCallback: Map<string, (x: PolymerEntityInstanceInterface)=>void> = new Map<string, (x: PolymerEntityInstanceInterface) => {}>();
@@ -55,14 +67,13 @@ export class AssemblyPfvFactory extends PfvAbstractFactory<{instanceSequenceConf
                 this.assemblyModelSate.set({entryId: v.entryId, labelAsymId: x.asymId, modelId: k});
                 asyncScheduler.schedule(()=>{
                     this.selectorManager.setLastSelection('select', null);
-                    this.pfvChangeCallback();
-                },1000);
+                    this.pfvChangeCallback(undefined);
+                },100);
             });
         });
         const operatorNameContainer: DataContainer<string> = new DataContainer<string>(config.defaultOperatorName);
-        let module: RcsbFvModulePublicInterface | undefined = undefined;
         if(this.assemblyModelSate.get("entryId") != null) {
-            module = await buildInstanceSequenceFv(
+            this.module = await buildInstanceSequenceFv(
                 this.rcsbFvDivId,
                 RcsbFvDOMConstants.SELECT_BUTTON_PFV_ID,
                 this.assemblyModelSate.getString("entryId"),
@@ -105,8 +116,8 @@ export class AssemblyPfvFactory extends PfvAbstractFactory<{instanceSequenceConf
             );
         }
         if(!config.defaultAuthId)
-            await createComponents(this.plugin, this.assemblyModelSate.getMap());
-        return module;
+            await createComponents<R>(this.plugin, this.assemblyModelSate.getMap());
+        return this.module;
     }
 
     private addOperatorButton(operatorName?: string): void{
@@ -120,8 +131,9 @@ export class AssemblyPfvFactory extends PfvAbstractFactory<{instanceSequenceConf
                     label:`${op.ids.join("-")} (${op.name})`,
                     optId:op.name,
                     onChange: async ()=>{
+                        this.module?.getFv()?.reset();
                         this.assemblyModelSate.set({operator:op});
-                        await this.getPfv({
+                        await this.create({
                             modelMap: this.assemblyModelSate.getMap(),
                             defaultAuthId: this.assemblyModelSate.getChainInfo()?.auth,
                             defaultOperatorName: op.name
@@ -166,7 +178,7 @@ export class AssemblyPfvFactory extends PfvAbstractFactory<{instanceSequenceConf
 
 }
 
-async function createComponents(plugin: SaguaroPluginInterface, modelMap:SaguaroPluginModelMapType): Promise<void> {
+async function createComponents<R>(plugin: ViewerActionManagerInterface<R>, modelMap:SaguaroPluginModelMapType): Promise<void> {
     plugin.displayComponent("Water", false);
     await plugin.colorComponent("Polymer", 'chain-id');
     const chains: Array<{modelId: string; auth: string; label: string;}> = new Array<{modelId: string; auth: string; label: string;}>();
@@ -177,7 +189,7 @@ async function createComponents(plugin: SaguaroPluginInterface, modelMap:Saguaro
             }
         });
     });
-    plugin.removeComponent();
+    await plugin.removeComponent();
     plugin.clearFocus();
     //TODO improve colorTheme condition (PLDDTConfidenceColorThemeProvider.isApplicable)
     const colorTheme: ColorTheme.BuiltIn = (chains.length === 1 && chains[0].modelId.includes("AF_AF")) ? PLDDTConfidenceColorThemeProvider.name as ColorTheme.BuiltIn : "chain-id";

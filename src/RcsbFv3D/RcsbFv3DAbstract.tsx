@@ -1,38 +1,44 @@
 import * as React from "react";
 import {createRoot, Root} from "react-dom/client";
 import {RcsbFv3DComponent, RcsbFv3DCssConfig} from './RcsbFv3DComponent';
-import {RcsbFvStructureInterface} from "../RcsbFvStructure/RcsbFvStructure";
+import {RcsbFvStructureConfigInterface} from "../RcsbFvStructure/RcsbFvStructure";
 import {RcsbFvSequenceInterface} from "../RcsbFvSequence/RcsbFvSequence";
 import {EventType, RcsbFvContextManager} from "../RcsbFvContextManager/RcsbFvContextManager";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {CSSProperties} from "react";
+import {StructureViewerInterface} from "../RcsbFvStructure/StructureViewerInterface";
 
-export interface RcsbFv3DAbstractInterface {
+export interface RcsbFv3DAbstractInterface<T,R,S,U> {
     elementId: string;
     cssConfig?: RcsbFv3DCssConfig;
+    sequenceConfig: RcsbFvSequenceInterface<T,R,U>;
+    structureConfig: RcsbFvStructureConfigInterface<R,S>;
+    structureViewer: StructureViewerInterface<R,S>;
 }
 
-export abstract class RcsbFv3DAbstract<T extends {}> {
+export abstract class RcsbFv3DAbstract<T,R,S,U> {
 
-    protected elementId: string;
+    private readonly elementId: string;
     private reactRoot: Root;
-    protected structureConfig: RcsbFvStructureInterface;
-    protected sequenceConfig: RcsbFvSequenceInterface<T>;
-    protected ctxManager: RcsbFvContextManager<T> = new RcsbFvContextManager<T>();
+    private readonly structureConfig: RcsbFvStructureConfigInterface<R,S>;
+    private readonly structureViewer: StructureViewerInterface<R,S>;
+    private readonly sequenceConfig: RcsbFvSequenceInterface<T,R,U>;
+    private readonly ctxManager: RcsbFvContextManager<T,R,S,U> = new RcsbFvContextManager<T,R,S,U>();
     private fullScreenFlag: boolean = false;
     private overflowStyle: string = "";
-    protected cssConfig:{
+    private readonly cssConfig:{
         rootPanel?: CSSProperties,
         structurePanel?: CSSProperties,
         sequencePanel?: CSSProperties
     } | undefined;
 
-    protected constructor(config?: any) {
-        if(config != null)
-            this.init(config);
+    protected constructor(config: RcsbFv3DAbstractInterface<T,R,S,U>) {
+       this.elementId = config.elementId;
+       if(config.cssConfig) this.cssConfig = config.cssConfig;
+       this.sequenceConfig = config.sequenceConfig;
+       this.structureConfig = config.structureConfig;
+       this.structureViewer = config.structureViewer;
     }
-
-    protected abstract init(config: any): void;
 
     public render(): void{
         if(this.elementId == null )
@@ -45,14 +51,15 @@ export abstract class RcsbFv3DAbstract<T extends {}> {
         }
         this.reactRoot = createRoot(element);
         this.reactRoot.render(
-            <RcsbFv3DComponent
+            <RcsbFv3DComponent<T,R,S,U>
                 structurePanelConfig={this.structureConfig}
                 sequencePanelConfig={this.sequenceConfig}
-                id={"RcsbFv3D_innerDiv_"+Math.random().toString(36).substr(2)}
+                id={this.elementId}
                 ctxManager={this.ctxManager}
                 cssConfig={this.cssConfig}
                 unmount={this.unmount.bind(this)}
                 fullScreen={this.fullScreenFlag}
+                structureViewer={this.structureViewer}
             />);
     }
 
@@ -69,7 +76,7 @@ export abstract class RcsbFv3DAbstract<T extends {}> {
         }
     }
 
-    public updateConfig(config: {structurePanelConfig?: Partial<RcsbFvStructureInterface>; sequencePanelConfig?: Partial<RcsbFvSequenceInterface<T>>;}){
+    public updateConfig(config: {structurePanelConfig?: Partial<RcsbFvStructureConfigInterface<R,S>>; sequencePanelConfig?: Partial<RcsbFvSequenceInterface<T,R,U>>;}){
         this.ctxManager.next({eventType: EventType.UPDATE_CONFIG, eventData:config});
     }
 

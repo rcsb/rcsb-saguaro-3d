@@ -1,6 +1,6 @@
 import {RcsbFv3DCustom} from "../../RcsbFv3D/RcsbFv3DCustom";
-import {RcsbFvStructureInterface} from "../../RcsbFvStructure/RcsbFvStructure";
-import {LoadMethod} from "../../RcsbFvStructure/StructurePlugins/MolstarPlugin";
+import {RcsbFvStructureConfigInterface} from "../../RcsbFvStructure/RcsbFvStructure";
+import {LoadMethod} from "../../RcsbFvStructure/StructureViewers/StructureViewer";
 import {
     BlockSelectorManager,
     CustomViewInterface,
@@ -18,8 +18,8 @@ import {
     RegionSelectionInterface
 } from "../../RcsbFvSelection/RcsbFvSelectorManager";
 import {
-    SaguaroPluginPublicInterface, SaguaroRegionList
-} from "../../RcsbFvStructure/SaguaroPluginInterface";
+    StructureViewerPublicInterface, SaguaroRegionList
+} from "../../RcsbFvStructure/StructureViewerInterface";
 
 const rowConfigChainA: Array<RcsbFvRowConfigInterface> = [
     {
@@ -91,7 +91,7 @@ const fvConfigChainA: FeatureViewInterface = {
         includeAxis: true
     },
     rowConfig: rowConfigChainA,
-    sequenceSelectionChangeCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => {
+    sequenceSelectionChangeCallback: (plugin: StructureViewerPublicInterface, selectorManager: RcsbFvSelectorManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => {
         selectorManager.clearSelection("select", {modelId:"1acb_board", labelAsymId:"A"});
         plugin.clearSelection("select", {modelId: "1acb_board", labelAsymId: "A"})
         if(sequenceRegion.length > 0) {
@@ -110,11 +110,11 @@ const fvConfigChainA: FeatureViewInterface = {
             plugin.resetCamera();
         }
     },
-    sequenceElementClickCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, d: RcsbFvTrackDataElementInterface) => {
+    sequenceElementClickCallback: (plugin: StructureViewerPublicInterface, selectorManager: RcsbFvSelectorManager, d: RcsbFvTrackDataElementInterface) => {
         if(d!=null)
             plugin.cameraFocus("1acb_board", "A", d.begin, d.end ?? d.begin);
     },
-    sequenceHoverCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, elements: Array<RcsbFvTrackDataElementInterface>) => {
+    sequenceHoverCallback: (plugin: StructureViewerPublicInterface, selectorManager: RcsbFvSelectorManager, elements: Array<RcsbFvTrackDataElementInterface>) => {
         if(elements == null || elements.length == 0)
             plugin.clearSelection("hover");
         else
@@ -125,7 +125,7 @@ const fvConfigChainA: FeatureViewInterface = {
                 end: e.end ?? e.begin
             })), "hover", "set");
     },
-    structureSelectionCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => {
+    structureSelectionCallback: (plugin: StructureViewerPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => {
         const sel: SaguaroRegionList | undefined = selection.getSelectionWithCondition("1acb_board", "A", "select");
         if(sel == null) {
             pfv.clearSelection("select");
@@ -134,7 +134,7 @@ const fvConfigChainA: FeatureViewInterface = {
             pfv.setSelection({elements: sel.regions, mode: "select"});
         }
     },
-    structureHoverCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => {
+    structureHoverCallback: (plugin: StructureViewerPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => {
         const sel: SaguaroRegionList | undefined = selection.getSelectionWithCondition("1acb_board", "A", "hover");
         if(sel == null)
             pfv.clearSelection("hover");
@@ -154,7 +154,7 @@ const fvConfigChainB: FeatureViewInterface = {
         includeAxis: true
     },
     rowConfig: rowConfigChainB,
-    sequenceSelectionChangeCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => {
+    sequenceSelectionChangeCallback: (plugin: StructureViewerPublicInterface, selectorManager: RcsbFvSelectorManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => {
         selectorManager.clearSelection("select", {modelId:"1acb_board", labelAsymId:"B"});
         plugin.clearSelection("select", {modelId: "1acb_board", labelAsymId: "B"})
         if(sequenceRegion.length > 0) {
@@ -173,11 +173,11 @@ const fvConfigChainB: FeatureViewInterface = {
             plugin.resetCamera();
         }
     },
-    sequenceElementClickCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, d: RcsbFvTrackDataElementInterface) => {
+    sequenceElementClickCallback: (plugin: StructureViewerPublicInterface, selectorManager: RcsbFvSelectorManager, d: RcsbFvTrackDataElementInterface) => {
         if(d!=null)
             plugin.cameraFocus("1acb_board", "B", d.begin, d.end ?? d.begin);
     },
-    sequenceHoverCallback: (plugin: SaguaroPluginPublicInterface, selectorManager: RcsbFvSelectorManager, elements: Array<RcsbFvTrackDataElementInterface>) => {
+    sequenceHoverCallback: (plugin: StructureViewerPublicInterface, selectorManager: RcsbFvSelectorManager, elements: Array<RcsbFvTrackDataElementInterface>) => {
         if(elements == null || elements.length == 0)
             plugin.clearSelection("hover");
         else
@@ -188,7 +188,7 @@ const fvConfigChainB: FeatureViewInterface = {
                 end: e.end ?? e.begin
             })), "hover", "set");
     },
-    structureSelectionCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => {
+    structureSelectionCallback: (plugin: StructureViewerPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => {
         const sel: SaguaroRegionList | undefined = selection.getSelectionWithCondition("1acb_board", "B", "select");
         if(sel == null) {
             pfv.clearSelection("select");
@@ -197,7 +197,7 @@ const fvConfigChainB: FeatureViewInterface = {
             pfv.setSelection({elements: sel.regions, mode: "select"});
         }
     },
-    structureHoverCallback: (plugin: SaguaroPluginPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => {
+    structureHoverCallback: (plugin: StructureViewerPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => {
         const sel: SaguaroRegionList | undefined = selection.getSelectionWithCondition("1acb_board", "B", "hover");
         if(sel == null)
             pfv.clearSelection("hover");
@@ -240,7 +240,7 @@ const sequenceConfig = {
     config: customConfig
 };
 
-const molstarConfig: RcsbFvStructureInterface = {
+const molstarConfig: RcsbFvStructureConfigInterface = {
     loadConfig: {
         loadMethod: LoadMethod.loadPdbIds,
         loadParams: [{

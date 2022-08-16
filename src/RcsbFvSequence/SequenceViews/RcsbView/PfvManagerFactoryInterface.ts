@@ -7,21 +7,23 @@ import {RcsbFvSelectorManager} from "../../../RcsbFvSelection/RcsbFvSelectorMana
 import {AssemblyModelSate} from "./AssemblyModelSate";
 import {
     OperatorInfo,
-    SaguaroPluginInterface,
-    SaguaroPluginModelMapType
-} from "../../../RcsbFvStructure/SaguaroPluginInterface";
+    SaguaroPluginModelMapType, ViewerCallbackManagerInterface, ViewerActionManagerInterface
+} from "../../../RcsbFvStructure/StructureViewerInterface";
 import {RcsbFvBoardConfigInterface} from "@rcsb/rcsb-saguaro";
 
-
-export interface PfvFactoryConfigInterface {
+export interface PfvManagerFactoryConfigInterface<R,U> {
     rcsbFvDivId: string;
     rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
     selectorManager: RcsbFvSelectorManager;
     assemblyModelSate: AssemblyModelSate;
-    plugin: SaguaroPluginInterface;
+    plugin: ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>;
     boardConfigContainer: DataContainer<Partial<RcsbFvBoardConfigInterface>>;
-    pfvChangeCallback(...context: unknown[]): Promise<void>;
+    pfvChangeCallback(context: U): Promise<void>;
     additionalConfig: RcsbFvAdditionalConfig & {operatorChangeCallback?:(operatorInfo: OperatorInfo)=>void} | undefined;
+}
+
+export interface PfvManagerFactoryInterface<T,R,U> {
+    getPfvManager(config:T & PfvManagerFactoryConfigInterface<R,U>): PfvManagerInterface;
 }
 
 export interface BuildPfvInterface {
@@ -30,22 +32,22 @@ export interface BuildPfvInterface {
     defaultOperatorName?:string;
 }
 
-export interface PfvFactoryInterface {
-    getPfv(config?: BuildPfvInterface): Promise<RcsbFvModulePublicInterface | undefined>;
+export interface PfvManagerInterface {
+    create(config?: BuildPfvInterface): Promise<RcsbFvModulePublicInterface | undefined>;
 }
 
-export abstract class PfvAbstractFactory<T={}> implements PfvFactoryInterface {
+export abstract class AbstractPfvManager<T,R,U> implements PfvManagerInterface {
 
     protected readonly rcsbFvDivId: string;
     protected readonly rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
     protected readonly selectorManager: RcsbFvSelectorManager;
     protected readonly assemblyModelSate: AssemblyModelSate;
-    protected readonly plugin: SaguaroPluginInterface;
+    protected readonly plugin: ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>;
     protected readonly boardConfigContainer: DataContainer<Partial<RcsbFvBoardConfigInterface>>;
-    protected readonly pfvChangeCallback: (...context: unknown[])=>Promise<void>;
+    protected readonly pfvChangeCallback: (context: U)=>Promise<void>;
     protected readonly additionalConfig: RcsbFvAdditionalConfig & {operatorChangeCallback?:(operatorInfo: OperatorInfo)=>void} | undefined;
 
-    protected constructor(config:PfvFactoryConfigInterface & T){
+    protected constructor(config:T & PfvManagerFactoryConfigInterface<R,U>){
         this.rcsbFvDivId = config.rcsbFvDivId;
         this.rcsbFvContainer = config.rcsbFvContainer;
         this.selectorManager = config.selectorManager;
@@ -56,5 +58,5 @@ export abstract class PfvAbstractFactory<T={}> implements PfvFactoryInterface {
         this.pfvChangeCallback = config.pfvChangeCallback;
     }
 
-    abstract getPfv(config?: BuildPfvInterface): Promise<RcsbFvModulePublicInterface | undefined>;
+    public abstract create(config?: BuildPfvInterface): Promise<RcsbFvModulePublicInterface | undefined>;
 }

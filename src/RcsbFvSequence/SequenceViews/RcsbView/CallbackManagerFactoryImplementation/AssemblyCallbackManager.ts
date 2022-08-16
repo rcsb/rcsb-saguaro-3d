@@ -1,12 +1,22 @@
 import {
     SaguaroPluginModelMapType, SaguaroRange,
     SaguaroRegionList
-} from "../../../../RcsbFvStructure/SaguaroPluginInterface";
+} from "../../../../RcsbFvStructure/StructureViewerInterface";
 import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {asyncScheduler} from "rxjs";
-import {AbstractCallbackManager} from "../CallbackManagerInterface";
+import {
+    AbstractCallbackManager, CallbackConfigInterface,
+    CallbackManagerFactoryInterface,
+    CallbackManagerInterface
+} from "../CallbackManagerFactoryInterface";
 
-export class AssemblyCallbackManager extends AbstractCallbackManager {
+export class AssemblyCallbackManagerFactory<R> implements CallbackManagerFactoryInterface<R,undefined> {
+    getCallbackManager(config: CallbackConfigInterface<R>): CallbackManagerInterface<undefined> {
+        return new AssemblyCallbackManager<R>(config);
+    }
+}
+
+class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
 
     private readonly CREATE_COMPONENT_THR: number = 3;
 
@@ -97,7 +107,7 @@ export class AssemblyCallbackManager extends AbstractCallbackManager {
     }
 
     public async modelChangeCallback(modelMap:SaguaroPluginModelMapType, defaultAuthId?: string, defaultOperatorName?:string): Promise<void> {
-        this.rcsbFvContainer.set(await this.pfvFactory.getPfv({modelMap, defaultAuthId, defaultOperatorName}));
+        this.rcsbFvContainer.set(await this.pfvFactory.create({modelMap, defaultAuthId, defaultOperatorName}));
     }
 
     public async pfvChangeCallback(): Promise<void>{

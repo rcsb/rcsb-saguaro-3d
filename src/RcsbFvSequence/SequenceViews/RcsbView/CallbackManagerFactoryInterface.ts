@@ -1,40 +1,47 @@
 import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
-import {SaguaroPluginInterface, SaguaroPluginModelMapType} from "../../../RcsbFvStructure/SaguaroPluginInterface";
+import {
+    SaguaroPluginModelMapType,
+    ViewerCallbackManagerInterface, ViewerActionManagerInterface
+} from "../../../RcsbFvStructure/StructureViewerInterface";
 import {DataContainer} from "../../../Utils/DataContainer";
 import {
     RcsbFvModulePublicInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {RcsbFvSelectorManager} from "../../../RcsbFvSelection/RcsbFvSelectorManager";
 import {AssemblyModelSate} from "./AssemblyModelSate";
-import {PfvFactoryInterface} from "./PfvFactoryInterface";
+import {PfvManagerInterface} from "./PfvManagerFactoryInterface";
 
-export interface CallbackManagerInterface {
+export interface CallbackManagerInterface<U> {
     pluginSelectCallback(mode:'select'|'hover'): Promise<void>;
     elementClickCallback(e:RcsbFvTrackDataElementInterface): void;
     highlightHoverCallback(selection: RcsbFvTrackDataElementInterface[]): void;
     selectionChangeCallback(selection: Array<RcsbFvTrackDataElementInterface>): void;
     modelChangeCallback(modelMap:SaguaroPluginModelMapType, defaultAuthId?: string, defaultOperatorName?:string): Promise<void>;
-    pfvChangeCallback(...context: unknown[]): Promise<void>;
+    pfvChangeCallback(args:U): Promise<void>;
 }
 
-export interface CallbackConfigInterface {
+export interface CallbackManagerFactoryInterface<R,U> {
+    getCallbackManager(config: CallbackConfigInterface<R>): CallbackManagerInterface<U>;
+}
+
+export interface CallbackConfigInterface<R> {
     rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
     selectorManager: RcsbFvSelectorManager;
     assemblyModelSate: AssemblyModelSate;
-    plugin: SaguaroPluginInterface;
-    pfvFactory: PfvFactoryInterface;
+    plugin: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
+    pfvFactory: PfvManagerInterface;
 }
 
-export abstract class AbstractCallbackManager implements CallbackManagerInterface {
+export abstract class AbstractCallbackManager<R,U> implements CallbackManagerInterface<U> {
     protected readonly rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
     protected readonly selectorManager: RcsbFvSelectorManager;
     protected readonly assemblyModelSate: AssemblyModelSate;
     protected selectedComponentId: string|undefined;
-    protected readonly plugin: SaguaroPluginInterface;
-    protected pfvFactory: PfvFactoryInterface;
+    protected readonly plugin: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
+    protected pfvFactory: PfvManagerInterface;
     protected readonly isInnerSelection: DataContainer<boolean> = new DataContainer<boolean>();
 
-    constructor(config: CallbackConfigInterface) {
+    constructor(config: CallbackConfigInterface<R>) {
         this.rcsbFvContainer = config.rcsbFvContainer;
         this.selectorManager = config.selectorManager;
         this.assemblyModelSate = config.assemblyModelSate;
@@ -59,7 +66,7 @@ export abstract class AbstractCallbackManager implements CallbackManagerInterfac
     abstract elementClickCallback(e:RcsbFvTrackDataElementInterface): void;
     abstract highlightHoverCallback(selection: RcsbFvTrackDataElementInterface[]): void;
     abstract modelChangeCallback(modelMap:SaguaroPluginModelMapType, defaultAuthId?: string, defaultOperatorName?:string): Promise<void>;
-    abstract pfvChangeCallback(...context: unknown[]): Promise<void>;
+    abstract pfvChangeCallback(args: U): Promise<void>;
     protected abstract innerPluginSelect(mode: "select" | "hover"): Promise<void> ;
     protected abstract innerSelectionChange(selection: Array<RcsbFvTrackDataElementInterface>): void;
 

@@ -1,8 +1,13 @@
 import * as React from "react";
-import {SaguaroPluginInterface} from "../../../../RcsbFvStructure/SaguaroPluginInterface";
+import {
+    StructureViewerInterface
+} from "../../../../RcsbFvStructure/StructureViewerInterface";
 
+type DisplayComponentMethod = (StructureViewerInterface<undefined,[]>)["displayComponent"]
 interface ChainDisplayInterface {
-    plugin: SaguaroPluginInterface;
+    plugin: {
+        displayComponent:DisplayComponentMethod
+    };
     label: string;
 }
 
