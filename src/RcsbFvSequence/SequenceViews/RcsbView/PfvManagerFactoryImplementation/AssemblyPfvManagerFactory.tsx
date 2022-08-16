@@ -154,7 +154,7 @@ class AssemblyPfvManager<R> extends AbstractPfvManager<{instanceSequenceConfig: 
             (await Promise.all(data.annotations.map(async ann=>{
                 if(ann.source == Source.PdbInterface && ann.target_id && data.rcsbContext?.asymId) {
                     const interfaceToInstance: InterfaceInstanceTranslate = await RcsbRequestContextManager.getInterfaceToInstance(ann.target_id);
-                    if(typeof ann.target_identifiers?.interface_partner_index === "number" && ann.target_identifiers.assembly_id === this.assemblyModelSate.getString("assemblyId")) {
+                    if(typeof ann.target_identifiers?.interface_partner_index === "number" && ann.target_identifiers.assembly_id === this.assemblyModelSate.getString("assemblyId") && Array.isArray(interfaceToInstance.getOperatorIds(ann.target_id))) {
                         const operatorIds:string[][] = interfaceToInstance.getOperatorIds(ann.target_id)[ann.target_identifiers.interface_partner_index];
                         if(ann.features && this.assemblyModelSate.getOperator() && operatorIds.map(o=>o.join("|")).includes( this.assemblyModelSate.getOperator()!.ids.join("|") )){
                             ann.features = ann.features.filter(f=>(f && f.type == FeatureType.BurialFraction));
