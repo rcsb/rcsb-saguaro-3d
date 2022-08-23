@@ -1,21 +1,24 @@
 import {RcsbFv3DCustom} from "../../RcsbFv3D/RcsbFv3DCustom";
 import {RcsbFvStructureConfigInterface} from "../../RcsbFvStructure/RcsbFvStructure";
-import {LoadMethod} from "../../RcsbFvStructure/StructureViewers/StructureViewer";
 import {
     CustomViewInterface,
     FeatureBlockInterface
 } from "../../RcsbFvSequence/SequenceViews/CustomView/CustomView";
-import * as React from "react";
 import {RcsbRepresentationPreset} from "./TrajectoryPreset";
 import {PluginStateObject} from "molstar/lib/mol-plugin-state/objects";
 import {fvConfig1, fvConfig2} from "./FeatureViewerConfig";
+import {
+    LoadMethod,
+    LoadMolstarInterface
+} from "../../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarActionManager";
+import {ViewerProps} from "@rcsb/rcsb-molstar/build/src/viewer";
 
-const block: FeatureBlockInterface = {
+const block: FeatureBlockInterface<LoadMolstarInterface> = {
     blockId:"MyBlock_1",
     featureViewConfig: [fvConfig1, fvConfig2]
 };
 
-const customConfig: CustomViewInterface = {
+const customConfig: CustomViewInterface<LoadMolstarInterface> = {
     blockConfig:[block]
 }
 
@@ -25,7 +28,7 @@ const sequenceConfig = {
     config: customConfig
 };
 
-const molstarConfig: RcsbFvStructureConfigInterface = {
+const molstarConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface,{viewerProps:Partial<ViewerProps>}> = {
     loadConfig: [{
         loadMethod: LoadMethod.loadPdbId,
         loadParams: {
@@ -60,8 +63,10 @@ const molstarConfig: RcsbFvStructureConfigInterface = {
         }
     }],
     pluginConfig: {
-        showImportControls: true,
-        showSessionControls: false
+        viewerProps:{
+            showImportControls: true,
+            showSessionControls: false
+        }
     }
 };
 

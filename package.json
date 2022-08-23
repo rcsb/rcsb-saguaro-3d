@@ -1,12 +1,13 @@
 {
   "name": "@rcsb/rcsb-saguaro-3d",
-  "version": "1.5.0-models.6",
+  "version": "1.5.0-models.7",
   "description": "RCSB Molstar/Saguaro Web App",
   "main": "build/dist/app.js",
   "files": [
     "build/dist"
   ],
   "scripts": {
+    "devServer": "webpack-dev-server --config webpack.server.dev.config.js",
     "tsc": "tsc --incremental",
     "build": "webpack --config ./webpack.config.js",
     "buildAll": "npm run cleanAll && npm run tsc && npm run cpStyles && npm run copyConfig && npm run build && npm run buildDoc",
@@ -80,7 +81,7 @@
     "@rcsb/rcsb-api-tools": "^4.1.0-models.1",
     "@rcsb/rcsb-molstar": "^2.5.5",
     "@rcsb/rcsb-saguaro": "^2.1.7",
-    "@rcsb/rcsb-saguaro-app": "^4.4.0-models.34",
+    "@rcsb/rcsb-saguaro-app": "^4.4.0-models.35",
     "molstar": "^3.13.0"
   },
   "bugs": {

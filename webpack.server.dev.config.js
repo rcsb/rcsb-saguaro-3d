@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
 
 const commonConfig = {
     mode: "development",
@@ -38,110 +39,22 @@ const commonConfig = {
     devtool: 'source-map'
 };
 
-const examples = [];
-
-examples.push({
-    ...commonConfig,
-    entry: {
-        'assembly': './src/examples/assembly/index.ts'
-    },
-    plugins: [new HtmlWebpackPlugin({
-        filename:'[name].html',
-        template:'./src/examples/html-template/index.html'
-    })]
-});
-
-examples.push({
-    ...commonConfig,
-    entry: {
-        "assembly-interface": './src/examples/assembly-interface/index.ts'
-    },
-    plugins: [new HtmlWebpackPlugin({
-        filename:'[name].html',
-        template:'./src/examples/html-template/index.html'
-    })]
-});
-
-examples.push({
-    ...commonConfig,
-    entry: {
-        "external-mapping": './src/examples/external-mapping/index.tsx'
-    },
-    plugins: [new HtmlWebpackPlugin({
-        filename:'[name].html',
-        template:'./src/examples/html-template/index.html'
-    })]
-});
-
-examples.push({
-    ...commonConfig,
-    entry: {
-        "single-chain": './src/examples/single-chain/index.tsx'
-    },
-    plugins: [new HtmlWebpackPlugin({
-        filename:'[name].html',
-        template:'./src/examples/html-template/index.html'
-    })]
-});
-
-examples.push({
-    ...commonConfig,
-    entry: {
-        "structural-alignment": './src/examples/structural-alignment/index.tsx'
-    },
-    plugins: [new HtmlWebpackPlugin({
-        filename:'[name].html',
-        template:'./src/examples/html-template/index.html'
-    })]
-});
-
-examples.push({
-    ...commonConfig,
-    entry: {
-        "multiple-chain": './src/examples/structural-alignment/index.tsx'
-    },
-    plugins: [new HtmlWebpackPlugin({
-        filename:'[name].html',
-        template:'./src/examples/html-template/index.html'
-    })]
-});
-
-examples.push({
-    ...commonConfig,
-    entry: {
-        "css-config": './src/examples/css-config/index.tsx'
-    },
-    plugins: [new HtmlWebpackPlugin({
-        filename:'[name].html',
-        template:'./src/examples/html-template/index.html'
-    })]
-});
-
-examples.push({
-    ...commonConfig,
-    entry: {
-        "uniprot": './src/examples/structural-alignment/index.tsx'
-    },
-    plugins: [new HtmlWebpackPlugin({
-        filename:'[name].html',
-        template:'./src/examples/html-template/index.html'
-    })]
-});
+const examples = ['assembly','uniprot','structural-alignment'];
+const entries = examples.reduce((prev,current)=>{prev[current]=`./src/examples/${current}/index.ts`;return prev;},{});
 
 const server = {
     ...commonConfig,
-    entry: {
-        //...examples.map(e=>Object.entries(e.entry)[0]).reduce((prev,curr)=>{prev[curr[0]]=curr[1];return prev;},{})
-        'assembly': './src/examples/assembly/index.ts'
-    },
+    entry: entries,
     devServer: {
         compress: true,
         port: 9000,
     },
-    plugins: [new HtmlWebpackPlugin({
-        filename:'[name].html',
-        template:'./src/examples/html-template/index.html'
-    })]
+    plugins: Object.keys(entries).map(key=>new HtmlWebpackPlugin({
+        filename:`${key}.html`,
+        template:'./src/examples/html-template/index.html',
+        inject: true,
+        chunks:[key]
+    }))
 }
 
 module.exports = [server];

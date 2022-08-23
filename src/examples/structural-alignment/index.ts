@@ -1,12 +1,10 @@
 import {RcsbFv3DCustom, RcsbFv3DCustomInterface} from "../../RcsbFv3D/RcsbFv3DCustom";
 import {RcsbFvStructureConfigInterface} from "../../RcsbFvStructure/RcsbFvStructure";
-import {LoadMethod} from "../../RcsbFvStructure/StructureViewers/StructureViewer";
 import {
     CustomViewInterface,
     FeatureBlockInterface,
     FeatureViewInterface
 } from "../../RcsbFvSequence/SequenceViews/CustomView/CustomView";
-import * as React from "react";
 import {
     RcsbFv,
     RcsbFvDisplayTypes,
@@ -20,6 +18,11 @@ import {
 import {StructureViewerPublicInterface, SaguaroRegionList} from "../../RcsbFvStructure/StructureViewerInterface";
 import {AlignmentManager} from "./AlignmentManager";
 import {Mat4} from "molstar/lib/mol-math/linear-algebra";
+import {
+    LoadMethod,
+    LoadMolstarInterface
+} from "../../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarActionManager";
+import {ViewerProps} from "@rcsb/rcsb-molstar/build/src/viewer";
 
 const sequence_101m: string = "MVLSEGEWQLVLHVWAKVEADVAGHGQDILIRLFKSHPETLEKFDRVKHLKTEAEMKASEDLKKHGVTVLTALGAILKKKGHHEAELKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGNFGADAQGAMNKALELFRKDIAAKYKELGYQG";
 const alignment = [{
@@ -96,18 +99,20 @@ const rowConfig: Array<RcsbFvRowConfigInterface> = [
     }
 ];
 
-const fvConfig: FeatureViewInterface = {
+const fvConfig: FeatureViewInterface<LoadMolstarInterface> = {
     boardId:"1ash_board",
     boardConfig: {
         range: {
             min: 1,
             max: 150
         },
-        rowTitleWidth: 190,
+        disableMenu:true,
+        rowTitleWidth: 70,
+        trackWidth: 530,
         includeAxis: true
     },
     rowConfig: rowConfig,
-    sequenceSelectionChangeCallback: (plugin: StructureViewerPublicInterface, selectorManager: RcsbFvSelectorManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => {
+    sequenceSelectionChangeCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface>, selectorManager: RcsbFvSelectorManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => {
         selectorManager.clearSelection("select", {modelId:"1ash_model", labelAsymId:"A"});
         selectorManager.clearSelection("select", {modelId:"101m_model", labelAsymId:"A"});
         if(sequenceRegion.length > 0) {
@@ -134,7 +139,7 @@ const fvConfig: FeatureViewInterface = {
             plugin.resetCamera();
         }
     },
-    sequenceElementClickCallback: async (plugin: StructureViewerPublicInterface, selectorManager: RcsbFvSelectorManager, d: RcsbFvTrackDataElementInterface) => {
+    sequenceElementClickCallback: async (plugin: StructureViewerPublicInterface<LoadMolstarInterface>, selectorManager: RcsbFvSelectorManager, d: RcsbFvTrackDataElementInterface) => {
         plugin.removeComponent("1ash_component");
         plugin.removeComponent("101m_component");
         if(d.begin === d.end || !d.end){
@@ -142,7 +147,7 @@ const fvConfig: FeatureViewInterface = {
             await plugin.createComponent("101m_component", "101m_model", "A", alignmentManager.getTargetPosition(d.begin)!, alignmentManager.getTargetPosition(d.begin)!, "ball-and-stick");
         }
     },
-    sequenceHoverCallback: (plugin: StructureViewerPublicInterface, selectorManager: RcsbFvSelectorManager, elements: Array<RcsbFvTrackDataElementInterface>) => {
+    sequenceHoverCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface>, selectorManager: RcsbFvSelectorManager, elements: Array<RcsbFvTrackDataElementInterface>) => {
         if (elements == null || elements.length == 0){
             plugin.clearSelection("hover");
         }else {
@@ -162,7 +167,7 @@ const fvConfig: FeatureViewInterface = {
                 ), "hover", "set");
         }
     },
-    structureSelectionCallback: (plugin: StructureViewerPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => {
+    structureSelectionCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface>, pfv: RcsbFv, selection: RcsbFvSelectorManager) => {
         const sel_1ash: SaguaroRegionList | undefined = selection.getSelectionWithCondition("1ash_model", "A", "select");
         const sel_101m: SaguaroRegionList | undefined = selection.getSelectionWithCondition("101m_model", "A", "select");
         pfv.clearSelection("select");
@@ -179,7 +184,7 @@ const fvConfig: FeatureViewInterface = {
                     })), mode: "select"});
         }
     },
-    structureHoverCallback: (plugin: StructureViewerPublicInterface, pfv: RcsbFv, selection: RcsbFvSelectorManager) => {
+    structureHoverCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface>, pfv: RcsbFv, selection: RcsbFvSelectorManager) => {
         const sel_1ash: SaguaroRegionList | undefined = selection.getSelectionWithCondition("1ash_model", "A", "hover");
         const sel_101m: SaguaroRegionList | undefined = selection.getSelectionWithCondition("101m_model", "A", "hover");
         if(sel_1ash == null && sel_101m == null)
@@ -195,22 +200,22 @@ const fvConfig: FeatureViewInterface = {
     }
 }
 
-const block: FeatureBlockInterface = {
+const block: FeatureBlockInterface<LoadMolstarInterface> = {
     blockId:"MyBlock_1",
     featureViewConfig: [fvConfig]
 };
 
-const customConfig: CustomViewInterface = {
+const customConfig: CustomViewInterface<LoadMolstarInterface> = {
     blockConfig:[block]
 }
 
 const sequenceConfig = {
-    title: "Structural alignment example",
-    subtitle: "2 PDB entries and 1 Feature Viewer",
+    title: undefined,
+    subtitle: undefined,
     config: customConfig
 };
 
-const molstarConfig: RcsbFvStructureConfigInterface = {
+const molstarConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface,{viewerProps:Partial<ViewerProps>}> = {
     loadConfig: {
         loadMethod: LoadMethod.loadPdbIds,
         loadParams: [{
@@ -228,8 +233,10 @@ const molstarConfig: RcsbFvStructureConfigInterface = {
         }]
     },
     pluginConfig: {
-        showImportControls: true,
-        showSessionControls: false
+        viewerProps:{
+            showImportControls: true,
+            showSessionControls: false
+        }
     }
 };
 
@@ -238,12 +245,21 @@ const custom3DConfig: RcsbFv3DCustomInterface = {
     structurePanelConfig: molstarConfig,
     sequencePanelConfig: sequenceConfig,
     cssConfig:{
+        overwriteCss:true,
+        rootPanel:{
+            display:"flex",
+            flexDirection:"column-reverse"
+        },
         structurePanel:{
-            minWidth:800,
-            minHeight:800
+            width: 600,
+            height: 600,
+            minWidth: 400,
+            minHeight: 400
         },
         sequencePanel:{
-            minWidth:800
+            minWidth:400,
+            width:600,
+            marginBottom:5
         }
     }
 }

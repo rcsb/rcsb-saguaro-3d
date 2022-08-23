@@ -1,4 +1,4 @@
-import {RcsbFv3DAbstract, RcsbFv3DAbstractInterface} from "./RcsbFv3DAbstract";
+import {RcsbFv3DAbstract} from "./RcsbFv3DAbstract";
 import {
     RcsbFvAdditionalConfig,
     RcsbFvModulePublicInterface
@@ -19,8 +19,11 @@ import {
 import {
     UniprotCallbackManagerFactory
 } from "../RcsbFvSequence/SequenceViews/RcsbView/CallbackManagerFactoryImplementation/UniprotCallbackManager";
+import {RcsbFvStructure} from "../RcsbFvStructure/RcsbFvStructure";
+import {RcsbFv3DCssConfig} from "./RcsbFv3DComponent";
 
-export interface RcsbFv3DUniprotInterface extends RcsbFv3DAbstractInterface<{upAcc:string},LoadMolstarInterface,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>},{context:UniprotSequenceOnchangeInterface,module:RcsbFvModulePublicInterface}> {
+export interface RcsbFv3DUniprotInterface  {
+    elementId?: string;
     config: {
         upAcc: string;
         title?: string;
@@ -28,22 +31,14 @@ export interface RcsbFv3DUniprotInterface extends RcsbFv3DAbstractInterface<{upA
     };
     additionalConfig?:RcsbFvAdditionalConfig;
     molstarProps?: Partial<ViewerProps>;
+    cssConfig?: RcsbFv3DCssConfig;
 }
 
 export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string},LoadMolstarInterface,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>},{context:UniprotSequenceOnchangeInterface,module:RcsbFvModulePublicInterface}> {
     constructor(params:RcsbFv3DUniprotInterface){
+        const elementId: string = params.elementId ?? uniqid("RcsbFv3D_");
         super({
-            elementId:params.elementId ?? "RcsbFv3D_mainDiv_"+uniqid(),
-            structureConfig: {
-                loadConfig: {
-                    loadMethod: LoadMethod.loadPdbId,
-                    loadParams: []
-                },
-                pluginConfig: {
-                    viewerElement: params.elementId,
-                    viewerProps: params.molstarProps ?? {}
-                }
-            },
+            elementId,
             sequenceConfig:{
                 type: "rcsb",
                 config:{
@@ -62,6 +57,16 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string},LoadMolstar
                             }
                         })
                     })
+                }
+            },
+            structureConfig: {
+                loadConfig: {
+                    loadMethod: LoadMethod.loadPdbId,
+                    loadParams: []
+                },
+                pluginConfig: {
+                    viewerElement:RcsbFvStructure.componentId(elementId),
+                    viewerProps: params.molstarProps ?? {}
                 }
             },
             structureViewer: new StructureViewer<LoadMolstarInterface,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}>( new MolstarManagerFactory() ),

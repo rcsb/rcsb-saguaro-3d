@@ -55,7 +55,6 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract<{instanceSequenceConfig?:
                     callbackManagerFactory: new AssemblyCallbackManagerFactory<LoadMolstarInterface>()
                 }
             },
-            structureViewer: new StructureViewer<LoadMolstarInterface,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}>(new MolstarManagerFactory()),
             structureConfig: {
                 loadConfig: {
                     loadMethod: LoadMethod.loadPdbId,
@@ -75,6 +74,7 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract<{instanceSequenceConfig?:
                     viewerProps:params.molstarProps ?? {}
                 }
             },
+            structureViewer: new StructureViewer<LoadMolstarInterface,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}>(new MolstarManagerFactory()),
             cssConfig: params.cssConfig
         });
     }

@@ -35,7 +35,7 @@ export interface StructureViewerInterface<R,S> extends StructureViewerPublicInte
     init: (selection: RcsbFvSelectorManager, args:S) => void;
 }
 
-export interface StructureViewerPublicInterface<T> extends ViewerActionManagerInterface<T>{}
+export interface StructureViewerPublicInterface<R> extends ViewerActionManagerInterface<R>{}
 
 export interface ViewerManagerFactoryInterface<R,S extends {}> {
     getViewerManagerFactory(selection: RcsbFvSelectorManager, args: S): {callbackManager:ViewerCallbackManagerInterface;actionManager:ViewerActionManagerInterface<R>};
