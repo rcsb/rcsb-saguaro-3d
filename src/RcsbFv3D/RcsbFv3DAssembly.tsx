@@ -69,7 +69,7 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract<{instanceSequenceConfig?:
                         }
                     }
                 },
-                pluginConfig: {
+                structureViewerConfig: {
                     viewerElement: RcsbFvStructure.componentId(elementId),
                     viewerProps:params.molstarProps ?? {}
                 }

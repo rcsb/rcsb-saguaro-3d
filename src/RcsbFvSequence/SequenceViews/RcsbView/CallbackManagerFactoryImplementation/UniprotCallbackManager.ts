@@ -12,6 +12,7 @@ import {AlignmentResponse} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Bo
 import {
     UniprotSequenceOnchangeInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvUniprotBuilder";
+import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 
 export class UniprotCallbackManagerFactory<R> implements CallbackManagerFactoryInterface<R,{context: UniprotSequenceOnchangeInterface, module: RcsbFvModulePublicInterface}> {
 
@@ -56,35 +57,13 @@ class UniprotCallbackManager<R>  extends AbstractCallbackManager<R,{context: Uni
             await this.plugin.load(this.loadParamRequest(params.context.entryId));
         }else{
             const alignments: AlignmentResponse = await params.module.getAlignmentResponse();
-            if(alignments.target_alignment && alignments.target_alignment.length > 0){
-                const entryId: string|undefined = alignments.target_alignment[0]!.target_id?.split("_")[0];
+            if(alignments.target_alignment && alignments.target_alignment.length > 0 && typeof alignments.target_alignment[0]?.target_id === "string"){
+                const entryId: string = TagDelimiter.parseEntity(alignments.target_alignment[0]?.target_id).entryId;
                 if(entryId)
                     await this.plugin.load(this.loadParamRequest(entryId));
             }
         }
     }
-
-    /*async pfvChangeCallback(context: UniprotSequenceOnchangeInterface, module: RcsbFvModulePublicInterface): Promise<void> {
-        if(context.entryId) {
-            await this.plugin.load({
-                loadMethod: LoadMethod.loadPdbId,
-                loadParams: {
-                    pdbId: context.entryId
-                }
-            });
-        }else{
-            const alignments: AlignmentResponse = await module.getAlignmentResponse();
-            if(alignments.target_alignment && alignments.target_alignment.length > 0){
-                const entryId: string|undefined = alignments.target_alignment[0]!.target_id?.split("_")[0];
-                await this.plugin.load({
-                    loadMethod: LoadMethod.loadPdbId,
-                    loadParams: {
-                        pdbId: entryId
-                    }
-                });
-            }
-        }
-    }*/
 
     protected innerPluginSelect(mode: "select" | "hover"): Promise<void> {
         return Promise.resolve(undefined);

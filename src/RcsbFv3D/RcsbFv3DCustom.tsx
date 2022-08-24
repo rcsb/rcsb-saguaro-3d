@@ -30,8 +30,8 @@ export class RcsbFv3DCustom extends RcsbFv3DAbstract<{},LoadMolstarInterface,{vi
             elementId: elementId,
             structureConfig: {
                 loadConfig: params.structurePanelConfig.loadConfig,
-                pluginConfig:{
-                    ...params.structurePanelConfig.pluginConfig,
+                structureViewerConfig:{
+                    ...params.structurePanelConfig.structureViewerConfig,
                     viewerElement:RcsbFvStructure.componentId(elementId),
                 }
             },

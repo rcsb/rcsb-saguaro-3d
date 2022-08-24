@@ -138,7 +138,7 @@ const molstarConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface,{viewer
             id:"1ash_model"
         }]
     },
-    pluginConfig: {
+    structureViewerConfig: {
         viewerProps:{
             showImportControls: true,
             showSessionControls: false

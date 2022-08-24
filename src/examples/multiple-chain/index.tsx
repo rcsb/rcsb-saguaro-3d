@@ -252,7 +252,7 @@ const molstarConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface,{viewer
             id:"1acb_board"
         }]
     },
-    pluginConfig: {
+    structureViewerConfig: {
         viewerProps:{
             showImportControls: true,
             showSessionControls: false

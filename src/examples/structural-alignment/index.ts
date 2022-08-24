@@ -232,7 +232,7 @@ const molstarConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface,{viewer
             ])
         }]
     },
-    pluginConfig: {
+    structureViewerConfig: {
         viewerProps:{
             showImportControls: true,
             showSessionControls: false

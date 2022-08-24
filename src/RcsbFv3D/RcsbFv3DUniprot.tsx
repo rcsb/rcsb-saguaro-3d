@@ -15,7 +15,7 @@ import {StructureViewer} from "../RcsbFvStructure/StructureViewers/StructureView
 import {MolstarManagerFactory} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarManagerFactory";
 import {
     UniprotPfvManagerFactory
-} from "../RcsbFvSequence/SequenceViews/RcsbView/PfvManagerFactoryImplementation/UniprotPfvFactory";
+} from "../RcsbFvSequence/SequenceViews/RcsbView/PfvManagerFactoryImplementation/UniprotPfvManagerFactory";
 import {
     UniprotCallbackManagerFactory
 } from "../RcsbFvSequence/SequenceViews/RcsbView/CallbackManagerFactoryImplementation/UniprotCallbackManager";
@@ -34,7 +34,7 @@ export interface RcsbFv3DUniprotInterface  {
     cssConfig?: RcsbFv3DCssConfig;
 }
 
-export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string},LoadMolstarInterface,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>},{context:UniprotSequenceOnchangeInterface,module:RcsbFvModulePublicInterface}> {
+export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string},LoadMolstarInterface|undefined,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>},{context:UniprotSequenceOnchangeInterface,module:RcsbFvModulePublicInterface}> {
     constructor(params:RcsbFv3DUniprotInterface){
         const elementId: string = params.elementId ?? uniqid("RcsbFv3D_");
         super({
@@ -60,11 +60,8 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string},LoadMolstar
                 }
             },
             structureConfig: {
-                loadConfig: {
-                    loadMethod: LoadMethod.loadPdbId,
-                    loadParams: []
-                },
-                pluginConfig: {
+                loadConfig: undefined,
+                structureViewerConfig: {
                     viewerElement:RcsbFvStructure.componentId(elementId),
                     viewerProps: params.molstarProps ?? {}
                 }

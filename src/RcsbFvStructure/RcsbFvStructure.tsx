@@ -5,10 +5,10 @@ import {RcsbFvSelectorManager} from "../RcsbFvSelection/RcsbFvSelectorManager";
 
 export interface RcsbFvStructureConfigInterface<R,S> {
     loadConfig: R | Array<R>;
-    pluginConfig: S;
+    structureViewerConfig: S;
 }
 
-export class RcsbFvStructure<R,S> extends React.Component <RcsbFvStructureConfigInterface<R,S> & {plugin: StructureViewerInterface<R,S>, componentId: string, selectorManager: RcsbFvSelectorManager}, RcsbFvStructureConfigInterface<R,S> > {
+export class RcsbFvStructure<R,S> extends React.Component <RcsbFvStructureConfigInterface<R,S> & {structureViewer: StructureViewerInterface<R,S>, componentId: string, selectorManager: RcsbFvSelectorManager}, RcsbFvStructureConfigInterface<R,S> > {
 
     render():JSX.Element {
         return (
@@ -20,9 +20,9 @@ export class RcsbFvStructure<R,S> extends React.Component <RcsbFvStructureConfig
 
     async componentDidMount() {
         this.updateDimensions();
-        this.props.plugin.init(this.props.selectorManager, this.props.pluginConfig);
+        this.props.structureViewer.init(this.props.selectorManager, this.props.structureViewerConfig);
         if(this.props.loadConfig)
-            await this.props.plugin.load(this.props.loadConfig);
+            await this.props.structureViewer.load(this.props.loadConfig);
         window.addEventListener('resize', this.updateDimensions.bind(this));
     }
 

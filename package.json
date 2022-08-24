@@ -80,8 +80,8 @@
   "dependencies": {
     "@rcsb/rcsb-api-tools": "^4.1.0-models.1",
     "@rcsb/rcsb-molstar": "^2.5.5",
-    "@rcsb/rcsb-saguaro": "^2.1.7",
-    "@rcsb/rcsb-saguaro-app": "^4.4.0-models.35",
+    "@rcsb/rcsb-saguaro": "^2.2.1",
+    "@rcsb/rcsb-saguaro-app": "^4.4.0-models.37",
     "molstar": "^3.13.0"
   },
   "bugs": {

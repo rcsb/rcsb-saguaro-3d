@@ -21,8 +21,8 @@ interface CallbackConfig {
     sequenceCallback?: (rcsbFv: RcsbFv)=>void;
 }
 
-type PluginType<R> = ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
-export class RcsbFvSequence<T,R,U> extends React.Component <RcsbFvSequenceInterface<T,R,U> & CallbackConfig & {unmount:(flag:boolean)=>void, plugin: PluginType<R>, selectorManager:RcsbFvSelectorManager, componentId:string}, RcsbFvSequenceInterface<T,R,U> > {
+type StructureViewerType<R> = ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
+export class RcsbFvSequence<T,R,U> extends React.Component <RcsbFvSequenceInterface<T,R,U> & CallbackConfig & {unmount:(flag:boolean)=>void, structureViewer: StructureViewerType<R>, selectorManager:RcsbFvSelectorManager, componentId:string}, RcsbFvSequenceInterface<T,R,U> > {
 
     render() {
         if(this.props.type == "custom"){
@@ -30,7 +30,7 @@ export class RcsbFvSequence<T,R,U> extends React.Component <RcsbFvSequenceInterf
             return (<CustomView<R>
                 {...config}
                 componentId={this.props.componentId}
-                plugin={this.props.plugin}
+                structureViewer={this.props.structureViewer}
                 selectorManager={this.props.selectorManager}
                 title={this.props.title}
                 subtitle={this.props.subtitle}
@@ -41,7 +41,7 @@ export class RcsbFvSequence<T,R,U> extends React.Component <RcsbFvSequenceInterf
             return (<RcsbView<T,R,U>
                 {...config}
                 componentId={this.props.componentId}
-                plugin={this.props.plugin}
+                structureViewer={this.props.structureViewer}
                 selectorManager={this.props.selectorManager}
                 title={this.props.title}
                 subtitle={this.props.subtitle}

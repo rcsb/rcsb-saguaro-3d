@@ -5,7 +5,7 @@ import {
 
 type DisplayComponentMethod = (StructureViewerInterface<undefined,[]>)["displayComponent"]
 interface ChainDisplayInterface {
-    plugin: {
+    structureViewer: {
         displayComponent:DisplayComponentMethod
     };
     label: string;
@@ -18,15 +18,15 @@ interface ChainDisplayState {
 export class ChainDisplay extends React.Component<ChainDisplayInterface, ChainDisplayState>{
 
     readonly state: ChainDisplayState = {
-        display: this.props.plugin.displayComponent(this.props.label) ? 'visible' : 'hidden'
+        display: this.props.structureViewer.displayComponent(this.props.label) ? 'visible' : 'hidden'
     };
 
     private changeDisplay(): void{
         if(this.state.display === 'visible') {
-            this.props.plugin.displayComponent(this.props.label, false);
+            this.props.structureViewer.displayComponent(this.props.label, false);
             this.setState({display: 'hidden'});
         }else{
-            this.props.plugin.displayComponent(this.props.label, true);
+            this.props.structureViewer.displayComponent(this.props.label, true);
             this.setState({display: 'visible'});
         }
     }

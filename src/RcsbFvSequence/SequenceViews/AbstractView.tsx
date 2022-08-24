@@ -14,7 +14,7 @@ export interface AbstractViewInterface<R> {
     componentId: string;
     title?: string;
     subtitle?: string;
-    plugin: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
+    structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
     selectorManager: RcsbFvSelectorManager;
     unmount:(flag:boolean,callback:()=>void)=>void;
 }
@@ -45,15 +45,15 @@ export abstract class AbstractView<P,S,R> extends React.Component <P & AbstractV
     }
 
     componentDidMount() {
-        this.props.plugin.setSelectCallback(this.structureSelectionCallback.bind(this));
-        this.props.plugin.setModelChangeCallback(this.modelChangeCallback.bind(this));
-        this.props.plugin.setHoverCallback(this.structureHoverCallback.bind(this));
-        this.props.plugin.setRepresentationChangeCallback(this.representationChangeCallback.bind(this));
+        this.props.structureViewer.setSelectCallback(this.structureSelectionCallback.bind(this));
+        this.props.structureViewer.setModelChangeCallback(this.modelChangeCallback.bind(this));
+        this.props.structureViewer.setHoverCallback(this.structureHoverCallback.bind(this));
+        this.props.structureViewer.setRepresentationChangeCallback(this.representationChangeCallback.bind(this));
         window.addEventListener('resize', this.resizeCallback);
     }
 
     componentWillUnmount() {
-        this.props.plugin.unsetCallbacks();
+        this.props.structureViewer.unsetCallbacks();
         window.removeEventListener('resize', this.resizeCallback);
     }
 

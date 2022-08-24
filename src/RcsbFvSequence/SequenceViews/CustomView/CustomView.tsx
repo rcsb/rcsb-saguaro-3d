@@ -128,7 +128,7 @@ export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomVi
         this.buildBlockFv();
         asyncScheduler.schedule(()=>{
             if(typeof this.state.blockChangeCallback === "function")
-                this.state.blockChangeCallback(this.props.plugin, Array.from(this.blockMap.get(this.blockViewSelector.getActiveBlock())!.values()).map(boardId=>(this.rcsbFvMap.get(boardId)!)), this.props.selectorManager);
+                this.state.blockChangeCallback(this.props.structureViewer, Array.from(this.blockMap.get(this.blockViewSelector.getActiveBlock())!.values()).map(boardId=>(this.rcsbFvMap.get(boardId)!)), this.props.selectorManager);
             else
                 this.structureSelectionCallback();
         },1000);
@@ -142,7 +142,7 @@ export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomVi
             document.getElementById("boardDiv_"+boardId)?.remove()
         });
         this.rcsbFvMap.clear();
-        this.props.plugin.unsetCallbacks();
+        this.props.structureViewer.unsetCallbacks();
     }
 
     private buildBlockFv(){
@@ -164,20 +164,20 @@ export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomVi
                     selectionChangeCallBack:(selection: RcsbFvTrackDataElementInterface[])=>{
                         if(this.innerSelectionFlag)
                             return;
-                        this.boardMap.get(boardId)!.sequenceSelectionChangeCallback(this.props.plugin, this.props.selectorManager, selection);
+                        this.boardMap.get(boardId)!.sequenceSelectionChangeCallback(this.props.structureViewer, this.props.selectorManager, selection);
                     },
                     highlightHoverCallback:(elements:Array<RcsbFvTrackDataElementInterface>)=>{
-                        this.boardMap.get(boardId)!.sequenceHoverCallback(this.props.plugin, this.props.selectorManager, elements);
+                        this.boardMap.get(boardId)!.sequenceHoverCallback(this.props.structureViewer, this.props.selectorManager, elements);
                     },
                     elementClickCallBack: (element: RcsbFvTrackDataElementInterface)=>{
-                        this.boardMap.get(boardId)!.sequenceElementClickCallback(this.props.plugin, this.props.selectorManager, element);
+                        this.boardMap.get(boardId)!.sequenceElementClickCallback(this.props.structureViewer, this.props.selectorManager, element);
                     }
                 },
                 rowConfigData: this.boardMap.get(boardId)!.rowConfig
             });
             this.rcsbFvMap.set(boardId, rcsbFv);
         });
-        this.props.plugin.setSelectCallback(()=>{
+        this.props.structureViewer.setSelectCallback(()=>{
            this.structureSelectionCallback();
         });
     }
@@ -188,7 +188,7 @@ export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomVi
             const pfv: RcsbFv | undefined = this.rcsbFvMap.get(boardId);
             if(pfv == null)
                 return;
-            this.boardMap.get(boardId)?.structureSelectionCallback(this.props.plugin, pfv, this.props.selectorManager);
+            this.boardMap.get(boardId)?.structureSelectionCallback(this.props.structureViewer, pfv, this.props.selectorManager);
         });
         this.innerSelectionFlag = false;
     }
@@ -198,7 +198,7 @@ export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomVi
             const pfv: RcsbFv | undefined = this.rcsbFvMap.get(boardId);
             if(pfv == null)
                 return;
-            this.boardMap.get(boardId)?.structureHoverCallback(this.props.plugin, pfv, this.props.selectorManager);
+            this.boardMap.get(boardId)?.structureHoverCallback(this.props.structureViewer, pfv, this.props.selectorManager);
         });
     }
 

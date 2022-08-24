@@ -46,6 +46,7 @@ class UniprotPfvManager<R> extends AbstractPfvManager<{upAcc:string},R,{context:
             this.additionalConfig
         );
         const module: RcsbFvModulePublicInterface = await this.module;
+        console.log(module);
         this.rcsbFvContainer.set(module);
         return module;
     }

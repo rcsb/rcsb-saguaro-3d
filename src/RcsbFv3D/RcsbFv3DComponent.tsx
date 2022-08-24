@@ -68,7 +68,7 @@ export class RcsbFv3DComponent<T,R,S,U> extends React.Component <RcsbFv3DCompone
                         <RcsbFvStructure<R,S>
                             {...this.state.structurePanelConfig}
                             componentId={this.props.id}
-                            plugin={this.props.structureViewer}
+                            structureViewer={this.props.structureViewer}
                             selectorManager={this.selectorManager}
                         />
                     </div>
@@ -77,7 +77,7 @@ export class RcsbFv3DComponent<T,R,S,U> extends React.Component <RcsbFv3DCompone
                             type={this.state.sequencePanelConfig.type}
                             config={this.state.sequencePanelConfig.config}
                             componentId={this.props.id}
-                            plugin={this.props.structureViewer}
+                            structureViewer={this.props.structureViewer}
                             selectorManager={this.selectorManager}
                             title={this.state.sequencePanelConfig.title}
                             subtitle={this.state.sequencePanelConfig.subtitle}

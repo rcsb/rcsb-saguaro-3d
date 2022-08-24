@@ -102,7 +102,7 @@ class AssemblyPfvManager<R> extends AbstractPfvManager<{instanceSequenceConfig: 
                     filterInstances: assemblyInstances.get(this.assemblyModelSate.getString("entryId")),
                     selectButtonOptionProps: (props: SelectOptionProps) => (
                         <div style={{display: 'flex'}}>
-                            <ChainDisplay plugin={this.plugin} label={props.data.label}/>
+                            <ChainDisplay structureViewer={this.plugin} label={props.data.label}/>
                             {props.children}
                         </div>)
                 },
