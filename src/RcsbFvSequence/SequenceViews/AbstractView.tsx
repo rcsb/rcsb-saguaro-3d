@@ -4,7 +4,6 @@ import {asyncScheduler, Subscription} from "rxjs";
 
 import {RcsbFvDOMConstants} from "../../RcsbFvConstants/RcsbFvConstants";
 import {
-    StructureViewerInterface,
     SaguaroPluginModelMapType, ViewerCallbackManagerInterface, ViewerActionManagerInterface
 } from "../../RcsbFvStructure/StructureViewerInterface";
 import {RcsbFvSelectorManager} from "../../RcsbFvSelection/RcsbFvSelectorManager";
@@ -25,7 +24,7 @@ export abstract class AbstractView<P,S,R> extends React.Component <P & AbstractV
     protected readonly rcsbFvDivId: string;
     private updateDimTask: Subscription | null = null;
 
-    constructor(props:P & AbstractViewInterface<R>) {
+    protected constructor(props:P & AbstractViewInterface<R>) {
         super(props);
         this.componentDivId = props.componentId+"_"+RcsbFvDOMConstants.PFV_DIV;
         this.rcsbFvDivId = props.componentId+"_"+RcsbFvDOMConstants.PFV_APP_ID;
@@ -77,11 +76,11 @@ export abstract class AbstractView<P,S,R> extends React.Component <P & AbstractV
         return null;
     }
 
-    abstract structureSelectionCallback(): void;
+    abstract additionalContent(): JSX.Element | null;
+    abstract updateDimensions(): void;
     abstract structureHoverCallback(): void;
     abstract representationChangeCallback(): void;
+    abstract structureSelectionCallback(): void;
     abstract modelChangeCallback(modelMap:SaguaroPluginModelMapType): void;
-    abstract updateDimensions(): void;
-    abstract additionalContent(): JSX.Element | null;
 
 }

@@ -48,15 +48,8 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string},LoadMolstar
                         upAcc:params.config.upAcc
                     },
                     buildPfvOnMount: true,
-                    pfvManagerFactory: new UniprotPfvManagerFactory<LoadMolstarInterface>(),
-                    callbackManagerFactory: new UniprotCallbackManagerFactory<LoadMolstarInterface>({
-                        pluginLoadParamsCollector:(pdbId:string)=>({
-                            loadMethod: LoadMethod.loadPdbId,
-                            loadParams:{
-                                pdbId
-                            }
-                        })
-                    })
+                    pfvManagerFactory: new UniprotPfvManagerFactory<LoadMolstarInterface>({pluginLoadParamsDefinition}),
+                    callbackManagerFactory: new UniprotCallbackManagerFactory<LoadMolstarInterface>({pluginLoadParamsDefinition})
                 }
             },
             structureConfig: {
@@ -71,3 +64,10 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string},LoadMolstar
     }
 
 }
+
+const pluginLoadParamsDefinition = (pdbId:string)=>({
+    loadMethod: LoadMethod.loadPdbId,
+    loadParams:{
+        pdbId
+    }
+})

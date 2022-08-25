@@ -6,27 +6,22 @@ import {
 import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {SaguaroPluginModelMapType} from "../../../../RcsbFvStructure/StructureViewerInterface";
 import {
-    RcsbFvModulePublicInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
-import {AlignmentResponse} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
-import {
     UniprotSequenceOnchangeInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvUniprotBuilder";
-import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 
-export class UniprotCallbackManagerFactory<R> implements CallbackManagerFactoryInterface<R,{context: UniprotSequenceOnchangeInterface, module: RcsbFvModulePublicInterface}> {
+export class UniprotCallbackManagerFactory<R> implements CallbackManagerFactoryInterface<R,{context: UniprotSequenceOnchangeInterface;}> {
 
-    private readonly pluginLoadParamsCollector:(id: string)=>R;
-    constructor(config: {pluginLoadParamsCollector:(id: string)=>R}) {
-        this.pluginLoadParamsCollector = config.pluginLoadParamsCollector;
+    private readonly pluginLoadParamsDefinition:(id: string)=>R;
+    constructor(config: {pluginLoadParamsDefinition:(id: string)=>R}) {
+        this.pluginLoadParamsDefinition = config.pluginLoadParamsDefinition;
     }
 
-    getCallbackManager(config: CallbackConfigInterface<R>): CallbackManagerInterface<{ context: UniprotSequenceOnchangeInterface; module: RcsbFvModulePublicInterface }> {
-        return new UniprotCallbackManager( {...config, loadParamRequest:this.pluginLoadParamsCollector});
+    getCallbackManager(config: CallbackConfigInterface<R>): CallbackManagerInterface<{context: UniprotSequenceOnchangeInterface;}> {
+        return new UniprotCallbackManager( {...config, loadParamRequest:this.pluginLoadParamsDefinition});
     }
 }
 
-class UniprotCallbackManager<R>  extends AbstractCallbackManager<R,{context: UniprotSequenceOnchangeInterface, module: RcsbFvModulePublicInterface}>{
+class UniprotCallbackManager<R>  extends AbstractCallbackManager<R,{context: UniprotSequenceOnchangeInterface;}>{
 
     private readonly loadParamRequest:(id: string)=>R;
 
@@ -45,24 +40,10 @@ class UniprotCallbackManager<R>  extends AbstractCallbackManager<R,{context: Uni
         return Promise.resolve(undefined);
     }
 
-    pluginSelectCallback(mode: "select" | "hover"): Promise<void> {
+    async pfvChangeCallback(params:{context: UniprotSequenceOnchangeInterface;}): Promise<void> {
+        if(typeof this.rcsbFvContainer.get() === "undefined")
+            return;
         return Promise.resolve(undefined);
-    }
-
-    selectionChangeCallback(selection: Array<RcsbFvTrackDataElementInterface>): void {
-    }
-
-    async pfvChangeCallback(params:{context: UniprotSequenceOnchangeInterface, module: RcsbFvModulePublicInterface}): Promise<void> {
-        if(params.context.entryId) {
-            await this.plugin.load(this.loadParamRequest(params.context.entryId));
-        }else{
-            const alignments: AlignmentResponse = await params.module.getAlignmentResponse();
-            if(alignments.target_alignment && alignments.target_alignment.length > 0 && typeof alignments.target_alignment[0]?.target_id === "string"){
-                const entryId: string = TagDelimiter.parseEntity(alignments.target_alignment[0]?.target_id).entryId;
-                if(entryId)
-                    await this.plugin.load(this.loadParamRequest(entryId));
-            }
-        }
     }
 
     protected innerPluginSelect(mode: "select" | "hover"): Promise<void> {

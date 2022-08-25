@@ -130,7 +130,7 @@ class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
         }else if( mode === 'select' && lastSel?.labelAsymId && (lastSel?.labelAsymId != labelAsymId || lastSel?.operatorName != operatorName) ){
             const authId: string | undefined = this.assemblyModelSate.getChainInfo(lastSel?.labelAsymId!)?.auth;
             await this.modelChangeCallback(this.assemblyModelSate.getMap(), authId, lastSel?.operatorName);
-        }else{
+        }else if(modelId && labelAsymId){
             const sel: SaguaroRegionList | undefined = this.selectorManager.getSelectionWithCondition(
                 modelId,
                 labelAsymId,

@@ -3,7 +3,6 @@ import * as React from "react";
 import {RcsbFvDOMConstants} from "../../../RcsbFvConstants/RcsbFvConstants";
 import {unmount} from "@rcsb/rcsb-saguaro-app";
 import {AbstractView, AbstractViewInterface} from "../AbstractView";
-import {InstanceSequenceConfig} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
 import {RcsbFvBoardConfigInterface, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {OperatorInfo, SaguaroPluginModelMapType} from "../../../RcsbFvStructure/StructureViewerInterface";
 import {RcsbFvAdditionalConfig, RcsbFvModulePublicInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";

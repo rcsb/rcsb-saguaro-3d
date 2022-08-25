@@ -63,10 +63,10 @@ export abstract class AbstractCallbackManager<R,U> implements CallbackManagerInt
         this.innerSelectionChange(selection);
     }
 
-    abstract elementClickCallback(e:RcsbFvTrackDataElementInterface): void;
-    abstract highlightHoverCallback(selection: RcsbFvTrackDataElementInterface[]): void;
-    abstract modelChangeCallback(modelMap:SaguaroPluginModelMapType, defaultAuthId?: string, defaultOperatorName?:string): Promise<void>;
-    abstract pfvChangeCallback(args: U): Promise<void>;
+    public abstract elementClickCallback(e:RcsbFvTrackDataElementInterface): void;
+    public abstract highlightHoverCallback(selection: RcsbFvTrackDataElementInterface[]): void;
+    public abstract modelChangeCallback(modelMap:SaguaroPluginModelMapType, defaultAuthId?: string, defaultOperatorName?:string): Promise<void>;
+    public abstract pfvChangeCallback(args: U): Promise<void>;
     protected abstract innerPluginSelect(mode: "select" | "hover"): Promise<void> ;
     protected abstract innerSelectionChange(selection: Array<RcsbFvTrackDataElementInterface>): void;
 
