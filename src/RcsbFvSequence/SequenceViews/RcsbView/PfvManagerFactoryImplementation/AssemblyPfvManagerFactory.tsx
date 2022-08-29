@@ -145,6 +145,8 @@ class AssemblyPfvManager<R> extends AbstractPfvManager<{instanceSequenceConfig: 
                     dropdownTitle:this.OPERATOR_DROPDOWN_TITLE
                 }
             );
+        }else{
+            RcsbFvUI.clearSelectButton(this.rcsbFvDivId,RcsbFvDOMConstants.SELECT_BUTTON_PFV_ID);
         }
     }
 

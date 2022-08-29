@@ -37,6 +37,7 @@ class UniprotCallbackManager<R>  extends AbstractCallbackManager<R,{context: Uni
     }
 
     modelChangeCallback(modelMap: SaguaroPluginModelMapType, defaultAuthId?: string, defaultOperatorName?: string): Promise<void> {
+        this.assemblyModelSate.setMap(modelMap);
         return Promise.resolve(undefined);
     }
 
