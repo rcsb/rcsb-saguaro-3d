@@ -16,6 +16,12 @@ import {
     AlignmentRequestContextType
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvFactories/RcsbFvTrackFactory/TrackFactoryImpl/AlignmentTrackFactory";
 import {AlignmentResponse, TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {StructureLoaderInterface} from "../../../../RcsbFvStructure/StructureUtils/StructureLoaderInterface";
+import {
+    ViewerActionManagerInterface,
+    ViewerCallbackManagerInterface
+} from "../../../../RcsbFvStructure/StructureViewerInterface";
+import {UniprotRowMarkComponent} from "./UniprotPfvManagerFactory/UniprotRowMarkComponent";
 
 interface UniprotPfvManagerInterface<R> extends PfvManagerFactoryConfigInterface<R,{context: UniprotSequenceOnchangeInterface;}> {
     upAcc:string;
@@ -23,26 +29,36 @@ interface UniprotPfvManagerInterface<R> extends PfvManagerFactoryConfigInterface
 
 export class UniprotPfvManagerFactory<R> implements PfvManagerFactoryInterface<{upAcc:string},R,{context: UniprotSequenceOnchangeInterface;}> {
 
-    private readonly pluginLoadParamsDefinition:(id: string)=>R;
-    constructor(config: {pluginLoadParamsDefinition:(id: string)=>R}) {
-        this.pluginLoadParamsDefinition = config.pluginLoadParamsDefinition;
+    private readonly structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;},{entryId:string;entityId:string;}]>;
+
+    constructor(config: {
+        structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;},{entryId:string;entityId:string;}]>
+    }) {
+        this.structureLoader = config.structureLoader;
     }
 
     getPfvManager(config: UniprotPfvManagerInterface<R>): PfvManagerInterface {
-        return new UniprotPfvManager({...config, loadParamRequest:this.pluginLoadParamsDefinition});
+        return new UniprotPfvManager({
+            ...config,
+            structureLoader:this.structureLoader
+        });
     }
 }
 
 class UniprotPfvManager<R> extends AbstractPfvManager<{upAcc:string},R,{context: UniprotSequenceOnchangeInterface;}>{
 
     private readonly upAcc:string;
-    private readonly loadParamRequest:(id: string)=>R;
-    private module:RcsbFvModulePublicInterface;
+    private readonly structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;},{entryId:string;entityId:string;}]>;
 
-    constructor(config:UniprotPfvManagerInterface<R> & {loadParamRequest:(id: string)=>R}) {
+    private module:RcsbFvModulePublicInterface;
+    private structureRef: {entryId:string;entityId:string;};
+
+    constructor(config:UniprotPfvManagerInterface<R> & {
+        structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;},{entryId:string;entityId:string;}]>
+    }) {
         super(config);
         this.upAcc = config.upAcc;
-        this.loadParamRequest = config.loadParamRequest;
+        this.structureLoader = config.structureLoader;
     }
 
     async create(): Promise<RcsbFvModulePublicInterface | undefined> {
@@ -60,7 +76,8 @@ class UniprotPfvManager<R> extends AbstractPfvManager<{upAcc:string},R,{context:
                     alignment: (alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment) => new Promise((resolve)=>{
                         resolve({
                             rowMark:{
-                                clickCallback: ()=>{
+                                externalComponent: UniprotRowMarkComponent,
+                                clickCallback:()=>{
                                     this.loadAlignment(alignmentContext,targetAlignment);
                                 }
                             }
@@ -77,13 +94,15 @@ class UniprotPfvManager<R> extends AbstractPfvManager<{upAcc:string},R,{context:
     private async readyStateLoad(): Promise<void> {
         const alignments: AlignmentResponse = await this.module.getAlignmentResponse();
         if(alignments.target_alignment && alignments.target_alignment.length > 0 && typeof alignments.target_alignment[0]?.target_id === "string"){
+            this.structureRef = TagDelimiter.parseEntity(alignments.target_alignment[0]?.target_id);
             await this.loadAlignment({queryId:this.upAcc}, alignments.target_alignment[0]);
         }
     }
 
     private async loadAlignment(alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment): Promise<void> {
-        if(typeof targetAlignment.target_id === "string")
-            await this.plugin.load( this.loadParamRequest(TagDelimiter.parseEntity(targetAlignment.target_id).entryId) )
+        if(typeof targetAlignment.target_id === "string") {
+            await this.structureLoader.load(this.plugin,this.structureRef,TagDelimiter.parseEntity(targetAlignment.target_id));
+        }
     }
 
 }

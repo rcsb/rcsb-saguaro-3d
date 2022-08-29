@@ -20,7 +20,6 @@ import {Viewer} from "@rcsb/rcsb-molstar/build/src/viewer";
 import {Subscription} from "rxjs";
 import {RcsbFvSelectorManager} from "../../../RcsbFvSelection/RcsbFvSelectorManager";
 import {DataContainer, DataContainerReader} from "../../../Utils/DataContainer";
-import {MolstarModelMapManager} from "./MolstarModelMapManager";
 
 
 export class MolstarCallbackManager implements ViewerCallbackManagerInterface{

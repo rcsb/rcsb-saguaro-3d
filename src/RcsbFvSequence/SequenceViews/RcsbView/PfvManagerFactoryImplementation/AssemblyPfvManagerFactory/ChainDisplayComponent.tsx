@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
     StructureViewerInterface
-} from "../../../../RcsbFvStructure/StructureViewerInterface";
+} from "../../../../../RcsbFvStructure/StructureViewerInterface";
 
 type DisplayComponentMethod = (StructureViewerInterface<undefined,[]>)["displayComponent"]
 interface ChainDisplayInterface {
@@ -15,7 +15,7 @@ interface ChainDisplayState {
     display: 'visible' | 'hidden';
 }
 
-export class ChainDisplay extends React.Component<ChainDisplayInterface, ChainDisplayState>{
+export class ChainDisplayComponent extends React.Component<ChainDisplayInterface, ChainDisplayState>{
 
     readonly state: ChainDisplayState = {
         display: this.props.structureViewer.displayComponent(this.props.label) ? 'visible' : 'hidden'

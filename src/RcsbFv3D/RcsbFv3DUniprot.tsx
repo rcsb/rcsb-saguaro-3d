@@ -21,6 +21,7 @@ import {
 } from "../RcsbFvSequence/SequenceViews/RcsbView/CallbackManagerFactoryImplementation/UniprotCallbackManager";
 import {RcsbFvStructure} from "../RcsbFvStructure/RcsbFvStructure";
 import {RcsbFv3DCssConfig} from "./RcsbFv3DComponent";
+import {MolstarAlignmentLoader} from "../RcsbFvStructure/StructureUtils/MolstarAlignmentLoader";
 
 export interface RcsbFv3DUniprotInterface  {
     elementId?: string;
@@ -48,7 +49,9 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string},LoadMolstar
                         upAcc:params.config.upAcc
                     },
                     buildPfvOnMount: true,
-                    pfvManagerFactory: new UniprotPfvManagerFactory<LoadMolstarInterface>({pluginLoadParamsDefinition}),
+                    pfvManagerFactory: new UniprotPfvManagerFactory<LoadMolstarInterface>({
+                        structureLoader: new MolstarAlignmentLoader()
+                    }),
                     callbackManagerFactory: new UniprotCallbackManagerFactory<LoadMolstarInterface>({pluginLoadParamsDefinition})
                 }
             },
