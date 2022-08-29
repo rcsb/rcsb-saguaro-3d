@@ -3,18 +3,19 @@ import {
     RcsbFvAdditionalConfig,
     RcsbFvModulePublicInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
-import {RcsbFvSelectorManager} from "../../../RcsbFvSelection/RcsbFvSelectorManager";
-import {AssemblyModelSate} from "./AssemblyModelSate";
+import {RcsbFvSelectorManager} from "../../../RcsbFvState/RcsbFvSelectorManager";
+import {AssemblyModelSate} from "../../../RcsbFvState/AssemblyModelSate";
 import {
     OperatorInfo,
     SaguaroPluginModelMapType, ViewerCallbackManagerInterface, ViewerActionManagerInterface
 } from "../../../RcsbFvStructure/StructureViewerInterface";
 import {RcsbFvBoardConfigInterface} from "@rcsb/rcsb-saguaro";
+import {RcsbFvStateManager} from "../../../RcsbFvState/RcsbFvStateManager";
 
 export interface PfvManagerFactoryConfigInterface<R,U> {
     rcsbFvDivId: string;
     rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
-    selectorManager: RcsbFvSelectorManager;
+    stateManager: RcsbFvStateManager;
     assemblyModelSate: AssemblyModelSate;
     plugin: ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>;
     boardConfigContainer: DataContainer<Partial<RcsbFvBoardConfigInterface>>;
@@ -40,7 +41,7 @@ export abstract class AbstractPfvManager<T,R,U> implements PfvManagerInterface {
 
     protected readonly rcsbFvDivId: string;
     protected readonly rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
-    protected readonly selectorManager: RcsbFvSelectorManager;
+    protected readonly stateManager: RcsbFvStateManager;
     protected readonly assemblyModelSate: AssemblyModelSate;
     protected readonly plugin: ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>;
     protected readonly boardConfigContainer: DataContainer<Partial<RcsbFvBoardConfigInterface>>;
@@ -50,7 +51,7 @@ export abstract class AbstractPfvManager<T,R,U> implements PfvManagerInterface {
     protected constructor(config:T & PfvManagerFactoryConfigInterface<R,U>){
         this.rcsbFvDivId = config.rcsbFvDivId;
         this.rcsbFvContainer = config.rcsbFvContainer;
-        this.selectorManager = config.selectorManager;
+        this.stateManager = config.stateManager;
         this.assemblyModelSate = config.assemblyModelSate;
         this.plugin = config.plugin;
         this.additionalConfig = config.additionalConfig;

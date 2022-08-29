@@ -8,11 +8,12 @@ import {
     RcsbFvTrackDataElementInterface
 } from "@rcsb/rcsb-saguaro";
 import * as React from "react";
-import {RcsbFvSelectorManager} from "../../../RcsbFvSelection/RcsbFvSelectorManager";
+import {RcsbFvSelectorManager} from "../../../RcsbFvState/RcsbFvSelectorManager";
 import {
     SaguaroPluginModelMapType,
     StructureViewerPublicInterface
 } from "../../../RcsbFvStructure/StructureViewerInterface";
+import {RcsbFvStateManager} from "../../../RcsbFvState/RcsbFvStateManager";
 
 export type CustomViewStateInterface<R> = Omit<CustomViewInterface<R>, "modelChangeCallback">;
 
@@ -20,7 +21,7 @@ export interface CustomViewInterface<R> {
     blockConfig: FeatureBlockInterface<R> | Array<FeatureBlockInterface<R>>;
     blockSelectorElement?: (blockSelector: BlockSelectorManager) => JSX.Element;
     modelChangeCallback?: (modelMap: SaguaroPluginModelMapType) => CustomViewStateInterface<R>;
-    blockChangeCallback?: (plugin: StructureViewerPublicInterface<R>, pfvList: Array<RcsbFv>, selection: RcsbFvSelectorManager) => void;
+    blockChangeCallback?: (plugin: StructureViewerPublicInterface<R>, pfvList: Array<RcsbFv>, stateManager: RcsbFvStateManager) => void;
 }
 
 export interface FeatureBlockInterface<R> {
@@ -34,11 +35,11 @@ export interface FeatureViewInterface<R> {
     boardId?:string;
     boardConfig: RcsbFvBoardConfigInterface;
     rowConfig: Array<RcsbFvRowConfigInterface>;
-    sequenceSelectionChangeCallback: (plugin: StructureViewerPublicInterface<R>, selectorManager: RcsbFvSelectorManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => void;
-    sequenceElementClickCallback: (plugin: StructureViewerPublicInterface<R>, selectorManager: RcsbFvSelectorManager, d: RcsbFvTrackDataElementInterface) => void;
-    sequenceHoverCallback: (plugin: StructureViewerPublicInterface<R>, selectorManager: RcsbFvSelectorManager, hoverRegion: Array<RcsbFvTrackDataElementInterface>) => void;
-    structureSelectionCallback: (plugin: StructureViewerPublicInterface<R>, pfv: RcsbFv, selectorManager: RcsbFvSelectorManager) => void;
-    structureHoverCallback: (plugin: StructureViewerPublicInterface<R>, pfv: RcsbFv, selectorManager: RcsbFvSelectorManager) => void;
+    sequenceSelectionChangeCallback: (plugin: StructureViewerPublicInterface<R>, stateManager: RcsbFvStateManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => void;
+    sequenceElementClickCallback: (plugin: StructureViewerPublicInterface<R>, stateManager: RcsbFvStateManager, d: RcsbFvTrackDataElementInterface) => void;
+    sequenceHoverCallback: (plugin: StructureViewerPublicInterface<R>, stateManager: RcsbFvStateManager, hoverRegion: Array<RcsbFvTrackDataElementInterface>) => void;
+    structureSelectionCallback: (plugin: StructureViewerPublicInterface<R>, pfv: RcsbFv, stateManager: RcsbFvStateManager) => void;
+    structureHoverCallback: (plugin: StructureViewerPublicInterface<R>, pfv: RcsbFv, stateManager: RcsbFvStateManager) => void;
 }
 
 export class BlockSelectorManager {
@@ -128,7 +129,7 @@ export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomVi
         this.buildBlockFv();
         asyncScheduler.schedule(()=>{
             if(typeof this.state.blockChangeCallback === "function")
-                this.state.blockChangeCallback(this.props.structureViewer, Array.from(this.blockMap.get(this.blockViewSelector.getActiveBlock())!.values()).map(boardId=>(this.rcsbFvMap.get(boardId)!)), this.props.selectorManager);
+                this.state.blockChangeCallback(this.props.structureViewer, Array.from(this.blockMap.get(this.blockViewSelector.getActiveBlock())!.values()).map(boardId=>(this.rcsbFvMap.get(boardId)!)), this.props.stateManager);
             else
                 this.structureSelectionCallback();
         },1000);
@@ -164,13 +165,13 @@ export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomVi
                     selectionChangeCallBack:(selection: RcsbFvTrackDataElementInterface[])=>{
                         if(this.innerSelectionFlag)
                             return;
-                        this.boardMap.get(boardId)!.sequenceSelectionChangeCallback(this.props.structureViewer, this.props.selectorManager, selection);
+                        this.boardMap.get(boardId)!.sequenceSelectionChangeCallback(this.props.structureViewer, this.props.stateManager, selection);
                     },
                     highlightHoverCallback:(elements:Array<RcsbFvTrackDataElementInterface>)=>{
-                        this.boardMap.get(boardId)!.sequenceHoverCallback(this.props.structureViewer, this.props.selectorManager, elements);
+                        this.boardMap.get(boardId)!.sequenceHoverCallback(this.props.structureViewer, this.props.stateManager, elements);
                     },
                     elementClickCallBack: (element: RcsbFvTrackDataElementInterface)=>{
-                        this.boardMap.get(boardId)!.sequenceElementClickCallback(this.props.structureViewer, this.props.selectorManager, element);
+                        this.boardMap.get(boardId)!.sequenceElementClickCallback(this.props.structureViewer, this.props.stateManager, element);
                     }
                 },
                 rowConfigData: this.boardMap.get(boardId)!.rowConfig
@@ -188,7 +189,7 @@ export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomVi
             const pfv: RcsbFv | undefined = this.rcsbFvMap.get(boardId);
             if(pfv == null)
                 return;
-            this.boardMap.get(boardId)?.structureSelectionCallback(this.props.structureViewer, pfv, this.props.selectorManager);
+            this.boardMap.get(boardId)?.structureSelectionCallback(this.props.structureViewer, pfv, this.props.stateManager);
         });
         this.innerSelectionFlag = false;
     }
@@ -198,7 +199,7 @@ export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomVi
             const pfv: RcsbFv | undefined = this.rcsbFvMap.get(boardId);
             if(pfv == null)
                 return;
-            this.boardMap.get(boardId)?.structureHoverCallback(this.props.structureViewer, pfv, this.props.selectorManager);
+            this.boardMap.get(boardId)?.structureHoverCallback(this.props.structureViewer, pfv, this.props.stateManager);
         });
     }
 

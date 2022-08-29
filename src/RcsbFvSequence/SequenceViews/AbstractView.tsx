@@ -6,15 +6,16 @@ import {RcsbFvDOMConstants} from "../../RcsbFvConstants/RcsbFvConstants";
 import {
     SaguaroPluginModelMapType, ViewerCallbackManagerInterface, ViewerActionManagerInterface
 } from "../../RcsbFvStructure/StructureViewerInterface";
-import {RcsbFvSelectorManager} from "../../RcsbFvSelection/RcsbFvSelectorManager";
+import {RcsbFvSelectorManager} from "../../RcsbFvState/RcsbFvSelectorManager";
 import {SequenceViewInterface} from "./SequenceViewInterface";
+import {RcsbFvStateManager} from "../../RcsbFvState/RcsbFvStateManager";
 
 export interface AbstractViewInterface<R> {
     componentId: string;
     title?: string;
     subtitle?: string;
     structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
-    selectorManager: RcsbFvSelectorManager;
+    stateManager: RcsbFvStateManager;
     unmount:(flag:boolean,callback:()=>void)=>void;
 }
 

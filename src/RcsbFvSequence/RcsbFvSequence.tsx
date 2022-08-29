@@ -6,8 +6,9 @@ import {
 } from "../RcsbFvStructure/StructureViewerInterface";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {RcsbFv, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
-import {RcsbFvSelectorManager} from "../RcsbFvSelection/RcsbFvSelectorManager";
+import {RcsbFvSelectorManager} from "../RcsbFvState/RcsbFvSelectorManager";
 import {RcsbView, RcsbViewInterface} from "./SequenceViews/RcsbView/RcsbView";
+import {RcsbFvStateManager} from "../RcsbFvState/RcsbFvStateManager";
 
 export interface RcsbFvSequenceInterface<T,R,U>{
     type: "custom" | "rcsb";
@@ -22,7 +23,7 @@ interface CallbackConfig {
 }
 
 type StructureViewerType<R> = ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
-export class RcsbFvSequence<T,R,U> extends React.Component <RcsbFvSequenceInterface<T,R,U> & CallbackConfig & {unmount:(flag:boolean)=>void, structureViewer: StructureViewerType<R>, selectorManager:RcsbFvSelectorManager, componentId:string}, RcsbFvSequenceInterface<T,R,U> > {
+export class RcsbFvSequence<T,R,U> extends React.Component <RcsbFvSequenceInterface<T,R,U> & CallbackConfig & {unmount:(flag:boolean)=>void, structureViewer: StructureViewerType<R>,  stateManager: RcsbFvStateManager, componentId:string}, RcsbFvSequenceInterface<T,R,U> > {
 
     render() {
         if(this.props.type == "custom"){
@@ -31,7 +32,7 @@ export class RcsbFvSequence<T,R,U> extends React.Component <RcsbFvSequenceInterf
                 {...config}
                 componentId={this.props.componentId}
                 structureViewer={this.props.structureViewer}
-                selectorManager={this.props.selectorManager}
+                stateManager={this.props.stateManager}
                 title={this.props.title}
                 subtitle={this.props.subtitle}
                 unmount={this.props.unmount}
@@ -42,7 +43,7 @@ export class RcsbFvSequence<T,R,U> extends React.Component <RcsbFvSequenceInterf
                 {...config}
                 componentId={this.props.componentId}
                 structureViewer={this.props.structureViewer}
-                selectorManager={this.props.selectorManager}
+                stateManager={this.props.stateManager}
                 title={this.props.title}
                 subtitle={this.props.subtitle}
                 unmount={this.props.unmount}

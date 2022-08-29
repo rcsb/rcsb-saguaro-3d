@@ -11,9 +11,10 @@ import {
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {
     RcsbFvSelectorManager
-} from "../../RcsbFvSelection/RcsbFvSelectorManager";
+} from "../../RcsbFvState/RcsbFvSelectorManager";
 import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/registry";
 import {ColorTheme} from "molstar/lib/mol-theme/color";
+import {RcsbFvStateManager} from "../../RcsbFvState/RcsbFvStateManager";
 
 
 
@@ -26,8 +27,8 @@ export class StructureViewer<R,S> implements StructureViewerInterface<R,S> {
         this.structureViewerManagerFactory = structureViewerManagerFactory;
     }
 
-    public init(selection: RcsbFvSelectorManager, args:S): void {
-        const {actionManager,callbackManager} = this.structureViewerManagerFactory.getViewerManagerFactory(selection, args);
+    public init( stateManager: RcsbFvStateManager, args:S): void {
+        const {actionManager,callbackManager} = this.structureViewerManagerFactory.getViewerManagerFactory(stateManager, args);
         this.actionManager = actionManager;
         this.callbackManager = callbackManager;
     }

@@ -18,14 +18,15 @@ import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {StateObject} from "molstar/lib/mol-state";
 import {Viewer} from "@rcsb/rcsb-molstar/build/src/viewer";
 import {Subscription} from "rxjs";
-import {RcsbFvSelectorManager} from "../../../RcsbFvSelection/RcsbFvSelectorManager";
+import {RcsbFvSelectorManager} from "../../../RcsbFvState/RcsbFvSelectorManager";
 import {DataContainer, DataContainerReader} from "../../../Utils/DataContainer";
+import {RcsbFvStateManager} from "../../../RcsbFvState/RcsbFvStateManager";
 
 
 export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
 
     private readonly viewer: Viewer;
-    private readonly selection: RcsbFvSelectorManager;
+    private readonly  stateManager: RcsbFvStateManager;
     private readonly loadingFlag: DataContainerReader<boolean>;
     private readonly modelMapManager: Omit<ViewerModelMapManagerInterface<null>,'add'>;
     private readonly innerSelectionFlag: DataContainer<boolean>;
@@ -34,9 +35,9 @@ export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
     private modelChangeCallbackSubs: Subscription;
     private modelChangeCallback: (chainMap:SaguaroPluginModelMapType)=>void;
 
-    constructor(config:{viewer: Viewer;selection: RcsbFvSelectorManager;loadingFlag: DataContainerReader<boolean>;modelMapManager: Omit<ViewerModelMapManagerInterface<null>,'add'>;innerSelectionFlag: DataContainer<boolean>;}) {
+    constructor(config:{viewer: Viewer; stateManager: RcsbFvStateManager;loadingFlag: DataContainerReader<boolean>;modelMapManager: Omit<ViewerModelMapManagerInterface<null>,'add'>;innerSelectionFlag: DataContainer<boolean>;}) {
         this.viewer = config.viewer;
-        this.selection = config.selection;
+        this.stateManager = config.stateManager;
         this.loadingFlag = config.loadingFlag;
         this.modelMapManager = config.modelMapManager;
         this.innerSelectionFlag = config.innerSelectionFlag;
@@ -67,7 +68,7 @@ export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
                     });
                 }
             }
-            this.selection.setSelectionFromResidueSelection(sequenceData, 'hover', 'structure');
+            this.stateManager.selectionState.setSelectionFromResidueSelection(sequenceData, 'hover', 'structure');
             g();
         });
     }
@@ -108,7 +109,7 @@ export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
                         for (const e of surroundingsLoci.elements) {
                             StructureElement.Location.set(surroundingsLoc, surroundingsLoci.structure, e.unit, e.unit.elements[0]);
                             if(SP.entity.type(surroundingsLoc) === 'polymer'){
-                                this.selection.setLastSelection('select', {
+                                this.stateManager.selectionState.setLastSelection('select', {
                                     modelId: currentModelId,
                                     labelAsymId: SP.chain.label_asym_id(surroundingsLoc),
                                     regions: []
@@ -117,17 +118,17 @@ export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
                         }
                         this.innerSelectionFlag.set(false);
                     }else if( SP.entity.type(loc) === 'polymer' ) {
-                        this.selection.setLastSelection('select', {
+                        this.stateManager.selectionState.setLastSelection('select', {
                             modelId: currentModelId,
                             labelAsymId: SP.chain.label_asym_id(loc),
                             operatorName: SP.unit.operator_name(loc),
                             regions: []
                         });
                     }else{
-                        this.selection.setLastSelection('select', null);
+                        this.stateManager.selectionState.setLastSelection('select', null);
                     }
             }else{
-                this.selection.setLastSelection('select', null);
+                this.stateManager.selectionState.setLastSelection('select', null);
             }
             const sequenceData: Array<SaguaroSet> = new Array<SaguaroSet>();
             for(const structure of this.viewer.plugin.managers.structure.hierarchy.current.structures){
@@ -153,7 +154,7 @@ export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
 
                 }
             }
-            this.selection.setSelectionFromResidueSelection(sequenceData, 'select', 'structure');
+            this.stateManager.selectionState.setSelectionFromResidueSelection(sequenceData, 'select', 'structure');
             g();
         });
     }

@@ -1,6 +1,6 @@
 import {FeatureViewInterface} from "../../RcsbFvSequence/SequenceViews/CustomView/CustomView";
 import {StructureViewerPublicInterface, SaguaroRegionList} from "../../RcsbFvStructure/StructureViewerInterface";
-import {RcsbFvSelectorManager, RegionSelectionInterface} from "../../RcsbFvSelection/RcsbFvSelectorManager";
+import {RcsbFvSelectorManager, RegionSelectionInterface} from "../../RcsbFvState/RcsbFvSelectorManager";
 import {
     RcsbFv,
     RcsbFvDisplayTypes,

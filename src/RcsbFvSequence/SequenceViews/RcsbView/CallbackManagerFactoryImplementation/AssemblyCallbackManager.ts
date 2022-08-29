@@ -116,8 +116,8 @@ class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
     }
 
     protected async innerPluginSelect(mode:'select'|'hover'): Promise<void> {
-        const allSel: Array<SaguaroRegionList> | undefined = this.selectorManager.getSelection(mode);
-        const lastSel: SaguaroRegionList|null = this.selectorManager.getLastSelection('select');
+        const allSel: Array<SaguaroRegionList> | undefined = this.stateManager.selectionState.getSelection(mode);
+        const lastSel: SaguaroRegionList|null = this.stateManager.selectionState.getLastSelection('select');
         const modelId: string = this.assemblyModelSate.getString("modelId");
         const labelAsymId: string = this.assemblyModelSate.getString("labelAsymId");
         const operatorName: string|undefined = this.assemblyModelSate.getOperator()?.name;
@@ -131,7 +131,7 @@ class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
             const authId: string | undefined = this.assemblyModelSate.getChainInfo(lastSel?.labelAsymId!)?.auth;
             await this.modelChangeCallback(this.assemblyModelSate.getMap(), authId, lastSel?.operatorName);
         }else if(modelId && labelAsymId){
-            const sel: SaguaroRegionList | undefined = this.selectorManager.getSelectionWithCondition(
+            const sel: SaguaroRegionList | undefined = this.stateManager.selectionState.getSelectionWithCondition(
                 modelId,
                 labelAsymId,
                 mode,
@@ -152,7 +152,7 @@ class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
         const operatorName: string|undefined = this.assemblyModelSate.getOperator()?.name;
 
         this.plugin.clearSelection('select', {modelId, labelAsymId, operatorName});
-        this.selectorManager.clearSelection('select', {labelAsymId, operatorName});
+        this.stateManager.selectionState.clearSelection('select', {labelAsymId, operatorName});
         if(selection == null || selection.length === 0) {
             this.resetPluginView();
         }else{
@@ -183,7 +183,7 @@ class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
                     'select',
                     'add'
                 );
-                this.selectorManager.addSelectionFromRegion(
+                this.stateManager.selectionState.addSelectionFromRegion(
                     modelId,
                     labelAsymId,
                     {begin:x, end:y, isEmpty: true, source: 'sequence'},
@@ -192,7 +192,7 @@ class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
                 );
             }else{
                 this.plugin.select(processGaps(modelId, labelAsymId, e, operatorName), 'select', 'add');
-                this.selectorManager.addSelectionFromRegion(modelId, labelAsymId, {begin:x, end:y, source: 'sequence'}, 'select', operatorName);
+                this.stateManager.selectionState.addSelectionFromRegion(modelId, labelAsymId, {begin:x, end:y, source: 'sequence'}, 'select', operatorName);
             }
         });
     }

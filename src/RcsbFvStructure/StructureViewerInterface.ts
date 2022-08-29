@@ -1,7 +1,8 @@
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/registry";
 import {ColorTheme} from "molstar/lib/mol-theme/color";
-import {RcsbFvSelectorManager, RegionSelectionInterface} from "../RcsbFvSelection/RcsbFvSelectorManager";
+import {RcsbFvSelectorManager, RegionSelectionInterface} from "../RcsbFvState/RcsbFvSelectorManager";
+import {RcsbFvStateManager} from "../RcsbFvState/RcsbFvStateManager";
 
 export type ChainType = "polymer"|"water"|"branched"|"non-polymer"|"macrolide";
 export type OperatorInfo = {ids:string[], name: string};
@@ -32,13 +33,13 @@ export interface SaguaroRegionList extends SaguaroChain{
 }
 
 export interface StructureViewerInterface<R,S> extends StructureViewerPublicInterface<R>,ViewerCallbackManagerInterface {
-    init: (selection: RcsbFvSelectorManager, args:S) => void;
+    init: (stateManager: RcsbFvStateManager, args:S) => void;
 }
 
 export interface StructureViewerPublicInterface<R> extends ViewerActionManagerInterface<R>{}
 
 export interface ViewerManagerFactoryInterface<R,S extends {}> {
-    getViewerManagerFactory(selection: RcsbFvSelectorManager, args: S): {callbackManager:ViewerCallbackManagerInterface;actionManager:ViewerActionManagerInterface<R>};
+    getViewerManagerFactory(stateManager: RcsbFvStateManager, args: S): {callbackManager:ViewerCallbackManagerInterface;actionManager:ViewerActionManagerInterface<R>};
 }
 
 export interface ViewerCallbackManagerInterface {

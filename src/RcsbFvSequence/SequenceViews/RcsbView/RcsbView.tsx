@@ -6,7 +6,7 @@ import {AbstractView, AbstractViewInterface} from "../AbstractView";
 import {RcsbFvBoardConfigInterface, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {OperatorInfo, SaguaroPluginModelMapType} from "../../../RcsbFvStructure/StructureViewerInterface";
 import {RcsbFvAdditionalConfig, RcsbFvModulePublicInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
-import {AssemblyModelSate} from "./AssemblyModelSate";
+import {AssemblyModelSate} from "../../../RcsbFvState/AssemblyModelSate";
 import {DataContainer} from "../../../Utils/DataContainer";
 import {
     PfvManagerInterface,
@@ -40,7 +40,7 @@ export class RcsbView<T,R,U> extends AbstractView<RcsbViewInterface<T,R,U>, {}, 
         this.pfvFactory = this.props.pfvManagerFactory.getPfvManager({
             ...this.props.pfvParams,
             rcsbFvContainer: this.rcsbFvContainer,
-            selectorManager: this.props.selectorManager,
+            stateManager: this.props.stateManager,
             plugin: this.props.structureViewer,
             assemblyModelSate: this.assemblyModelSate,
             boardConfigContainer: this.boardConfigContainer,
@@ -51,7 +51,7 @@ export class RcsbView<T,R,U> extends AbstractView<RcsbViewInterface<T,R,U>, {}, 
         });
         this.callbackManager = this.props.callbackManagerFactory.getCallbackManager({
             rcsbFvContainer: this.rcsbFvContainer,
-            selectorManager: this.props.selectorManager,
+            stateManager: this.props.stateManager,
             plugin: this.props.structureViewer,
             assemblyModelSate: this.assemblyModelSate,
             pfvFactory: this.pfvFactory

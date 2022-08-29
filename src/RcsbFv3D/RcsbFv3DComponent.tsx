@@ -15,8 +15,9 @@ import {
 } from "../RcsbFvContextManager/RcsbFvContextManager";
 import {Subscription} from "rxjs";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
-import {RcsbFvSelectorManager} from "../RcsbFvSelection/RcsbFvSelectorManager";
+import {RcsbFvSelectorManager} from "../RcsbFvState/RcsbFvSelectorManager";
 import {CSSProperties, MouseEvent} from "react";
+import {RcsbFvStateManager} from "../RcsbFvState/RcsbFvStateManager";
 
 export interface RcsbFv3DCssConfig {
     overwriteCss?: boolean;
@@ -44,7 +45,7 @@ interface RcsbFv3DComponentState<T,R,S,U> {
 
 export class RcsbFv3DComponent<T,R,S,U> extends React.Component <RcsbFv3DComponentInterface<T,R,S,U>, RcsbFv3DComponentState<T,R,S,U>> {
 
-    private readonly selectorManager: RcsbFvSelectorManager = new RcsbFvSelectorManager();
+    private readonly stateManager: RcsbFvStateManager = new RcsbFvStateManager();
     private subscription: Subscription;
     private readonly ROOT_DIV_ID: string = "rootPanelDiv";
 
@@ -69,7 +70,7 @@ export class RcsbFv3DComponent<T,R,S,U> extends React.Component <RcsbFv3DCompone
                             {...this.state.structurePanelConfig}
                             componentId={this.props.id}
                             structureViewer={this.props.structureViewer}
-                            selectorManager={this.selectorManager}
+                            stateManager={this.stateManager}
                         />
                     </div>
                     <div style={this.sequenceCssConfig(this.props.cssConfig?.sequencePanel)}  >
@@ -78,7 +79,7 @@ export class RcsbFv3DComponent<T,R,S,U> extends React.Component <RcsbFv3DCompone
                             config={this.state.sequencePanelConfig.config}
                             componentId={this.props.id}
                             structureViewer={this.props.structureViewer}
-                            selectorManager={this.selectorManager}
+                            stateManager={this.stateManager}
                             title={this.state.sequencePanelConfig.title}
                             subtitle={this.state.sequencePanelConfig.subtitle}
                             unmount={this.props.unmount}

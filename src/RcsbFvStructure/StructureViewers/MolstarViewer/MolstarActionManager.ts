@@ -6,7 +6,7 @@ import {
     ViewerModelMapManagerInterface
 } from "../../StructureViewerInterface";
 import {Viewer} from "@rcsb/rcsb-molstar/build/src/viewer";
-import {RcsbFvSelectorManager} from "../../../RcsbFvSelection/RcsbFvSelectorManager";
+import {RcsbFvSelectorManager} from "../../../RcsbFvState/RcsbFvSelectorManager";
 import {DataContainer, DataContainerReader} from "../../../Utils/DataContainer";
 import {MolstarModelMapManager} from "./MolstarModelMapManager";
 import {Structure, StructureElement, StructureSelection} from "molstar/lib/mol-model/structure";

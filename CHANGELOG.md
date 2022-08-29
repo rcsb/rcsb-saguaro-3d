@@ -2,7 +2,7 @@
 
 [Semantic Versioning](https://semver.org/)
 
-## [1.5.0-models] - 2022-06-15
+## [2.0.0-models] - 2022-06-15
 ### Dependency update
 - rcsb-saguaro-app v4.4.0-models
 - rcsb-saguaro v2.1.2
@@ -11,6 +11,16 @@
 - molstar v3.8.1
 - React v18
 - Updated multiple dependencies
+
+### Major refactoring
+- `StructureViewerInterface` abstraction to 3D structure viewer
+  - `ViewerCallbackManagerInterface` defines 3D viewer callbacks
+  - `ViewerActionManagerInterface` defines 3D viewer API
+  - `ViewerModelMapManagerInterface` manager provides information of the loaded structures
+- Global state interface `RcsbFvStateInterface` manages selections and loaded data 
+
+### Breaking change
+- `FeatureViewInterface` callback methods argument `selectorManager: RcsbFvSelectorManager` has been refactored to `stateManager: RcsbFvStateManager`
 
 ## [1.4.4] - 2022-05-26
 ### Dependency update

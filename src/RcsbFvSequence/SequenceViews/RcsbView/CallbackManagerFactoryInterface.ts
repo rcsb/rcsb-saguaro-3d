@@ -7,9 +7,10 @@ import {DataContainer} from "../../../Utils/DataContainer";
 import {
     RcsbFvModulePublicInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
-import {RcsbFvSelectorManager} from "../../../RcsbFvSelection/RcsbFvSelectorManager";
-import {AssemblyModelSate} from "./AssemblyModelSate";
+import {RcsbFvSelectorManager} from "../../../RcsbFvState/RcsbFvSelectorManager";
+import {AssemblyModelSate} from "../../../RcsbFvState/AssemblyModelSate";
 import {PfvManagerInterface} from "./PfvManagerFactoryInterface";
+import {RcsbFvStateManager} from "../../../RcsbFvState/RcsbFvStateManager";
 
 export interface CallbackManagerInterface<U> {
     pluginSelectCallback(mode:'select'|'hover'): Promise<void>;
@@ -26,7 +27,7 @@ export interface CallbackManagerFactoryInterface<R,U> {
 
 export interface CallbackConfigInterface<R> {
     rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
-    selectorManager: RcsbFvSelectorManager;
+    stateManager: RcsbFvStateManager;
     assemblyModelSate: AssemblyModelSate;
     plugin: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
     pfvFactory: PfvManagerInterface;
@@ -34,7 +35,7 @@ export interface CallbackConfigInterface<R> {
 
 export abstract class AbstractCallbackManager<R,U> implements CallbackManagerInterface<U> {
     protected readonly rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
-    protected readonly selectorManager: RcsbFvSelectorManager;
+    protected readonly stateManager: RcsbFvStateManager;
     protected readonly assemblyModelSate: AssemblyModelSate;
     protected selectedComponentId: string|undefined;
     protected readonly plugin: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
@@ -43,7 +44,7 @@ export abstract class AbstractCallbackManager<R,U> implements CallbackManagerInt
 
     constructor(config: CallbackConfigInterface<R>) {
         this.rcsbFvContainer = config.rcsbFvContainer;
-        this.selectorManager = config.selectorManager;
+        this.stateManager = config.stateManager;
         this.assemblyModelSate = config.assemblyModelSate;
         this.plugin = config.plugin;
         this.pfvFactory = config.pfvFactory;
