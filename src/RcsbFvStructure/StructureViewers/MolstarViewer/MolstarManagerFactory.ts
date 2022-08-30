@@ -35,8 +35,7 @@ export class MolstarManagerFactory implements ViewerManagerFactoryInterface<Load
             viewer: viewer,
             modelMapManager: modelMapManager,
             innerSelectionFlag: innerSelectionFlag,
-            loadingFlag: loadingFlag,
-            callbackManager: callbackManager
+            loadingFlag: loadingFlag
         });
         return {
             actionManager,

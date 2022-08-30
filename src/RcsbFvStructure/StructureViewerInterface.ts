@@ -3,6 +3,7 @@ import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/re
 import {ColorTheme} from "molstar/lib/mol-theme/color";
 import {RcsbFvSelectorManager, RegionSelectionInterface} from "../RcsbFvState/RcsbFvSelectorManager";
 import {RcsbFvStateManager} from "../RcsbFvState/RcsbFvStateManager";
+import {Subscription} from "rxjs";
 
 export type ChainType = "polymer"|"water"|"branched"|"non-polymer"|"macrolide";
 export type OperatorInfo = {ids:string[], name: string};
@@ -43,13 +44,13 @@ export interface ViewerManagerFactoryInterface<R,S extends {}> {
 }
 
 export interface ViewerCallbackManagerInterface {
-    setRepresentationChangeCallback(g:()=>void): void;
-    setHoverCallback(g:()=>void): void;
-    setSelectCallback(g:(flag?:boolean)=>void): void;
+    subscribeRepresentationChange(): Subscription;
+    subscribeHover(): Subscription;
+    subscribeSelection(): Subscription;
+    subscribeModelChange(): Subscription;
+    modelChange(): void;
+    unsubscribe(): void;
     pluginCall(f: (plugin: PluginContext) => void): void;
-    setModelChangeCallback(f:(modelMap:SaguaroPluginModelMapType)=>void): void;
-    getModelChangeCallback():(modelMap:SaguaroPluginModelMapType)=>void;
-    unsetCallbacks(): void;
 }
 
 export interface ViewerActionManagerInterface<R> {

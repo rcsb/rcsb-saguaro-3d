@@ -68,9 +68,9 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string},LoadMolstar
 
 }
 
-const pluginLoadParamsDefinition = (pdbId:string)=>({
+const pluginLoadParamsDefinition = (entryId:string)=>({
     loadMethod: LoadMethod.loadPdbId,
     loadParams:{
-        pdbId
+        entryId
     }
 })

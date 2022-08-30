@@ -15,6 +15,7 @@ import {
 import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/registry";
 import {ColorTheme} from "molstar/lib/mol-theme/color";
 import {RcsbFvStateManager} from "../../RcsbFvState/RcsbFvStateManager";
+import {Subscription} from "rxjs";
 
 
 
@@ -31,6 +32,10 @@ export class StructureViewer<R,S> implements StructureViewerInterface<R,S> {
         const {actionManager,callbackManager} = this.structureViewerManagerFactory.getViewerManagerFactory(stateManager, args);
         this.actionManager = actionManager;
         this.callbackManager = callbackManager;
+
+        this.subscribeSelection();
+        this.subscribeHover();
+        this.subscribeModelChange();
     }
 
     public async clear(): Promise<void>{
@@ -39,6 +44,7 @@ export class StructureViewer<R,S> implements StructureViewerInterface<R,S> {
 
     async load(loadConfig: R|Array<R>): Promise<void>{
       await this.actionManager.load(loadConfig);
+      this.modelChange();
     }
 
     public setBackground(color: number) {
@@ -98,32 +104,32 @@ export class StructureViewer<R,S> implements StructureViewerInterface<R,S> {
         return this.actionManager.displayComponent(componentLabel as any,visibilityFlag as any);
     }
 
-    public setRepresentationChangeCallback(g:()=>void){
-        this.callbackManager.setRepresentationChangeCallback(g);
+    public subscribeRepresentationChange(): Subscription{
+        return this.callbackManager.subscribeRepresentationChange();
     }
 
-    public setHoverCallback(g:()=>void){
-        this.callbackManager.setHoverCallback(g);
+    public subscribeHover(): Subscription {
+        return this.callbackManager.subscribeHover();
     }
 
-    public setSelectCallback(g:(flag?:boolean)=>void){
-        this.callbackManager.setSelectCallback(g);
+    public subscribeSelection(): Subscription {
+        return this.callbackManager.subscribeSelection();
     }
 
     public pluginCall(f: (plugin: PluginContext) => void){
         this.callbackManager.pluginCall(f);
     }
 
-    public setModelChangeCallback(f:(modelMap:SaguaroPluginModelMapType)=>void){
-        this.callbackManager.setModelChangeCallback(f);
+    public subscribeModelChange(): Subscription {
+        return this.callbackManager.subscribeModelChange();
     }
 
-    public getModelChangeCallback(): (modelMap: SaguaroPluginModelMapType) => void {
-        return this.callbackManager.getModelChangeCallback();
+    public modelChange():  void {
+        this.callbackManager.modelChange();
     }
 
-    public unsetCallbacks(): void {
-        this.callbackManager.unsetCallbacks();
+    public unsubscribe(): void {
+        this.callbackManager.unsubscribe();
     }
 
     public resetCamera(): void {

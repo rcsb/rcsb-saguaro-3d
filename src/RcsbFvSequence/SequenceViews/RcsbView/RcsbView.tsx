@@ -29,7 +29,6 @@ export interface RcsbViewInterface<T,R,U> {
 
 export class RcsbView<T,R,U> extends AbstractView<RcsbViewInterface<T,R,U>, {}, R>{
 
-    private readonly assemblyModelSate: AssemblyModelSate = new AssemblyModelSate();
     private boardConfigContainer: DataContainer<Partial<RcsbFvBoardConfigInterface>> = new DataContainer();
     private rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface> = new DataContainer<RcsbFvModulePublicInterface>();
     private readonly callbackManager: CallbackManagerInterface<U>;
@@ -42,7 +41,6 @@ export class RcsbView<T,R,U> extends AbstractView<RcsbViewInterface<T,R,U>, {}, 
             rcsbFvContainer: this.rcsbFvContainer,
             stateManager: this.props.stateManager,
             plugin: this.props.structureViewer,
-            assemblyModelSate: this.assemblyModelSate,
             boardConfigContainer: this.boardConfigContainer,
             rcsbFvDivId: this.rcsbFvDivId,
             pfvChangeCallback: this.pfvChangeCallback.bind(this),
@@ -53,7 +51,6 @@ export class RcsbView<T,R,U> extends AbstractView<RcsbViewInterface<T,R,U>, {}, 
             rcsbFvContainer: this.rcsbFvContainer,
             stateManager: this.props.stateManager,
             plugin: this.props.structureViewer,
-            assemblyModelSate: this.assemblyModelSate,
             pfvFactory: this.pfvFactory
         });
     }
@@ -138,8 +135,8 @@ export class RcsbView<T,R,U> extends AbstractView<RcsbViewInterface<T,R,U>, {}, 
         return void 0;
     }
 
-    async modelChangeCallback(modelMap:SaguaroPluginModelMapType, defaultAuthId?: string, defaultOperatorName?:string): Promise<void> {
-        await this.callbackManager.modelChangeCallback(modelMap, defaultAuthId, defaultOperatorName);
+    async modelChangeCallback(defaultAuthId?: string, defaultOperatorName?:string): Promise<void> {
+        await this.callbackManager.modelChangeCallback(defaultAuthId, defaultOperatorName);
     }
 
     private async pluginSelectCallback(mode:'select'|'hover'): Promise<void> {

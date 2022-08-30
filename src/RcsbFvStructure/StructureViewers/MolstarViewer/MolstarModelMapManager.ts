@@ -1,4 +1,9 @@
-import {ChainInfo, OperatorInfo, SaguaroPluginModelMapType} from "../../StructureViewerInterface";
+import {
+    ChainInfo,
+    OperatorInfo,
+    SaguaroPluginModelMapType,
+    ViewerModelMapManagerInterface
+} from "../../StructureViewerInterface";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {Structure, StructureElement, StructureProperties as SP} from "molstar/lib/mol-model/structure";
 import {StructureRef} from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
@@ -12,7 +17,7 @@ interface LoadParams<P=any,S={}> {
     params?:P;
 }
 
-export class MolstarModelMapManager {
+export class MolstarModelMapManager implements ViewerModelMapManagerInterface<LoadMolstarInterface> {
 
     private readonly viewer: Viewer;
     private readonly modelMap: Map<string,string|undefined> = new Map<string, string>();

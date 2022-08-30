@@ -57,14 +57,13 @@ class AssemblyPfvManager<R> extends AbstractPfvManager<{instanceSequenceConfig: 
     }
 
     public async create(config: BuildPfvInterface): Promise<RcsbFvModulePublicInterface | undefined> {
-        this.assemblyModelSate.setMap(config.modelMap);
         this.plugin.clearFocus();
         const onChangeCallback: Map<string, (x: PolymerEntityInstanceInterface)=>void> = new Map<string, (x: PolymerEntityInstanceInterface) => {}>();
         const assemblyInstances: Map<string, Set<string>> = new Map<string, Set<string>>();
-        this.assemblyModelSate.forEach((v,k)=>{
+        this.stateManager.assemblyModelSate.forEach((v,k)=>{
             assemblyInstances.set(v.entryId,new Set<string>(v.chains.map(d=>d.label)));
             onChangeCallback.set(v.entryId,(x)=>{
-                this.assemblyModelSate.set({entryId: v.entryId, labelAsymId: x.asymId, modelId: k});
+                this.stateManager.assemblyModelSate.set({entryId: v.entryId, labelAsymId: x.asymId, modelId: k});
                 asyncScheduler.schedule(()=>{
                     this.stateManager.selectionState.setLastSelection('select', null);
                     this.pfvChangeCallback(undefined);
@@ -72,34 +71,34 @@ class AssemblyPfvManager<R> extends AbstractPfvManager<{instanceSequenceConfig: 
             });
         });
         const operatorNameContainer: DataContainer<string> = new DataContainer<string>(config.defaultOperatorName);
-        if(this.assemblyModelSate.get("entryId") != null) {
+        if(this.stateManager.assemblyModelSate.get("entryId") != null) {
             this.module = await buildInstanceSequenceFv(
                 this.rcsbFvDivId,
                 RcsbFvDOMConstants.SELECT_BUTTON_PFV_ID,
-                this.assemblyModelSate.getString("entryId"),
+                this.stateManager.assemblyModelSate.getString("entryId"),
                 {
                     ...this.instanceSequenceConfig,
                     defaultValue: config.defaultAuthId,
-                    onChangeCallback: onChangeCallback.get(this.assemblyModelSate.getString("entryId")),
+                    onChangeCallback: onChangeCallback.get(this.stateManager.assemblyModelSate.getString("entryId")),
                     beforeChangeCallback: (x: PolymerEntityInstanceInterface)=>{
-                        this.assemblyModelSate.set({entryId:x.entryId, labelAsymId: x.asymId});
-                        const entryMap:[string, {entryId: string, assemblyId: string, chains: ChainInfo[]}] | undefined = Array.from(this.assemblyModelSate.entries()).find((e)=>(e[1].entryId === x.entryId));
+                        this.stateManager.assemblyModelSate.set({entryId:x.entryId, labelAsymId: x.asymId});
+                        const entryMap:[string, {entryId: string, assemblyId: string, chains: ChainInfo[]}] | undefined = Array.from(this.stateManager.assemblyModelSate.entries()).find((e)=>(e[1].entryId === x.entryId));
                         if(!entryMap){
                             throw `Error: no modelId was found for ${x.entryId}`;
                         }
-                        const operator: OperatorInfo|undefined = getOperator(this.assemblyModelSate.getMap().get(entryMap[0])!, config.defaultAuthId, operatorNameContainer.get());
+                        const operator: OperatorInfo|undefined = getOperator(this.stateManager.assemblyModelSate.getMap().get(entryMap[0])!, config.defaultAuthId, operatorNameContainer.get());
                         this.addOperatorButton(operator?.name);
-                        this.assemblyModelSate.setOperator(x.asymId,operator?.name);
+                        this.stateManager.assemblyModelSate.setOperator(x.asymId,operator?.name);
                         operatorNameContainer.set(undefined);
-                        if(typeof this.additionalConfig?.operatorChangeCallback === "function" && this.assemblyModelSate.getOperator()){
-                            this.additionalConfig.operatorChangeCallback(this.assemblyModelSate.getOperator()!);
+                        if(typeof this.additionalConfig?.operatorChangeCallback === "function" && this.stateManager.assemblyModelSate.getOperator()){
+                            this.additionalConfig.operatorChangeCallback(this.stateManager.assemblyModelSate.getOperator()!);
                         }
-                        if((this.assemblyModelSate.getChainInfo()?.operators?.length ?? 0) > 1)
+                        if((this.stateManager.assemblyModelSate.getChainInfo()?.operators?.length ?? 0) > 1)
                             return {
                                 operatorIds: operator?.ids
                             }
                     },
-                    filterInstances: assemblyInstances.get(this.assemblyModelSate.getString("entryId")),
+                    filterInstances: assemblyInstances.get(this.stateManager.assemblyModelSate.getString("entryId")),
                     selectButtonOptionProps: (props: SelectOptionProps) => (
                         <div style={{display: 'flex'}}>
                             <ChainDisplayComponent structureViewer={this.plugin} label={props.data.label}/>
@@ -116,14 +115,14 @@ class AssemblyPfvManager<R> extends AbstractPfvManager<{instanceSequenceConfig: 
             );
         }
         if(!config.defaultAuthId)
-            await createComponents<R>(this.plugin, this.assemblyModelSate.getMap());
+            await createComponents<R>(this.plugin, this.stateManager.assemblyModelSate.getMap());
         return this.module;
     }
 
     private addOperatorButton(operatorName?: string): void{
-        const currentChainInfo: ChainInfo|undefined = this.assemblyModelSate.getChainInfo();
+        const currentChainInfo: ChainInfo|undefined = this.stateManager.assemblyModelSate.getChainInfo();
         if(this.useOperatorsFlag && currentChainInfo && currentChainInfo.operators.length >1 ){
-            this.assemblyModelSate.setOperator(undefined,operatorName);
+            this.stateManager.assemblyModelSate.setOperator(undefined,operatorName);
             RcsbFvUI.addSelectButton(
                 this.rcsbFvDivId,
                 RcsbFvDOMConstants.SELECT_BUTTON_PFV_ID,
@@ -132,16 +131,15 @@ class AssemblyPfvManager<R> extends AbstractPfvManager<{instanceSequenceConfig: 
                     optId:op.name,
                     onChange: async ()=>{
                         this.module?.getFv()?.reset();
-                        this.assemblyModelSate.set({operator:op});
+                        this.stateManager.assemblyModelSate.set({operator:op});
                         await this.create({
-                            modelMap: this.assemblyModelSate.getMap(),
-                            defaultAuthId: this.assemblyModelSate.getChainInfo()?.auth,
+                            defaultAuthId: this.stateManager.assemblyModelSate.getChainInfo()?.auth,
                             defaultOperatorName: op.name
                         })
                     }
                 })),
                 {
-                    defaultValue: this.assemblyModelSate.getOperator()?.name,
+                    defaultValue: this.stateManager.assemblyModelSate.getOperator()?.name,
                     dropdownTitle:this.OPERATOR_DROPDOWN_TITLE
                 }
             );
@@ -156,9 +154,9 @@ class AssemblyPfvManager<R> extends AbstractPfvManager<{instanceSequenceConfig: 
             (await Promise.all(data.annotations.map(async ann=>{
                 if(ann.source == Source.PdbInterface && ann.target_id && data.rcsbContext?.asymId) {
                     const interfaceToInstance: InterfaceInstanceTranslate = await RcsbRequestContextManager.getInterfaceToInstance(ann.target_id);
-                    if(typeof ann.target_identifiers?.interface_partner_index === "number" && ann.target_identifiers.assembly_id === this.assemblyModelSate.getString("assemblyId") && Array.isArray(interfaceToInstance.getOperatorIds(ann.target_id))) {
+                    if(typeof ann.target_identifiers?.interface_partner_index === "number" && ann.target_identifiers.assembly_id === this.stateManager.assemblyModelSate.getString("assemblyId") && Array.isArray(interfaceToInstance.getOperatorIds(ann.target_id))) {
                         const operatorIds:string[][] = interfaceToInstance.getOperatorIds(ann.target_id)[ann.target_identifiers.interface_partner_index];
-                        if(ann.features && this.assemblyModelSate.getOperator() && operatorIds.map(o=>o.join("|")).includes( this.assemblyModelSate.getOperator()!.ids.join("|") )){
+                        if(ann.features && this.stateManager.assemblyModelSate.getOperator() && operatorIds.map(o=>o.join("|")).includes( this.stateManager.assemblyModelSate.getOperator()!.ids.join("|") )){
                             ann.features = ann.features.filter(f=>(f && f.type == FeatureType.BurialFraction));
                             if(ann.features.length > 0)
                                 return ann;

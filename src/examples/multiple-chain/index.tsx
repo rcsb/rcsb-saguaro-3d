@@ -249,7 +249,7 @@ const molstarConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface,{viewer
     loadConfig: {
         loadMethod: LoadMethod.loadPdbIds,
         loadParams: [{
-            pdbId: "1acb",
+            entryId: "1acb",
             id:"1acb_board"
         }]
     },

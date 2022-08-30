@@ -32,7 +32,7 @@ const molstarConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface,{viewer
     loadConfig: [{
         loadMethod: LoadMethod.loadPdbId,
         loadParams: {
-            pdbId: "1ash",
+            entryId: "1ash",
             reprProvider: RcsbRepresentationPreset,
             params: {
                 id: "structure_1",
@@ -48,7 +48,7 @@ const molstarConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface,{viewer
     },{
         loadMethod: LoadMethod.loadPdbId,
         loadParams: {
-            pdbId: "101m",
+            entryId: "101m",
             reprProvider: RcsbRepresentationPreset,
             params: {
                 id: "structure_2",

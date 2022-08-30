@@ -30,7 +30,7 @@ export class MolstarAlignmentLoader implements StructureLoaderInterface<[ViewerC
             await structureViewer.load({
                 loadMethod: LoadMethod.loadPdbId,
                 loadParams:{
-                    pdbId:pdb.entryId
+                    entryId:pdb.entryId
                 }
             });
             structureViewer.pluginCall(async (plugin)=>{

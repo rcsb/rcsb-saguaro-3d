@@ -1,5 +1,5 @@
 import {
-    SaguaroPluginModelMapType, SaguaroRange,
+    SaguaroRange,
     SaguaroRegionList
 } from "../../../../RcsbFvStructure/StructureViewerInterface";
 import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
@@ -28,9 +28,9 @@ class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
 
         const x = e.begin;
         const y = e.end ?? e.begin;
-        const modelId: string = this.assemblyModelSate.getString("modelId");
-        const labelAsymId: string = this.assemblyModelSate.getString("labelAsymId");
-        const operatorName: string|undefined = this.assemblyModelSate.getOperator()?.name;
+        const modelId: string = this.stateManager.assemblyModelSate.getString("modelId");
+        const labelAsymId: string = this.stateManager.assemblyModelSate.getString("labelAsymId");
+        const operatorName: string|undefined = this.stateManager.assemblyModelSate.getOperator()?.name;
 
         if(e.isEmpty){
             this.plugin.cameraFocus(modelId, labelAsymId, [x,y], operatorName);
@@ -70,9 +70,9 @@ class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
     }
 
     public highlightHoverCallback(selection: RcsbFvTrackDataElementInterface[]): void {
-        const modelId: string = this.assemblyModelSate.getString("modelId");
-        const labelAsymId: string = this.assemblyModelSate.getString("labelAsymId");
-        const operatorName: string|undefined = this.assemblyModelSate.getOperator()?.name;
+        const modelId: string = this.stateManager.assemblyModelSate.getString("modelId");
+        const labelAsymId: string = this.stateManager.assemblyModelSate.getString("labelAsymId");
+        const operatorName: string|undefined = this.stateManager.assemblyModelSate.getOperator()?.name;
 
         if(selection != null && selection.length > 0) {
             if(selection[0].isEmpty){
@@ -106,8 +106,8 @@ class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
         }
     }
 
-    public async modelChangeCallback(modelMap:SaguaroPluginModelMapType, defaultAuthId?: string, defaultOperatorName?:string): Promise<void> {
-        this.rcsbFvContainer.set(await this.pfvFactory.create({modelMap, defaultAuthId, defaultOperatorName}));
+    public async modelChangeCallback(defaultAuthId?: string, defaultOperatorName?:string): Promise<void> {
+        this.rcsbFvContainer.set(await this.pfvFactory.create({defaultAuthId, defaultOperatorName}));
     }
 
     public async pfvChangeCallback(): Promise<void>{
@@ -118,9 +118,9 @@ class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
     protected async innerPluginSelect(mode:'select'|'hover'): Promise<void> {
         const allSel: Array<SaguaroRegionList> | undefined = this.stateManager.selectionState.getSelection(mode);
         const lastSel: SaguaroRegionList|null = this.stateManager.selectionState.getLastSelection('select');
-        const modelId: string = this.assemblyModelSate.getString("modelId");
-        const labelAsymId: string = this.assemblyModelSate.getString("labelAsymId");
-        const operatorName: string|undefined = this.assemblyModelSate.getOperator()?.name;
+        const modelId: string = this.stateManager.assemblyModelSate.getString("modelId");
+        const labelAsymId: string = this.stateManager.assemblyModelSate.getString("labelAsymId");
+        const operatorName: string|undefined = this.stateManager.assemblyModelSate.getOperator()?.name;
 
         if(mode === 'select') this.removeComponent();
 
@@ -128,8 +128,8 @@ class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
             this.rcsbFvContainer.get()?.getFv().clearSelection(mode);
             if(mode === 'select') this.resetPluginView();
         }else if( mode === 'select' && lastSel?.labelAsymId && (lastSel?.labelAsymId != labelAsymId || lastSel?.operatorName != operatorName) ){
-            const authId: string | undefined = this.assemblyModelSate.getChainInfo(lastSel?.labelAsymId!)?.auth;
-            await this.modelChangeCallback(this.assemblyModelSate.getMap(), authId, lastSel?.operatorName);
+            const authId: string | undefined = this.stateManager.assemblyModelSate.getChainInfo(lastSel?.labelAsymId!)?.auth;
+            await this.modelChangeCallback(authId, lastSel?.operatorName);
         }else if(modelId && labelAsymId){
             const sel: SaguaroRegionList | undefined = this.stateManager.selectionState.getSelectionWithCondition(
                 modelId,
@@ -147,9 +147,9 @@ class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
     }
 
     protected innerSelectionChange(selection: Array<RcsbFvTrackDataElementInterface>): void {
-        const modelId: string = this.assemblyModelSate.getString("modelId");
-        const labelAsymId: string = this.assemblyModelSate.getString("labelAsymId");
-        const operatorName: string|undefined = this.assemblyModelSate.getOperator()?.name;
+        const modelId: string = this.stateManager.assemblyModelSate.getString("modelId");
+        const labelAsymId: string = this.stateManager.assemblyModelSate.getString("labelAsymId");
+        const operatorName: string|undefined = this.stateManager.assemblyModelSate.getOperator()?.name;
 
         this.plugin.clearSelection('select', {modelId, labelAsymId, operatorName});
         this.stateManager.selectionState.clearSelection('select', {labelAsymId, operatorName});
@@ -161,9 +161,9 @@ class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
     }
 
     private select(selection: Array<RcsbFvTrackDataElementInterface>): void{
-        const modelId: string = this.assemblyModelSate.getString("modelId");
-        const labelAsymId: string = this.assemblyModelSate.getString("labelAsymId");
-        const operatorName: string|undefined = this.assemblyModelSate.getOperator()?.name;
+        const modelId: string = this.stateManager.assemblyModelSate.getString("modelId");
+        const labelAsymId: string = this.stateManager.assemblyModelSate.getString("labelAsymId");
+        const operatorName: string|undefined = this.stateManager.assemblyModelSate.getOperator()?.name;
 
         selection.forEach(e=>{
             const x = e.begin;
@@ -191,8 +191,9 @@ class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
                     operatorName
                 );
             }else{
-                this.plugin.select(processGaps(modelId, labelAsymId, e, operatorName), 'select', 'add');
-                this.stateManager.selectionState.addSelectionFromRegion(modelId, labelAsymId, {begin:x, end:y, source: 'sequence'}, 'select', operatorName);
+                const ranges: SaguaroRange[] = processGaps(modelId, labelAsymId, e, operatorName)
+                this.plugin.select(ranges, 'select', 'add');
+                ranges.forEach(r=>this.stateManager.selectionState.addSelectionFromRegion(modelId, labelAsymId, {begin:r.begin, end:r.end, source: 'sequence'}, 'select', operatorName))
             }
         });
     }

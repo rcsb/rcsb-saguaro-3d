@@ -38,7 +38,7 @@ export interface LoadMolstarInterface {
 }
 
 interface LoadParams<P=any,S={}> {
-    pdbId?: string;
+    entryId?: string;
     props?: PresetProps;
     matrix?: Mat4;
     url?: string,
@@ -57,16 +57,14 @@ export class MolstarActionManager implements ViewerActionManagerInterface<LoadMo
 
     private readonly innerSelectionFlag: DataContainer<boolean>;
     private readonly modelMapManager: ViewerModelMapManagerInterface<LoadMolstarInterface>;
-    private readonly callbackManager: ViewerCallbackManagerInterface;
     private readonly componentMap: Map<string, StructureComponentRef> = new Map<string, StructureComponentRef>();
     private readonly loadingFlag: DataContainer<boolean>;
 
-    constructor(config:{viewer: Viewer;modelMapManager: ViewerModelMapManagerInterface<LoadMolstarInterface>;innerSelectionFlag: DataContainer<boolean>; loadingFlag: DataContainer<boolean>; callbackManager: ViewerCallbackManagerInterface;}) {
+    constructor(config:{viewer: Viewer;modelMapManager: ViewerModelMapManagerInterface<LoadMolstarInterface>;innerSelectionFlag: DataContainer<boolean>; loadingFlag: DataContainer<boolean>;}) {
         this.viewer = config.viewer;
         this.modelMapManager = config.modelMapManager;
         this.innerSelectionFlag = config.innerSelectionFlag;
         this.loadingFlag = config.loadingFlag;
-        this.callbackManager = config.callbackManager;
     }
 
     async load(loadConfig: LoadMolstarInterface|Array<LoadMolstarInterface>): Promise<void>{
@@ -75,11 +73,11 @@ export class MolstarActionManager implements ViewerActionManagerInterface<LoadMo
             if(checkLoadData(lC)) {
                 if (lC.loadMethod == LoadMethod.loadPdbId) {
                     const config: LoadParams = lC.loadParams as LoadParams;
-                    await this.viewer.loadPdbId(config.pdbId!, {props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params});
+                    await this.viewer.loadPdbId(config.entryId!, {props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params});
                 } else if (lC.loadMethod == LoadMethod.loadPdbIds) {
                     const config: Array<LoadParams> = lC.loadParams as Array<LoadParams>;
                     await this.viewer.loadPdbIds(config.map((d) => {
-                        return {pdbId: d.pdbId!, config:{props: d.props, matrix: d.matrix, reprProvider: d.reprProvider, params: d.params}}
+                        return {pdbId: d.entryId!, config:{props: d.props, matrix: d.matrix, reprProvider: d.reprProvider, params: d.params}}
                     }));
                 } else if (lC.loadMethod == LoadMethod.loadStructureFromUrl) {
                     const config: LoadParams = lC.loadParams as LoadParams;
@@ -95,7 +93,6 @@ export class MolstarActionManager implements ViewerActionManagerInterface<LoadMo
             }
         }
         this.loadingFlag.set(false);
-        this.callbackManager.getModelChangeCallback()(this.modelMapManager.getChains());
     }
 
     public select(modelId:string, labelAsymId: string, begin: number, end: number, mode: 'select'|'hover', operation:'add'|'set', operatorName?:string): void;
@@ -312,13 +309,13 @@ function checkLoadData(loadConfig: LoadMolstarInterface): boolean{
     const method: LoadMethod = loadConfig.loadMethod;
     const params: LoadParams | Array<LoadParams> = loadConfig.loadParams;
     if( method == LoadMethod.loadPdbId ){
-        if(params instanceof Array || params.pdbId == null)
+        if(params instanceof Array || params.entryId == null)
             throw loadConfig.loadMethod+": missing pdbId";
     }else if( method == LoadMethod.loadPdbIds ){
         if(!(params instanceof Array))
             throw loadConfig.loadMethod+": Array object spected";
         for(const d of params){
-            if(d.pdbId == null)
+            if(d.entryId == null)
                 throw loadConfig.loadMethod+": missing pdbId"
         }
     }else if( method == LoadMethod.loadStructureFromUrl ){

@@ -45,15 +45,21 @@ export abstract class AbstractView<P,S,R> extends React.Component <P & AbstractV
     }
 
     componentDidMount() {
-        this.props.structureViewer.setSelectCallback(this.structureSelectionCallback.bind(this));
-        this.props.structureViewer.setModelChangeCallback(this.modelChangeCallback.bind(this));
-        this.props.structureViewer.setHoverCallback(this.structureHoverCallback.bind(this));
-        this.props.structureViewer.setRepresentationChangeCallback(this.representationChangeCallback.bind(this));
+        this.props.stateManager.subscribe(o=>{
+            if(o.view == "3d-view" && o.type == "selection-change")
+                this.structureSelectionCallback();
+            if(o.view == "3d-view" && o.type == "hover-change")
+                this.structureHoverCallback()
+            if(o.view == "3d-view" && o.type == "model-change")
+                this.modelChangeCallback();
+            if(o.view == "3d-view" && o.type == "representation-change")
+                this.representationChangeCallback();
+        });
         window.addEventListener('resize', this.resizeCallback);
     }
 
     componentWillUnmount() {
-        this.props.structureViewer.unsetCallbacks();
+        this.props.structureViewer.unsubscribe();
         window.removeEventListener('resize', this.resizeCallback);
     }
 
@@ -82,6 +88,6 @@ export abstract class AbstractView<P,S,R> extends React.Component <P & AbstractV
     abstract structureHoverCallback(): void;
     abstract representationChangeCallback(): void;
     abstract structureSelectionCallback(): void;
-    abstract modelChangeCallback(modelMap:SaguaroPluginModelMapType): void;
+    abstract modelChangeCallback(): void;
 
 }

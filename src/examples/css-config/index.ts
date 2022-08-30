@@ -220,10 +220,10 @@ const molstarConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface,{viewer
     loadConfig: {
         loadMethod: LoadMethod.loadPdbIds,
         loadParams: [{
-            pdbId: "1ash",
+            entryId: "1ash",
             id:"1ash_model"
         },{
-            pdbId: "101m",
+            entryId: "101m",
             id:"101m_model",
             matrix:Mat4.ofRows([
                 [-0.7671995717115603, -0.5623954843039239, 0.30840904072376607, 46.883192662113345],

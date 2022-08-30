@@ -31,9 +31,9 @@ export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
     private readonly modelMapManager: Omit<ViewerModelMapManagerInterface<null>,'add'>;
     private readonly innerSelectionFlag: DataContainer<boolean>;
 
-    private selectCallbackSubs: Subscription;
-    private modelChangeCallbackSubs: Subscription;
-    private modelChangeCallback: (chainMap:SaguaroPluginModelMapType)=>void;
+    private selectSubs: Subscription;
+    private hoverSubs: Subscription;
+    private modelChangeSubs: Subscription;
 
     constructor(config:{viewer: Viewer; stateManager: RcsbFvStateManager;loadingFlag: DataContainerReader<boolean>;modelMapManager: Omit<ViewerModelMapManagerInterface<null>,'add'>;innerSelectionFlag: DataContainer<boolean>;}) {
         this.viewer = config.viewer;
@@ -43,11 +43,12 @@ export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
         this.innerSelectionFlag = config.innerSelectionFlag;
     }
 
-    public setRepresentationChangeCallback(g:()=>void){
+    public subscribeRepresentationChange(): Subscription{
+        return new Subscription();
     }
 
-    public setHoverCallback(g:()=>void){
-        this.viewer.plugin.behaviors.interaction.hover.subscribe((r)=>{
+    public subscribeHover(): Subscription{
+        this.hoverSubs = this.viewer.plugin.behaviors.interaction.hover.subscribe((r)=>{
             const sequenceData: Array<SaguaroSet> = new Array<SaguaroSet>();
             const loci:Loci = r.current.loci;
             if(StructureElement.Loci.is(loci)){
@@ -69,12 +70,13 @@ export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
                 }
             }
             this.stateManager.selectionState.setSelectionFromResidueSelection(sequenceData, 'hover', 'structure');
-            g();
+            this.stateManager.next({type:"hover-change", view:"3d-view"});
         });
+        return this.hoverSubs;
     }
 
-    public setSelectCallback(g:(flag?:boolean)=>void){
-        this.selectCallbackSubs = this.viewer.plugin.managers.structure.selection.events.changed.subscribe(()=>{
+    public subscribeSelection(): Subscription {
+        this.selectSubs = this.viewer.plugin.managers.structure.selection.events.changed.subscribe(()=>{
             if(this.innerSelectionFlag.get()) {
                 return;
             }
@@ -155,34 +157,33 @@ export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
                 }
             }
             this.stateManager.selectionState.setSelectionFromResidueSelection(sequenceData, 'select', 'structure');
-            g();
+            this.stateManager.next({type:"selection-change", view:"3d-view"});
         });
+        return this.selectSubs;
     }
 
     public pluginCall(f: (plugin: PluginContext) => void){
         this.viewer.pluginCall(f);
     }
 
-    public setModelChangeCallback(f:(modelMap:SaguaroPluginModelMapType)=>void){
-        this.modelChangeCallback = f;
-        this.modelChangeCallbackSubs = this.viewer.plugin.state.events.object.updated.subscribe((o:{obj: StateObject, action: "in-place" | "recreate"})=>{
+    public subscribeModelChange(): Subscription{
+        this.modelChangeSubs = this.viewer.plugin.state.behaviors.events.object.updated.subscribe(o=>{
             if(this.loadingFlag.get())
                 return;
-            if(o.obj.type.name === "Behavior" && o.action === "in-place") {
-                f(this.modelMapManager.getChains());
-            }else if(o.obj.type.name === "Model" && o.action === "in-place"){
-                f(this.modelMapManager.getChains());
-            }
+            this.modelChange();
         });
+        return this.modelChangeSubs;
     }
 
-    public getModelChangeCallback():(modelMap:SaguaroPluginModelMapType)=>void {
-        return this.modelChangeCallback;
+    public modelChange(): void {
+        this.stateManager.assemblyModelSate.setMap(this.modelMapManager.getChains());
+        this.stateManager.next({type:"model-change", view:"3d-view"});
     }
 
-    public unsetCallbacks(): void {
-        this.selectCallbackSubs?.unsubscribe();
-        this.modelChangeCallbackSubs?.unsubscribe();
+    public unsubscribe(): void {
+        this.selectSubs?.unsubscribe();
+        this.modelChangeSubs?.unsubscribe();
+        this.hoverSubs?.unsubscribe();
     }
 
 

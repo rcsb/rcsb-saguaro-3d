@@ -16,7 +16,6 @@ export interface PfvManagerFactoryConfigInterface<R,U> {
     rcsbFvDivId: string;
     rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
     stateManager: RcsbFvStateManager;
-    assemblyModelSate: AssemblyModelSate;
     plugin: ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>;
     boardConfigContainer: DataContainer<Partial<RcsbFvBoardConfigInterface>>;
     pfvChangeCallback(context: U): Promise<void>;
@@ -28,7 +27,6 @@ export interface PfvManagerFactoryInterface<T,R,U> {
 }
 
 export interface BuildPfvInterface {
-    modelMap:SaguaroPluginModelMapType;
     defaultAuthId?: string;
     defaultOperatorName?:string;
 }
@@ -42,7 +40,6 @@ export abstract class AbstractPfvManager<T,R,U> implements PfvManagerInterface {
     protected readonly rcsbFvDivId: string;
     protected readonly rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
     protected readonly stateManager: RcsbFvStateManager;
-    protected readonly assemblyModelSate: AssemblyModelSate;
     protected readonly plugin: ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>;
     protected readonly boardConfigContainer: DataContainer<Partial<RcsbFvBoardConfigInterface>>;
     protected readonly pfvChangeCallback: (context: U)=>Promise<void>;
@@ -52,7 +49,6 @@ export abstract class AbstractPfvManager<T,R,U> implements PfvManagerInterface {
         this.rcsbFvDivId = config.rcsbFvDivId;
         this.rcsbFvContainer = config.rcsbFvContainer;
         this.stateManager = config.stateManager;
-        this.assemblyModelSate = config.assemblyModelSate;
         this.plugin = config.plugin;
         this.additionalConfig = config.additionalConfig;
         this.boardConfigContainer = config.boardConfigContainer;

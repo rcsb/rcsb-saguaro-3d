@@ -9,7 +9,7 @@ import {AssemblyModelSate} from "./AssemblyModelSate";
 import {Subscription} from "rxjs";
 
 export type RcsbFvStateType = {
-    type: "selection-change"|"model-change";
+    type: "selection-change"|"hover-change"|"model-change"|"representation-change";
     view: "1d-view" | "3d-view"
 };
 

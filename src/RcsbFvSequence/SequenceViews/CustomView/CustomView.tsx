@@ -20,7 +20,7 @@ export type CustomViewStateInterface<R> = Omit<CustomViewInterface<R>, "modelCha
 export interface CustomViewInterface<R> {
     blockConfig: FeatureBlockInterface<R> | Array<FeatureBlockInterface<R>>;
     blockSelectorElement?: (blockSelector: BlockSelectorManager) => JSX.Element;
-    modelChangeCallback?: (modelMap: SaguaroPluginModelMapType) => CustomViewStateInterface<R>;
+    modelChangeCallback?: () => CustomViewStateInterface<R>;
     blockChangeCallback?: (plugin: StructureViewerPublicInterface<R>, pfvList: Array<RcsbFv>, stateManager: RcsbFvStateManager) => void;
 }
 
@@ -143,7 +143,7 @@ export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomVi
             document.getElementById("boardDiv_"+boardId)?.remove()
         });
         this.rcsbFvMap.clear();
-        this.props.structureViewer.unsetCallbacks();
+        this.props.structureViewer.unsubscribe();
     }
 
     private buildBlockFv(){
@@ -178,9 +178,9 @@ export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomVi
             });
             this.rcsbFvMap.set(boardId, rcsbFv);
         });
-        this.props.structureViewer.setSelectCallback(()=>{
+        /*this.props.structureViewer.setSelectCallback(()=>{
            this.structureSelectionCallback();
-        });
+        });*/
     }
 
     structureSelectionCallback(): void {
@@ -213,13 +213,13 @@ export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomVi
         return this.state.blockSelectorElement(this.blockViewSelector);
     }
 
-    modelChangeCallback(modelMap:SaguaroPluginModelMapType): void {
+    modelChangeCallback(): void {
         if(this.firstModelLoad){
             this.firstModelLoad = false;
             return;
         }
         if(typeof this.props.modelChangeCallback === "function") {
-            let newConfig: CustomViewStateInterface<R> = this.props.modelChangeCallback(modelMap);
+            let newConfig: CustomViewStateInterface<R> = this.props.modelChangeCallback();
             if(newConfig != null ){
                 this.updateContext = "state-change";
                 if(newConfig.blockConfig != null && newConfig.blockSelectorElement != null){

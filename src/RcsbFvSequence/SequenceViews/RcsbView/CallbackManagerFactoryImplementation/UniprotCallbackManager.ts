@@ -36,8 +36,7 @@ class UniprotCallbackManager<R>  extends AbstractCallbackManager<R,{context: Uni
     highlightHoverCallback(selection: RcsbFvTrackDataElementInterface[]): void {
     }
 
-    modelChangeCallback(modelMap: SaguaroPluginModelMapType, defaultAuthId?: string, defaultOperatorName?: string): Promise<void> {
-        this.assemblyModelSate.setMap(modelMap);
+    modelChangeCallback(defaultAuthId?: string, defaultOperatorName?: string): Promise<void> {
         return Promise.resolve(undefined);
     }
 

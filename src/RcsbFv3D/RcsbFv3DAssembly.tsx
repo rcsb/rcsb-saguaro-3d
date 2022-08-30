@@ -59,7 +59,7 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract<{instanceSequenceConfig?:
                 loadConfig: {
                     loadMethod: LoadMethod.loadPdbId,
                     loadParams: {
-                        pdbId: params.config.entryId,
+                        entryId: params.config.entryId,
                         id: params.config.entryId,
                         reprProvider: RcsbRepresentationPreset,
                         params: {
