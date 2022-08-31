@@ -80,10 +80,10 @@
     "webpack-dev-server": "^4.9.3"
   },
   "dependencies": {
-    "@rcsb/rcsb-api-tools": "^4.1.0-models.3",
+    "@rcsb/rcsb-api-tools": "^4.1.0",
     "@rcsb/rcsb-molstar": "^2.5.5",
     "@rcsb/rcsb-saguaro": "^2.2.6",
-    "@rcsb/rcsb-saguaro-app": "^4.4.0-models.43",
+    "@rcsb/rcsb-saguaro-app": "^4.4.0",
     "molstar": "^3.13.0"
   },
   "bugs": {
