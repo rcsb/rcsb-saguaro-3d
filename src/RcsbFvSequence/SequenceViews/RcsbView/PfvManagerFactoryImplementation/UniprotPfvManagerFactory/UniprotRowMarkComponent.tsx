@@ -4,7 +4,7 @@
 */
 
 import React from "react";
-import classes from './scss/UniprotPfvStyle.module.scss';
+//import classes from './scss/UniprotPfvStyle.module.scss';
 import {Property} from "csstype";
 import {asyncScheduler} from "rxjs";
 
@@ -30,13 +30,14 @@ export class UniprotRowMarkComponent extends React.Component <UniprotRowMarkInte
     }
 
     public render(): JSX.Element {
-        return (
+        return (<></>);
+        /*return (
             <>
                 <div onClick={this.click.bind(this)} onMouseOver={this.hover.bind(this)} style={{visibility: this.state.visibility, cursor:"pointer", display:"inline-block", width:6, height:6, marginBottom: 4, marginRight:5}} >
                     <div className={classes.uniprotRowMark} style={{borderLeftColor: this.props.isGlowing ? this.HOVER_COLOR : (this.state.borderLeftColor)}}/>
                 </div>
             </>
-        );
+        );*/
     }
 
     private click(): void {
