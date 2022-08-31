@@ -291,15 +291,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
 ### Build app
     npm install
     npm run buildApp
-    
-### Build examples 
-    npm run buildExamples
-    
-From the root of the project:
-    
-    npx http-server -p PORT-NUMBER
-    
-and navigate to `localhost:PORT-NUMBER/build/examples/`
+
+### Testing
+- `npm install`
+- `npm run devServer`
+- Go to `http://localhost:9000/assembly.html`
 
 ### Library Documentation
 TypeScript full classes documentation can be found [here](https://rcsb.github.io/rcsb-saguaro-3d/globals.html).
