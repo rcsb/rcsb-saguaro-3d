@@ -1,7 +1,7 @@
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/registry";
 import {ColorTheme} from "molstar/lib/mol-theme/color";
-import {RcsbFvSelectorManager, RegionSelectionInterface} from "../RcsbFvState/RcsbFvSelectorManager";
+import {RegionSelectionInterface} from "../RcsbFvState/RcsbFvSelectorManager";
 import {RcsbFvStateManager} from "../RcsbFvState/RcsbFvStateManager";
 import {Subscription} from "rxjs";
 

@@ -111,26 +111,30 @@ export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
                         for (const e of surroundingsLoci.elements) {
                             StructureElement.Location.set(surroundingsLoc, surroundingsLoci.structure, e.unit, e.unit.elements[0]);
                             if(SP.entity.type(surroundingsLoc) === 'polymer'){
-                                this.stateManager.selectionState.setLastSelection('select', {
+                                this.stateManager.selectionState.setLastSelection({
                                     modelId: currentModelId,
                                     labelAsymId: SP.chain.label_asym_id(surroundingsLoc),
+                                    source:"structure",
                                     regions: []
                                 });
                             }
                         }
                         this.innerSelectionFlag.set(false);
                     }else if( SP.entity.type(loc) === 'polymer' ) {
-                        this.stateManager.selectionState.setLastSelection('select', {
+                        this.stateManager.selectionState.setLastSelection({
                             modelId: currentModelId,
                             labelAsymId: SP.chain.label_asym_id(loc),
                             operatorName: SP.unit.operator_name(loc),
+                            source:"structure",
                             regions: []
                         });
                     }else{
-                        this.stateManager.selectionState.setLastSelection('select', null);
+                        this.stateManager.selectionState.setLastSelection(null);
                     }
+                else
+                    this.stateManager.selectionState.setLastSelection(null);
             }else{
-                this.stateManager.selectionState.setLastSelection('select', null);
+                this.stateManager.selectionState.setLastSelection(null);
             }
             const sequenceData: Array<SaguaroSet> = new Array<SaguaroSet>();
             for(const structure of this.viewer.plugin.managers.structure.hierarchy.current.structures){
@@ -157,6 +161,8 @@ export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
                 }
             }
             this.stateManager.selectionState.setSelectionFromResidueSelection(sequenceData, 'select', 'structure');
+            if(sequenceData.length == 0)
+                this.stateManager.selectionState.setLastSelection(null);
             this.stateManager.next({type:"selection-change", view:"3d-view"});
         });
         return this.selectSubs;

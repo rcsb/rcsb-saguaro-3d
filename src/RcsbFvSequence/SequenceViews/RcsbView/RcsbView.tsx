@@ -4,9 +4,8 @@ import {RcsbFvDOMConstants} from "../../../RcsbFvConstants/RcsbFvConstants";
 import {unmount} from "@rcsb/rcsb-saguaro-app";
 import {AbstractView, AbstractViewInterface} from "../AbstractView";
 import {RcsbFvBoardConfigInterface, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
-import {OperatorInfo, SaguaroPluginModelMapType} from "../../../RcsbFvStructure/StructureViewerInterface";
+import {OperatorInfo} from "../../../RcsbFvStructure/StructureViewerInterface";
 import {RcsbFvAdditionalConfig, RcsbFvModulePublicInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
-import {AssemblyModelSate} from "../../../RcsbFvState/AssemblyModelSate";
 import {DataContainer} from "../../../Utils/DataContainer";
 import {
     PfvManagerInterface,
@@ -140,7 +139,7 @@ export class RcsbView<T,R,U> extends AbstractView<RcsbViewInterface<T,R,U>, {}, 
     }
 
     private async pluginSelectCallback(mode:'select'|'hover'): Promise<void> {
-        await this.callbackManager.pluginSelectCallback(mode);
+        await this.callbackManager.structureViewerSelectionCallback(mode);
     }
 
     private async pfvChangeCallback(context: U): Promise<void>{
@@ -152,11 +151,11 @@ export class RcsbView<T,R,U> extends AbstractView<RcsbViewInterface<T,R,U>, {}, 
     }
 
     private selectionChangeCallback(selection: Array<RcsbFvTrackDataElementInterface>): void {
-        this.callbackManager.selectionChangeCallback(selection);
+        this.callbackManager.pfvSelectionChangeCallback(selection);
     }
 
     private elementClickCallback(e:RcsbFvTrackDataElementInterface): void {
-        this.callbackManager.elementClickCallback(e);
+        this.callbackManager.featureClickCallback(e);
     }
 
 }

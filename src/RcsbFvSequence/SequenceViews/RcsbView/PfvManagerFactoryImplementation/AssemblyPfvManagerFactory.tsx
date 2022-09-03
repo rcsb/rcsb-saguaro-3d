@@ -65,7 +65,6 @@ class AssemblyPfvManager<R> extends AbstractPfvManager<{instanceSequenceConfig: 
             onChangeCallback.set(v.entryId,(x)=>{
                 this.stateManager.assemblyModelSate.set({entryId: v.entryId, labelAsymId: x.asymId, modelId: k});
                 asyncScheduler.schedule(()=>{
-                    this.stateManager.selectionState.setLastSelection('select', null);
                     this.pfvChangeCallback(undefined);
                 },100);
             });

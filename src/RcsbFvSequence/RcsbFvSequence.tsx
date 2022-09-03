@@ -6,7 +6,6 @@ import {
 } from "../RcsbFvStructure/StructureViewerInterface";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {RcsbFv, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
-import {RcsbFvSelectorManager} from "../RcsbFvState/RcsbFvSelectorManager";
 import {RcsbView, RcsbViewInterface} from "./SequenceViews/RcsbView/RcsbView";
 import {RcsbFvStateManager} from "../RcsbFvState/RcsbFvStateManager";
 

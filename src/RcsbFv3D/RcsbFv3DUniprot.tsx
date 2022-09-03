@@ -22,6 +22,7 @@ import {
 import {RcsbFvStructure} from "../RcsbFvStructure/RcsbFvStructure";
 import {RcsbFv3DCssConfig} from "./RcsbFv3DComponent";
 import {MolstarAlignmentLoader} from "../RcsbFvStructure/StructureUtils/MolstarAlignmentLoader";
+import {UniprotBehaviourObserver} from "../RcsbFvStructure/StructureViewerBehaviour/UniprotBehaviour";
 
 export interface RcsbFv3DUniprotInterface  {
     elementId?: string;
@@ -63,6 +64,7 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string},LoadMolstar
                 }
             },
             structureViewer: new StructureViewer<LoadMolstarInterface,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}>( new MolstarManagerFactory() ),
+            structureViewerBehaviourObserver: new UniprotBehaviourObserver<LoadMolstarInterface>()
         });
     }
 

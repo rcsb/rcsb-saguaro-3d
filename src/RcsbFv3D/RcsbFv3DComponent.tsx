@@ -18,6 +18,7 @@ import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {RcsbFvSelectorManager} from "../RcsbFvState/RcsbFvSelectorManager";
 import {CSSProperties, MouseEvent} from "react";
 import {RcsbFvStateManager} from "../RcsbFvState/RcsbFvStateManager";
+import {StructureViewerBehaviourObserverInterface} from "../RcsbFvStructure/StructureViewerBehaviourInterface";
 
 export interface RcsbFv3DCssConfig {
     overwriteCss?: boolean;
@@ -35,6 +36,7 @@ export interface RcsbFv3DComponentInterface<T,R,S,U> {
     unmount:(flag:boolean)=>void;
     fullScreen: boolean;
     structureViewer: StructureViewerInterface<R,S>;
+    structureViewerBehaviourObserver: StructureViewerBehaviourObserverInterface<R>;
 }
 
 interface RcsbFv3DComponentState<T,R,S,U> {
@@ -71,6 +73,7 @@ export class RcsbFv3DComponent<T,R,S,U> extends React.Component <RcsbFv3DCompone
                             componentId={this.props.id}
                             structureViewer={this.props.structureViewer}
                             stateManager={this.stateManager}
+                            structureViewerBehaviourObserver={this.props.structureViewerBehaviourObserver}
                         />
                     </div>
                     <div style={this.sequenceCssConfig(this.props.cssConfig?.sequencePanel)}  >

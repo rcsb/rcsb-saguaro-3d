@@ -30,7 +30,7 @@ class UniprotCallbackManager<R>  extends AbstractCallbackManager<R,{context: Uni
         this.loadParamRequest = config.loadParamRequest;
     }
 
-    elementClickCallback(e: RcsbFvTrackDataElementInterface): void {
+    featureClickCallback(e: RcsbFvTrackDataElementInterface): void {
     }
 
     highlightHoverCallback(selection: RcsbFvTrackDataElementInterface[]): void {
@@ -46,11 +46,11 @@ class UniprotCallbackManager<R>  extends AbstractCallbackManager<R,{context: Uni
         return Promise.resolve(undefined);
     }
 
-    protected innerPluginSelect(mode: "select" | "hover"): Promise<void> {
+    protected innerStructureViewerSelectionChange(mode: "select" | "hover"): Promise<void> {
         return Promise.resolve(undefined);
     }
 
-    protected innerSelectionChange(selection: Array<RcsbFvTrackDataElementInterface>): void {
+    protected innerPfvSelectionChange(selection: Array<RcsbFvTrackDataElementInterface>): void {
     }
 
 }

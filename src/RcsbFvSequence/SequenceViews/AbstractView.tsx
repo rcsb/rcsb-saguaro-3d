@@ -4,9 +4,8 @@ import {asyncScheduler, Subscription} from "rxjs";
 
 import {RcsbFvDOMConstants} from "../../RcsbFvConstants/RcsbFvConstants";
 import {
-    SaguaroPluginModelMapType, ViewerCallbackManagerInterface, ViewerActionManagerInterface
+    ViewerCallbackManagerInterface, ViewerActionManagerInterface
 } from "../../RcsbFvStructure/StructureViewerInterface";
-import {RcsbFvSelectorManager} from "../../RcsbFvState/RcsbFvSelectorManager";
 import {SequenceViewInterface} from "./SequenceViewInterface";
 import {RcsbFvStateManager} from "../../RcsbFvState/RcsbFvStateManager";
 

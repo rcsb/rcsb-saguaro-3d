@@ -11,16 +11,17 @@ export interface RegionSelectionInterface{
 //TODO Check how lastSelection is used. It is not linked to selection. Only label asymId is used when the value is got
 export class RcsbFvSelectorManager {
 
-    private lastSelection: SaguaroRegionList | null = null;
+    private lastSelection: SaguaroRegionList & {source:RegionSelectionInterface["source"]}| null = null;
     private selection: Array<SaguaroRegionList> = new Array<SaguaroRegionList>();
     private hover: Array<SaguaroRegionList> = new Array<SaguaroRegionList>();
 
-    public setSelectionFromRegion(modelId: string, labelAsymId: string, region: RegionSelectionInterface, mode:'select'|'hover', operatorName?: string): void {
-        this.clearSelection(mode);
+    public selectFromRegion(operation:"set"|"add", modelId: string, labelAsymId: string, region: RegionSelectionInterface, mode:'select'|'hover', operatorName?: string): void {
+        if(operation == "set")
+            this.clearSelection(mode,{modelId,labelAsymId,operatorName});
         this.addSelectionFromRegion(modelId, labelAsymId, region, mode, operatorName);
     }
 
-    public addSelectionFromRegion(modelId: string, labelAsymId: string, region: RegionSelectionInterface, mode:'select'|'hover', operatorName?: string): void {
+    private addSelectionFromRegion(modelId: string, labelAsymId: string, region: RegionSelectionInterface, mode:'select'|'hover', operatorName?: string): void {
         if(mode === 'select'){
             this.selection.push({modelId:modelId, labelAsymId:labelAsymId, regions:[region], operatorName: operatorName});
         }else{
@@ -28,12 +29,15 @@ export class RcsbFvSelectorManager {
         }
     }
 
-    public setSelectionFromMultipleRegions(regions: {modelId: string, labelAsymId: string, region: RegionSelectionInterface, operatorName?: string}[], mode:'select'|'hover'): void {
-        this.clearSelection(mode);
+    public selectFromMultipleRegions(operation:"set"|"add", regions: {modelId: string, labelAsymId: string, region: RegionSelectionInterface, operatorName?: string}[], mode:'select'|'hover'): void {
+        if(operation == "set")
+            regions.forEach(r =>{
+                this.clearSelection(mode,r);
+            });
         this.addSelectionFromMultipleRegions(regions, mode);
     }
 
-    public addSelectionFromMultipleRegions(regions: (SaguaroChain & {region: RegionSelectionInterface})[], mode:'select'|'hover'): void {
+    private addSelectionFromMultipleRegions(regions: (SaguaroChain & {region: RegionSelectionInterface})[], mode:'select'|'hover'): void {
         regions.forEach(r=>{
             this.addSelectionFromRegion(r.modelId, r.labelAsymId, r.region, mode, r.operatorName);
         });
@@ -54,11 +58,11 @@ export class RcsbFvSelectorManager {
             return this.hover;
     }
 
-    public getLastSelection(mode:'select'|'hover'): SaguaroRegionList | null{
+    public getLastSelection(): SaguaroRegionList & {source:RegionSelectionInterface["source"]} | null{
        return this.lastSelection;
     }
 
-    public setLastSelection(mode:'select'|'hover', selection: SaguaroRegionList | null): void {
+    public setLastSelection(selection: SaguaroRegionList & {source:RegionSelectionInterface["source"]} | null): void {
         this.lastSelection = selection;
     }
 

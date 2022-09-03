@@ -2,6 +2,11 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [2.1.0] - 2022-09-02
+### Major refactoring
+- `StructureViewerBehaviourObserverInterface`
+- `StructureViewerBehaviourInterface`
+
 ## [2.0.1] - 2022-09-01
 ### Dependency update
 - rcsb-saguaro-app v4.4.1

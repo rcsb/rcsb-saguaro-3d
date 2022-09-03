@@ -16,6 +16,7 @@ import {
 import {
     AssemblyCallbackManagerFactory
 } from "../RcsbFvSequence/SequenceViews/RcsbView/CallbackManagerFactoryImplementation/AssemblyCallbackManager";
+import {AssemblyBehaviourObserver} from "../RcsbFvStructure/StructureViewerBehaviour/AssemblyBehaviour";
 
 type RcsbFv3DAssemblyAdditionalConfig = RcsbFvAdditionalConfig & {operatorChangeCallback?:(operatorInfo: OperatorInfo)=>void};
 
@@ -75,6 +76,7 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract<{instanceSequenceConfig?:
                 }
             },
             structureViewer: new StructureViewer<LoadMolstarInterface,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}>(new MolstarManagerFactory()),
+            structureViewerBehaviourObserver: new AssemblyBehaviourObserver<LoadMolstarInterface>(),
             cssConfig: params.cssConfig
         });
     }

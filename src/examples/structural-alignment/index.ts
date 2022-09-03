@@ -126,7 +126,7 @@ const fvConfig: FeatureViewInterface<LoadMolstarInterface> = {
                 labelAsymId: "A",
                 region: {begin: alignmentManager.getTargetPosition(r.begin), end: alignmentManager.getTargetPosition(r.end ?? r.begin), source: "sequence"} as RegionSelectionInterface
             })));
-            stateManager.selectionState.addSelectionFromMultipleRegions(regions, "select");
+            stateManager.selectionState.selectFromMultipleRegions("set", regions, "select");
             plugin.select(regions.map(r => ({
                 ...r,
                 begin: r.region.begin,

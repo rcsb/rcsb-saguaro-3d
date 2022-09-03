@@ -3,13 +3,21 @@ import {StructureViewerInterface} from "./StructureViewerInterface";
 import {RcsbFvDOMConstants} from "../RcsbFvConstants/RcsbFvConstants";
 import {RcsbFvSelectorManager} from "../RcsbFvState/RcsbFvSelectorManager";
 import {RcsbFvStateManager} from "../RcsbFvState/RcsbFvStateManager";
+import {StructureViewerBehaviourObserverInterface} from "./StructureViewerBehaviourInterface";
 
 export interface RcsbFvStructureConfigInterface<R,S> {
     loadConfig: R | Array<R>;
     structureViewerConfig: S;
 }
 
-export class RcsbFvStructure<R,S> extends React.Component <RcsbFvStructureConfigInterface<R,S> & {structureViewer: StructureViewerInterface<R,S>, componentId: string,  stateManager: RcsbFvStateManager}, RcsbFvStructureConfigInterface<R,S> > {
+interface RcsbFvStructureAdditionalInterface<R,S>{
+    componentId: string;
+    structureViewer: StructureViewerInterface<R,S>;
+    stateManager: RcsbFvStateManager;
+    structureViewerBehaviourObserver: StructureViewerBehaviourObserverInterface<R>;
+}
+
+export class RcsbFvStructure<R,S> extends React.Component <RcsbFvStructureConfigInterface<R,S> & RcsbFvStructureAdditionalInterface<R,S>, RcsbFvStructureConfigInterface<R,S> > {
 
     render():JSX.Element {
         return (
@@ -22,9 +30,14 @@ export class RcsbFvStructure<R,S> extends React.Component <RcsbFvStructureConfig
     async componentDidMount() {
         this.updateDimensions();
         this.props.structureViewer.init(this.props.stateManager, this.props.structureViewerConfig);
+        this.props.structureViewerBehaviourObserver.observe(this.props.structureViewer, this.props.stateManager);
         if(this.props.loadConfig)
             await this.props.structureViewer.load(this.props.loadConfig);
         window.addEventListener('resize', this.updateDimensions.bind(this));
+    }
+
+    public componentWillUnmount(): void {
+        this.props.structureViewerBehaviourObserver.unsubscribe();
     }
 
     private updateDimensions(): void {

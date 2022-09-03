@@ -7,6 +7,7 @@ import {EventType, RcsbFvContextManager} from "../RcsbFvContextManager/RcsbFvCon
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {CSSProperties} from "react";
 import {StructureViewerInterface} from "../RcsbFvStructure/StructureViewerInterface";
+import {StructureViewerBehaviourObserverInterface} from "../RcsbFvStructure/StructureViewerBehaviourInterface";
 
 export interface RcsbFv3DAbstractInterface<T,R,S,U> {
     elementId: string;
@@ -14,6 +15,7 @@ export interface RcsbFv3DAbstractInterface<T,R,S,U> {
     sequenceConfig: RcsbFvSequenceInterface<T,R,U>;
     structureConfig: RcsbFvStructureConfigInterface<R,S>;
     structureViewer: StructureViewerInterface<R,S>;
+    structureViewerBehaviourObserver: StructureViewerBehaviourObserverInterface<R>;
 }
 
 export abstract class RcsbFv3DAbstract<T,R,S,U> {
@@ -22,6 +24,7 @@ export abstract class RcsbFv3DAbstract<T,R,S,U> {
     private reactRoot: Root;
     private readonly structureConfig: RcsbFvStructureConfigInterface<R,S>;
     private readonly structureViewer: StructureViewerInterface<R,S>;
+    private readonly structureViewerBehaviourObserver: StructureViewerBehaviourObserverInterface<R>;
     private readonly sequenceConfig: RcsbFvSequenceInterface<T,R,U>;
     private readonly ctxManager: RcsbFvContextManager<T,R,S,U> = new RcsbFvContextManager<T,R,S,U>();
     private fullScreenFlag: boolean = false;
@@ -38,6 +41,7 @@ export abstract class RcsbFv3DAbstract<T,R,S,U> {
        this.sequenceConfig = config.sequenceConfig;
        this.structureConfig = config.structureConfig;
        this.structureViewer = config.structureViewer;
+       this.structureViewerBehaviourObserver = config.structureViewerBehaviourObserver;
     }
 
     public render(): void{
@@ -60,6 +64,7 @@ export abstract class RcsbFv3DAbstract<T,R,S,U> {
                 unmount={this.unmount.bind(this)}
                 fullScreen={this.fullScreenFlag}
                 structureViewer={this.structureViewer}
+                structureViewerBehaviourObserver={this.structureViewerBehaviourObserver}
             />);
     }
 
