@@ -11,6 +11,7 @@ import {
     CallbackManagerInterface
 } from "../CallbackManagerFactoryInterface";
 import {RegionSelectionInterface} from "../../../../RcsbFvState/RcsbFvSelectorManager";
+import {DataContainer} from "../../../../Utils/DataContainer";
 
 export class AssemblyCallbackManagerFactory<R> implements CallbackManagerFactoryInterface<R,undefined> {
     getCallbackManager(config: CallbackConfigInterface<R>): CallbackManagerInterface<undefined> {
@@ -21,23 +22,30 @@ export class AssemblyCallbackManagerFactory<R> implements CallbackManagerFactory
 class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
 
     public featureClickCallback(e:RcsbFvTrackDataElementInterface): void {
-        this.plugin.clearFocus();
         if(e == null){
             this.stateManager.selectionState.setLastSelection(null);
-            return;
+        }else{
+            const x = e.begin;
+            const y = e.end ?? e.begin;
+            const modelId: string = this.stateManager.assemblyModelSate.getString("modelId");
+            const labelAsymId: string = this.stateManager.assemblyModelSate.getString("labelAsymId");
+            const operatorName: string | undefined = this.stateManager.assemblyModelSate.getOperator()?.name;
+            if (e.isEmpty)
+                this.stateManager.selectionState.setLastSelection({
+                    modelId, labelAsymId, operatorName, source: "sequence", regions: [
+                        {begin: x, end: x, source: "sequence"},
+                        {begin: y, end: y, source: "sequence"}
+                    ]
+                });
+            else
+                this.stateManager.selectionState.setLastSelection({
+                    modelId,
+                    labelAsymId,
+                    operatorName,
+                    source: "sequence",
+                    regions: processGaps(modelId, labelAsymId, e, operatorName).map(r => ({...r, source: "sequence"}))
+                });
         }
-        const x = e.begin;
-        const y = e.end ?? e.begin;
-        const modelId: string = this.stateManager.assemblyModelSate.getString("modelId");
-        const labelAsymId: string = this.stateManager.assemblyModelSate.getString("labelAsymId");
-        const operatorName: string|undefined = this.stateManager.assemblyModelSate.getOperator()?.name;
-        if(e.isEmpty)
-            this.stateManager.selectionState.setLastSelection({modelId,labelAsymId,operatorName,source:"sequence",regions:[
-                {begin:x,end:x,source:"sequence"},
-                {begin:y,end:y,source:"sequence"}
-            ]});
-        else
-            this.stateManager.selectionState.setLastSelection({modelId,labelAsymId,operatorName,source:"sequence",regions:processGaps(modelId, labelAsymId, e, operatorName).map(r=>({...r, source:"sequence"}))});
         this.stateManager.next({type:"feature-click", view:"1d-view"});
     }
 
@@ -51,7 +59,9 @@ class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
 
     public async pfvChangeCallback(): Promise<void>{
         this.stateManager.selectionState.setLastSelection(null);
-        await this.structureViewerSelectionCallback("select");
+        this.rcsbFvContainer.get()?.getFv().then(async ()=>{
+            await this.structureViewerSelectionCallback("select");
+        });
     }
 
     protected async innerStructureViewerSelectionChange(mode:'select'|'hover'): Promise<void> {

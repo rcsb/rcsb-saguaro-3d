@@ -34,7 +34,7 @@ export abstract class AbstractCallbackManager<R,U> implements CallbackManagerInt
     protected readonly stateManager: RcsbFvStateManager;
     protected readonly plugin: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
     protected pfvFactory: PfvManagerInterface;
-    protected readonly isInnerSelection: DataContainer<boolean> = new DataContainer<boolean>();
+    private readonly isInnerSelection: DataContainer<boolean> = new DataContainer<boolean>();
 
     constructor(config: CallbackConfigInterface<R>) {
         this.rcsbFvContainer = config.rcsbFvContainer;

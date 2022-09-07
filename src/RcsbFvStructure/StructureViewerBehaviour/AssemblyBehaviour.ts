@@ -91,6 +91,12 @@ class AssemblyBehaviour<R> implements StructureViewerBehaviourInterface {
                 });
             else
                 this.selectedComponentId = undefined;
+        }else{
+            const modelId: string = this.stateManager.assemblyModelSate.getString("modelId");
+            const labelAsymId: string = this.stateManager.assemblyModelSate.getString("labelAsymId");
+            const operatorName: string|undefined = this.stateManager.assemblyModelSate.getOperator()?.name;
+            this.structureViewer.clearSelection("select", {modelId, labelAsymId, operatorName});
+            this.resetPluginView();
         }
     }
 
