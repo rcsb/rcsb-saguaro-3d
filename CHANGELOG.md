@@ -4,8 +4,8 @@
 
 ## [2.1.0] - 2022-09-02
 ### Major refactoring
-- `StructureViewerBehaviourObserverInterface`
-- `StructureViewerBehaviourInterface`
+- `StructureViewerBehaviourObserverInterface` factory of structure viewer behaviours
+- `StructureViewerBehaviourInterface` abstraction of structure viewer callback events
 
 ## [2.0.1] - 2022-09-01
 ### Dependency update
