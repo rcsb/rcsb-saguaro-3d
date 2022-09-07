@@ -63,7 +63,7 @@ class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
 
         if(allSel == null || allSel.length ===0) {
             this.rcsbFvContainer.get()?.getFv().clearSelection(mode);
-        }else if( mode === 'select' && lastSel?.labelAsymId && (lastSel?.labelAsymId != labelAsymId || lastSel?.operatorName != operatorName) ){
+        }else if( mode === 'select' && ((lastSel?.labelAsymId && lastSel?.labelAsymId != labelAsymId) || (lastSel?.operatorName && lastSel?.operatorName != operatorName)) ){
             const authId: string | undefined = this.stateManager.assemblyModelSate.getChainInfo(lastSel?.labelAsymId!)?.auth;
             await this.modelChangeCallback(authId, lastSel?.operatorName);
         }else if(modelId && labelAsymId){

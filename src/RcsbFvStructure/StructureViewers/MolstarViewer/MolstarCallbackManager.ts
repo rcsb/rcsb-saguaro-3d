@@ -145,19 +145,21 @@ export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
                     const loc = StructureElement.Location.create(loci.structure);
                     for (const e of loci.elements) {
                         StructureElement.Location.set(loc, loci.structure, e.unit, e.unit.elements[0]);
-                        const seqIds = new Set<number>();
-                        for (let i = 0, il = OrderedSet.size(e.indices); i < il; ++i) {
-                            loc.element = e.unit.elements[OrderedSet.getAt(e.indices, i)];
-                            seqIds.add(SP.residue.label_seq_id(loc));
+                        if(SP.entity.type(loc) === 'polymer'){
+                            const seqIds = new Set<number>();
+                            for (let i = 0, il = OrderedSet.size(e.indices); i < il; ++i) {
+                                loc.element = e.unit.elements[OrderedSet.getAt(e.indices, i)];
+                                seqIds.add(SP.residue.label_seq_id(loc));
+                            }
+                            if(seqIds.size > 0)
+                                sequenceData.push({
+                                    modelId: this.modelMapManager.getModelId(data.model.id),
+                                    labelAsymId: SP.chain.label_asym_id(loc),
+                                    operatorName: SP.unit.operator_name(loc),
+                                    seqIds
+                                });
                         }
-                        sequenceData.push({
-                            modelId: this.modelMapManager.getModelId(data.model.id),
-                            labelAsymId: SP.chain.label_asym_id(loc),
-                            operatorName: SP.unit.operator_name(loc),
-                            seqIds
-                        });
                     }
-
                 }
             }
             this.stateManager.selectionState.setSelectionFromResidueSelection(sequenceData, 'select', 'structure');
