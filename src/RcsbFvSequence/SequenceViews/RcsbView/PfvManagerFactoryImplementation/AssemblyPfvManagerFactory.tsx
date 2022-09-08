@@ -57,7 +57,7 @@ class AssemblyPfvManager<R> extends AbstractPfvManager<{instanceSequenceConfig: 
     }
 
     public async create(config: BuildPfvInterface): Promise<RcsbFvModulePublicInterface | undefined> {
-        this.plugin.clearFocus();
+        this.structureViewer.clearFocus();
         const onChangeCallback: Map<string, (x: PolymerEntityInstanceInterface)=>void> = new Map<string, (x: PolymerEntityInstanceInterface) => {}>();
         const assemblyInstances: Map<string, Set<string>> = new Map<string, Set<string>>();
         this.stateManager.assemblyModelSate.forEach((v,k)=>{
@@ -100,7 +100,7 @@ class AssemblyPfvManager<R> extends AbstractPfvManager<{instanceSequenceConfig: 
                     filterInstances: assemblyInstances.get(this.stateManager.assemblyModelSate.getString("entryId")),
                     selectButtonOptionProps: (props: SelectOptionProps) => (
                         <div style={{display: 'flex'}}>
-                            <ChainDisplayComponent structureViewer={this.plugin} label={props.data.label}/>
+                            <ChainDisplayComponent structureViewer={this.structureViewer} label={props.data.label}/>
                             {props.children}
                         </div>)
                 },
@@ -114,7 +114,7 @@ class AssemblyPfvManager<R> extends AbstractPfvManager<{instanceSequenceConfig: 
             );
         }
         if(!config.defaultAuthId)
-            await createComponents<R>(this.plugin, this.stateManager.assemblyModelSate.getMap());
+            await createComponents<R>(this.structureViewer, this.stateManager.assemblyModelSate.getMap());
         return this.module;
     }
 

@@ -39,7 +39,7 @@ export class RcsbView<T,R,U> extends AbstractView<RcsbViewInterface<T,R,U>, {}, 
             ...this.props.pfvParams,
             rcsbFvContainer: this.rcsbFvContainer,
             stateManager: this.props.stateManager,
-            plugin: this.props.structureViewer,
+            structureViewer: this.props.structureViewer,
             boardConfigContainer: this.boardConfigContainer,
             rcsbFvDivId: this.rcsbFvDivId,
             pfvChangeCallback: this.pfvChangeCallback.bind(this),
@@ -49,7 +49,7 @@ export class RcsbView<T,R,U> extends AbstractView<RcsbViewInterface<T,R,U>, {}, 
         this.callbackManager = this.props.callbackManagerFactory.getCallbackManager({
             rcsbFvContainer: this.rcsbFvContainer,
             stateManager: this.props.stateManager,
-            plugin: this.props.structureViewer,
+            structureViewer: this.props.structureViewer,
             pfvFactory: this.pfvFactory
         });
     }

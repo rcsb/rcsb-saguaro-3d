@@ -101,7 +101,7 @@ class UniprotPfvManager<R> extends AbstractPfvManager<{upAcc:string},R,{context:
 
     private async loadAlignment(alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment): Promise<void> {
         if(typeof targetAlignment.target_id === "string") {
-            await this.structureLoader.load(this.plugin,this.structureRef,TagDelimiter.parseEntity(targetAlignment.target_id));
+            await this.structureLoader.load(this.structureViewer,this.structureRef,TagDelimiter.parseEntity(targetAlignment.target_id));
         }
     }
 

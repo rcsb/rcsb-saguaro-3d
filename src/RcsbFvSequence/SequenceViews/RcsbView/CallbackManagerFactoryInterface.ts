@@ -25,21 +25,21 @@ export interface CallbackManagerFactoryInterface<R,U> {
 export interface CallbackConfigInterface<R> {
     rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
     stateManager: RcsbFvStateManager;
-    plugin: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
+    structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
     pfvFactory: PfvManagerInterface;
 }
 
 export abstract class AbstractCallbackManager<R,U> implements CallbackManagerInterface<U> {
     protected readonly rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
     protected readonly stateManager: RcsbFvStateManager;
-    protected readonly plugin: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
+    protected readonly structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
     protected pfvFactory: PfvManagerInterface;
     private readonly isInnerSelection: DataContainer<boolean> = new DataContainer<boolean>();
 
     constructor(config: CallbackConfigInterface<R>) {
         this.rcsbFvContainer = config.rcsbFvContainer;
         this.stateManager = config.stateManager;
-        this.plugin = config.plugin;
+        this.structureViewer = config.structureViewer;
         this.pfvFactory = config.pfvFactory;
     }
 

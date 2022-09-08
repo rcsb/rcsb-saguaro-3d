@@ -16,7 +16,7 @@ export interface PfvManagerFactoryConfigInterface<R,U> {
     rcsbFvDivId: string;
     rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
     stateManager: RcsbFvStateManager;
-    plugin: ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>;
+    structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>;
     boardConfigContainer: DataContainer<Partial<RcsbFvBoardConfigInterface>>;
     pfvChangeCallback(context: U): Promise<void>;
     additionalConfig: RcsbFvAdditionalConfig & {operatorChangeCallback?:(operatorInfo: OperatorInfo)=>void} | undefined;
@@ -40,7 +40,7 @@ export abstract class AbstractPfvManager<T,R,U> implements PfvManagerInterface {
     protected readonly rcsbFvDivId: string;
     protected readonly rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
     protected readonly stateManager: RcsbFvStateManager;
-    protected readonly plugin: ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>;
+    protected readonly structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>;
     protected readonly boardConfigContainer: DataContainer<Partial<RcsbFvBoardConfigInterface>>;
     protected readonly pfvChangeCallback: (context: U)=>Promise<void>;
     protected readonly additionalConfig: RcsbFvAdditionalConfig & {operatorChangeCallback?:(operatorInfo: OperatorInfo)=>void} | undefined;
@@ -49,7 +49,7 @@ export abstract class AbstractPfvManager<T,R,U> implements PfvManagerInterface {
         this.rcsbFvDivId = config.rcsbFvDivId;
         this.rcsbFvContainer = config.rcsbFvContainer;
         this.stateManager = config.stateManager;
-        this.plugin = config.plugin;
+        this.structureViewer = config.structureViewer;
         this.additionalConfig = config.additionalConfig;
         this.boardConfigContainer = config.boardConfigContainer;
         this.pfvChangeCallback = config.pfvChangeCallback;
