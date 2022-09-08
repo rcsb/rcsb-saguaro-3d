@@ -4,7 +4,6 @@ import {
     CallbackManagerFactoryInterface, CallbackManagerInterface
 } from "../CallbackManagerFactoryInterface";
 import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
-import {SaguaroPluginModelMapType} from "../../../../RcsbFvStructure/StructureViewerInterface";
 import {
     UniprotSequenceOnchangeInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvUniprotBuilder";
