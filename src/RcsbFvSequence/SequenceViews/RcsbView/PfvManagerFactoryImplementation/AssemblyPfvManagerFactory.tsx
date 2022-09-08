@@ -57,7 +57,6 @@ class AssemblyPfvManager<R> extends AbstractPfvManager<{instanceSequenceConfig: 
     }
 
     public async create(config: BuildPfvInterface): Promise<RcsbFvModulePublicInterface | undefined> {
-        this.structureViewer.clearFocus();
         const onChangeCallback: Map<string, (x: PolymerEntityInstanceInterface)=>void> = new Map<string, (x: PolymerEntityInstanceInterface) => {}>();
         const assemblyInstances: Map<string, Set<string>> = new Map<string, Set<string>>();
         this.stateManager.assemblyModelSate.forEach((v,k)=>{

@@ -53,6 +53,8 @@ class AssemblyBehaviour<R> implements StructureViewerBehaviourInterface {
                 await this.featureClick();
             if(o.type == "selection-change" && o.view == "3d-view")
                 await this.isSelectionEmpty();
+            if(o.type == "pfv-change" && o.view == "1d-view")
+                this.resetPluginView();
         });
     }
 

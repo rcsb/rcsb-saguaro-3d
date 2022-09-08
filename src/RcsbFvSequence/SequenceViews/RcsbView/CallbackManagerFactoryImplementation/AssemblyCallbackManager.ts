@@ -60,6 +60,7 @@ class AssemblyCallbackManager<R> extends AbstractCallbackManager<R,undefined> {
     public async pfvChangeCallback(): Promise<void>{
         this.stateManager.selectionState.setLastSelection(null);
         this.rcsbFvContainer.get()?.getFv().then(async ()=>{
+            this.stateManager.next({type:"pfv-change", view:"1d-view"});
             await this.structureViewerSelectionCallback("select");
         });
     }
