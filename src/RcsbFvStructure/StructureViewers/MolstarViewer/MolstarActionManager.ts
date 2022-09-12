@@ -2,13 +2,11 @@ import {
     SaguaroChain,
     SaguaroPosition,
     SaguaroRange,
-    ViewerActionManagerInterface, ViewerCallbackManagerInterface,
+    ViewerActionManagerInterface,
     ViewerModelMapManagerInterface
 } from "../../StructureViewerInterface";
 import {Viewer} from "@rcsb/rcsb-molstar/build/src/viewer";
-import {RcsbFvSelectorManager} from "../../../RcsbFvState/RcsbFvSelectorManager";
-import {DataContainer, DataContainerReader} from "../../../Utils/DataContainer";
-import {MolstarModelMapManager} from "./MolstarModelMapManager";
+import {DataContainer} from "../../../Utils/DataContainer";
 import {Structure, StructureElement, StructureSelection} from "molstar/lib/mol-model/structure";
 import {Expression} from "molstar/lib/commonjs/mol-script/language/expression";
 import {MolScriptBuilder as MS} from "molstar/lib/mol-script/language/builder";
@@ -32,9 +30,9 @@ export enum LoadMethod {
     loadStructureFromData = "loadStructureFromData"
 }
 
-export interface LoadMolstarInterface {
+export interface LoadMolstarInterface<P=any> {
     loadMethod: LoadMethod;
-    loadParams: LoadParams | Array<LoadParams>;
+    loadParams: LoadParams<P> | Array<LoadParams<P>>;
 }
 
 interface LoadParams<P=any,S={}> {
