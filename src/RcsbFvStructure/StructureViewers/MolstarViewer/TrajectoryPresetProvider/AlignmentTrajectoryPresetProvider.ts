@@ -18,7 +18,6 @@ import {PLDDTConfidenceColorThemeProvider} from "molstar/lib/extensions/model-ar
 import {AlignmentRepresentationPresetProvider} from "./AlignmentRepresentationPresetProvider";
 
 export type TrajectoryParamsType = {
-    ref?: {entryId:string;entityId:string;};
     pdb?: {entryId:string;entityId:string;};
     assemblyId?: string;
     modelIndex?: number;
@@ -34,7 +33,6 @@ export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvid
     },
     isApplicable: (trajectory: PluginStateObject.Molecule.Trajectory, plugin: PluginContext): boolean => true,
     params: (trajectory: PluginStateObject.Molecule.Trajectory | undefined, plugin: PluginContext):ParamDefinition.For<TrajectoryParamsType> => ({
-        ref:PD.Value<{entryId:string;entityId:string;}|undefined>(undefined),
         pdb:PD.Value<{entryId:string;entityId:string;}|undefined>(undefined),
         assemblyId:PD.Value<string|undefined>(undefined),
         modelIndex:PD.Value<number|undefined>(undefined),
@@ -62,7 +60,6 @@ export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvid
             structureProperties,
             AlignmentRepresentationPresetProvider,
             {
-                ref: params.ref,
                 pdb:params.pdb
             }
         );

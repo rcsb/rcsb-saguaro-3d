@@ -68,10 +68,14 @@ export class AssemblyModelSate {
     }
 
     private setFirstModel(): void{
-        this.state.modelId = Array.from(this.modelMap.keys())[0];
-        this.state.entryId = this.modelMap.get(this.state.modelId)!.entryId;
-        this.state.assemblyId = this.modelMap.get(this.state.modelId)!.assemblyId;
-        this.state.operator = undefined;
+        if(Array.from(this.modelMap.keys()).length == 0){
+           this.state = {};
+        }else{
+            this.state.modelId = Array.from(this.modelMap.keys())[0];
+            this.state.entryId = this.modelMap.get(this.state.modelId)!.entryId;
+            this.state.assemblyId = this.modelMap.get(this.state.modelId)!.assemblyId;
+            this.state.operator = undefined;
+        }
     }
 
 }

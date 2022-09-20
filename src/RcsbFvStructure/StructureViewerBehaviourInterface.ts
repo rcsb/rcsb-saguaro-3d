@@ -15,5 +15,6 @@ export interface StructureViewerBehaviourInterface {
     selectionChange(): void;
     hoverChange(): void;
     featureClick(): void;
+    modelChange(): void;
     unsubscribe(): void;
 }

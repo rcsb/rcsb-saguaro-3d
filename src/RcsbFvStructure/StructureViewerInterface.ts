@@ -55,6 +55,7 @@ export interface ViewerCallbackManagerInterface {
 
 export interface ViewerActionManagerInterface<R> {
     load(loadConfig: R|Array<R>): Promise<void>;
+    removeStructure(removeConfig: R|Array<R>): Promise<void>;
     select(modelId:string, labelAsymId: string, begin: number, end: number, mode: 'select'|'hover', operation:'add'|'set', operatorName?:string): void;
     select(selection: Array<SaguaroPosition>, mode: 'select'|'hover', operation:'add'|'set'): void;
     select(selection: Array<SaguaroRange>, mode: 'select'|'hover', operation:'add'|'set'): void;
@@ -79,6 +80,7 @@ export interface ViewerActionManagerInterface<R> {
 
 export interface ViewerModelMapManagerInterface<R> {
     add(lC: R): void;
+    delete(lC: R): void;
     getChains(): SaguaroPluginModelMapType;
     getModelId(id: string): string;
 }

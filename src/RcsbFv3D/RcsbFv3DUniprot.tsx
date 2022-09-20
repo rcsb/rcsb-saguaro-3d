@@ -50,9 +50,7 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string},LoadMolstar
                         upAcc:params.config.upAcc
                     },
                     buildPfvOnMount: true,
-                    pfvManagerFactory: new UniprotPfvManagerFactory<LoadMolstarInterface>({
-                        structureLoader: new MolstarAlignmentLoader()
-                    }),
+                    pfvManagerFactory: new UniprotPfvManagerFactory<LoadMolstarInterface>(),
                     callbackManagerFactory: new UniprotCallbackManagerFactory<LoadMolstarInterface>({pluginLoadParamsDefinition})
                 }
             },
@@ -64,7 +62,7 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string},LoadMolstar
                 }
             },
             structureViewer: new StructureViewer<LoadMolstarInterface,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}>( new MolstarManagerFactory() ),
-            structureViewerBehaviourObserver: new UniprotBehaviourObserver<LoadMolstarInterface>()
+            structureViewerBehaviourObserver: new UniprotBehaviourObserver<LoadMolstarInterface>(new MolstarAlignmentLoader())
         });
     }
 

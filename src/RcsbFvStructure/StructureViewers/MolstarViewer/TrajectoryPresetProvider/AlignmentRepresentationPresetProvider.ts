@@ -22,25 +22,31 @@ import {alignAndSuperpose} from "molstar/lib/mol-model/structure/structure/util/
 import {Mat4} from "molstar/lib/mol-math/linear-algebra";
 import {SymmetryOperator} from "molstar/lib/mol-math/geometry/symmetry-operator";
 import {StateTransforms} from "molstar/lib/mol-plugin-state/transforms";
+import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 
-export const AlignmentRepresentationPresetProvider = StructureRepresentationPresetProvider<{ref?:{entryId:string;entityId:string;};pdb?:{entryId:string;entityId:string;};},any>({
+let refData: Structure|undefined = undefined;
+let refId: {entryId:string;entityId:string;}|undefined = undefined;
+export const AlignmentRepresentationPresetProvider = StructureRepresentationPresetProvider<{pdb?:{entryId:string;entityId:string;};},any>({
         id: 'alignment-to-reference',
         display: {
             name: 'Alignemnt to Reference'
         },
         isApplicable: (structureRef: PluginStateObject.Molecule.Structure, plugin: PluginContext): boolean => true,
         params: (structureRef: PluginStateObject.Molecule.Structure | undefined, plugin: PluginContext) => ({
-            ref: PD.Value<{entryId:string;entityId:string;}|undefined>(undefined),
             pdb: PD.Value<{entryId:string;entityId:string;}|undefined>(undefined)
         }),
-        apply: async (structureRef: StateObjectRef<PluginStateObject.Molecule.Structure>, params: {ref?:{entryId:string;entityId:string;};pdb?:{entryId:string;entityId:string;};}, plugin: PluginContext) => {
+        apply: async (structureRef: StateObjectRef<PluginStateObject.Molecule.Structure>, params: {pdb?:{entryId:string;entityId:string;};}, plugin: PluginContext) => {
             const structureCell = StateObjectRef.resolveAndCheck(plugin.state.data, structureRef);
-            if (!structureCell) return;
+            if(!structureCell) return;
             const structure = structureCell.obj!.data;
-            if(params.ref && params.pdb){
-                await structuralAlignment(plugin, params.ref, params.pdb, structure);
+            if(plugin.managers.structure.hierarchy.current.structures.length == 1){
+                refId = params.pdb
             }
-            const entryId = structure.model.entryId;
+            if(refId && params.pdb){
+                await structuralAlignment(plugin, refId, params.pdb, structure);
+            }
+            const entryId = params.pdb?.entryId!;
+            const entityId = params.pdb?.entityId!;
             const l = StructureElement.Location.create(structure);
             const asymObserved: {[key:string]:boolean} = {};
             for(const unit of structure.units) {
@@ -57,9 +63,9 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
                         MS.struct.generator.atomGroups({
                             'chain-test': MS.core.rel.eq([MS.ammp('label_asym_id'), asymId])
                         }),
-                        uniqid(`${entryId}_${asymId}_${operators.join(",")}`),
+                        uniqid(`${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.instance}${asymId}_${operators.join(",")}`),
                         {
-                            label: `${entryId}.${asymId}-${operators.join(",")}`
+                            label: `${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.instance}${asymId}-${operators.join(",")}`
                         }
                     );
                     //TODO This needs to be called after tryCreateComponentFromExpression
@@ -81,9 +87,9 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
                 const comp = await plugin.builders.structure.tryCreateComponentFromExpression(
                     structureCell,
                     expression.expression,
-                    uniqid(`${entryId}_${expression.tag}`),
+                    uniqid(`${entryId}${TagDelimiter.entity}${entityId}_${expression.tag}`),
                     {
-                        label: expression.label
+                        label: `${entryId}${TagDelimiter.entity}${entityId}-${expression.tag}`
                     });
                 //TODO This needs to be called after tryCreateComponentFromExpression
                 const { update, builder } = reprBuilder(plugin, {
@@ -100,7 +106,6 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
         }
     });
 
-let refData: Structure|undefined = undefined;
 async function structuralAlignment(plugin: PluginContext, ref:{entryId:string;entityId:string;}, pdb:{entryId:string;entityId:string;}, structure: Structure): Promise<void> {
     if(ref.entryId == pdb.entryId){
         refData = structure;

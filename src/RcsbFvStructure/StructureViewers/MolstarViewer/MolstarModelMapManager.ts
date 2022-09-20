@@ -10,14 +10,14 @@ import {StructureRef} from "molstar/lib/mol-plugin-state/manager/structure/hiera
 import {State} from "molstar/lib/mol-state";
 import {PluginStateObject as PSO} from "molstar/lib/mol-plugin-state/objects";
 import {Viewer} from "@rcsb/rcsb-molstar/build/src/viewer";
-import {LoadMolstarInterface} from "./MolstarActionManager";
+import {LoadMethod} from "./MolstarActionManager";
 
 interface LoadParams<P=any,S={}> {
     id?:string;
     params?:P;
 }
 
-export class MolstarModelMapManager implements ViewerModelMapManagerInterface<LoadMolstarInterface> {
+export class MolstarModelMapManager implements ViewerModelMapManagerInterface<{loadMethod: LoadMethod; loadParams: LoadParams;}> {
 
     private readonly viewer: Viewer;
     private readonly modelMap: Map<string,string|undefined> = new Map<string, string>();
@@ -26,20 +26,26 @@ export class MolstarModelMapManager implements ViewerModelMapManagerInterface<Lo
         this.viewer = viewer;
     }
 
-    public add(lC: LoadMolstarInterface){
-        (Array.isArray(lC.loadParams) ? lC.loadParams : [lC.loadParams]).forEach((lP: LoadParams)=>{
-            if(typeof lP.params?.getMap === "function") {
-                const map: Map<string,string> = lP.params.getMap();
-                if(typeof map?.forEach === "function")
-                    map.forEach((modelId: string, key: string) => {
-                        if (typeof modelId === "string" && typeof key === "string") {
-                            this.modelMap.set(key, modelId);
-                            this.modelMap.set(modelId, key);
-                        }
-                    })
-            }
-        });
+    public add(lC: {loadMethod: LoadMethod; loadParams: LoadParams;}){
+        //TODO get rid of the getMap mechanics
+        if(typeof lC.loadParams.params?.getMap === "function") {
+            const map: Map<string,string> = lC.loadParams.params.getMap();
+            if(typeof map?.forEach === "function")
+                map.forEach((modelId: string, key: string) => {
+                    if (typeof modelId === "string" && typeof key === "string") {
+                        this.modelMap.set(key, modelId);
+                        this.modelMap.set(modelId, key);
+                    }
+                })
+        }
         this.map(lC.loadParams);
+    }
+
+    public delete(lC: {loadMethod: LoadMethod; loadParams: LoadParams;}) {
+        if(lC.loadParams.id){
+            if(this.modelMap.get(lC.loadParams.id)) this.modelMap.delete(this.modelMap.get(lC.loadParams.id)!);
+            this.modelMap.delete(lC.loadParams.id);
+        }
     }
 
     public getChains(): SaguaroPluginModelMapType{
@@ -49,7 +55,8 @@ export class MolstarModelMapManager implements ViewerModelMapManagerInterface<Lo
             const structure: Structure = getStructure(structureRef[0], this.viewer.plugin.state.data);
             let modelEntityId = getModelEntityOptions(structure)[0][0];
             const chains: [{modelId:string;entryId:string;assemblyId:string;},ChainInfo[]] = getChainValues(structure, modelEntityId);
-            out.set(this.getModelId(chains[0].modelId),{entryId:chains[0].entryId, assemblyId:chains[0].assemblyId, chains: chains[1]});
+            if(chains.length > 0 && chains[0].modelId)
+                out.set(this.getModelId(chains[0].modelId),{entryId:chains[0].entryId, assemblyId:chains[0].assemblyId, chains: chains[1]});
         });
         return out;
     }
@@ -58,23 +65,21 @@ export class MolstarModelMapManager implements ViewerModelMapManagerInterface<Lo
         return this.modelMap.get(id) ?? id;
     }
 
-    private map(loadParams: LoadParams | Array<LoadParams>): void{
-        const loadParamList: Array<LoadParams> = loadParams instanceof Array ? loadParams : [loadParams];
+    private map(loadParams: LoadParams): void{
         const structureRefList = getStructureOptions(this.viewer.plugin);
-        if(loadParamList.length == structureRefList.length )
-            structureRefList.forEach((structureRef,i)=>{
-                const structure = getStructure(structureRef[0], this.viewer.plugin.state.data);
-                let modelEntityId = getModelEntityOptions(structure)[0][0];
-                const chains: [{modelId:string, entryId:string},ChainInfo[]] = getChainValues(structure, modelEntityId);
-                if(!this.modelMap.has(chains[0].modelId)) {
-                    this.modelMap.set(chains[0].modelId, loadParamList[i].id);
-                    if (loadParamList[i].id != null)
-                        this.modelMap.set(loadParamList[i].id!, chains[0].modelId);
-                }
-            });
+        if(structureRefList.length > 0) {
+            const structureRef = structureRefList[structureRefList.length - 1];
+            const structure = getStructure(structureRef[0], this.viewer.plugin.state.data);
+            let modelEntityId = getModelEntityOptions(structure)[0][0];
+            const chains: [{ modelId: string, entryId: string }, ChainInfo[]] = getChainValues(structure, modelEntityId);
+            if (!this.modelMap.has(chains[0].modelId)) {
+                this.modelMap.set(chains[0].modelId, loadParams.id);
+                if (loadParams.id != null)
+                    this.modelMap.set(loadParams.id!, chains[0].modelId);
+            }
+        }
     }
 }
-
 
 function getStructureOptions(plugin: PluginContext): [string,string][] {
     const options: [string, string][] = [];

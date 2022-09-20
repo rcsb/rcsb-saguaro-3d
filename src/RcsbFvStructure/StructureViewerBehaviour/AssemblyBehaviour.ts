@@ -43,6 +43,10 @@ class AssemblyBehaviour<R> implements StructureViewerBehaviourInterface {
         this.subscription = this.subscribe();
     }
 
+    public modelChange(): void {
+        throw new Error("Method not implemented.");
+    }
+
     private subscribe(): Subscription {
         return this.stateManager.subscribe(async o=>{
             if(o.type == "selection-change" && o.view == "1d-view")

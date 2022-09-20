@@ -16,12 +16,9 @@ import {
     AlignmentRequestContextType
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvFactories/RcsbFvTrackFactory/TrackFactoryImpl/AlignmentTrackFactory";
 import {AlignmentResponse, TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
-import {StructureLoaderInterface} from "../../../../RcsbFvStructure/StructureUtils/StructureLoaderInterface";
-import {
-    ViewerActionManagerInterface,
-    ViewerCallbackManagerInterface
-} from "../../../../RcsbFvStructure/StructureViewerInterface";
+import {UniprotRowTitleComponent} from "./UniprotPfvManagerFactory/UniprotRowTitleComponent";
 import {UniprotRowMarkComponent} from "./UniprotPfvManagerFactory/UniprotRowMarkComponent";
+
 
 interface UniprotPfvManagerInterface<R> extends PfvManagerFactoryConfigInterface<R,{context: UniprotSequenceOnchangeInterface;}> {
     upAcc:string;
@@ -29,36 +26,21 @@ interface UniprotPfvManagerInterface<R> extends PfvManagerFactoryConfigInterface
 
 export class UniprotPfvManagerFactory<R> implements PfvManagerFactoryInterface<{upAcc:string},R,{context: UniprotSequenceOnchangeInterface;}> {
 
-    private readonly structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;},{entryId:string;entityId:string;}]>;
-
-    constructor(config: {
-        structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;},{entryId:string;entityId:string;}]>
-    }) {
-        this.structureLoader = config.structureLoader;
-    }
-
     getPfvManager(config: UniprotPfvManagerInterface<R>): PfvManagerInterface {
-        return new UniprotPfvManager({
-            ...config,
-            structureLoader:this.structureLoader
-        });
+        return new UniprotPfvManager(config);
     }
+
 }
 
 class UniprotPfvManager<R> extends AbstractPfvManager<{upAcc:string},R,{context: UniprotSequenceOnchangeInterface;}>{
 
     private readonly upAcc:string;
-    private readonly structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;},{entryId:string;entityId:string;}]>;
 
     private module:RcsbFvModulePublicInterface;
-    private structureRef: {entryId:string;entityId:string;};
 
-    constructor(config:UniprotPfvManagerInterface<R> & {
-        structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;},{entryId:string;entityId:string;}]>
-    }) {
+    constructor(config:UniprotPfvManagerInterface<R>) {
         super(config);
         this.upAcc = config.upAcc;
-        this.structureLoader = config.structureLoader;
     }
 
     async create(): Promise<RcsbFvModulePublicInterface | undefined> {
@@ -76,9 +58,20 @@ class UniprotPfvManager<R> extends AbstractPfvManager<{upAcc:string},R,{context:
                     alignment: (alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment) => new Promise((resolve)=>{
                         resolve({
                             rowMark:{
-                                externalComponent: UniprotRowMarkComponent,
-                                clickCallback:()=>{
-                                    this.loadAlignment(alignmentContext,targetAlignment);
+                                externalRowMark: {
+                                    component:UniprotRowMarkComponent,
+                                    props:{
+                                        rowRef:TagDelimiter.parseEntity(targetAlignment.target_id!),
+                                        stateManager: this.stateManager
+                                    }
+                                },
+                                clickCallback:() => this.loadAlignment(alignmentContext,targetAlignment)
+                            },
+                            externalRowTitle: {
+                                rowTitleComponent:UniprotRowTitleComponent,
+                                rowTitleAdditionalProps:{
+                                    alignmentContext,
+                                    targetAlignment
                                 }
                             }
                         });
@@ -94,14 +87,19 @@ class UniprotPfvManager<R> extends AbstractPfvManager<{upAcc:string},R,{context:
     private async readyStateLoad(): Promise<void> {
         const alignments: AlignmentResponse = await this.module.getAlignmentResponse();
         if(alignments.target_alignment && alignments.target_alignment.length > 0 && typeof alignments.target_alignment[0]?.target_id === "string"){
-            this.structureRef = TagDelimiter.parseEntity(alignments.target_alignment[0]?.target_id);
-            await this.loadAlignment({queryId:this.upAcc}, alignments.target_alignment[0]);
+            this.loadAlignment({queryId:this.upAcc}, alignments.target_alignment[0]);
         }
     }
 
-    private async loadAlignment(alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment): Promise<void> {
+    private loadAlignment(alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment):void {
         if(typeof targetAlignment.target_id === "string") {
-            await this.structureLoader.load(this.structureViewer,this.structureRef,TagDelimiter.parseEntity(targetAlignment.target_id));
+            this.stateManager.next<"model-change", {pdb:{entryId:string;entityId:string;}}>({
+                type:"model-change",
+                view:"1d-view",
+                data:{
+                    pdb:TagDelimiter.parseEntity(targetAlignment.target_id)
+                }
+            });
         }
     }
 

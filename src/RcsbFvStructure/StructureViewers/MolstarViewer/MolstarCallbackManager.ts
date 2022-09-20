@@ -22,20 +22,20 @@ import {RcsbFvSelectorManager} from "../../../RcsbFvState/RcsbFvSelectorManager"
 import {DataContainer, DataContainerReader} from "../../../Utils/DataContainer";
 import {RcsbFvStateManager} from "../../../RcsbFvState/RcsbFvStateManager";
 
-
+type ModelMapType = Omit<ViewerModelMapManagerInterface<null>,'add'|'delete'>;
 export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
 
     private readonly viewer: Viewer;
     private readonly  stateManager: RcsbFvStateManager;
     private readonly loadingFlag: DataContainerReader<boolean>;
-    private readonly modelMapManager: Omit<ViewerModelMapManagerInterface<null>,'add'>;
+    private readonly modelMapManager: ModelMapType;
     private readonly innerSelectionFlag: DataContainer<boolean>;
 
     private selectSubs: Subscription;
     private hoverSubs: Subscription;
     private modelChangeSubs: Subscription;
 
-    constructor(config:{viewer: Viewer; stateManager: RcsbFvStateManager;loadingFlag: DataContainerReader<boolean>;modelMapManager: Omit<ViewerModelMapManagerInterface<null>,'add'>;innerSelectionFlag: DataContainer<boolean>;}) {
+    constructor(config:{viewer: Viewer; stateManager: RcsbFvStateManager;loadingFlag: DataContainerReader<boolean>;modelMapManager: ModelMapType;innerSelectionFlag: DataContainer<boolean>;}) {
         this.viewer = config.viewer;
         this.stateManager = config.stateManager;
         this.loadingFlag = config.loadingFlag;

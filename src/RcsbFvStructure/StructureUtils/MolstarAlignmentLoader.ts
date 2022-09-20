@@ -23,43 +23,41 @@ import {
     AlignmentTrajectoryPresetProvider, TrajectoryParamsType
 } from "../StructureViewers/MolstarViewer/TrajectoryPresetProvider/AlignmentTrajectoryPresetProvider";
 
-export class MolstarAlignmentLoader implements StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <LoadMolstarInterface<TrajectoryParamsType>>,{entryId:string;entityId:string;},{entryId:string;entityId:string;}]> {
+export class MolstarAlignmentLoader implements StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <LoadMolstarInterface<TrajectoryParamsType>>,{entryId:string;entityId:string;}]> {
 
-    private readonly structureMap: Map<string,string|undefined> = new Map<string,string|undefined>();
+    private readonly structureMap: Set<string> = new Set<string>();
 
-    async load(structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface <LoadMolstarInterface<TrajectoryParamsType>>, ref: {entryId:string;entityId:string;}, pdb:{entryId:string;entityId:string;}): Promise<void> {
+    async load(structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface <LoadMolstarInterface<TrajectoryParamsType>>, pdb:{entryId:string;entityId:string;}): Promise<void> {
         const structureId: string = `${pdb.entryId}${TagDelimiter.entity}${pdb.entityId}`;
         if(!this.structureMap.has(structureId)){
             await structureViewer.load({
                 loadMethod: LoadMethod.loadPdbId,
                 loadParams:{
+                    id: structureId,
                     entryId:pdb.entryId,
                     reprProvider: AlignmentTrajectoryPresetProvider,
                     params:{
                         assemblyId: "1",
                         modelIndex: 0,
-                        ref:ref,
                         pdb: pdb
                     }
                 }
             });
             structureViewer.pluginCall(async (plugin)=>{
-                this.structureMap.set(
-                    structureId,
-                    plugin.managers.structure.hierarchy.current.structures[ plugin.managers.structure.hierarchy.current.structures.length -1].properties?.cell?.obj?.data?.units[0]?.model?.id
+                this.structureMap.add(
+                    structureId
                 );
 
             });
 
         } else {
-            structureViewer.pluginCall(async (plugin)=>{
-                const pdbStr: StructureRef|undefined = plugin.managers.structure.hierarchy.current.structures.find(s=>s.properties?.cell?.obj?.data?.units[0]?.model?.id == this.structureMap.get(structureId));
-                if(pdbStr) {
-                    plugin.managers.structure.hierarchy.remove([pdbStr]);
-                    this.structureMap.delete(structureId);
-                    await PluginCommands.Camera.Reset(plugin);
+            await structureViewer.removeStructure({
+                loadMethod: LoadMethod.loadPdbId,
+                loadParams:{
+                    id: structureId
                 }
             });
+            this.structureMap.delete(structureId);
             return;
         }
     }

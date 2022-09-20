@@ -21,6 +21,7 @@ import {Mat4} from "molstar/lib/mol-math/linear-algebra";
 import {BuiltInTrajectoryFormat} from "molstar/lib/mol-plugin-state/formats/trajectory";
 import {PluginState} from "molstar/lib/mol-plugin/state";
 import {TrajectoryHierarchyPresetProvider} from "molstar/lib/mol-plugin-state/builder/structure/hierarchy-preset";
+import {PluginCommands} from "molstar/lib/mol-plugin/commands";
 
 export enum LoadMethod {
     loadPdbId = "loadPdbId",
@@ -91,6 +92,22 @@ export class MolstarActionManager implements ViewerActionManagerInterface<LoadMo
             }
         }
         this.loadingFlag.set(false);
+    }
+
+    async removeStructure(loadConfig: LoadMolstarInterface|Array<LoadMolstarInterface>): Promise<void>{
+        loadConfig = Array.isArray(loadConfig) ? loadConfig : [loadConfig];
+        loadConfig.forEach(lC=>{
+            (Array.isArray(lC.loadParams) ? lC.loadParams : [lC.loadParams]).forEach(loadParams=>{
+                if(typeof loadParams.id === "string") {
+                    const pdbStr: StructureRef | undefined = this.viewer.plugin.managers.structure.hierarchy.current.structures.find(s => s.properties?.cell?.obj?.data?.units[0]?.model?.id == this.modelMapManager.getModelId(loadParams.id!));
+                    if (pdbStr) {
+                        this.viewer.plugin.managers.structure.hierarchy.remove([pdbStr]);
+                        PluginCommands.Camera.Reset(this.viewer.plugin);
+                    }
+                }
+            });
+
+        })
     }
 
     public select(modelId:string, labelAsymId: string, begin: number, end: number, mode: 'select'|'hover', operation:'add'|'set', operatorName?:string): void;

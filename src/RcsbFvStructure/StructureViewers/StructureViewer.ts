@@ -47,6 +47,11 @@ export class StructureViewer<R,S> implements StructureViewerInterface<R,S> {
       this.modelChange();
     }
 
+    async removeStructure(loadConfig: R|Array<R>): Promise<void>{
+        await this.actionManager.removeStructure(loadConfig);
+        this.modelChange();
+    }
+
     public setBackground(color: number) {
     }
 
