@@ -11,6 +11,8 @@ import {ViewerActionManagerInterface, ViewerCallbackManagerInterface} from "../S
 import {RcsbFvStateInterface} from "../../RcsbFvState/RcsbFvStateInterface";
 import {Subscription} from "rxjs";
 import {StructureLoaderInterface} from "../StructureUtils/StructureLoaderInterface";
+import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
+import {createSelectionExpressions} from "@rcsb/rcsb-molstar/build/src/viewer/helpers/selection";
 
 export class UniprotBehaviourObserver<R> implements StructureViewerBehaviourObserverInterface<R> {
 
@@ -52,9 +54,11 @@ class UniprotBehaviour<R> implements StructureViewerBehaviourInterface {
     }
 
     private subscribe(): Subscription {
-        return this.stateManager.subscribe<"model-change",{pdb:{entryId:string;entityId:string;}}>(async o=>{
+        return this.stateManager.subscribe<"model-change" | "representation-change",{pdb:{entryId:string;entityId:string;}} & {tag:"polymer"|"non-polymer";isHidden:boolean;}>(async o=>{
             if(o.type == "model-change" && o.view == "1d-view" && o.data)
                 await this.modelChange(o.data);
+            if(o.type == "representation-change" && o.view == "1d-view" && o.data)
+                this.reprChange(o.data);
         });
     }
 
@@ -70,10 +74,35 @@ class UniprotBehaviour<R> implements StructureViewerBehaviourInterface {
     unsubscribe(): void {
     }
 
+    reprChange(data?:{pdb:{entryId:string;entityId:string;}} & {tag:"aligned"|"polymer"|"non-polymer";isHidden:boolean;}): void {
+        if(data){
+            switch (data.tag){
+                case "aligned":
+                    const asymId: string|undefined = this.stateManager.assemblyModelSate.getModelChainInfo(`${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}`)?.chains[0].label;
+                    const componentId: string = `${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}${TagDelimiter.instance}${asymId}${TagDelimiter.assembly}${"polymer"}`;
+                    this.structureViewer.displayComponent(componentId, !data.isHidden);
+                    break;
+                case "polymer":
+                    this.stateManager.assemblyModelSate.getModelChainInfo(`${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}`)?.chains.map(ch=>ch.label).forEach(asymId=>{
+                        const componentId: string = `${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}${TagDelimiter.instance}${asymId}${TagDelimiter.assembly}${data.tag}`;
+                        this.structureViewer.displayComponent(componentId, !data.isHidden);
+                    });
+                    break;
+                case "non-polymer":
+                    createSelectionExpressions(data.pdb.entryId).map(expression=>expression.tag).filter(tag=>tag!="water").forEach(tag=>{
+                        const componentId: string = `${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}${TagDelimiter.assembly}${tag}`;
+                        this.structureViewer.displayComponent(componentId, !data.isHidden);
+                    });
+                    break;
+            }
+        }
+    }
+
     async modelChange(data?:{pdb:{entryId:string;entityId:string;}}): Promise<void> {
         if(data)
             await this.structureLoader.load(this.structureViewer, data.pdb);
-        console.log(this.stateManager.assemblyModelSate.getMap());
     }
+
+
 
 }

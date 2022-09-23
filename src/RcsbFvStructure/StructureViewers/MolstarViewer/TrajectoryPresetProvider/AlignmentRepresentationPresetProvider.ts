@@ -63,9 +63,9 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
                         MS.struct.generator.atomGroups({
                             'chain-test': MS.core.rel.eq([MS.ammp('label_asym_id'), asymId])
                         }),
-                        uniqid(`${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.instance}${asymId}_${operators.join(",")}`),
+                        uniqid(`${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.instance}${asymId}${TagDelimiter.entity}${operators.join(",")}`),
                         {
-                            label: `${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.instance}${asymId}-${operators.join(",")}`
+                            label: `${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.instance}${asymId}${TagDelimiter.assembly}${type}`
                         }
                     );
                     //TODO This needs to be called after tryCreateComponentFromExpression
@@ -77,7 +77,7 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
                     builder.buildRepresentation(update, comp, {
                         color: PLDDTConfidenceColorThemeProvider.isApplicable({ structure }) ? PLDDTConfidenceColorThemeProvider.name as ColorTheme.BuiltIn : "chain-id",
                         type: "cartoon"
-                    })
+                    });
                     await update.commit({ revertOnError: false });
                 }
             }
@@ -99,7 +99,11 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
                 });
                 builder.buildRepresentation(update, comp, {
                     type: expression.type
-                });
+                },expression.tag == "water" ? {
+                    initialState:{
+                        isHidden:true
+                    }
+                } : undefined);
                 await update.commit({ revertOnError: false });
             }
 

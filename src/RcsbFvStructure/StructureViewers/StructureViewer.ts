@@ -35,6 +35,7 @@ export class StructureViewer<R,S> implements StructureViewerInterface<R,S> {
 
         this.subscribeSelection();
         this.subscribeHover();
+        this.subscribeRepresentationChange();
         this.subscribeModelChange();
     }
 

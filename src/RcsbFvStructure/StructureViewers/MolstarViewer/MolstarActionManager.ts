@@ -55,14 +55,16 @@ export class MolstarActionManager implements ViewerActionManagerInterface<LoadMo
     private readonly viewer: Viewer;
 
     private readonly innerSelectionFlag: DataContainer<boolean>;
+    private readonly innerReprChangeFlag: DataContainer<boolean>;
     private readonly modelMapManager: ViewerModelMapManagerInterface<LoadMolstarInterface>;
     private readonly componentMap: Map<string, StructureComponentRef> = new Map<string, StructureComponentRef>();
     private readonly loadingFlag: DataContainer<boolean>;
 
-    constructor(config:{viewer: Viewer;modelMapManager: ViewerModelMapManagerInterface<LoadMolstarInterface>;innerSelectionFlag: DataContainer<boolean>; loadingFlag: DataContainer<boolean>;}) {
+    constructor(config:{viewer: Viewer;modelMapManager: ViewerModelMapManagerInterface<LoadMolstarInterface>;innerSelectionFlag: DataContainer<boolean>;  innerReprChangeFlag: DataContainer<boolean>; loadingFlag: DataContainer<boolean>;}) {
         this.viewer = config.viewer;
         this.modelMapManager = config.modelMapManager;
         this.innerSelectionFlag = config.innerSelectionFlag;
+        this.innerReprChangeFlag = config.innerReprChangeFlag;
         this.loadingFlag = config.loadingFlag;
     }
 
@@ -281,6 +283,7 @@ export class MolstarActionManager implements ViewerActionManagerInterface<LoadMo
             return this.getComponentDisplay(componentLabel);
     }
     private changeComponentDisplay(componentLabel: string, visibilityFlag: boolean): void{
+        this.innerReprChangeFlag.set(true);
         if(this.componentMap.has(componentLabel) && this.getComponentDisplay(componentLabel) != visibilityFlag) {
             this.viewer.plugin.managers.structure.component.toggleVisibility([this.componentMap.get(componentLabel)!]);
         }else if(!this.componentMap.has(componentLabel)){
@@ -295,6 +298,7 @@ export class MolstarActionManager implements ViewerActionManagerInterface<LoadMo
                 }
             }
         }
+        this.innerReprChangeFlag.set(false);
     }
     private getComponentDisplay(componentLabel: string): boolean | undefined{
         if(this.componentMap.has(componentLabel)) {

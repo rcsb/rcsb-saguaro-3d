@@ -106,6 +106,9 @@ class AssemblyBehaviour<R> implements StructureViewerBehaviourInterface {
         }
     }
 
+    public reprChange(): void {
+    }
+
     public unsubscribe(): void {
         this.subscription.unsubscribe();
     }

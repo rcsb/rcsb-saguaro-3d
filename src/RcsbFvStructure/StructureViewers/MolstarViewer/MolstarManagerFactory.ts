@@ -12,6 +12,7 @@ export class MolstarManagerFactory implements ViewerManagerFactoryInterface<Load
     public getViewerManagerFactory(stateManager: RcsbFvStateManager, viewerParams: {viewerElement: string | HTMLElement, viewerProps: Partial<ViewerProps>}) {
         const loadingFlag: DataContainer<boolean> = new DataContainer(false);
         const innerSelectionFlag: DataContainer<boolean> = new DataContainer(false);
+        const innerReprChangeFlag: DataContainer<boolean> = new DataContainer(false);
         const viewer = new Viewer(viewerParams.viewerElement, {
             ...viewerParams,
             layoutShowControls:false,
@@ -29,12 +30,14 @@ export class MolstarManagerFactory implements ViewerManagerFactoryInterface<Load
             stateManager: stateManager,
             loadingFlag: loadingFlag,
             modelMapManager: modelMapManager,
-            innerSelectionFlag: innerSelectionFlag
+            innerSelectionFlag: innerSelectionFlag,
+            innerReprChangeFlag: innerReprChangeFlag
         });
         const actionManager = new MolstarActionManager({
             viewer: viewer,
             modelMapManager: modelMapManager,
             innerSelectionFlag: innerSelectionFlag,
+            innerReprChangeFlag: innerReprChangeFlag,
             loadingFlag: loadingFlag
         });
         return {

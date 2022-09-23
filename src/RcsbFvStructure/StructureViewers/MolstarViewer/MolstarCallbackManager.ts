@@ -30,21 +30,30 @@ export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
     private readonly loadingFlag: DataContainerReader<boolean>;
     private readonly modelMapManager: ModelMapType;
     private readonly innerSelectionFlag: DataContainer<boolean>;
+    private readonly innerReprChangeFlag: DataContainer<boolean>;
 
     private selectSubs: Subscription;
     private hoverSubs: Subscription;
     private modelChangeSubs: Subscription;
+    private reprChangeSubs: Subscription;
 
-    constructor(config:{viewer: Viewer; stateManager: RcsbFvStateManager;loadingFlag: DataContainerReader<boolean>;modelMapManager: ModelMapType;innerSelectionFlag: DataContainer<boolean>;}) {
+    constructor(config:{viewer: Viewer; stateManager: RcsbFvStateManager;loadingFlag: DataContainerReader<boolean>;modelMapManager: ModelMapType;innerSelectionFlag: DataContainer<boolean>; innerReprChangeFlag: DataContainer<boolean>;}) {
         this.viewer = config.viewer;
         this.stateManager = config.stateManager;
         this.loadingFlag = config.loadingFlag;
         this.modelMapManager = config.modelMapManager;
         this.innerSelectionFlag = config.innerSelectionFlag;
+        this.innerReprChangeFlag = config.innerReprChangeFlag;
     }
 
     public subscribeRepresentationChange(): Subscription{
-        return new Subscription();
+        this.reprChangeSubs = this.viewer.plugin.state.data.events.cell.stateUpdated.subscribe((s)=>{
+            if(this.innerReprChangeFlag.get())
+                return;
+            if(s.cell.obj?.tags?.find(t => t.indexOf('structure-component-') === 0))
+                this.stateManager.next<"representation-change",{label:string;isHidden:boolean;}>({type:"representation-change", view:"3d-view", data:{label:s.cell.obj?.label, isHidden:!!s.cell.state.isHidden}});
+        });
+        return this.reprChangeSubs;
     }
 
     public subscribeHover(): Subscription{
@@ -77,9 +86,8 @@ export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
 
     public subscribeSelection(): Subscription {
         this.selectSubs = this.viewer.plugin.managers.structure.selection.events.changed.subscribe(()=>{
-            if(this.innerSelectionFlag.get()) {
+            if(this.innerSelectionFlag.get())
                 return;
-            }
             if(this.viewer.plugin.managers.structure.selection.additionsHistory.length > 0) {
                 const currentLoci: Loci = this.viewer.plugin.managers.structure.selection.additionsHistory[0].loci;
                 const loc: StructureElement.Location = StructureElement.Location.create(currentLoci.structure);

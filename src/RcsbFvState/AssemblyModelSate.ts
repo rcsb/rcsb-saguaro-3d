@@ -58,6 +58,10 @@ export class AssemblyModelSate {
         this.state.operator = opName ? currentChainInfo?.operators.filter(op=>(op.name === opName))[0] : currentChainInfo?.operators[0];
     }
 
+    public getModelChainInfo(modelId: string): {entryId: string; assemblyId: string, chains:Array<ChainInfo>;} | undefined {
+        return this.modelMap.get(modelId);
+    }
+
     public getChainInfo(asymId?:string): ChainInfo | undefined{
         if(!this.state.modelId)
             throw "modelId not define";
