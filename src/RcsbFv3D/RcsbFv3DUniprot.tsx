@@ -43,6 +43,8 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string},LoadMolstar
             elementId,
             sequenceConfig:{
                 type: "rcsb",
+                title: params.config.title,
+                subtitle: params.config.subtitle,
                 config:{
                     rcsbId: params.config.upAcc,
                     additionalConfig: params.additionalConfig,
