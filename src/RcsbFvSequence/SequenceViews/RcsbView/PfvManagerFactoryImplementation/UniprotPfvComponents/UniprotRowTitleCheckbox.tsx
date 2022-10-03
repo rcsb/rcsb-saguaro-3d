@@ -35,7 +35,8 @@ export class UniprotRowTitleCheckbox extends React.Component <UniprotRowTitleChe
 
 
     public render():JSX.Element {
-        return (<input type={"checkbox"} disabled={this.props.disabled} checked={this.state.checked} onClick={()=>{this.click()}}/>);
+        //return (<input type={"checkbox"} disabled={this.props.disabled} checked={this.state.checked} onClick={()=>{this.click()}}/>);
+        return (<div style={this.style()} onClick={()=>{this.click()}}/>);
     }
 
     public componentDidUpdate(prevProps: Readonly<UniprotRowTitleCheckboxInterface>, prevState: Readonly<UniprotRowTitleCheckboxState>, snapshot?: any) {
@@ -93,6 +94,25 @@ export class UniprotRowTitleCheckbox extends React.Component <UniprotRowTitleChe
                 }
             });
         });
-
     }
+
+    private style():React.CSSProperties {
+        const color = {
+            "checked":"rgb(51, 122, 183)",
+            "unchecked":"rgba(51,122,183,0.44)",
+            "disabled":"#ddd"
+        }
+        return {
+            width:7,
+            height:7,
+            backgroundColor: this.props.disabled ? color.disabled : color[ this.state.checked ? "checked" : "unchecked"],
+            border: 1,
+            borderStyle: "solid",
+            borderColor: this.props.disabled ? color.disabled :  color.checked,
+            display:"inline-block",
+            marginLeft:4,
+            cursor: this.props.disabled ? undefined : "pointer"
+        };
+    }
+
 }

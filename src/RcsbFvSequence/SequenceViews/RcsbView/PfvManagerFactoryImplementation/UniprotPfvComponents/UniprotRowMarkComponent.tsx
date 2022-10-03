@@ -21,12 +21,13 @@ interface UniprotRowMarkInterface  {
 interface UniprotRowMarkState {
     visibility: Property.Visibility | undefined;
     borderLeftColor: Property.BorderLeftColor | undefined;
+    markHoverColor: string;
 }
 
 export class UniprotRowMarkComponent extends React.Component <UniprotRowMarkInterface,UniprotRowMarkState> {
 
     private readonly HOVER_COLOR: string = "#666";
-    private readonly ACTIVE_COLOR: string = "#ccc";
+    private readonly ACTIVE_COLOR: string ="rgb(51, 122, 183)";
     private subscription: Subscription;
 
     constructor(props:UniprotRowMarkInterface) {
@@ -35,14 +36,15 @@ export class UniprotRowMarkComponent extends React.Component <UniprotRowMarkInte
 
     readonly state: UniprotRowMarkState = {
         visibility: undefined,
-        borderLeftColor: undefined
+        borderLeftColor: undefined,
+        markHoverColor: this.HOVER_COLOR
     }
 
     public render(): JSX.Element {
         return (
             <>
                 <div onClick={this.click.bind(this)} onMouseOver={this.hover.bind(this)} style={{visibility: this.state.visibility, cursor:"pointer", display:"inline-block", width:6, height:6, marginBottom: 4, marginRight:5}} >
-                    <div className={classes.uniprotRowMark} style={{borderLeftColor: this.props.isGlowing ? this.HOVER_COLOR : (this.state.borderLeftColor)}}/>
+                    <div className={classes.uniprotRowMark} onMouseOut={()=>this.markHover(false)}onMouseOver={()=>this.markHover(true)} style={{borderLeftColor: this.props.isGlowing ? this.state.markHoverColor : (this.state.borderLeftColor)}}/>
                 </div>
             </>
         );
@@ -76,6 +78,13 @@ export class UniprotRowMarkComponent extends React.Component <UniprotRowMarkInte
 
     private hover(): void {
         this.props.hoverCallback?.();
+    }
+
+    private markHover(flag:boolean): void {
+        if(flag)
+            this.setState({markHoverColor:this.ACTIVE_COLOR});
+        else
+            this.setState({markHoverColor:this.HOVER_COLOR});
     }
 
 

@@ -7,12 +7,20 @@ import {
     StructureViewerBehaviourInterface,
     StructureViewerBehaviourObserverInterface
 } from "../StructureViewerBehaviourInterface";
-import {ViewerActionManagerInterface, ViewerCallbackManagerInterface} from "../StructureViewerInterface";
+import {
+    ChainInfo,
+    OperatorInfo,
+    SaguaroRange,
+    ViewerActionManagerInterface,
+    ViewerCallbackManagerInterface
+} from "../StructureViewerInterface";
 import {RcsbFvStateInterface} from "../../RcsbFvState/RcsbFvStateInterface";
-import {Subscription} from "rxjs";
+import {asyncScheduler, Subscription} from "rxjs";
 import {StructureLoaderInterface} from "../StructureUtils/StructureLoaderInterface";
 import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {createSelectionExpressions} from "@rcsb/rcsb-molstar/build/src/viewer/helpers/selection";
+import {RegionSelectionInterface} from "../../RcsbFvState/RcsbFvSelectorManager";
+import {defaultInputTarget} from "concurrently/dist/src/defaults";
 
 export class UniprotBehaviourObserver<R> implements StructureViewerBehaviourObserverInterface<R> {
 
@@ -35,12 +43,16 @@ export class UniprotBehaviourObserver<R> implements StructureViewerBehaviourObse
 
 }
 
+type SelectedRegion = {modelId: string, labelAsymId: string, region: RegionSelectionInterface, operatorName?: string};
 class UniprotBehaviour<R> implements StructureViewerBehaviourInterface {
 
     private readonly structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
     private readonly stateManager: RcsbFvStateInterface;
     private readonly subscription: Subscription;
     private readonly structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;}]>;
+    private readonly componentList: string[] = [];
+
+    private readonly CREATE_COMPONENT_THR: number = 5;
 
     constructor(
         structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>,
@@ -54,21 +66,71 @@ class UniprotBehaviour<R> implements StructureViewerBehaviourInterface {
     }
 
     private subscribe(): Subscription {
-        return this.stateManager.subscribe<"model-change" | "representation-change",{pdb:{entryId:string;entityId:string;}} & {tag:"polymer"|"non-polymer";isHidden:boolean;}>(async o=>{
+        return this.stateManager.subscribe<"model-change"|"representation-change"|"feature-click",{pdb:{entryId:string;entityId:string;}} & {tag:"polymer"|"non-polymer";isHidden:boolean;} & SelectedRegion[]>(async o=>{
             if(o.type == "model-change" && o.view == "1d-view" && o.data)
                 await this.modelChange(o.data);
             if(o.type == "representation-change" && o.view == "1d-view" && o.data)
                 this.reprChange(o.data);
+            if(o.type == "selection-change" && o.view == "1d-view")
+                this.selectionChange();
+            if(o.type == "hover-change" && o.view == "1d-view")
+                this.hoverChange();
+            if(o.type == "feature-click" && o.view == "1d-view" && o.data)
+                await this.featureClick(o.data)
+            if(o.type == "selection-change" && o.view == "3d-view")
+                await this.isSelectionEmpty();
         });
     }
 
-    featureClick(): void {
+    async featureClick(data?: SelectedRegion[]): Promise<void> {
+        let onetimeCall = (d: SelectedRegion) => {
+            const {modelId, labelAsymId, region, operatorName} = d;
+            const regions = [region];
+            const residues: number[] = regions.map(r=> r.begin == r.end ? [r.begin] : [r.begin,r.end]).flat().filter(r=>r!=null);
+            this.structureViewer.cameraFocus(modelId, labelAsymId, residues, operatorName);
+            onetimeCall = ()=>{};
+        };
+        await this.removeComponent();
+        if(!data || data.length == 0)
+            this.resetPluginView();
+        data?.forEach(d=>{
+            const {modelId, labelAsymId, region, operatorName} = d;
+            const regions = [region];
+            if(modelId && labelAsymId && Array.isArray(regions) && regions.length > 0) {
+                const residues: number[] = regions.map(r=> r.begin == r.end ? [r.begin] : [r.begin,r.end]).flat().filter(r=>r!=null);
+                if(residues.length == 0)
+                    return;
+                if(residues.length == 1)
+                    this.structureViewer.setFocus(modelId,labelAsymId,residues[0],residues[0],operatorName);
+                onetimeCall(d);
+                const ranges: SaguaroRange[] = regions.map(r=>({
+                    modelId,
+                    labelAsymId,
+                    begin: r.begin,
+                    end: r.end
+                }));
+                const nRes = ranges.map(r=>r.end-r.begin+1).reduce((prev,curr)=>curr+prev,0);
+                if( nRes <= this.CREATE_COMPONENT_THR)
+                    asyncScheduler.schedule(async ()=>{
+                        const x = residues[0];
+                        const y = residues[residues.length-1];
+                        const selectedComponentId = `${modelId}${TagDelimiter.instance}${labelAsymId +":"+ ((x === y) ? x.toString() : x.toString()+","+y.toString())}`;
+                        await this.structureViewer.createComponent(selectedComponentId!,ranges, "ball-and-stick");
+                        this.componentList.push(selectedComponentId);
+                    });
+
+            }else{
+                this.structureViewer.clearSelection("select", {modelId, labelAsymId});
+            }
+        })
     }
 
     hoverChange(): void {
+        this.select("hover")
     }
 
     selectionChange(): void {
+        this.select("select")
     }
 
     unsubscribe(): void {
@@ -78,14 +140,20 @@ class UniprotBehaviour<R> implements StructureViewerBehaviourInterface {
         if(data){
             switch (data.tag){
                 case "aligned":
-                    const asymId: string|undefined = this.stateManager.assemblyModelSate.getModelChainInfo(`${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}`)?.chains[0].label;
-                    const componentId: string = `${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}${TagDelimiter.instance}${asymId}${TagDelimiter.assembly}${"polymer"}`;
-                    this.structureViewer.displayComponent(componentId, !data.isHidden);
+                    const chain: ChainInfo|undefined = this.stateManager.assemblyModelSate.getModelChainInfo(`${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}`)?.chains.find(ch=>ch.entityId==data.pdb.entityId);
+                    if(chain){
+                        const asymId: string|undefined = chain.label;
+                        const operatorInfo: OperatorInfo[] = chain.operators ?? [];
+                        const componentId: string = `${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}${TagDelimiter.instance}${asymId}${TagDelimiter.assembly}${operatorInfo[0].ids.join(",")}${TagDelimiter.assembly}${"polymer"}`;
+                        this.structureViewer.displayComponent(componentId, !data.isHidden);
+                    }
                     break;
                 case "polymer":
                     this.stateManager.assemblyModelSate.getModelChainInfo(`${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}`)?.chains.map(ch=>ch.label).forEach(asymId=>{
-                        const componentId: string = `${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}${TagDelimiter.instance}${asymId}${TagDelimiter.assembly}${data.tag}`;
-                        this.structureViewer.displayComponent(componentId, !data.isHidden);
+                        this.stateManager.assemblyModelSate.getModelChainInfo(`${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}`)?.chains[0].operators.forEach(operatorInfo=>{
+                            const componentId: string = `${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}${TagDelimiter.instance}${asymId}${TagDelimiter.assembly}${operatorInfo.ids.join(",")}${TagDelimiter.assembly}${data.tag}`;
+                            this.structureViewer.displayComponent(componentId, !data.isHidden);
+                        });
                     });
                     break;
                 case "non-polymer":
@@ -103,6 +171,38 @@ class UniprotBehaviour<R> implements StructureViewerBehaviourInterface {
             await this.structureLoader.load(this.structureViewer, data.pdb);
     }
 
+    private select(mode:"select"|"hover"): void{
+        if(this.stateManager.selectionState.getSelection(mode).length == 0)
+            this.structureViewer.clearSelection(mode);
+        this.structureViewer.select(this.stateManager.selectionState.getSelection(mode).map(selectedRegion=>{
+            return selectedRegion.regions.map(region=>{
+                return {
+                    modelId: selectedRegion.modelId,
+                    labelAsymId: selectedRegion.labelAsymId,
+                    operatorName: selectedRegion.operatorName,
+                    begin: region.begin,
+                    end: region.end
+                };
+            })
+        }).flat(), mode, "set");
+    }
 
+    private resetPluginView(): void {
+        this.structureViewer.clearFocus();
+        this.structureViewer.resetCamera();
+    }
+
+    private async isSelectionEmpty(): Promise<void> {
+        if(this.stateManager.selectionState.getLastSelection() == null) {
+            await this.removeComponent();
+            this.resetPluginView();
+        }
+    }
+
+    private async removeComponent(): Promise<void> {
+        await Promise.all(this.componentList.map(async compId=>{
+            await this.structureViewer.removeComponent(compId);
+        }));
+    }
 
 }

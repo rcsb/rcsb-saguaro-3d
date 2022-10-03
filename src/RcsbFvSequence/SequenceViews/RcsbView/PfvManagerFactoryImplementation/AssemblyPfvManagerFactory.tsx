@@ -12,7 +12,7 @@ import {asyncScheduler} from "rxjs";
 import {buildInstanceSequenceFv, FeatureType, RcsbFvUI, RcsbRequestContextManager} from "@rcsb/rcsb-saguaro-app";
 import {RcsbFvDOMConstants} from "../../../../RcsbFvConstants/RcsbFvConstants";
 import {SelectOptionProps} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvComponents/SelectButton";
-import {ChainDisplayComponent} from "./AssemblyPfvManagerFactory/ChainDisplayComponent";
+import {ChainDisplayComponent} from "./AssemblyPfvComponents/ChainDisplayComponent";
 import * as React from "react";
 import {AnnotationFeatures, Source, Type} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {

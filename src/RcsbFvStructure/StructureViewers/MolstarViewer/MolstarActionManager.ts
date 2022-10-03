@@ -209,6 +209,7 @@ export class MolstarActionManager implements ViewerActionManagerInterface<LoadMo
     public async createComponent(componentLabel: string, residues: Array<SaguaroPosition>, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
     public async createComponent(componentLabel: string, residues: Array<SaguaroRange>, representationType: StructureRepresentationRegistry.BuiltIn): Promise<void>;
     public async createComponent(...args: any[]): Promise<void> {
+        this.innerReprChangeFlag.set(true);
         await this.removeComponent(args[0]);
         if(Array.isArray(args[1])){
             if( args[1].length > 0 ) {
@@ -224,6 +225,7 @@ export class MolstarActionManager implements ViewerActionManagerInterface<LoadMo
             await this.viewer.createComponent(args[0], {modelId: this.modelMapManager.getModelId(args[1]), labelAsymId:args[2], operatorName: args[4]}, args[3]);
         }
         this.componentMap.set(args[0], this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups[this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups.length-1][0]);
+        this.innerReprChangeFlag.set(false);
     }
 
     public isComponent(componentLabel: string): boolean{

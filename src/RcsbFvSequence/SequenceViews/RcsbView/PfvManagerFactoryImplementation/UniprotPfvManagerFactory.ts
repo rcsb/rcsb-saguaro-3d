@@ -7,8 +7,7 @@ import {
 import {
     RcsbFvModulePublicInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
-import {buildMultipleAlignmentSequenceFv, TagDelimiter} from "@rcsb/rcsb-saguaro-app";
-import {RcsbFvDOMConstants} from "../../../../RcsbFvConstants/RcsbFvConstants";
+import {buildUniprotFv, TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {
     UniprotSequenceOnchangeInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvUniprotBuilder";
@@ -16,9 +15,8 @@ import {
     AlignmentRequestContextType
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvFactories/RcsbFvTrackFactory/TrackFactoryImpl/AlignmentTrackFactory";
 import {AlignmentResponse, TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
-import {UniprotRowTitleComponent} from "./UniprotPfvManagerFactory/UniprotRowTitleComponent";
-import {UniprotRowMarkComponent} from "./UniprotPfvManagerFactory/UniprotRowMarkComponent";
-
+import {UniprotRowTitleComponent} from "./UniprotPfvComponents/UniprotRowTitleComponent";
+import {UniprotRowMarkComponent} from "./UniprotPfvComponents/UniprotRowMarkComponent";
 
 interface UniprotPfvManagerInterface<R> extends PfvManagerFactoryConfigInterface<R,{context: UniprotSequenceOnchangeInterface;}> {
     upAcc:string;
@@ -44,16 +42,12 @@ class UniprotPfvManager<R> extends AbstractPfvManager<{upAcc:string},R,{context:
     }
 
     async create(): Promise<RcsbFvModulePublicInterface | undefined> {
-        this.module = await buildMultipleAlignmentSequenceFv(
+        this.module = await buildUniprotFv(
             this.rcsbFvDivId,
-            RcsbFvDOMConstants.SELECT_BUTTON_PFV_ID,
             this.upAcc,
             {
-                onChangeCallback:(context,module)=>{
-                    this.pfvChangeCallback({context});
-                }
-            },{
                 ... this.additionalConfig,
+                boardConfig: this.boardConfigContainer.get(),
                 trackConfigModifier: {
                     alignment: (alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment) => new Promise((resolve)=>{
                         resolve({

@@ -52,20 +52,24 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
             for(const unit of structure.units) {
                 StructureElement.Location.set(l, structure, unit, unit.elements[0]);
                 const asymId = SP.chain.label_asym_id(l);
-                if(asymObserved[asymId])
-                    continue;
-                asymObserved[asymId] = true;
                 const operators = SP.unit.pdbx_struct_oper_list_ids(l);
+                const operatorName = SP.unit.operator_name(l);
+                if(asymObserved[`${asymId}${TagDelimiter.assembly}${operatorName}`])
+                    continue;
+                asymObserved[`${asymId}${TagDelimiter.assembly}${operatorName}`] = true;
                 const type = SP.entity.type(l);
                 if (type == "polymer") {
                     const comp = await plugin.builders.structure.tryCreateComponentFromExpression(
                         structureCell,
                         MS.struct.generator.atomGroups({
-                            'chain-test': MS.core.rel.eq([MS.ammp('label_asym_id'), asymId])
+                            'chain-test': MS.core.logic.and([
+                                MS.core.rel.eq([MS.ammp('label_asym_id'), asymId]),
+                                MS.core.rel.eq([MS.acp('operatorName'), operatorName])
+                            ])
                         }),
                         uniqid(`${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.instance}${asymId}${TagDelimiter.entity}${operators.join(",")}`),
                         {
-                            label: `${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.instance}${asymId}${TagDelimiter.assembly}${type}`
+                            label: `${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.instance}${asymId}${TagDelimiter.assembly}${operators.join(",")}${TagDelimiter.assembly}${type}`
                         }
                     );
                     //TODO This needs to be called after tryCreateComponentFromExpression

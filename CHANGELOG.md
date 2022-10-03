@@ -2,6 +2,13 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [2.2.0-msa] - 2022-10-03
+### New Features
+- New UniProt MSA 1D3D view
+  - `UniprotPfvManagerFactory` builds the UniProt MSA PFV
+  - `UniprotCallbackManagerFactory` 1D callbacks
+  - `UniprotBehaviourObserver` 3D callbacks
+
 ## [2.1.0] - 2022-09-02
 ### Major refactoring
 - `StructureViewerBehaviourObserverInterface` factory of structure viewer behaviours
