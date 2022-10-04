@@ -35,7 +35,6 @@ export class UniprotRowTitleCheckbox extends React.Component <UniprotRowTitleChe
 
 
     public render():JSX.Element {
-        //return (<input type={"checkbox"} disabled={this.props.disabled} checked={this.state.checked} onClick={()=>{this.click()}}/>);
         return (<div style={this.style()} onClick={()=>{this.click()}}/>);
     }
 

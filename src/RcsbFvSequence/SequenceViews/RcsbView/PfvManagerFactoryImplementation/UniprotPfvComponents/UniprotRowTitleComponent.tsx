@@ -43,7 +43,7 @@ export class UniprotRowTitleComponent extends React.Component <UniprotRowTitleIn
 
     public render(): JSX.Element{
        return <div style={{textAlign:"right"}}>
-           <a href={`/structure/${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entryId}#entity-${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entityId}`}>{this.props.targetAlignment.target_id}</a>
+           <a style={{MozUserSelect:"none", WebkitUserSelect:"none", msUserSelect:"none"}} href={`/structure/${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entryId}#entity-${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entityId}`}>{this.props.targetAlignment.target_id}</a>
            <UniprotRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"aligned"} stateManager={this.props.stateManager}/>
            <UniprotRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"polymer"} stateManager={this.props.stateManager}/>
            <UniprotRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"non-polymer"} stateManager={this.props.stateManager}/>

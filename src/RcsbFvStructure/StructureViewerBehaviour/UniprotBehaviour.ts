@@ -149,9 +149,9 @@ class UniprotBehaviour<R> implements StructureViewerBehaviourInterface {
                     }
                     break;
                 case "polymer":
-                    this.stateManager.assemblyModelSate.getModelChainInfo(`${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}`)?.chains.map(ch=>ch.label).forEach(asymId=>{
-                        this.stateManager.assemblyModelSate.getModelChainInfo(`${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}`)?.chains[0].operators.forEach(operatorInfo=>{
-                            const componentId: string = `${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}${TagDelimiter.instance}${asymId}${TagDelimiter.assembly}${operatorInfo.ids.join(",")}${TagDelimiter.assembly}${data.tag}`;
+                    this.stateManager.assemblyModelSate.getModelChainInfo(`${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}`)?.chains.forEach(chain=>{
+                        chain.operators.forEach(operatorInfo=>{
+                            const componentId: string = `${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}${TagDelimiter.instance}${chain.label}${TagDelimiter.assembly}${operatorInfo.ids.join(",")}${TagDelimiter.assembly}${data.tag}`;
                             this.structureViewer.displayComponent(componentId, !data.isHidden);
                         });
                     });
