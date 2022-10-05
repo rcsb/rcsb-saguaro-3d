@@ -126,6 +126,10 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
             builder.buildRepresentation(update, comp, {
                 color: PLDDTConfidenceColorThemeProvider.isApplicable({ structure }) ? PLDDTConfidenceColorThemeProvider.name as ColorTheme.BuiltIn : "chain-id",
                 type: "cartoon"
+            }, {
+                initialState:{
+                    isHidden:true
+                }
             });
             await update.commit({ revertOnError: false });
             for(const expression of createSelectionExpressions(entryId)){
@@ -134,9 +138,9 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
                 const comp = await plugin.builders.structure.tryCreateComponentFromExpression(
                     structureCell,
                     expression.expression,
-                    uniqid(`${entryId}${TagDelimiter.entity}${entityId}_${expression.tag}`),
+                    uniqid(`${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.assembly}${expression.tag}`),
                     {
-                        label: `${entryId}${TagDelimiter.entity}${entityId}-${expression.tag}`
+                        label: `${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.assembly}${expression.tag}`
                     });
                 //TODO This needs to be called after tryCreateComponentFromExpression
                 const { update, builder } = reprBuilder(plugin, {
@@ -146,14 +150,19 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
                 });
                 builder.buildRepresentation(update, comp, {
                     type: expression.type
-                },expression.tag == "water" ? {
+                },{
                     initialState:{
                         isHidden:true
                     }
-                } : undefined);
+                });
                 await update.commit({ revertOnError: false });
             }
-
+            for (const c of plugin.managers.structure.hierarchy.currentComponentGroups){
+                for (const comp of c) {
+                    if(comp.representations[0].cell.state.isHidden)
+                        plugin.managers.structure.component.toggleVisibility(c);
+                }
+            }
         }
     });
 

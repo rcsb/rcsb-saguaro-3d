@@ -23,7 +23,7 @@ interface UniprotRowTitleCheckboxState {
 export class UniprotRowTitleCheckbox extends React.Component <UniprotRowTitleCheckboxInterface,UniprotRowTitleCheckboxState> {
 
     readonly state: UniprotRowTitleCheckboxState = {
-        checked: !this.props.disabled
+        checked: this.props.tag == "aligned"
     };
 
     private subscription: Subscription;
@@ -40,7 +40,7 @@ export class UniprotRowTitleCheckbox extends React.Component <UniprotRowTitleChe
 
     public componentDidUpdate(prevProps: Readonly<UniprotRowTitleCheckboxInterface>, prevState: Readonly<UniprotRowTitleCheckboxState>, snapshot?: any) {
         if(prevProps.disabled != this.props.disabled)
-            this.setState({checked:!this.props.disabled});
+            this.setState({checked:(!this.props.disabled && this.props.tag == "aligned")});
     }
 
     public componentWillUnmount() {
