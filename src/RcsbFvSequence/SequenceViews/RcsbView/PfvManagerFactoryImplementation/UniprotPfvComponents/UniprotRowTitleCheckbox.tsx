@@ -51,14 +51,7 @@ export class UniprotRowTitleCheckbox extends React.Component <UniprotRowTitleChe
         this.subscription = this.props.stateManager.subscribe<"representation-change",{label:string;isHidden:boolean;} & {tag:UniprotRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;};}>((o)=>{
             if(o.type == "representation-change" && o.view == "3d-view" && o.data)
                 this.structureViewerRepresentationChange(o.data);
-            if(o.type == "representation-change" && o.view == "1d-view" && o.data)
-                this.sequenceViewerRepresentationChange(o.data);
         })
-    }
-
-    private sequenceViewerRepresentationChange(d:{tag:UniprotRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;};}): void {
-        if(this.props.tag == "aligned" && d.tag == "polymer" && this.props.entityId == d.pdb.entityId && this.props.entryId == d.pdb.entryId)
-            this.setState({checked:!d.isHidden})
     }
 
     private structureViewerRepresentationChange(d:{label:string;isHidden:boolean;}): void {

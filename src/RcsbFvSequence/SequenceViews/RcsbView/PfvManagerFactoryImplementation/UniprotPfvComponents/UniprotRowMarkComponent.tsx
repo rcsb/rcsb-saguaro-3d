@@ -26,7 +26,7 @@ interface UniprotRowMarkState {
 
 export class UniprotRowMarkComponent extends React.Component <UniprotRowMarkInterface,UniprotRowMarkState> {
 
-    private readonly HOVER_COLOR: string = "#666";
+    private readonly HOVER_COLOR: string = "rgb(51, 122, 183)";
     private readonly ACTIVE_COLOR: string ="rgb(51, 122, 183)";
     private subscription: Subscription;
 

@@ -14,26 +14,32 @@ import {RcsbFvStateManager} from "../../../../../RcsbFvState/RcsbFvStateManager"
 import {Subscription} from "rxjs";
 import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {UniprotRowTitleCheckbox} from "./UniprotRowTitleCheckbox";
+import {MouseEvent} from "react";
 
 interface UniprotRowTitleInterface extends RcsbFvRowTitleInterface {
     alignmentContext: AlignmentRequestContextType;
     targetAlignment: TargetAlignment;
     stateManager:RcsbFvStateManager;
-
+    titleClick: ()=>void;
 }
 
 interface UniprotRowTitleState {
     expandTitle: boolean;
     disabled: boolean;
+    titleColor: string;
 }
 
 export class UniprotRowTitleComponent extends React.Component <UniprotRowTitleInterface, UniprotRowTitleState> {
 
     private readonly configData : RcsbFvRowConfigInterface;
     private subscription: Subscription;
+    private readonly HOVER_COLOR: string = "#ccc";
+    private readonly ACTIVE_COLOR: string ="rgb(51, 122, 183)";
+
     readonly state = {
         expandTitle: false,
-        disabled: true
+        disabled: true,
+        titleColor: this.HOVER_COLOR
     };
 
     constructor(props: UniprotRowTitleInterface) {
@@ -43,7 +49,14 @@ export class UniprotRowTitleComponent extends React.Component <UniprotRowTitleIn
 
     public render(): JSX.Element{
        return <div style={{textAlign:"right"}}>
-           <a style={{MozUserSelect:"none", WebkitUserSelect:"none", msUserSelect:"none"}} href={`/structure/${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entryId}#entity-${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entityId}`}>{this.props.targetAlignment.target_id}</a>
+           <div style={{
+               MozUserSelect:"none",
+               WebkitUserSelect:"none",
+               msUserSelect:"none",
+               display:"inline-block",
+               color: this.state.titleColor,
+               cursor: "pointer"
+           }} onClick={(e: MouseEvent)=>this.click(e)} onMouseOver={()=>this.hover(true)} onMouseOut={()=>this.hover(false)}>{this.props.targetAlignment.target_id}</div>
            <UniprotRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"aligned"} stateManager={this.props.stateManager}/>
            <UniprotRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"polymer"} stateManager={this.props.stateManager}/>
            <UniprotRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"non-polymer"} stateManager={this.props.stateManager}/>
@@ -68,10 +81,24 @@ export class UniprotRowTitleComponent extends React.Component <UniprotRowTitleIn
     private modelChange(): void {
         if(this.props.targetAlignment.target_id && this.props.stateManager.assemblyModelSate.getMap().has(this.props.targetAlignment.target_id)){
             if(this.state.disabled)
-                this.setState({disabled:false})
+                this.setState({disabled:false, titleColor:this.ACTIVE_COLOR});
         }else if(!this.state.disabled){
-            this.setState({disabled:true})
+            this.setState({disabled:true, titleColor:this.HOVER_COLOR});
         }
+    }
+
+    private hover(flag: boolean): void {
+        if(this.state.disabled && flag)
+            this.setState({titleColor:this.ACTIVE_COLOR});
+        else if(this.state.disabled && !flag)
+            this.setState({titleColor:this.HOVER_COLOR});
+    }
+
+    private click(e: MouseEvent){
+        if(e.shiftKey)
+            document.location.href = `/structure/${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entryId}#entity-${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entityId}`;
+        else
+            this.props.titleClick();
     }
 
 }

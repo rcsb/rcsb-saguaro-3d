@@ -48,43 +48,80 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
             const entryId = params.pdb?.entryId!;
             const entityId = params.pdb?.entityId!;
             const l = StructureElement.Location.create(structure);
+            const unit = structure.units.find((u,n)=>u.model.atomicHierarchy.chains.label_entity_id.value(n) === params.pdb?.entityId);
+            if(!unit)
+                return;
+            StructureElement.Location.set(l, structure, unit, unit.elements[0]);
+            const alignedAsymId = SP.chain.label_asym_id(l);
+            const alignedOperators = SP.unit.pdbx_struct_oper_list_ids(l);
+            const alignedOperatorName = SP.unit.operator_name(l);
+            const alignedType = SP.entity.type(l);
+            if(alignedType != "polymer")
+                return;
+            let comp = await plugin.builders.structure.tryCreateComponentFromExpression(
+                structureCell,
+                MS.struct.generator.atomGroups({
+                    'chain-test': MS.core.logic.and([
+                        MS.core.rel.eq([MS.ammp('label_asym_id'), alignedAsymId]),
+                        MS.core.rel.eq([MS.acp('operatorName'), alignedOperatorName])
+                    ])
+                }),
+                uniqid(`${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.instance}${alignedAsymId}${TagDelimiter.entity}${alignedOperators.join(",")}`),
+                {
+                    label: `${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.instance}${alignedAsymId}${TagDelimiter.assembly}${alignedOperators.join(",")}${TagDelimiter.assembly}${alignedType}`
+                }
+            );
+            //TODO This needs to be called after tryCreateComponentFromExpression
+            let reprBuild = reprBuilder(plugin, {
+                ignoreHydrogens: true,
+                ignoreLight: false,
+                quality: "auto"
+            });
+            reprBuild.builder.buildRepresentation(reprBuild.update, comp, {
+                color: PLDDTConfidenceColorThemeProvider.isApplicable({ structure }) ? PLDDTConfidenceColorThemeProvider.name as ColorTheme.BuiltIn : "chain-id",
+                type: "cartoon"
+            });
+            await reprBuild.update.commit({ revertOnError: false });
+
+            const expressions = []
             const asymObserved: {[key:string]:boolean} = {};
-            for(const unit of structure.units) {
+            for(const unit of structure.units){
                 StructureElement.Location.set(l, structure, unit, unit.elements[0]);
                 const asymId = SP.chain.label_asym_id(l);
-                const operators = SP.unit.pdbx_struct_oper_list_ids(l);
                 const operatorName = SP.unit.operator_name(l);
+                if(asymId == alignedAsymId && operatorName == alignedOperatorName)
+                    continue;
                 if(asymObserved[`${asymId}${TagDelimiter.assembly}${operatorName}`])
                     continue;
                 asymObserved[`${asymId}${TagDelimiter.assembly}${operatorName}`] = true;
                 const type = SP.entity.type(l);
                 if (type == "polymer") {
-                    const comp = await plugin.builders.structure.tryCreateComponentFromExpression(
-                        structureCell,
-                        MS.struct.generator.atomGroups({
-                            'chain-test': MS.core.logic.and([
-                                MS.core.rel.eq([MS.ammp('label_asym_id'), asymId]),
-                                MS.core.rel.eq([MS.acp('operatorName'), operatorName])
-                            ])
-                        }),
-                        uniqid(`${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.instance}${asymId}${TagDelimiter.entity}${operators.join(",")}`),
-                        {
-                            label: `${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.instance}${asymId}${TagDelimiter.assembly}${operators.join(",")}${TagDelimiter.assembly}${type}`
-                        }
-                    );
-                    //TODO This needs to be called after tryCreateComponentFromExpression
-                    const { update, builder } = reprBuilder(plugin, {
-                        ignoreHydrogens: true,
-                        ignoreLight: false,
-                        quality: "auto"
-                    });
-                    builder.buildRepresentation(update, comp, {
-                        color: PLDDTConfidenceColorThemeProvider.isApplicable({ structure }) ? PLDDTConfidenceColorThemeProvider.name as ColorTheme.BuiltIn : "chain-id",
-                        type: "cartoon"
-                    });
-                    await update.commit({ revertOnError: false });
+                    expressions.push(MS.core.logic.and([
+                        MS.core.rel.eq([MS.ammp('label_asym_id'), asymId]),
+                        MS.core.rel.eq([MS.acp('operatorName'), operatorName])
+                    ]))
                 }
             }
+            comp = await plugin.builders.structure.tryCreateComponentFromExpression(
+                structureCell,
+                MS.struct.generator.atomGroups({
+                    'chain-test': MS.core.logic.or(expressions)
+                }),
+                uniqid(`${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.assembly}${alignedType}`),
+                {
+                    label: `${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.assembly}${alignedType}`
+                }
+            );
+            reprBuild = reprBuilder(plugin, {
+                ignoreHydrogens: true,
+                ignoreLight: false,
+                quality: "auto"
+            });
+            reprBuild.builder.buildRepresentation(reprBuild.update, comp, {
+                color: PLDDTConfidenceColorThemeProvider.isApplicable({ structure }) ? PLDDTConfidenceColorThemeProvider.name as ColorTheme.BuiltIn : "chain-id",
+                type: "cartoon"
+            });
+            await reprBuild.update.commit({ revertOnError: false });
             for(const expression of createSelectionExpressions(entryId)){
                 if(expression.tag == "polymer")
                     continue;

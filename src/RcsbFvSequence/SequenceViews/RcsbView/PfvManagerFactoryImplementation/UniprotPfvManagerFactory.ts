@@ -66,7 +66,8 @@ class UniprotPfvManager<R> extends AbstractPfvManager<{upAcc:string},R,{context:
                                 rowTitleAdditionalProps:{
                                     alignmentContext,
                                     targetAlignment,
-                                    stateManager: this.stateManager
+                                    stateManager: this.stateManager,
+                                    titleClick: ()=> this.loadAlignment(alignmentContext,targetAlignment)
                                 }
                             }
                         });

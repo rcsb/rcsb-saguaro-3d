@@ -149,15 +149,11 @@ class UniprotBehaviour<R> implements StructureViewerBehaviourInterface {
                     }
                     break;
                 case "polymer":
-                    this.stateManager.assemblyModelSate.getModelChainInfo(`${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}`)?.chains.forEach(chain=>{
-                        chain.operators.forEach(operatorInfo=>{
-                            const componentId: string = `${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}${TagDelimiter.instance}${chain.label}${TagDelimiter.assembly}${operatorInfo.ids.join(",")}${TagDelimiter.assembly}${data.tag}`;
-                            this.structureViewer.displayComponent(componentId, !data.isHidden);
-                        });
-                    });
+                    const componentId: string = `${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}${TagDelimiter.assembly}${data.tag}`;
+                    this.structureViewer.displayComponent(componentId, !data.isHidden);
                     break;
                 case "non-polymer":
-                    createSelectionExpressions(data.pdb.entryId).map(expression=>expression.tag).filter(tag=>tag!="water").forEach(tag=>{
+                    createSelectionExpressions(data.pdb.entryId).map(expression=>expression.tag).filter(tag=>(tag!="water" && tag != "polymer")).forEach(tag=>{
                         const componentId: string = `${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}${TagDelimiter.assembly}${tag}`;
                         this.structureViewer.displayComponent(componentId, !data.isHidden);
                     });
