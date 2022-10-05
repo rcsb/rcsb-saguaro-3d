@@ -48,40 +48,46 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
             const entryId = params.pdb?.entryId!;
             const entityId = params.pdb?.entityId!;
             const l = StructureElement.Location.create(structure);
-            const unit = structure.units.find((u,n)=>u.model.atomicHierarchy.chains.label_entity_id.value(n) === params.pdb?.entityId);
-            if(!unit)
-                return;
-            StructureElement.Location.set(l, structure, unit, unit.elements[0]);
-            const alignedAsymId = SP.chain.label_asym_id(l);
-            const alignedOperators = SP.unit.pdbx_struct_oper_list_ids(l);
-            const alignedOperatorName = SP.unit.operator_name(l);
-            const alignedType = SP.entity.type(l);
-            if(alignedType != "polymer")
-                return;
-            let comp = await plugin.builders.structure.tryCreateComponentFromExpression(
-                structureCell,
-                MS.struct.generator.atomGroups({
-                    'chain-test': MS.core.logic.and([
-                        MS.core.rel.eq([MS.ammp('label_asym_id'), alignedAsymId]),
-                        MS.core.rel.eq([MS.acp('operatorName'), alignedOperatorName])
-                    ])
-                }),
-                uniqid(`${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.instance}${alignedAsymId}${TagDelimiter.entity}${alignedOperators.join(",")}`),
-                {
-                    label: `${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.instance}${alignedAsymId}${TagDelimiter.assembly}${alignedOperators.join(",")}${TagDelimiter.assembly}${alignedType}`
+            let alignedAsymId;
+            let alignedOperatorName;
+            let alignedType;
+            for(const unit of structure.units) {
+                StructureElement.Location.set(l, structure, unit, unit.elements[0]);
+                const alignedEntityId = SP.chain.label_entity_id(l);
+                if(alignedEntityId == params.pdb?.entityId){
+                    alignedAsymId = SP.chain.label_asym_id(l);
+                    alignedOperatorName = SP.unit.operator_name(l);
+                    alignedType = SP.entity.type(l);
+                    const alignedOperators = SP.unit.pdbx_struct_oper_list_ids(l);
+                    if(alignedType != "polymer")
+                        return;
+                    const comp = await plugin.builders.structure.tryCreateComponentFromExpression(
+                        structureCell,
+                        MS.struct.generator.atomGroups({
+                            'chain-test': MS.core.logic.and([
+                                MS.core.rel.eq([MS.ammp('label_asym_id'), alignedAsymId]),
+                                MS.core.rel.eq([MS.acp('operatorName'), alignedOperatorName])
+                            ])
+                        }),
+                        uniqid(`${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.instance}${alignedAsymId}${TagDelimiter.entity}${alignedOperators.join(",")}`),
+                        {
+                            label: `${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.instance}${alignedAsymId}${TagDelimiter.assembly}${alignedOperators.join(",")}${TagDelimiter.assembly}${alignedType}`
+                        }
+                    );
+                    //TODO This needs to be called after tryCreateComponentFromExpression
+                    const {update, builder} = reprBuilder(plugin, {
+                        ignoreHydrogens: true,
+                        ignoreLight: false,
+                        quality: "auto"
+                    });
+                    builder.buildRepresentation(update, comp, {
+                        color: PLDDTConfidenceColorThemeProvider.isApplicable({ structure }) ? PLDDTConfidenceColorThemeProvider.name as ColorTheme.BuiltIn : "chain-id",
+                        type: "cartoon"
+                    });
+                    await update.commit({ revertOnError: false });
+                    break;
                 }
-            );
-            //TODO This needs to be called after tryCreateComponentFromExpression
-            let reprBuild = reprBuilder(plugin, {
-                ignoreHydrogens: true,
-                ignoreLight: false,
-                quality: "auto"
-            });
-            reprBuild.builder.buildRepresentation(reprBuild.update, comp, {
-                color: PLDDTConfidenceColorThemeProvider.isApplicable({ structure }) ? PLDDTConfidenceColorThemeProvider.name as ColorTheme.BuiltIn : "chain-id",
-                type: "cartoon"
-            });
-            await reprBuild.update.commit({ revertOnError: false });
+            }
 
             const expressions = []
             const asymObserved: {[key:string]:boolean} = {};
@@ -102,7 +108,7 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
                     ]))
                 }
             }
-            comp = await plugin.builders.structure.tryCreateComponentFromExpression(
+            const comp = await plugin.builders.structure.tryCreateComponentFromExpression(
                 structureCell,
                 MS.struct.generator.atomGroups({
                     'chain-test': MS.core.logic.or(expressions)
@@ -112,16 +118,16 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
                     label: `${entryId}${TagDelimiter.entity}${entityId}${TagDelimiter.assembly}${alignedType}`
                 }
             );
-            reprBuild = reprBuilder(plugin, {
+            const {update, builder} = reprBuilder(plugin, {
                 ignoreHydrogens: true,
                 ignoreLight: false,
                 quality: "auto"
             });
-            reprBuild.builder.buildRepresentation(reprBuild.update, comp, {
+            builder.buildRepresentation(update, comp, {
                 color: PLDDTConfidenceColorThemeProvider.isApplicable({ structure }) ? PLDDTConfidenceColorThemeProvider.name as ColorTheme.BuiltIn : "chain-id",
                 type: "cartoon"
             });
-            await reprBuild.update.commit({ revertOnError: false });
+            await update.commit({ revertOnError: false });
             for(const expression of createSelectionExpressions(entryId)){
                 if(expression.tag == "polymer")
                     continue;
@@ -156,8 +162,8 @@ async function structuralAlignment(plugin: PluginContext, ref:{entryId:string;en
         refData = structure;
     }else{
         const pdbData: Structure = structure;
-        const pdbUnit:Unit|undefined = pdbData?.units.find((u,n)=>u.model.atomicHierarchy.chains.label_entity_id.value(n) === pdb.entityId);
-        const refUnit:Unit|undefined = refData?.units.find((u,n)=>u.model.atomicHierarchy.chains.label_entity_id.value(n) === ref.entityId);
+        const pdbUnit:Unit|undefined = findFirstEntityUnit(pdbData,pdb.entityId);
+        const refUnit:Unit|undefined =  refData ? findFirstEntityUnit(refData, ref.entityId) : undefined;
         if(pdbData && pdbUnit && refData && refUnit){
             const refLoci: Loci = Structure.toStructureElementLoci(Structure.create([refUnit]));
             const pdbLoci: Loci = Structure.toStructureElementLoci(Structure.create([pdbUnit]));
@@ -168,6 +174,17 @@ async function structuralAlignment(plugin: PluginContext, ref:{entryId:string;en
                 const { bTransform } = transforms[0];
                 await transform(plugin, plugin.helpers.substructureParent.get(pdbData)!, bTransform, coordinateSystem);
             }
+        }
+    }
+}
+
+function findFirstEntityUnit(structure: Structure, entityId: string): Unit|undefined {
+    const l = StructureElement.Location.create(structure);
+    for(const unit of structure.units) {
+        StructureElement.Location.set(l, structure, unit, unit.elements[0]);
+        const unitEntityId = SP.chain.label_entity_id(l);
+        if (unitEntityId == entityId) {
+            return unit;
         }
     }
 }
