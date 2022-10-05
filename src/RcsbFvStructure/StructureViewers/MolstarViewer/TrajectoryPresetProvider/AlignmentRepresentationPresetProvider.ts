@@ -23,6 +23,7 @@ import {Mat4} from "molstar/lib/mol-math/linear-algebra";
 import {SymmetryOperator} from "molstar/lib/mol-math/geometry/symmetry-operator";
 import {StateTransforms} from "molstar/lib/mol-plugin-state/transforms";
 import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
+import {type} from "typedoc/dist/lib/output/themes/default/partials/type";
 
 let refData: Structure|undefined = undefined;
 let refId: {entryId:string;entityId:string;}|undefined = undefined;
@@ -159,7 +160,7 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
             }
             for (const c of plugin.managers.structure.hierarchy.currentComponentGroups){
                 for (const comp of c) {
-                    if(comp.representations[0].cell.state.isHidden)
+                    if(typeof comp.cell.state.isHidden === "undefined" && comp.representations[0].cell.state.isHidden)
                         plugin.managers.structure.component.toggleVisibility(c);
                 }
             }
