@@ -83,13 +83,12 @@ class UniprotBehaviour<R> implements StructureViewerBehaviourInterface {
     }
 
     async featureClick(data?: SelectedRegion[]): Promise<void> {
-        let onetimeCall = (d: SelectedRegion) => {
+        const cameraFocus = onetimeCall<SelectedRegion>((d: SelectedRegion) => {
             const {modelId, labelAsymId, region, operatorName} = d;
             const regions = [region];
             const residues: number[] = regions.map(r=> r.begin == r.end ? [r.begin] : [r.begin,r.end]).flat().filter(r=>r!=null);
             this.structureViewer.cameraFocus(modelId, labelAsymId, residues, operatorName);
-            onetimeCall = ()=>{};
-        };
+        });
         await this.removeComponent();
         if(!data || data.length == 0)
             this.resetPluginView();
@@ -102,12 +101,13 @@ class UniprotBehaviour<R> implements StructureViewerBehaviourInterface {
                     return;
                 if(residues.length == 1)
                     this.structureViewer.setFocus(modelId,labelAsymId,residues[0],residues[0],operatorName);
-                onetimeCall(d);
+                cameraFocus.call(d);
                 const ranges: SaguaroRange[] = regions.map(r=>({
                     modelId,
                     labelAsymId,
                     begin: r.begin,
-                    end: r.end
+                    end: r.end,
+                    operatorName
                 }));
                 const nRes = ranges.map(r=>r.end-r.begin+1).reduce((prev,curr)=>curr+prev,0);
                 if( nRes <= this.CREATE_COMPONENT_THR)
@@ -201,4 +201,14 @@ class UniprotBehaviour<R> implements StructureViewerBehaviourInterface {
         }));
     }
 
+}
+
+function onetimeCall<P>(f:(x:P)=>void): {call: (x:P)=>void} {
+    const g = {
+        call:(x:P)=>{
+            f(x)
+            g.call = (x)=>{}
+        }
+    };
+    return g;
 }
