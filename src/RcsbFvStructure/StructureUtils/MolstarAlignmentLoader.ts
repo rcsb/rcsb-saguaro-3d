@@ -22,12 +22,13 @@ import {TrajectoryHierarchyPresetProvider} from "molstar/lib/mol-plugin-state/bu
 import {
     AlignmentTrajectoryPresetProvider, TrajectoryParamsType
 } from "../StructureViewers/MolstarViewer/TrajectoryPresetProvider/AlignmentTrajectoryPresetProvider";
+import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 
-export class MolstarAlignmentLoader implements StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <LoadMolstarInterface<TrajectoryParamsType>>,{entryId:string;entityId:string;}]> {
+export class MolstarAlignmentLoader implements StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <LoadMolstarInterface<TrajectoryParamsType>>,{entryId:string;entityId:string;},TargetAlignment]> {
 
     private readonly structureMap: Set<string> = new Set<string>();
 
-    async load(structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface <LoadMolstarInterface<TrajectoryParamsType>>, pdb:{entryId:string;entityId:string;}): Promise<void> {
+    async load(structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface <LoadMolstarInterface<TrajectoryParamsType>>, pdb:{entryId:string;entityId:string;}, targetAlignment: TargetAlignment): Promise<void> {
         const structureId: string = `${pdb.entryId}${TagDelimiter.entity}${pdb.entityId}`;
         if(!this.structureMap.has(structureId)){
             await structureViewer.load({
@@ -39,7 +40,8 @@ export class MolstarAlignmentLoader implements StructureLoaderInterface<[ViewerC
                     params:{
                         assemblyId: "1",
                         modelIndex: 0,
-                        pdb: pdb
+                        pdb,
+                        targetAlignment
                     }
                 }
             });

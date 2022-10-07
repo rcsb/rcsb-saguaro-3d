@@ -30,6 +30,13 @@ export class UniprotPfvManagerFactory<R> implements PfvManagerFactoryInterface<{
 
 }
 
+type AlignmentDataType = {
+    pdb:{
+        entryId:string;
+        entityId:string;
+    },
+    targetAlignment: TargetAlignment;
+};
 class UniprotPfvManager<R> extends AbstractPfvManager<{upAcc:string},R,{context: UniprotSequenceOnchangeInterface;}>{
 
     private readonly upAcc:string;
@@ -89,11 +96,12 @@ class UniprotPfvManager<R> extends AbstractPfvManager<{upAcc:string},R,{context:
 
     private loadAlignment(alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment):void {
         if(typeof targetAlignment.target_id === "string") {
-            this.stateManager.next<"model-change", {pdb:{entryId:string;entityId:string;}}>({
+            this.stateManager.next<"model-change",AlignmentDataType>({
                 type:"model-change",
                 view:"1d-view",
                 data:{
-                    pdb:TagDelimiter.parseEntity(targetAlignment.target_id)
+                    pdb:TagDelimiter.parseEntity(targetAlignment.target_id),
+                    targetAlignment
                 }
             });
         }

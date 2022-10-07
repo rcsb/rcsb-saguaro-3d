@@ -16,9 +16,11 @@ import {
 } from "molstar/lib/mol-plugin-state/builder/structure/representation-preset";
 import {PLDDTConfidenceColorThemeProvider} from "molstar/lib/extensions/model-archive/quality-assessment/color/plddt";
 import {AlignmentRepresentationPresetProvider} from "./AlignmentRepresentationPresetProvider";
+import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 
 export type TrajectoryParamsType = {
     pdb?: {entryId:string;entityId:string;};
+    targetAlignment?: TargetAlignment;
     assemblyId?: string;
     modelIndex?: number;
     plddt?: 'off' | 'single-chain' | 'on';
@@ -34,6 +36,7 @@ export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvid
     isApplicable: (trajectory: PluginStateObject.Molecule.Trajectory, plugin: PluginContext): boolean => true,
     params: (trajectory: PluginStateObject.Molecule.Trajectory | undefined, plugin: PluginContext):ParamDefinition.For<TrajectoryParamsType> => ({
         pdb:PD.Value<{entryId:string;entityId:string;}|undefined>(undefined),
+        targetAlignment: PD.Value<TargetAlignment|undefined>(undefined),
         assemblyId:PD.Value<string|undefined>(undefined),
         modelIndex:PD.Value<number|undefined>(undefined),
         plddt:PD.Value<'off' | 'single-chain' | 'on' | undefined>(undefined)
@@ -60,7 +63,8 @@ export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvid
             structureProperties,
             AlignmentRepresentationPresetProvider,
             {
-                pdb:params.pdb
+                pdb:params.pdb,
+                targetAlignment:params.targetAlignment
             }
         );
 

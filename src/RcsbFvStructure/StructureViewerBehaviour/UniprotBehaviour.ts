@@ -21,13 +21,14 @@ import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {createSelectionExpressions} from "@rcsb/rcsb-molstar/build/src/viewer/helpers/selection";
 import {RegionSelectionInterface} from "../../RcsbFvState/RcsbFvSelectorManager";
 import {defaultInputTarget} from "concurrently/dist/src/defaults";
+import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 
 export class UniprotBehaviourObserver<R> implements StructureViewerBehaviourObserverInterface<R> {
 
     private structureBehaviour: StructureViewerBehaviourInterface;
-    private readonly structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;}]>;
+    private readonly structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;},TargetAlignment]>;
 
-    constructor(structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;}]>) {
+    constructor(structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;},TargetAlignment]>) {
         this.structureLoader = structureLoader
     }
     public observe(
@@ -44,12 +45,19 @@ export class UniprotBehaviourObserver<R> implements StructureViewerBehaviourObse
 }
 
 type SelectedRegion = {modelId: string, labelAsymId: string, region: RegionSelectionInterface, operatorName?: string};
+type AlignmentDataType = {
+    pdb:{
+        entryId:string;
+        entityId:string;
+    },
+    targetAlignment: TargetAlignment;
+};
 class UniprotBehaviour<R> implements StructureViewerBehaviourInterface {
 
     private readonly structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
     private readonly stateManager: RcsbFvStateInterface;
     private readonly subscription: Subscription;
-    private readonly structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;}]>;
+    private readonly structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;},TargetAlignment]>;
     private readonly componentList: string[] = [];
 
     private readonly CREATE_COMPONENT_THR: number = 5;
@@ -57,7 +65,7 @@ class UniprotBehaviour<R> implements StructureViewerBehaviourInterface {
     constructor(
         structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>,
         stateManager: RcsbFvStateInterface,
-        structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;}]>
+        structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;},TargetAlignment]>
     ) {
         this.structureViewer = structureViewer;
         this.stateManager = stateManager;
@@ -66,7 +74,7 @@ class UniprotBehaviour<R> implements StructureViewerBehaviourInterface {
     }
 
     private subscribe(): Subscription {
-        return this.stateManager.subscribe<"model-change"|"representation-change"|"feature-click",{pdb:{entryId:string;entityId:string;}} & {tag:"polymer"|"non-polymer";isHidden:boolean;} & SelectedRegion[]>(async o=>{
+        return this.stateManager.subscribe<"model-change"|"representation-change"|"feature-click",AlignmentDataType & {tag:"polymer"|"non-polymer";isHidden:boolean;} & SelectedRegion[]>(async o=>{
             if(o.type == "model-change" && o.view == "1d-view" && o.data)
                 await this.modelChange(o.data);
             if(o.type == "representation-change" && o.view == "1d-view" && o.data)
@@ -162,9 +170,9 @@ class UniprotBehaviour<R> implements StructureViewerBehaviourInterface {
         }
     }
 
-    async modelChange(data?:{pdb:{entryId:string;entityId:string;}}): Promise<void> {
+    async modelChange(data?:AlignmentDataType): Promise<void> {
         if(data)
-            await this.structureLoader.load(this.structureViewer, data.pdb);
+            await this.structureLoader.load(this.structureViewer, data.pdb, data.targetAlignment);
     }
 
     private select(mode:"select"|"hover"): void{

@@ -9,43 +9,49 @@ import {
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {PluginStateObject} from "molstar/lib/mol-plugin-state/objects";
 import {StateObjectRef} from "molstar/lib/mol-state";
-import {Structure, StructureElement, StructureProperties as SP, Unit} from "molstar/lib/mol-model/structure";
+import {
+    QueryContext,
+    Structure,
+    StructureElement,
+    StructureProperties as SP,
+    StructureSelection,
+    Unit
+} from "molstar/lib/mol-model/structure";
 import {MolScriptBuilder as MS} from "molstar/lib/mol-script/language/builder";
-import reprBuilder = StructureRepresentationPresetProvider.reprBuilder;
 import uniqid from "uniqid";
 import {PLDDTConfidenceColorThemeProvider} from "molstar/lib/extensions/model-archive/quality-assessment/color/plddt";
 import {ColorTheme} from "molstar/lib/mol-theme/color";
 import {createSelectionExpressions} from "@rcsb/rcsb-molstar/build/src/viewer/helpers/selection";
 import {ParamDefinition as PD} from "molstar/lib/mol-util/param-definition";
 import {Loci} from "molstar/lib/mol-model/loci";
-import {alignAndSuperpose} from "molstar/lib/mol-model/structure/structure/util/superposition";
+import {alignAndSuperpose, superpose} from "molstar/lib/mol-model/structure/structure/util/superposition";
 import {Mat4} from "molstar/lib/mol-math/linear-algebra";
 import {SymmetryOperator} from "molstar/lib/mol-math/geometry/symmetry-operator";
 import {StateTransforms} from "molstar/lib/mol-plugin-state/transforms";
 import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
-import {type} from "typedoc/dist/lib/output/themes/default/partials/type";
+import {AlignedRegion, TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {AlignmentMapper as AM} from "../../../../Utils/AlignmentMapper";
+import {compile} from 'molstar/lib/mol-script/runtime/query/compiler';
+import reprBuilder = StructureRepresentationPresetProvider.reprBuilder;
 
 let refData: Structure|undefined = undefined;
-let refId: {entryId:string;entityId:string;}|undefined = undefined;
-export const AlignmentRepresentationPresetProvider = StructureRepresentationPresetProvider<{pdb?:{entryId:string;entityId:string;};},any>({
+let refParams: StructureAlignmentParamsType|undefined = undefined;
+export const AlignmentRepresentationPresetProvider = StructureRepresentationPresetProvider<{pdb?:{entryId:string;entityId:string;};targetAlignment?:TargetAlignment;},any>({
         id: 'alignment-to-reference',
         display: {
             name: 'Alignemnt to Reference'
         },
         isApplicable: (structureRef: PluginStateObject.Molecule.Structure, plugin: PluginContext): boolean => true,
         params: (structureRef: PluginStateObject.Molecule.Structure | undefined, plugin: PluginContext) => ({
-            pdb: PD.Value<{entryId:string;entityId:string;}|undefined>(undefined)
+            pdb: PD.Value<{entryId:string;entityId:string;}|undefined>(undefined),
+            targetAlignment: PD.Value<TargetAlignment|undefined>(undefined)
         }),
-        apply: async (structureRef: StateObjectRef<PluginStateObject.Molecule.Structure>, params: {pdb?:{entryId:string;entityId:string;};}, plugin: PluginContext) => {
+        apply: async (structureRef: StateObjectRef<PluginStateObject.Molecule.Structure>, params: {pdb?:{entryId:string;entityId:string;};targetAlignment?: TargetAlignment;}, plugin: PluginContext) => {
             const structureCell = StateObjectRef.resolveAndCheck(plugin.state.data, structureRef);
             if(!structureCell) return;
             const structure = structureCell.obj!.data;
-            if(plugin.managers.structure.hierarchy.current.structures.length == 1){
-                refId = params.pdb
-            }
-            if(refId && params.pdb){
-                await structuralAlignment(plugin, refId, params.pdb, structure);
-            }
+
+
             const entryId = params.pdb?.entryId!;
             const entityId = params.pdb?.entityId!;
             const l = StructureElement.Location.create(structure);
@@ -62,6 +68,22 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
                     const alignedOperators = SP.unit.pdbx_struct_oper_list_ids(l);
                     if(alignedType != "polymer")
                         return;
+                    if(plugin.managers.structure.hierarchy.current.structures.length == 1){
+                        refParams = {
+                            entryId: entryId,
+                            labelAsymId: alignedAsymId,
+                            operatorName:alignedOperatorName,
+                            targetAlignment:params.targetAlignment!
+                        };
+                    }
+                    if(refParams && params.pdb){
+                        await structuralAlignment(plugin, refParams, {
+                            entryId: entryId,
+                            labelAsymId: alignedAsymId,
+                            operatorName:alignedOperatorName,
+                            targetAlignment:params.targetAlignment!
+                        }, structure);
+                    }
                     const comp = await plugin.builders.structure.tryCreateComponentFromExpression(
                         structureCell,
                         MS.struct.generator.atomGroups({
@@ -167,20 +189,45 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
         }
     });
 
-async function structuralAlignment(plugin: PluginContext, ref:{entryId:string;entityId:string;}, pdb:{entryId:string;entityId:string;}, structure: Structure): Promise<void> {
+
+type StructureAlignmentParamsType = {
+    entryId:string;
+    labelAsymId:string;
+    operatorName:string;
+    targetAlignment:TargetAlignment;
+};
+async function structuralAlignment(plugin: PluginContext, ref:StructureAlignmentParamsType, pdb:StructureAlignmentParamsType, structure: Structure): Promise<void> {
     if(ref.entryId == pdb.entryId){
         refData = structure;
     }else{
+        const pdbResIndexes: number[] = [];
+        const refResIndexes: number[] = [];
+        if(ref.targetAlignment?.aligned_regions && pdb.targetAlignment?.aligned_regions){
+            const alignmentList = AM.getAllTargetIntersections( ref.targetAlignment.aligned_regions as AlignedRegion[], pdb.targetAlignment.aligned_regions as AlignedRegion[])
+            alignmentList.forEach(alignment=>{
+                const refRange = AM.range(alignment[0].target_begin, alignment[0].target_end);
+                const pdbRange = AM.range(alignment[1].target_begin, alignment[1].target_end);
+                refRange.forEach((refIndex,n)=>{
+                    const pdbIndex = pdbRange[n];
+                    const pdbLoci =  residueToLoci(pdb, pdbIndex, structure);
+                    const refLoci =  residueToLoci(refParams!, refIndex, refData!);
+                    if(!Loci.isEmpty(pdbLoci) && !Loci.isEmpty(refLoci)){
+                        pdbResIndexes.push(pdbIndex)
+                        refResIndexes.push(refIndex)
+                    }
+                });
+            })
+        }
         const pdbData: Structure = structure;
-        const pdbUnit:Unit|undefined = findFirstEntityUnit(pdbData,pdb.entityId);
-        const refUnit:Unit|undefined =  refData ? findFirstEntityUnit(refData, ref.entityId) : undefined;
+        const pdbUnit:Unit|undefined = findFirstInstanceUnit(pdbData,pdb.labelAsymId);
+        const refUnit:Unit|undefined =  refData ? findFirstInstanceUnit(refData, ref.labelAsymId) : undefined;
         if(pdbData && pdbUnit && refData && refUnit){
-            const refLoci: Loci = Structure.toStructureElementLoci(Structure.create([refUnit]));
-            const pdbLoci: Loci = Structure.toStructureElementLoci(Structure.create([pdbUnit]));
+            const refLoci: Loci = residueListToLoci(refParams!, refResIndexes, refData);
+            const pdbLoci: Loci = residueListToLoci(pdb, pdbResIndexes, structure);
             if(StructureElement.Loci.is(refLoci) && StructureElement.Loci.is(pdbLoci)) {
                 const pivot = plugin.managers.structure.hierarchy.findStructure(refLoci.structure);
                 const coordinateSystem = pivot?.transform?.cell.obj?.data.coordinateSystem;
-                const transforms = alignAndSuperpose([refLoci, pdbLoci]);
+                const transforms = superpose([refLoci, pdbLoci]);
                 const { bTransform } = transforms[0];
                 await transform(plugin, plugin.helpers.substructureParent.get(pdbData)!, bTransform, coordinateSystem);
             }
@@ -188,12 +235,11 @@ async function structuralAlignment(plugin: PluginContext, ref:{entryId:string;en
     }
 }
 
-function findFirstEntityUnit(structure: Structure, entityId: string): Unit|undefined {
+function findFirstInstanceUnit(structure: Structure, labelAsymId: string): Unit|undefined {
     const l = StructureElement.Location.create(structure);
     for(const unit of structure.units) {
         StructureElement.Location.set(l, structure, unit, unit.elements[0]);
-        const unitEntityId = SP.chain.label_entity_id(l);
-        if (unitEntityId == entityId) {
+        if (SP.chain.label_asym_id(l) == labelAsymId) {
             return unit;
         }
     }
@@ -220,4 +266,32 @@ async function transform(plugin:PluginContext, s: StateObjectRef<PluginStateObje
         : plugin.state.data.build().to(s)
             .insert(StateTransforms.Model.TransformStructureConformation, params, { tags: SuperpositionTag });
     await plugin.runTask(plugin.state.data.updateTree(b));
+}
+
+function residueToLoci(pdb:StructureAlignmentParamsType, pdbIndex:number, structure: Structure): Loci {
+    const expression = MS.struct.generator.atomGroups({
+        'chain-test': MS.core.logic.and([
+            MS.core.rel.eq([MS.ammp('label_asym_id'), pdb.labelAsymId]),
+            MS.core.rel.eq([MS.acp('operatorName'), pdb.operatorName])
+        ]),
+        'residue-test':MS.core.rel.eq([MS.ammp('label_seq_id'), pdbIndex])
+    });
+    const query = compile<StructureSelection>(expression);
+    const selection = query(new QueryContext(structure));
+    return StructureSelection.toLociWithSourceUnits(selection);
+}
+
+function residueListToLoci(pdb:StructureAlignmentParamsType, indexList:number[], structure: Structure): Loci {
+    const expression = MS.struct.generator.atomGroups({
+        'chain-test': MS.core.logic.and([
+            MS.core.rel.eq([MS.ammp('label_asym_id'), pdb.labelAsymId]),
+            MS.core.rel.eq([MS.acp('operatorName'), pdb.operatorName])
+        ]),
+        'residue-test':MS.core.logic.or(
+            indexList.map(index=>MS.core.rel.eq([MS.ammp('label_seq_id'), index]))
+        )
+    });
+    const query = compile<StructureSelection>(expression);
+    const selection = query(new QueryContext(structure));
+    return StructureSelection.toLociWithSourceUnits(selection);
 }
