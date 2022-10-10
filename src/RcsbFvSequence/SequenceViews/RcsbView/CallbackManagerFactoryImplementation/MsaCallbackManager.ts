@@ -4,29 +4,27 @@ import {
     CallbackManagerFactoryInterface, CallbackManagerInterface
 } from "../CallbackManagerFactoryInterface";
 import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
-import {
-    UniprotSequenceOnchangeInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvUniprotBuilder";
 import {AlignedRegion, AlignmentResponse} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {RegionSelectionInterface} from "../../../../RcsbFvState/RcsbFvSelectorManager";
 import {ChainInfo, SaguaroRegionList} from "../../../../RcsbFvStructure/StructureViewerInterface";
 import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {AlignmentMapper as AM} from "../../../../Utils/AlignmentMapper";
 
-export class UniprotCallbackManagerFactory<R> implements CallbackManagerFactoryInterface<R,{context: UniprotSequenceOnchangeInterface;}> {
+export class MsaCallbackManagerFactory<R,U> implements CallbackManagerFactoryInterface<R,U> {
 
     private readonly pluginLoadParamsDefinition:(id: string)=>R;
     constructor(config: {pluginLoadParamsDefinition:(id: string)=>R}) {
         this.pluginLoadParamsDefinition = config.pluginLoadParamsDefinition;
     }
 
-    getCallbackManager(config: CallbackConfigInterface<R>): CallbackManagerInterface<{context: UniprotSequenceOnchangeInterface;}> {
-        return new UniprotCallbackManager( {...config, loadParamRequest:this.pluginLoadParamsDefinition});
+    getCallbackManager(config: CallbackConfigInterface<R>): CallbackManagerInterface<U> {
+        return new MsaCallbackManager( {...config, loadParamRequest:this.pluginLoadParamsDefinition});
     }
+
 }
 
 type SelectedRegion = {modelId: string, labelAsymId: string, region: RegionSelectionInterface, operatorName?: string};
-class UniprotCallbackManager<R>  extends AbstractCallbackManager<R,{context: UniprotSequenceOnchangeInterface;}>{
+class MsaCallbackManager<R,U>  extends AbstractCallbackManager<R,U>{
 
     private readonly loadParamRequest:(id: string)=>R;
 
@@ -51,7 +49,7 @@ class UniprotCallbackManager<R>  extends AbstractCallbackManager<R,{context: Uni
         return Promise.resolve(undefined);
     }
 
-    async pfvChangeCallback(params:{context: UniprotSequenceOnchangeInterface;}): Promise<void> {
+    async pfvChangeCallback(params:U): Promise<void> {
         if(typeof this.rcsbFvContainer.get() === "undefined")
             return;
         return Promise.resolve(undefined);
@@ -65,7 +63,6 @@ class UniprotCallbackManager<R>  extends AbstractCallbackManager<R,{context: Uni
             allSel.forEach(sel => {
                 const chain: ChainInfo | undefined = this.stateManager.assemblyModelSate.getModelChainInfo(sel.modelId)?.chains.find(ch => ch.entityId == TagDelimiter.parseEntity(sel.modelId).entityId && ch.label == sel.labelAsymId);
                 if (chain) {
-                    sel.regions.forEach(r=>console.log(r));
                     regions = regions.concat(this.getModelRegions(sel.regions.map(r => ({
                         begin: r.begin,
                         end: r.end

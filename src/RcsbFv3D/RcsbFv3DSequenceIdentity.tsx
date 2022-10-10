@@ -23,11 +23,17 @@ import {RcsbFvStructure} from "../RcsbFvStructure/RcsbFvStructure";
 import {RcsbFv3DCssConfig} from "./RcsbFv3DComponent";
 import {MolstarAlignmentLoader} from "../RcsbFvStructure/StructureUtils/MolstarAlignmentLoader";
 import {UniprotBehaviourObserver} from "../RcsbFvStructure/StructureViewerBehaviour/UniprotBehaviour";
+import {
+    SequenceIdentityPfvManagerFactory
+} from "../RcsbFvSequence/SequenceViews/RcsbView/PfvManagerFactoryImplementation/SequenceIdentityPfvManagerFactory";
+import {
+    PolymerEntityInstanceInterface
+} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
 
-export interface RcsbFv3DUniprotInterface  {
+export interface RcsbFv3DSequenceIdentityInterface  {
     elementId?: string;
     config: {
-        upAcc: string;
+        groupId: string;
         title?: string;
         subtitle?: string;
     };
@@ -36,8 +42,8 @@ export interface RcsbFv3DUniprotInterface  {
     cssConfig?: RcsbFv3DCssConfig;
 }
 
-export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string},LoadMolstarInterface|undefined,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>},{context:UniprotSequenceOnchangeInterface,module:RcsbFvModulePublicInterface}> {
-    constructor(params:RcsbFv3DUniprotInterface){
+export class RcsbFv3DSequenceIdentity extends RcsbFv3DAbstract<{groupId:string},LoadMolstarInterface|undefined,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>},{context:any,module:RcsbFvModulePublicInterface}> {
+    constructor(params:RcsbFv3DSequenceIdentityInterface){
         const elementId: string = params.elementId ?? uniqid("RcsbFv3D_");
         super({
             elementId,
@@ -46,14 +52,14 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string},LoadMolstar
                 title: params.config.title,
                 subtitle: params.config.subtitle,
                 config:{
-                    rcsbId: params.config.upAcc,
+                    rcsbId: params.config.groupId,
                     additionalConfig: params.additionalConfig,
                     pfvParams:{
-                        upAcc:params.config.upAcc
+                        groupId:params.config.groupId
                     },
                     buildPfvOnMount: true,
-                    pfvManagerFactory: new UniprotPfvManagerFactory<LoadMolstarInterface>(),
-                    callbackManagerFactory: new MsaCallbackManagerFactory<LoadMolstarInterface, {context: UniprotSequenceOnchangeInterface;}>({pluginLoadParamsDefinition})
+                    pfvManagerFactory: new SequenceIdentityPfvManagerFactory<LoadMolstarInterface>(),
+                    callbackManagerFactory: new MsaCallbackManagerFactory<LoadMolstarInterface, {context:{groupId:string} & Partial<PolymerEntityInstanceInterface>}>({pluginLoadParamsDefinition})
                 }
             },
             structureConfig: {

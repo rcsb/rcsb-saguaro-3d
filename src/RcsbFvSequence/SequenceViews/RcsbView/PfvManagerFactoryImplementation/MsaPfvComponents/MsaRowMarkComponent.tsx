@@ -4,13 +4,13 @@
 */
 
 import React from "react";
-import classes from '../../../../../styles/UniprotPfvStyle.module.scss';
+import classes from '../../../../../styles/MsaPfvStyle.module.scss';
 import {Property} from "csstype";
 import {asyncScheduler, Subscription} from "rxjs";
 import {RcsbFvStateManager} from "../../../../../RcsbFvState/RcsbFvStateManager";
 import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 
-interface UniprotRowMarkInterface  {
+interface MsaRowMarkInterface  {
     isGlowing:boolean;
     clickCallback?:()=>void;
     hoverCallback?:()=>void;
@@ -18,23 +18,23 @@ interface UniprotRowMarkInterface  {
     stateManager: RcsbFvStateManager;
 }
 
-interface UniprotRowMarkState {
+interface MsaRowMarkState {
     visibility: Property.Visibility | undefined;
     borderLeftColor: Property.BorderLeftColor | undefined;
     markHoverColor: string;
 }
 
-export class UniprotRowMarkComponent extends React.Component <UniprotRowMarkInterface,UniprotRowMarkState> {
+export class MsaRowMarkComponent extends React.Component <MsaRowMarkInterface,MsaRowMarkState> {
 
     private readonly HOVER_COLOR: string = "rgb(51, 122, 183)";
     private readonly ACTIVE_COLOR: string ="rgb(51, 122, 183)";
     private subscription: Subscription;
 
-    constructor(props:UniprotRowMarkInterface) {
+    constructor(props:MsaRowMarkInterface) {
         super(props);
     }
 
-    readonly state: UniprotRowMarkState = {
+    readonly state: MsaRowMarkState = {
         visibility: undefined,
         borderLeftColor: undefined,
         markHoverColor: this.HOVER_COLOR
@@ -44,7 +44,7 @@ export class UniprotRowMarkComponent extends React.Component <UniprotRowMarkInte
         return (
             <>
                 <div onClick={this.click.bind(this)} onMouseOver={this.hover.bind(this)} style={{visibility: this.state.visibility, cursor:"pointer", display:"inline-block", width:6, height:6, marginBottom: 4, marginRight:5}} >
-                    <div className={classes.uniprotRowMark} onMouseOut={()=>this.markHover(false)}onMouseOver={()=>this.markHover(true)} style={{borderLeftColor: this.props.isGlowing ? this.state.markHoverColor : (this.state.borderLeftColor)}}/>
+                    <div className={classes.msaRowMark} onMouseOut={()=>this.markHover(false)} onMouseOver={()=>this.markHover(true)} style={{borderLeftColor: this.props.isGlowing ? this.state.markHoverColor : (this.state.borderLeftColor)}}/>
                 </div>
             </>
         );

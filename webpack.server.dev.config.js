@@ -39,7 +39,7 @@ const commonConfig = {
     devtool: 'source-map'
 };
 
-const examples = ['assembly','uniprot','structural-alignment'];
+const examples = ['assembly','uniprot','structural-alignment','sequence-identity'];
 const entries = examples.reduce((prev,current)=>{prev[current]=`./src/examples/${current}/index.ts`;return prev;},{});
 
 const server = {

@@ -13,23 +13,23 @@ import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borr
 import {RcsbFvStateManager} from "../../../../../RcsbFvState/RcsbFvStateManager";
 import {Subscription} from "rxjs";
 import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
-import {UniprotRowTitleCheckbox} from "./UniprotRowTitleCheckbox";
+import {MsaRowTitleCheckbox} from "./MsaRowTitleCheckbox";
 import {MouseEvent} from "react";
 
-interface UniprotRowTitleInterface extends RcsbFvRowTitleInterface {
+interface MsaRowTitleInterface extends RcsbFvRowTitleInterface {
     alignmentContext: AlignmentRequestContextType;
     targetAlignment: TargetAlignment;
     stateManager:RcsbFvStateManager;
     titleClick: ()=>void;
 }
 
-interface UniprotRowTitleState {
+interface MsaRowTitleState {
     expandTitle: boolean;
     disabled: boolean;
     titleColor: string;
 }
 
-export class UniprotRowTitleComponent extends React.Component <UniprotRowTitleInterface, UniprotRowTitleState> {
+export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface, MsaRowTitleState> {
 
     private readonly configData : RcsbFvRowConfigInterface;
     private subscription: Subscription;
@@ -42,7 +42,7 @@ export class UniprotRowTitleComponent extends React.Component <UniprotRowTitleIn
         titleColor: this.HOVER_COLOR
     };
 
-    constructor(props: UniprotRowTitleInterface) {
+    constructor(props: MsaRowTitleInterface) {
         super(props);
         this.configData = this.props.data;
     }
@@ -57,9 +57,9 @@ export class UniprotRowTitleComponent extends React.Component <UniprotRowTitleIn
                color: this.state.titleColor,
                cursor: "pointer"
            }} onClick={(e: MouseEvent)=>this.click(e)} onMouseOver={()=>this.hover(true)} onMouseOut={()=>this.hover(false)}>{this.props.targetAlignment.target_id}</div>
-           <UniprotRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"aligned"} stateManager={this.props.stateManager}/>
-           <UniprotRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"polymer"} stateManager={this.props.stateManager}/>
-           <UniprotRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"non-polymer"} stateManager={this.props.stateManager}/>
+           <MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"aligned"} stateManager={this.props.stateManager}/>
+           <MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"polymer"} stateManager={this.props.stateManager}/>
+           <MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"non-polymer"} stateManager={this.props.stateManager}/>
        </div>;
     }
 

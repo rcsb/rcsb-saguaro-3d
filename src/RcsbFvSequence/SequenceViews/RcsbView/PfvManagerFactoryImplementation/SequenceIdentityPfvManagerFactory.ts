@@ -7,25 +7,26 @@ import {
 import {
     RcsbFvModulePublicInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
-import {buildUniprotFv, TagDelimiter} from "@rcsb/rcsb-saguaro-app";
-import {
-    UniprotSequenceOnchangeInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvUniprotBuilder";
+import {TagDelimiter, buildSequenceIdentityAlignmentFv} from "@rcsb/rcsb-saguaro-app";
+
 import {
     AlignmentRequestContextType
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvFactories/RcsbFvTrackFactory/TrackFactoryImpl/AlignmentTrackFactory";
 import {AlignmentResponse, TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {MsaRowTitleComponent} from "./MsaPfvComponents/MsaRowTitleComponent";
 import {MsaRowMarkComponent} from "./MsaPfvComponents/MsaRowMarkComponent";
+import {
+    PolymerEntityInstanceInterface
+} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
 
-interface UniprotPfvManagerInterface<R> extends PfvManagerFactoryConfigInterface<R,{context: UniprotSequenceOnchangeInterface;}> {
-    upAcc:string;
+interface SequenceIdentityPfvManagerInterface<R> extends PfvManagerFactoryConfigInterface<R,{context: {groupId:string};}> {
+    groupId:string;
 }
 
-export class UniprotPfvManagerFactory<R> implements PfvManagerFactoryInterface<{upAcc:string},R,{context: UniprotSequenceOnchangeInterface;}> {
+export class SequenceIdentityPfvManagerFactory<R> implements PfvManagerFactoryInterface<{groupId:string},R,{context: {groupId:string};}> {
 
-    getPfvManager(config: UniprotPfvManagerInterface<R>): PfvManagerInterface {
-        return new UniprotPfvManager(config);
+    getPfvManager(config: SequenceIdentityPfvManagerInterface<R>): PfvManagerInterface {
+        return new SequenceIdentityPfvManager(config);
     }
 
 }
@@ -37,21 +38,23 @@ type AlignmentDataType = {
     },
     targetAlignment: TargetAlignment;
 };
-class UniprotPfvManager<R> extends AbstractPfvManager<{upAcc:string},R,{context: UniprotSequenceOnchangeInterface;}>{
 
-    private readonly upAcc:string;
+class SequenceIdentityPfvManager<R> extends AbstractPfvManager<{groupId:string},R,{context: {groupId:string} &  Partial<PolymerEntityInstanceInterface>;}>{
+
+    private readonly groupId:string;
 
     private module:RcsbFvModulePublicInterface;
 
-    constructor(config:UniprotPfvManagerInterface<R>) {
+    constructor(config:SequenceIdentityPfvManagerInterface<R>) {
         super(config);
-        this.upAcc = config.upAcc;
+        this.groupId = config.groupId;
     }
 
     async create(): Promise<RcsbFvModulePublicInterface | undefined> {
-        this.module = await buildUniprotFv(
+        this.module = await buildSequenceIdentityAlignmentFv(
             this.rcsbFvDivId,
-            this.upAcc,
+            this.groupId,
+            undefined,
             {
                 ... this.additionalConfig,
                 boardConfig: this.boardConfigContainer.get(),
@@ -90,7 +93,7 @@ class UniprotPfvManager<R> extends AbstractPfvManager<{upAcc:string},R,{context:
     private async readyStateLoad(): Promise<void> {
         const alignments: AlignmentResponse = await this.module.getAlignmentResponse();
         if(alignments.target_alignment && alignments.target_alignment.length > 0 && typeof alignments.target_alignment[0]?.target_id === "string"){
-            this.loadAlignment({queryId:this.upAcc}, alignments.target_alignment[0]);
+            this.loadAlignment({queryId:this.groupId}, alignments.target_alignment[0]);
         }
     }
 

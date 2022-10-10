@@ -83,7 +83,7 @@
     "@rcsb/rcsb-api-tools": "^4.1.0",
     "@rcsb/rcsb-molstar": "^2.5.5",
     "@rcsb/rcsb-saguaro": "^2.2.15",
-    "@rcsb/rcsb-saguaro-app": "^4.4.10",
+    "@rcsb/rcsb-saguaro-app": "^4.4.12",
     "molstar": "^3.13.0"
   },
   "bugs": {

@@ -8,7 +8,7 @@ import {RcsbFvStateManager} from "../../../../../RcsbFvState/RcsbFvStateManager"
 import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {Subscription} from "rxjs";
 
-interface UniprotRowTitleCheckboxInterface {
+interface MsaRowTitleCheckboxInterface {
     disabled:boolean;
     entryId: string;
     entityId: string;
@@ -16,19 +16,19 @@ interface UniprotRowTitleCheckboxInterface {
     stateManager:RcsbFvStateManager
 }
 
-interface UniprotRowTitleCheckboxState {
+interface MsaRowTitleCheckboxState {
     checked:boolean;
 }
 
-export class UniprotRowTitleCheckbox extends React.Component <UniprotRowTitleCheckboxInterface,UniprotRowTitleCheckboxState> {
+export class MsaRowTitleCheckbox extends React.Component <MsaRowTitleCheckboxInterface,MsaRowTitleCheckboxState> {
 
-    readonly state: UniprotRowTitleCheckboxState = {
+    readonly state: MsaRowTitleCheckboxState = {
         checked: this.props.tag == "aligned"
     };
 
     private subscription: Subscription;
 
-    constructor(props: UniprotRowTitleCheckboxInterface) {
+    constructor(props: MsaRowTitleCheckboxInterface) {
         super(props);
         this.subscribe();
     }
@@ -38,7 +38,7 @@ export class UniprotRowTitleCheckbox extends React.Component <UniprotRowTitleChe
         return (<div style={this.style()} onClick={()=>{this.click()}}/>);
     }
 
-    public componentDidUpdate(prevProps: Readonly<UniprotRowTitleCheckboxInterface>, prevState: Readonly<UniprotRowTitleCheckboxState>, snapshot?: any) {
+    public componentDidUpdate(prevProps: Readonly<MsaRowTitleCheckboxInterface>, prevState: Readonly<MsaRowTitleCheckboxState>, snapshot?: any) {
         if(prevProps.disabled != this.props.disabled)
             this.setState({checked:(!this.props.disabled && this.props.tag == "aligned")});
     }
@@ -48,7 +48,7 @@ export class UniprotRowTitleCheckbox extends React.Component <UniprotRowTitleChe
     }
 
     private subscribe(): void{
-        this.subscription = this.props.stateManager.subscribe<"representation-change",{label:string;isHidden:boolean;} & {tag:UniprotRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;};}>((o)=>{
+        this.subscription = this.props.stateManager.subscribe<"representation-change",{label:string;isHidden:boolean;} & {tag:MsaRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;};}>((o)=>{
             if(o.type == "representation-change" && o.view == "3d-view" && o.data)
                 this.structureViewerRepresentationChange(o.data);
         })
@@ -73,7 +73,7 @@ export class UniprotRowTitleCheckbox extends React.Component <UniprotRowTitleChe
 
     private click(): void {
         this.setState({checked:!this.state.checked},()=>{
-            this.props.stateManager.next<"representation-change",{tag:UniprotRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;};}>({
+            this.props.stateManager.next<"representation-change",{tag:MsaRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;};}>({
                 view:"1d-view",
                 type: "representation-change",
                 data:{
