@@ -4,7 +4,11 @@ import {
     CallbackManagerFactoryInterface, CallbackManagerInterface
 } from "../CallbackManagerFactoryInterface";
 import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
-import {AlignedRegion, AlignmentResponse} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {
+    AlignedRegion,
+    AlignmentResponse,
+    TargetAlignment
+} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {RegionSelectionInterface} from "../../../../RcsbFvState/RcsbFvSelectorManager";
 import {ChainInfo, SaguaroRegionList} from "../../../../RcsbFvStructure/StructureViewerInterface";
 import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
@@ -27,6 +31,8 @@ type SelectedRegion = {modelId: string, labelAsymId: string, region: RegionSelec
 class MsaCallbackManager<R,U>  extends AbstractCallbackManager<R,U>{
 
     private readonly loadParamRequest:(id: string)=>R;
+    private readonly targetIds: {[key:string]:boolean} = {};
+    private alignmentResponse: AlignmentResponse;
 
     constructor(config: CallbackConfigInterface<R> & {loadParamRequest:(id: string)=>R}) {
         super(config);
@@ -52,7 +58,22 @@ class MsaCallbackManager<R,U>  extends AbstractCallbackManager<R,U>{
     async pfvChangeCallback(params:U): Promise<void> {
         if(typeof this.rcsbFvContainer.get() === "undefined")
             return;
-        return Promise.resolve(undefined);
+        const alignmentResponse: AlignmentResponse|undefined = await this.rcsbFvContainer.get()?.getAlignmentResponse();
+        if(!this.alignmentResponse && alignmentResponse) {
+            this.alignmentResponse = alignmentResponse;
+            alignmentResponse.target_alignment?.forEach(ta=> {if(ta?.target_id) this.targetIds[ta.target_id]=true})
+        }else if(alignmentResponse) {
+            const newTargetAlignments = alignmentResponse.target_alignment?.filter(ta=>{
+                if(ta && ta.target_id && !this.targetIds[ta.target_id]){
+                    this.targetIds[ta.target_id] = true;
+                    return true;
+                }
+            });
+            if(newTargetAlignments)
+                this.alignmentResponse.target_alignment = this.alignmentResponse.target_alignment?.concat(
+                    newTargetAlignments
+                );
+        }
     }
 
     protected async innerStructureViewerSelectionChange(mode: "select" | "hover"): Promise<void> {
@@ -82,8 +103,9 @@ class MsaCallbackManager<R,U>  extends AbstractCallbackManager<R,U>{
         if(alignment){
             const regions = this.getModelRegions(selection, alignment, Array.from(this.stateManager.assemblyModelSate.getMap().keys()), "query");
             if(regions.length == 0)
-                this.stateManager.selectionState.clearSelection("select");
-            this.stateManager.selectionState.selectFromMultipleRegions("set", regions, mode);
+                this.stateManager.selectionState.clearSelection(mode);
+            else
+                this.stateManager.selectionState.selectFromMultipleRegions("set", regions, mode);
             this.stateManager.next({type: mode == "select" ? "selection-change" : "hover-change", view:"1d-view"});
         }
     }
@@ -99,7 +121,10 @@ class MsaCallbackManager<R,U>  extends AbstractCallbackManager<R,U>{
             if(!labelAsymId || ! operatorName)
                 return;
             selection.forEach(s=>{
-                const alignedRegions = alignment.target_alignment?.find(ta=>ta?.target_id === modelId)?.aligned_regions!.filter((o): o is AlignedRegion => o!=null);
+                const alignedRegions = (alignment.target_alignment?.find(ta=>ta?.target_id === modelId)?.aligned_regions!.filter((o): o is AlignedRegion => o!=null) ?? []).concat(
+                    this.alignmentResponse?.target_alignment?.find(ta=>ta?.target_id === modelId)?.aligned_regions!.filter((o): o is AlignedRegion => o!=null) ?? []
+                );
+
                 if(!alignedRegions)
                     return;
                 AM.mapRangeToRegionList({begin:s.begin, end: s.end ?? s.begin}, alignedRegions, pointer)?.forEach(region=>{

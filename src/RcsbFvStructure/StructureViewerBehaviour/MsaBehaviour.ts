@@ -23,7 +23,7 @@ import {RegionSelectionInterface} from "../../RcsbFvState/RcsbFvSelectorManager"
 import {defaultInputTarget} from "concurrently/dist/src/defaults";
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 
-export class UniprotBehaviourObserver<R> implements StructureViewerBehaviourObserverInterface<R> {
+export class MsaBehaviourObserver<R> implements StructureViewerBehaviourObserverInterface<R> {
 
     private structureBehaviour: StructureViewerBehaviourInterface;
     private readonly structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;},TargetAlignment]>;
@@ -35,7 +35,7 @@ export class UniprotBehaviourObserver<R> implements StructureViewerBehaviourObse
         structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>,
         stateManager: RcsbFvStateInterface
     ): void {
-        this.structureBehaviour = new UniprotBehaviour(structureViewer, stateManager, this.structureLoader);
+        this.structureBehaviour = new MsaBehaviour(structureViewer, stateManager, this.structureLoader);
     }
 
     public unsubscribe(): void {
@@ -52,7 +52,7 @@ type AlignmentDataType = {
     },
     targetAlignment: TargetAlignment;
 };
-class UniprotBehaviour<R> implements StructureViewerBehaviourInterface {
+class MsaBehaviour<R> implements StructureViewerBehaviourInterface {
 
     private readonly structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
     private readonly stateManager: RcsbFvStateInterface;
@@ -100,6 +100,9 @@ class UniprotBehaviour<R> implements StructureViewerBehaviourInterface {
         await this.removeComponent();
         if(!data || data.length == 0)
             this.resetPluginView();
+        const numRes = data?.map(d=>(d.region.end-d.region.begin+1)).reduce((prev,curr)=>prev+curr,0);
+        if(!numRes)
+            return;
         data?.forEach(d=>{
             const {modelId, labelAsymId, region, operatorName} = d;
             const regions = [region];
@@ -117,8 +120,7 @@ class UniprotBehaviour<R> implements StructureViewerBehaviourInterface {
                     end: r.end,
                     operatorName
                 }));
-                const nRes = ranges.map(r=>r.end-r.begin+1).reduce((prev,curr)=>curr+prev,0);
-                if( nRes <= this.CREATE_COMPONENT_THR)
+                if( numRes <= this.CREATE_COMPONENT_THR)
                     asyncScheduler.schedule(async ()=>{
                         const x = residues[0];
                         const y = residues[residues.length-1];

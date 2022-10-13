@@ -48,23 +48,39 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
     }
 
     public render(): JSX.Element{
-       return <div style={{textAlign:"right"}}>
-           <div style={{
-               MozUserSelect:"none",
-               WebkitUserSelect:"none",
-               msUserSelect:"none",
-               display:"inline-block",
-               color: this.state.titleColor,
-               cursor: "pointer"
-           }} onClick={(e: MouseEvent)=>this.click(e)} onMouseOver={()=>this.hover(true)} onMouseOut={()=>this.hover(false)}>{this.props.targetAlignment.target_id}</div>
-           <MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"aligned"} stateManager={this.props.stateManager}/>
-           <MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"polymer"} stateManager={this.props.stateManager}/>
-           <MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"non-polymer"} stateManager={this.props.stateManager}/>
-       </div>;
+       return (
+           <div style={{textAlign:"right", display:"flex"}}>
+               <div >
+                   <div
+                       style={{
+                           MozUserSelect:"none",
+                           WebkitUserSelect:"none",
+                           msUserSelect:"none",
+                           color: this.state.titleColor,
+                           cursor: "pointer",
+                           maxWidth:100,
+                           overflow: "hidden",
+                           textOverflow: "ellipsis",
+                           whiteSpace: "nowrap"
+                       }}
+                       onClick={(e: MouseEvent)=>this.click(e)}
+                       onMouseOver={()=>this.hover(true)}
+                       onMouseOut={()=>this.hover(false)}
+                       title={this.props.targetAlignment.target_id ?? undefined}
+                   >
+                       {this.props.targetAlignment.target_id}
+                   </div>
+               </div>
+               <div><MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"aligned"} stateManager={this.props.stateManager}/></div>
+               <div><MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"polymer"} stateManager={this.props.stateManager}/></div>
+               <div><MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"non-polymer"} stateManager={this.props.stateManager}/></div>
+           </div>
+       );
     }
 
     public componentDidMount(): void {
         this.subscribe();
+        this.modelChange();
     }
 
     public componentWillUnmount() {
@@ -79,7 +95,7 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
     }
 
     private modelChange(): void {
-        if(this.props.targetAlignment.target_id && this.props.stateManager.assemblyModelSate.getMap().has(this.props.targetAlignment.target_id)){
+        if(this.props.targetAlignment.target_id && this.props.stateManager.assemblyModelSate.getMap()?.has(this.props.targetAlignment.target_id)){
             if(this.state.disabled)
                 this.setState({disabled:false, titleColor:this.ACTIVE_COLOR});
         }else if(!this.state.disabled){
@@ -95,10 +111,13 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
     }
 
     private click(e: MouseEvent){
-        if(e.shiftKey)
-            document.location.href = `/structure/${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entryId}#entity-${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entityId}`;
-        else
+        if(e.shiftKey) {
+            const newWin: Window|null = window.open(`/structure/${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entryId}#entity-${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entityId}`);
+            if(!newWin || newWin.closed || typeof newWin.closed=='undefined')
+                document.location.href = `/structure/${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entryId}#entity-${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entityId}`;
+        } else {
             this.props.titleClick();
+        }
     }
 
 }

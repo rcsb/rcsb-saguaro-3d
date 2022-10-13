@@ -7,7 +7,7 @@ import {
 import {
     RcsbFvModulePublicInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
-import {buildUniprotFv, TagDelimiter} from "@rcsb/rcsb-saguaro-app";
+import {buildUniprotAlignmentFv, TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {
     UniprotSequenceOnchangeInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvUniprotBuilder";
@@ -17,9 +17,11 @@ import {
 import {AlignmentResponse, TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {MsaRowTitleComponent} from "./MsaPfvComponents/MsaRowTitleComponent";
 import {MsaRowMarkComponent} from "./MsaPfvComponents/MsaRowMarkComponent";
+import {SearchQuery} from "@rcsb/rcsb-api-tools/build/RcsbSearch/Types/SearchQueryInterface";
 
 interface UniprotPfvManagerInterface<R> extends PfvManagerFactoryConfigInterface<R,{context: UniprotSequenceOnchangeInterface;}> {
     upAcc:string;
+    query?: SearchQuery
 }
 
 export class UniprotPfvManagerFactory<R> implements PfvManagerFactoryInterface<{upAcc:string},R,{context: UniprotSequenceOnchangeInterface;}> {
@@ -40,18 +42,21 @@ type AlignmentDataType = {
 class UniprotPfvManager<R> extends AbstractPfvManager<{upAcc:string},R,{context: UniprotSequenceOnchangeInterface;}>{
 
     private readonly upAcc:string;
+    private readonly config:UniprotPfvManagerInterface<R>;
 
     private module:RcsbFvModulePublicInterface;
 
     constructor(config:UniprotPfvManagerInterface<R>) {
         super(config);
+        this.config = config;
         this.upAcc = config.upAcc;
     }
 
     async create(): Promise<RcsbFvModulePublicInterface | undefined> {
-        this.module = await buildUniprotFv(
+        this.module = await buildUniprotAlignmentFv(
             this.rcsbFvDivId,
             this.upAcc,
+            this.config.query,
             {
                 ... this.additionalConfig,
                 boardConfig: this.boardConfigContainer.get(),

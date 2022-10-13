@@ -52,6 +52,7 @@ export class MsaRowMarkComponent extends React.Component <MsaRowMarkInterface,Ms
 
     componentDidMount() {
         this.subscribe();
+        this.modelChange();
     }
 
     componentWillUnmount() {
@@ -66,7 +67,7 @@ export class MsaRowMarkComponent extends React.Component <MsaRowMarkInterface,Ms
     }
 
     private modelChange(): void {
-       if(Array.from(this.props.stateManager.assemblyModelSate.getMap().keys()).includes(`${this.props.rowRef.entryId}${TagDelimiter.entity}${this.props.rowRef.entityId}`))
+       if(Array.from(this.props.stateManager.assemblyModelSate.getMap()?.keys() ?? []).includes(`${this.props.rowRef.entryId}${TagDelimiter.entity}${this.props.rowRef.entityId}`))
            this.setState({visibility: "visible", borderLeftColor: this.ACTIVE_COLOR});
        else if(this.state.visibility == "visible")
            this.setState({visibility: undefined, borderLeftColor: undefined});

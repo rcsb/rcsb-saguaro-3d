@@ -22,18 +22,20 @@ import {
 import {RcsbFvStructure} from "../RcsbFvStructure/RcsbFvStructure";
 import {RcsbFv3DCssConfig} from "./RcsbFv3DComponent";
 import {MolstarAlignmentLoader} from "../RcsbFvStructure/StructureUtils/MolstarAlignmentLoader";
-import {UniprotBehaviourObserver} from "../RcsbFvStructure/StructureViewerBehaviour/UniprotBehaviour";
+import {MsaBehaviourObserver} from "../RcsbFvStructure/StructureViewerBehaviour/MsaBehaviour";
 import {
     SequenceIdentityPfvManagerFactory
 } from "../RcsbFvSequence/SequenceViews/RcsbView/PfvManagerFactoryImplementation/SequenceIdentityPfvManagerFactory";
 import {
     PolymerEntityInstanceInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
+import {SearchQuery} from "@rcsb/rcsb-api-tools/build/RcsbSearch/Types/SearchQueryInterface";
 
 export interface RcsbFv3DSequenceIdentityInterface  {
     elementId?: string;
     config: {
         groupId: string;
+        query?: SearchQuery;
         title?: string;
         subtitle?: string;
     };
@@ -42,7 +44,7 @@ export interface RcsbFv3DSequenceIdentityInterface  {
     cssConfig?: RcsbFv3DCssConfig;
 }
 
-export class RcsbFv3DSequenceIdentity extends RcsbFv3DAbstract<{groupId:string},LoadMolstarInterface|undefined,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>},{context:any,module:RcsbFvModulePublicInterface}> {
+export class RcsbFv3DSequenceIdentity extends RcsbFv3DAbstract<{groupId:string; query?: SearchQuery;},LoadMolstarInterface|undefined,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>},{context:any,module:RcsbFvModulePublicInterface}> {
     constructor(params:RcsbFv3DSequenceIdentityInterface){
         const elementId: string = params.elementId ?? uniqid("RcsbFv3D_");
         super({
@@ -55,7 +57,8 @@ export class RcsbFv3DSequenceIdentity extends RcsbFv3DAbstract<{groupId:string},
                     rcsbId: params.config.groupId,
                     additionalConfig: params.additionalConfig,
                     pfvParams:{
-                        groupId:params.config.groupId
+                        groupId:params.config.groupId,
+                        query:params.config.query
                     },
                     buildPfvOnMount: true,
                     pfvManagerFactory: new SequenceIdentityPfvManagerFactory<LoadMolstarInterface>(),
@@ -70,7 +73,7 @@ export class RcsbFv3DSequenceIdentity extends RcsbFv3DAbstract<{groupId:string},
                 }
             },
             structureViewer: new StructureViewer<LoadMolstarInterface,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}>( new MolstarManagerFactory() ),
-            structureViewerBehaviourObserver: new UniprotBehaviourObserver<LoadMolstarInterface>(new MolstarAlignmentLoader())
+            structureViewerBehaviourObserver: new MsaBehaviourObserver<LoadMolstarInterface>(new MolstarAlignmentLoader())
         });
     }
 

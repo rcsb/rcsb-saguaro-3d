@@ -22,12 +22,14 @@ import {
 import {RcsbFvStructure} from "../RcsbFvStructure/RcsbFvStructure";
 import {RcsbFv3DCssConfig} from "./RcsbFv3DComponent";
 import {MolstarAlignmentLoader} from "../RcsbFvStructure/StructureUtils/MolstarAlignmentLoader";
-import {UniprotBehaviourObserver} from "../RcsbFvStructure/StructureViewerBehaviour/UniprotBehaviour";
+import {MsaBehaviourObserver} from "../RcsbFvStructure/StructureViewerBehaviour/MsaBehaviour";
+import {SearchQuery} from "@rcsb/rcsb-api-tools/build/RcsbSearch/Types/SearchQueryInterface";
 
 export interface RcsbFv3DUniprotInterface  {
     elementId?: string;
     config: {
         upAcc: string;
+        query?: SearchQuery
         title?: string;
         subtitle?: string;
     };
@@ -36,7 +38,7 @@ export interface RcsbFv3DUniprotInterface  {
     cssConfig?: RcsbFv3DCssConfig;
 }
 
-export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string},LoadMolstarInterface|undefined,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>},{context:UniprotSequenceOnchangeInterface,module:RcsbFvModulePublicInterface}> {
+export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string; query?: SearchQuery;},LoadMolstarInterface|undefined,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>},{context:UniprotSequenceOnchangeInterface,module:RcsbFvModulePublicInterface}> {
     constructor(params:RcsbFv3DUniprotInterface){
         const elementId: string = params.elementId ?? uniqid("RcsbFv3D_");
         super({
@@ -49,7 +51,8 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string},LoadMolstar
                     rcsbId: params.config.upAcc,
                     additionalConfig: params.additionalConfig,
                     pfvParams:{
-                        upAcc:params.config.upAcc
+                        upAcc:params.config.upAcc,
+                        query:params.config.query
                     },
                     buildPfvOnMount: true,
                     pfvManagerFactory: new UniprotPfvManagerFactory<LoadMolstarInterface>(),
@@ -64,7 +67,7 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string},LoadMolstar
                 }
             },
             structureViewer: new StructureViewer<LoadMolstarInterface,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}>( new MolstarManagerFactory() ),
-            structureViewerBehaviourObserver: new UniprotBehaviourObserver<LoadMolstarInterface>(new MolstarAlignmentLoader())
+            structureViewerBehaviourObserver: new MsaBehaviourObserver<LoadMolstarInterface>(new MolstarAlignmentLoader())
         });
     }
 

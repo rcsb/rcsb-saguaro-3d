@@ -126,8 +126,15 @@ export class RcsbView<T,R,U> extends AbstractView<RcsbViewInterface<T,R,U>, {}, 
         const width: number = window.document.getElementById(this.componentDivId)?.getBoundingClientRect().width ?? 0;
         const trackWidth: number = width - 190 - 55;
         this.boardConfigContainer.set({...this.boardConfigContainer.get(), trackWidth});
+        const select = this.rcsbFvContainer.get()?.getFv().getSelection("select");
+        const dom = this.rcsbFvContainer.get()?.getFv().getDomain();
         await this.rcsbFvContainer.get()?.getFv().updateBoardConfig({boardConfigData:{trackWidth:trackWidth}})
-        await this.structureSelectionCallback();
+        if(select)
+            this.rcsbFvContainer.get()?.getFv().setSelection({
+                elements: select.map(s=>({begin:s.rcsbFvTrackDataElement.begin, end:s.rcsbFvTrackDataElement.end })),
+                mode:"select"
+            });
+        if(dom) this.rcsbFvContainer.get()?.getFv().setDomain(dom);
         return void 0;
     }
 

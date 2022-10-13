@@ -10,7 +10,8 @@ import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {PluginStateObject} from "molstar/lib/mol-plugin-state/objects";
 import {StateObjectRef} from "molstar/lib/mol-state";
 import {
-    QueryContext,
+    Model,
+    QueryContext, ResidueIndex,
     Structure,
     StructureElement,
     StructureProperties as SP,
@@ -24,7 +25,7 @@ import {ColorTheme} from "molstar/lib/mol-theme/color";
 import {createSelectionExpressions} from "@rcsb/rcsb-molstar/build/src/viewer/helpers/selection";
 import {ParamDefinition as PD} from "molstar/lib/mol-util/param-definition";
 import {Loci} from "molstar/lib/mol-model/loci";
-import {alignAndSuperpose, superpose} from "molstar/lib/mol-model/structure/structure/util/superposition";
+import {superpose} from "molstar/lib/mol-model/structure/structure/util/superposition";
 import {Mat4} from "molstar/lib/mol-math/linear-algebra";
 import {SymmetryOperator} from "molstar/lib/mol-math/geometry/symmetry-operator";
 import {StateTransforms} from "molstar/lib/mol-plugin-state/transforms";
@@ -33,6 +34,11 @@ import {AlignedRegion, TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGra
 import {AlignmentMapper as AM} from "../../../../Utils/AlignmentMapper";
 import {compile} from 'molstar/lib/mol-script/runtime/query/compiler';
 import reprBuilder = StructureRepresentationPresetProvider.reprBuilder;
+import {
+    QualityAssessment,
+} from "molstar/lib/extensions/model-archive/quality-assessment/prop";
+import {MmcifFormat} from "molstar/lib/mol-model-formats/structure/mmcif";
+import {CustomProperty} from "molstar/lib/mol-model-props/common/custom-property";
 
 let refData: Structure|undefined = undefined;
 let refParams: StructureAlignmentParamsType|undefined = undefined;
@@ -202,28 +208,30 @@ async function structuralAlignment(plugin: PluginContext, ref:StructureAlignment
     }else{
         const pdbResIndexes: number[] = [];
         const refResIndexes: number[] = [];
-        if(ref.targetAlignment?.aligned_regions && pdb.targetAlignment?.aligned_regions){
+        const pdbData: Structure = structure;
+        const pdbUnit:{unit: Unit; q:CustomProperty.Data<QualityAssessment>}|undefined = await findFirstInstanceUnit(pdbData,pdb.labelAsymId);
+        const refUnit:{unit: Unit; q:CustomProperty.Data<QualityAssessment>}|undefined =  refData ? await findFirstInstanceUnit(refData, ref.labelAsymId) : undefined;
+        if( pdbUnit && refUnit && ref.targetAlignment?.aligned_regions && pdb.targetAlignment?.aligned_regions){
             const alignmentList = AM.getAllTargetIntersections( ref.targetAlignment.aligned_regions as AlignedRegion[], pdb.targetAlignment.aligned_regions as AlignedRegion[])
             alignmentList.forEach(alignment=>{
                 const refRange = AM.range(alignment[0].target_begin, alignment[0].target_end);
                 const pdbRange = AM.range(alignment[1].target_begin, alignment[1].target_end);
                 refRange.forEach((refIndex,n)=>{
                     const pdbIndex = pdbRange[n];
-                    const pdbLoci =  residueToLoci(pdb, pdbIndex, structure);
+                    const pdbLoci =  residueToLoci(pdb, pdbIndex, pdbData);
                     const refLoci =  residueToLoci(refParams!, refIndex, refData!);
-                    if(!Loci.isEmpty(pdbLoci) && !Loci.isEmpty(refLoci)){
+                    if(!Loci.isEmpty(pdbLoci) && !Loci.isEmpty(refLoci) && checkLocalScore(pdbUnit.q.value.pLDDT, pdbIndex) && checkLocalScore(refUnit.q.value.pLDDT, refIndex)){
                         pdbResIndexes.push(pdbIndex)
                         refResIndexes.push(refIndex)
                     }
                 });
             })
         }
-        const pdbData: Structure = structure;
-        const pdbUnit:Unit|undefined = findFirstInstanceUnit(pdbData,pdb.labelAsymId);
-        const refUnit:Unit|undefined =  refData ? findFirstInstanceUnit(refData, ref.labelAsymId) : undefined;
         if(pdbData && pdbUnit && refData && refUnit){
             const refLoci: Loci = residueListToLoci(refParams!, refResIndexes, refData);
-            const pdbLoci: Loci = residueListToLoci(pdb, pdbResIndexes, structure);
+            const pdbLoci: Loci = residueListToLoci(pdb, pdbResIndexes, pdbData);
+            console.log(refLoci);
+            console.log(pdbLoci);
             if(StructureElement.Loci.is(refLoci) && StructureElement.Loci.is(pdbLoci)) {
                 const pivot = plugin.managers.structure.hierarchy.findStructure(refLoci.structure);
                 const coordinateSystem = pivot?.transform?.cell.obj?.data.coordinateSystem;
@@ -235,14 +243,69 @@ async function structuralAlignment(plugin: PluginContext, ref:StructureAlignment
     }
 }
 
-function findFirstInstanceUnit(structure: Structure, labelAsymId: string): Unit|undefined {
+async function findFirstInstanceUnit(structure: Structure, labelAsymId: string): Promise<{unit: Unit; q:CustomProperty.Data<QualityAssessment>}|undefined> {
     const l = StructureElement.Location.create(structure);
     for(const unit of structure.units) {
         StructureElement.Location.set(l, structure, unit, unit.elements[0]);
         if (SP.chain.label_asym_id(l) == labelAsymId) {
-            return unit;
+            const q:CustomProperty.Data<QualityAssessment> = await obtain(unit.model);
+            return {unit,q};
         }
     }
+}
+
+function checkLocalScore(scoreMap: Map<ResidueIndex, number>|undefined, index: number): boolean{
+    if(typeof  scoreMap == "undefined")
+        return true;
+    return !!(scoreMap.get(index as ResidueIndex) && scoreMap.get(index as ResidueIndex)! >= 70);
+
+}
+
+const Empty = {
+    value: {
+        localMetrics: new Map()
+    }
+};
+async function obtain(model: Model): Promise<CustomProperty.Data<QualityAssessment>> {
+    if (!model || !MmcifFormat.is(model.sourceData)) return Empty;
+    const { ma_qa_metric, ma_qa_metric_local } = model.sourceData.data.db;
+    const { model_id, label_asym_id, label_seq_id, metric_id, metric_value } = ma_qa_metric_local;
+    const { index } = model.atomicHierarchy;
+
+    // for simplicity we assume names in ma_qa_metric for mode 'local' are unique
+    const localMetrics = new Map<string, Map<ResidueIndex, number>>();
+    const localNames = new Map<number, string>();
+
+    for (let i = 0, il = ma_qa_metric._rowCount; i < il; i++) {
+        if (ma_qa_metric.mode.value(i) !== 'local') continue;
+
+        const name = ma_qa_metric.name.value(i);
+        if (localMetrics.has(name)) {
+            console.warn(`local ma_qa_metric with name '${name}' already added`);
+            continue;
+        }
+
+        localMetrics.set(name, new Map());
+        localNames.set(ma_qa_metric.id.value(i), name);
+    }
+
+    for (let i = 0, il = ma_qa_metric_local._rowCount; i < il; i++) {
+        if (model_id.value(i) !== model.modelNum) continue;
+
+        const labelAsymId = label_asym_id.value(i);
+        const entityIndex = index.findEntity(labelAsymId);
+        const rI = index.findResidue(model.entities.data.id.value(entityIndex), labelAsymId, label_seq_id.value(i));
+        const name = localNames.get(metric_id.value(i))!;
+        localMetrics.get(name)!.set(rI, metric_value.value(i));
+    }
+
+    return {
+        value: {
+            localMetrics,
+            pLDDT: localMetrics.get('pLDDT'),
+            qmean: localMetrics.get('qmean'),
+        }
+    };
 }
 
 const SuperpositionTag = 'SuperpositionTransform';
@@ -272,9 +335,11 @@ function residueToLoci(pdb:StructureAlignmentParamsType, pdbIndex:number, struct
     const expression = MS.struct.generator.atomGroups({
         'chain-test': MS.core.logic.and([
             MS.core.rel.eq([MS.ammp('label_asym_id'), pdb.labelAsymId]),
-            MS.core.rel.eq([MS.acp('operatorName'), pdb.operatorName])
+            MS.core.rel.eq([MS.acp('operatorName'), pdb.operatorName]),
+            MS.core.rel.eq([MS.acp('modelIndex'),1])
         ]),
-        'residue-test':MS.core.rel.eq([MS.ammp('label_seq_id'), pdbIndex])
+        'residue-test':MS.core.rel.eq([MS.ammp('label_seq_id'), pdbIndex]),
+        'atom-test':MS.core.rel.eq([MS.ammp("label_atom_id"),"CA"])
     });
     const query = compile<StructureSelection>(expression);
     const selection = query(new QueryContext(structure));
@@ -285,11 +350,13 @@ function residueListToLoci(pdb:StructureAlignmentParamsType, indexList:number[],
     const expression = MS.struct.generator.atomGroups({
         'chain-test': MS.core.logic.and([
             MS.core.rel.eq([MS.ammp('label_asym_id'), pdb.labelAsymId]),
-            MS.core.rel.eq([MS.acp('operatorName'), pdb.operatorName])
+            MS.core.rel.eq([MS.acp('operatorName'), pdb.operatorName]),
+            MS.core.rel.eq([MS.acp('modelIndex'),1])
         ]),
         'residue-test':MS.core.logic.or(
             indexList.map(index=>MS.core.rel.eq([MS.ammp('label_seq_id'), index]))
-        )
+        ),
+        'atom-test':MS.core.rel.eq([MS.ammp("label_atom_id"),"CA"])
     });
     const query = compile<StructureSelection>(expression);
     const selection = query(new QueryContext(structure));

@@ -20,27 +20,42 @@ interface MsaRowTitleCheckboxState {
     checked:boolean;
 }
 
+//TODO keeps a global state of the (checkboxes <=> mol-star components) This needs further review!!!
+const globalState: {[key:string]: boolean;} = {};
+
 export class MsaRowTitleCheckbox extends React.Component <MsaRowTitleCheckboxInterface,MsaRowTitleCheckboxState> {
 
     readonly state: MsaRowTitleCheckboxState = {
-        checked: this.props.tag == "aligned"
+        checked: typeof globalState[ this.entityId()+this.props.tag ] === "boolean" ? globalState[ this.entityId()+this.props.tag ] : this.props.tag == "aligned"
     };
 
     private subscription: Subscription;
 
     constructor(props: MsaRowTitleCheckboxInterface) {
         super(props);
+    }
+
+    public render():JSX.Element {
+        return (
+            <div
+                style={this.style()}
+                onClick={()=>{this.click()}}
+                title={this.title()}
+            />);
+    }
+
+    public componentDidMount() {
         this.subscribe();
     }
 
-
-    public render():JSX.Element {
-        return (<div style={this.style()} onClick={()=>{this.click()}}/>);
-    }
-
     public componentDidUpdate(prevProps: Readonly<MsaRowTitleCheckboxInterface>, prevState: Readonly<MsaRowTitleCheckboxState>, snapshot?: any) {
-        if(prevProps.disabled != this.props.disabled)
-            this.setState({checked:(!this.props.disabled && this.props.tag == "aligned")});
+        if(prevProps.disabled != this.props.disabled && !this.props.disabled ) {
+           this.setState({checked: typeof globalState[ this.entityId()+this.props.tag ] === "boolean" ? globalState[ this.entityId()+this.props.tag ] : (!this.props.disabled && this.props.tag == "aligned")});
+        }else if(prevProps.disabled != this.props.disabled) {
+            this.setState({checked: this.props.tag == "aligned"},()=>{
+                globalState[ this.entityId()+this.props.tag ]  = this.state.checked;
+            });
+        }
     }
 
     public componentWillUnmount() {
@@ -59,7 +74,7 @@ export class MsaRowTitleCheckbox extends React.Component <MsaRowTitleCheckboxInt
         const suffix: string = row.pop()!;
         const entryId: string = row.join(TagDelimiter.entity);
         const entityId: string = suffix.substring(0,1);
-        if( `${this.props.entryId}${TagDelimiter.entity}${this.props.entityId}` == `${entryId}${TagDelimiter.entity}${entityId}` ){
+        if( this.entityId() == `${entryId}${TagDelimiter.entity}${entityId}` ){
             //TODO this is a one to many relationship
             /*if( d.label.includes("polymer") && this.props.tag == "polymer" && d.isHidden == this.state.checked){
                 this.setState({checked:!this.state.checked});
@@ -73,6 +88,7 @@ export class MsaRowTitleCheckbox extends React.Component <MsaRowTitleCheckboxInt
 
     private click(): void {
         this.setState({checked:!this.state.checked},()=>{
+            globalState[this.entityId()+this.props.tag] = this.state.checked;
             this.props.stateManager.next<"representation-change",{tag:MsaRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;};}>({
                 view:"1d-view",
                 type: "representation-change",
@@ -107,4 +123,20 @@ export class MsaRowTitleCheckbox extends React.Component <MsaRowTitleCheckboxInt
         };
     }
 
+    private entityId(): string {
+        return `${this.props.entryId}${TagDelimiter.entity}${this.props.entityId}`;
+    };
+
+    private title(): string | undefined{
+        if(this.props.disabled)
+            return undefined;
+        switch (this.props.tag){
+            case "aligned":
+                return `${this.state.checked ? "Hide" : "Show"} Aligned Polymer Chain`;
+            case "polymer":
+                return `${this.state.checked ? "Hide" : "Show"} Other Polymer Chains`;
+            case "non-polymer":
+                return `${this.state.checked ? "Hide" : "Show"} Non-polymer Chains`;
+        }
+    }
 }
