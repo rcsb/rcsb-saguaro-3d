@@ -51,8 +51,8 @@ export class MsaRowMarkComponent extends React.Component <MsaRowMarkInterface,Ms
     }
 
     componentDidMount() {
-        this.subscribe();
-        this.modelChange();
+        /*this.subscribe();
+        this.modelChange();*/
     }
 
     componentWillUnmount() {
