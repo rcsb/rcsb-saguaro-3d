@@ -230,8 +230,6 @@ async function structuralAlignment(plugin: PluginContext, ref:StructureAlignment
         if(pdbData && pdbUnit && refData && refUnit){
             const refLoci: Loci = residueListToLoci(refParams!, refResIndexes, refData);
             const pdbLoci: Loci = residueListToLoci(pdb, pdbResIndexes, pdbData);
-            console.log(refLoci);
-            console.log(pdbLoci);
             if(StructureElement.Loci.is(refLoci) && StructureElement.Loci.is(pdbLoci)) {
                 const pivot = plugin.managers.structure.hierarchy.findStructure(refLoci.structure);
                 const coordinateSystem = pivot?.transform?.cell.obj?.data.coordinateSystem;
@@ -290,7 +288,8 @@ async function obtain(model: Model): Promise<CustomProperty.Data<QualityAssessme
     }
 
     for (let i = 0, il = ma_qa_metric_local._rowCount; i < il; i++) {
-        if (model_id.value(i) !== model.modelNum) continue;
+        if (model_id.value(i) !== model.modelNum)
+            continue;
 
         const labelAsymId = label_asym_id.value(i);
         const entityIndex = index.findEntity(labelAsymId);
@@ -339,7 +338,10 @@ function residueToLoci(pdb:StructureAlignmentParamsType, pdbIndex:number, struct
             MS.core.rel.eq([MS.acp('modelIndex'),1])
         ]),
         'residue-test':MS.core.rel.eq([MS.ammp('label_seq_id'), pdbIndex]),
-        'atom-test':MS.core.rel.eq([MS.ammp("label_atom_id"),"CA"])
+        'atom-test':MS.core.logic.and([
+            MS.core.rel.eq([MS.ammp("label_atom_id"),"CA"]),
+            MS.core.logic.or([MS.core.rel.eq([MS.ammp("label_alt_id"),""]), MS.core.rel.eq([MS.ammp("label_alt_id"),"A"])])
+        ])
     });
     const query = compile<StructureSelection>(expression);
     const selection = query(new QueryContext(structure));
@@ -356,7 +358,10 @@ function residueListToLoci(pdb:StructureAlignmentParamsType, indexList:number[],
         'residue-test':MS.core.logic.or(
             indexList.map(index=>MS.core.rel.eq([MS.ammp('label_seq_id'), index]))
         ),
-        'atom-test':MS.core.rel.eq([MS.ammp("label_atom_id"),"CA"])
+        'atom-test':MS.core.logic.and([
+            MS.core.rel.eq([MS.ammp("label_atom_id"),"CA"]),
+            MS.core.logic.or([MS.core.rel.eq([MS.ammp("label_alt_id"),""]), MS.core.rel.eq([MS.ammp("label_alt_id"),"A"])])
+        ])
     });
     const query = compile<StructureSelection>(expression);
     const selection = query(new QueryContext(structure));

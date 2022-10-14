@@ -49,10 +49,12 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
 
     public render(): JSX.Element{
        return (
-           <div style={{textAlign:"right", display:"flex"}}>
-               <div >
-                   <div
-                       style={{
+           <div style={{textAlign:"right", display:"flex"}}
+                onMouseOver={()=>this.hover(true)}
+                onMouseOut={()=>this.hover(false)}
+           >
+               <div>
+                   <div style={{
                            MozUserSelect:"none",
                            WebkitUserSelect:"none",
                            msUserSelect:"none",
@@ -64,16 +66,16 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
                            whiteSpace: "nowrap"
                        }}
                        onClick={(e: MouseEvent)=>this.click(e)}
-                       onMouseOver={()=>this.hover(true)}
-                       onMouseOut={()=>this.hover(false)}
                        title={this.props.targetAlignment.target_id ?? undefined}
                    >
                        {this.props.targetAlignment.target_id}
                    </div>
                </div>
-               <div><MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"aligned"} stateManager={this.props.stateManager}/></div>
-               <div><MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"polymer"} stateManager={this.props.stateManager}/></div>
-               <div><MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"non-polymer"} stateManager={this.props.stateManager}/></div>
+               <div  style={{cursor: this.state.disabled ? "pointer" : undefined}} onClick={(e: MouseEvent)=>this.altClick(e)} >
+                   <MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"aligned"} stateManager={this.props.stateManager}/>
+                   <MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"polymer"} stateManager={this.props.stateManager}/>
+                   <MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"non-polymer"} stateManager={this.props.stateManager}/>
+               </div>
            </div>
        );
     }
@@ -110,7 +112,7 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
             this.setState({titleColor:this.HOVER_COLOR});
     }
 
-    private click(e: MouseEvent){
+    private click(e: MouseEvent): void{
         if(e.shiftKey) {
             const newWin: Window|null = window.open(`/structure/${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entryId}#entity-${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entityId}`);
             if(!newWin || newWin.closed || typeof newWin.closed=='undefined')
@@ -118,6 +120,11 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
         } else {
             this.props.titleClick();
         }
+    }
+
+    private altClick(e: MouseEvent): void{
+        if(this.state.disabled)
+            this.props.titleClick();
     }
 
 }

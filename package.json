@@ -1,6 +1,6 @@
 {
   "name": "@rcsb/rcsb-saguaro-3d",
-  "version": "2.2.0-uniprot-msa.13",
+  "version": "2.2.0-uniprot-msa.14",
   "description": "RCSB Molstar/Saguaro Web App",
   "main": "build/dist/app.js",
   "files": [
@@ -83,7 +83,7 @@
     "@rcsb/rcsb-api-tools": "^4.1.0",
     "@rcsb/rcsb-molstar": "^2.5.5",
     "@rcsb/rcsb-saguaro": "^2.2.15",
-    "@rcsb/rcsb-saguaro-app": "^4.4.13-uniprot-msa.10",
+    "@rcsb/rcsb-saguaro-app": "^4.4.13-uniprot-msa.11",
     "molstar": "^3.13.0"
   },
   "bugs": {

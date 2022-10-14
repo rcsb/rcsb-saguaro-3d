@@ -87,6 +87,8 @@ export class MsaRowTitleCheckbox extends React.Component <MsaRowTitleCheckboxInt
     }
 
     private click(): void {
+        if(this.props.disabled)
+            return;
         this.setState({checked:!this.state.checked},()=>{
             globalState[this.entityId()+this.props.tag] = this.state.checked;
             this.props.stateManager.next<"representation-change",{tag:MsaRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;};}>({
