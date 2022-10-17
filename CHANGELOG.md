@@ -2,6 +2,14 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [2.1.1] - 2022-10-17
+### Dependency update
+- rcsb-saguaro-app v4.4.13
+- rcsb-saguaro v2.2.16
+
+### Minor display update
+- 1D PFV on-change resets 3D display
+
 ## [2.1.0] - 2022-09-02
 ### Major refactoring
 - `StructureViewerBehaviourObserverInterface` factory of structure viewer behaviours
