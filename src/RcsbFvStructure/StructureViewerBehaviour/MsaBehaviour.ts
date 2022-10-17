@@ -110,9 +110,9 @@ class MsaBehaviour<R> implements StructureViewerBehaviourInterface {
                 const residues: number[] = regions.map(r=> r.begin == r.end ? [r.begin] : [r.begin,r.end]).flat().filter(r=>r!=null);
                 if(residues.length == 0)
                     return;
-                if(residues.length == 1)
+                if(numRes == data?.length)
                     this.structureViewer.setFocus(modelId,labelAsymId,residues[0],residues[0],operatorName);
-                cameraFocus.call(d);
+                //cameraFocus.call(d);
                 const ranges: SaguaroRange[] = regions.map(r=>({
                     modelId,
                     labelAsymId,
@@ -178,6 +178,8 @@ class MsaBehaviour<R> implements StructureViewerBehaviourInterface {
     }
 
     private select(mode:"select"|"hover"): void{
+        if(mode == "select")
+            this.structureViewer.clearFocus();
         if(this.stateManager.selectionState.getSelection(mode).length == 0)
             this.structureViewer.clearSelection(mode);
         this.structureViewer.select(this.stateManager.selectionState.getSelection(mode).map(selectedRegion=>{
