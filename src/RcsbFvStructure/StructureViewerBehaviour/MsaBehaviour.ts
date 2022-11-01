@@ -20,7 +20,6 @@ import {StructureLoaderInterface} from "../StructureUtils/StructureLoaderInterfa
 import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {createSelectionExpressions} from "@rcsb/rcsb-molstar/build/src/viewer/helpers/selection";
 import {RegionSelectionInterface} from "../../RcsbFvState/RcsbFvSelectorManager";
-import {defaultInputTarget} from "concurrently/dist/src/defaults";
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 
 export class MsaBehaviourObserver<R> implements StructureViewerBehaviourObserverInterface<R> {
@@ -112,7 +111,7 @@ class MsaBehaviour<R> implements StructureViewerBehaviourInterface {
                     return;
                 if(numRes == data?.length)
                     this.structureViewer.setFocus(modelId,labelAsymId,residues[0],residues[0],operatorName);
-                //cameraFocus.call(d);
+                cameraFocus.call(d);
                 const ranges: SaguaroRange[] = regions.map(r=>({
                     modelId,
                     labelAsymId,
@@ -120,7 +119,10 @@ class MsaBehaviour<R> implements StructureViewerBehaviourInterface {
                     end: r.end,
                     operatorName
                 }));
-                if( numRes <= this.CREATE_COMPONENT_THR)
+                if(
+                    data?.map( d => (d.region.end-d.region.begin+1) < this.CREATE_COMPONENT_THR ? 1 : 0)
+                    .reduce((prev,curr)=>prev+curr,0) == data?.length
+                )
                     asyncScheduler.schedule(async ()=>{
                         const x = residues[0];
                         const y = residues[residues.length-1];
