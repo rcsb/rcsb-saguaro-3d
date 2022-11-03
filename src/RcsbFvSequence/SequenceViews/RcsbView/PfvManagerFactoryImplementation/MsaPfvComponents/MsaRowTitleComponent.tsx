@@ -114,8 +114,11 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
 
     private click(e: MouseEvent): void{
         if(e.shiftKey) {
-            const newWin: Window|null = window.open(`/structure/${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entryId}#entity-${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entityId}`);
-            if(!newWin || newWin.closed || typeof newWin.closed=='undefined')
+            const newWin: Window|null = window.open(
+                `/structure/${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entryId}#entity-${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entityId}`,
+                "_blank"
+            );
+            if(!newWin || newWin.closed || typeof newWin.closed === 'undefined')
                 document.location.href = `/structure/${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entryId}#entity-${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entityId}`;
         } else {
             this.props.titleClick();
