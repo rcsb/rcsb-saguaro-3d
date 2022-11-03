@@ -2,7 +2,7 @@
 
 [Semantic Versioning](https://semver.org/)
 
-## [2.2.0-msa] - 2022-10-13
+## [2.2.0] - 2022-11-03
 ### New Features
 - New UniProt MSA 1D3D view
   - `UniprotPfvManagerFactory` builds UniProt Group MSA PFV

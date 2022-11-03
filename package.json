@@ -1,6 +1,6 @@
 {
   "name": "@rcsb/rcsb-saguaro-3d",
-  "version": "2.2.0-uniprot-msa.21",
+  "version": "2.2.0",
   "description": "RCSB Molstar/Saguaro Web App",
   "main": "build/dist/app.js",
   "files": [
@@ -14,7 +14,7 @@
     "buildApp": "npm run cleanAll && npm run tsc && npm run cpStyles && npm run copyConfig && npm run build && npm run clean",
     "cpStyles": "ncp src/styles build/src/styles",
     "copyConfig": "ncp build/src/config.js build/dist/config.js",
-    "buildDoc": "typedoc src/RcsbFv3D/RcsbFv3DAssembly.tsx src/RcsbFv3D/RcsbFv3DCustom.tsx && sed -i '' '/---/d' docs/index.html",
+    "buildDoc": "typedoc --excludeExternals --externalPattern \"**/node_modules/**\" src/RcsbFv3D/RcsbFv3DAssembly.tsx src/RcsbFv3D/RcsbFv3DUniprot.tsx src/RcsbFv3D/RcsbFv3DSequenceIdentity.tsx src/RcsbFv3D/RcsbFv3DCustom.tsx && sed -i '' '/---/d' docs/index.html",
     "clean": "del-cli build/src",
     "cleanAll": "npm run clean && del-cli build/dist",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -71,8 +71,8 @@
     "style-loader": "^3.3.1",
     "ts-loader": "^9.3.1",
     "tslib": "^2.4.0",
-    "typedoc": "^0.23.10",
-    "typedoc-plugin-missing-exports": "^0.23.0",
+    "typedoc": "^0.23.20",
+    "typedoc-plugin-missing-exports": "^1.0.0",
     "typescript": "^4.7.4",
     "uniqid": "^5.4.0",
     "webpack": "^5.73.0",
@@ -80,10 +80,10 @@
     "webpack-dev-server": "^4.9.3"
   },
   "dependencies": {
-    "@rcsb/rcsb-api-tools": "^4.1.0",
+    "@rcsb/rcsb-api-tools": "^4.1.1",
     "@rcsb/rcsb-molstar": "^2.5.5",
-    "@rcsb/rcsb-saguaro": "^2.2.15",
-    "@rcsb/rcsb-saguaro-app": "^4.4.13-uniprot-msa.17",
+    "@rcsb/rcsb-saguaro": "^2.2.16",
+    "@rcsb/rcsb-saguaro-app": "^4.4.15",
     "molstar": "^3.13.0"
   },
   "bugs": {
