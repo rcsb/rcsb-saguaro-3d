@@ -1,3 +1,4 @@
+import * as React from "react";
 import {RcsbFv3DAbstract} from "./RcsbFv3DAbstract";
 import {RcsbRepresentationPreset} from "../RcsbFvStructure/StructureViewers/MolstarViewer/StructureRepresentation";
 import {RcsbFvAdditionalConfig} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
@@ -17,6 +18,7 @@ import {
     AssemblyCallbackManagerFactory
 } from "../RcsbFvSequence/SequenceViews/RcsbView/CallbackManagerFactoryImplementation/AssemblyCallbackManager";
 import {AssemblyBehaviourObserver} from "../RcsbFvStructure/StructureViewerBehaviour/AssemblyBehaviour";
+import {HelpLinkComponent} from "../RcsbFvSequence/SequenceViews/RcsbView/Components/HelpLinkComponent";
 
 type RcsbFv3DAssemblyAdditionalConfig = RcsbFvAdditionalConfig & {operatorChangeCallback?:(operatorInfo: OperatorInfo)=>void};
 
@@ -53,7 +55,8 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract<{instanceSequenceConfig?:
                         instanceSequenceConfig:params.instanceSequenceConfig
                     },
                     pfvManagerFactory: new AssemblyPfvManagerFactory(),
-                    callbackManagerFactory: new AssemblyCallbackManagerFactory<LoadMolstarInterface>()
+                    callbackManagerFactory: new AssemblyCallbackManagerFactory<LoadMolstarInterface>(),
+                    additionalContent:(props)=>(<HelpLinkComponent {...props} helpHref={"/docs/sequence-viewers/3d-protein-feature-view"}/>)
                 }
             },
             structureConfig: {

@@ -1,3 +1,4 @@
+import * as React from "react";
 import {RcsbFv3DAbstract} from "./RcsbFv3DAbstract";
 import {
     RcsbFvAdditionalConfig,
@@ -8,14 +9,8 @@ import uniqid from "uniqid";
 import {LoadMethod, LoadMolstarInterface} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarActionManager";
 import {ViewerProps} from "@rcsb/rcsb-molstar/build/src/viewer";
 
-import {
-    UniprotSequenceOnchangeInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvUniprotBuilder";
 import {StructureViewer} from "../RcsbFvStructure/StructureViewers/StructureViewer";
 import {MolstarManagerFactory} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarManagerFactory";
-import {
-    UniprotPfvManagerFactory
-} from "../RcsbFvSequence/SequenceViews/RcsbView/PfvManagerFactoryImplementation/UniprotPfvManagerFactory";
 import {
     MsaCallbackManagerFactory
 } from "../RcsbFvSequence/SequenceViews/RcsbView/CallbackManagerFactoryImplementation/MsaCallbackManager";
@@ -30,6 +25,7 @@ import {
     PolymerEntityInstanceInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
 import {SearchQuery} from "@rcsb/rcsb-api-tools/build/RcsbSearch/Types/SearchQueryInterface";
+import {HelpLinkComponent} from "../RcsbFvSequence/SequenceViews/RcsbView/Components/HelpLinkComponent";
 
 export interface RcsbFv3DSequenceIdentityInterface  {
     elementId?: string;
@@ -62,7 +58,8 @@ export class RcsbFv3DSequenceIdentity extends RcsbFv3DAbstract<{groupId:string; 
                     },
                     buildPfvOnMount: true,
                     pfvManagerFactory: new SequenceIdentityPfvManagerFactory<LoadMolstarInterface>(),
-                    callbackManagerFactory: new MsaCallbackManagerFactory<LoadMolstarInterface, {context:{groupId:string} & Partial<PolymerEntityInstanceInterface>}>({pluginLoadParamsDefinition})
+                    callbackManagerFactory: new MsaCallbackManagerFactory<LoadMolstarInterface, {context:{groupId:string} & Partial<PolymerEntityInstanceInterface>}>({pluginLoadParamsDefinition}),
+                    additionalContent:(props)=>(<HelpLinkComponent {...props} helpHref={"/docs/grouping-structures/groups-1d-3d-alignment"}/>)
                 }
             },
             structureConfig: {

@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import {RcsbFvDOMConstants} from "../../../RcsbFvConstants/RcsbFvConstants";
 import {unmount} from "@rcsb/rcsb-saguaro-app";
 import {AbstractView, AbstractViewInterface} from "../AbstractView";
 import {RcsbFvBoardConfigInterface, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
@@ -23,6 +22,7 @@ export interface RcsbViewInterface<T,R,U> {
     pfvParams:T;
     pfvManagerFactory: PfvManagerFactoryInterface<T,R,U>;
     callbackManagerFactory: CallbackManagerFactoryInterface<R,U>;
+    additionalContent?(props:RcsbViewInterface<T,R,U> & AbstractViewInterface<R>): JSX.Element;
     buildPfvOnMount?: boolean;
 }
 
@@ -55,23 +55,7 @@ export class RcsbView<T,R,U> extends AbstractView<RcsbViewInterface<T,R,U>, {}, 
     }
 
     additionalContent(): JSX.Element {
-        return (
-            <div style={{marginTop:10}}>
-                <div>
-                    <div id={RcsbFvDOMConstants.SELECT_BUTTON_PFV_ID} style={{display:"inline-block"}}/>
-                </div>
-                <div style={{position:"absolute", top:5, right:5}} >
-                    <a style={{textDecoration:"none", color:"#337ab7", cursor:"pointer", marginRight:15}} target={"_blank"} href={"/docs/sequence-viewers/3d-protein-feature-view"}>
-                        Help
-                    </a>
-                    <a style={{textDecoration:"none", color: "#337ab7", cursor:"pointer"}} onClick={()=>{this.props.unmount(true, ()=>{
-                        window.history.back();
-                    })}}>
-                        Back
-                    </a>
-                </div>
-            </div>
-        );
+        return this.props.additionalContent ? this.props.additionalContent(this.props) : <></>;
     }
 
     async componentDidMount (): Promise<void> {
