@@ -13,7 +13,6 @@ import {
     RcsbFvTrackDataElementInterface
 } from "@rcsb/rcsb-saguaro";
 import {
-    RcsbFvSelectorManager,
     RegionSelectionInterface
 } from "../../RcsbFvState/RcsbFvSelectorManager";
 import {
@@ -247,11 +246,11 @@ const sequenceConfig = {
 
 const molstarConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface,{viewerProps:Partial<ViewerProps>}> = {
     loadConfig: {
-        loadMethod: LoadMethod.loadPdbIds,
-        loadParams: [{
+        loadMethod: LoadMethod.loadPdbId,
+        loadParams: {
             entryId: "1acb",
             id:"1acb_board"
-        }]
+        }
     },
     structureViewerConfig: {
         viewerProps:{

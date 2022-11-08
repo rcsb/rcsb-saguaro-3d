@@ -87,22 +87,22 @@ var fvConfig = {
                 });
             }), "hover", "set");
     },
-    structureSelectionCallback: function (plugin, pfv, selection) {
-        var sel = selection.getSelectionWithCondition("1ash_model", "A", "select");
-        if (sel == null) {
+    structureSelectionCallback: function (plugin, pfv, stateManager) {
+        const sel = stateManager.selectionState.getSelectionWithCondition("1ash_model", "A", "select");
+        if(sel == null) {
             pfv.clearSelection("select");
             plugin.resetCamera();
-        }
-        else {
-            pfv.setSelection({ elements: sel.regions, mode: "select" });
+        }else {
+            pfv.setSelection({elements: sel.regions, mode: "select"});
         }
     },
-    structureHoverCallback: function (plugin, pfv, selection) {
-        var sel = selection.getSelectionWithCondition("1ash_model", "A", "hover");
-        if (sel == null)
+    structureHoverCallback: function (plugin, pfv, stateManager) {
+        const sel = stateManager.selectionState.getSelectionWithCondition("1ash_model", "A", "hover");
+        if(sel == null) {
             pfv.clearSelection("hover");
-        else
-            pfv.setSelection({ elements: sel.regions, mode: "hover" });
+        }else {
+            pfv.setSelection({elements: sel.regions, mode: "hover"});
+        }
     }
 };
 var block = {
@@ -119,16 +119,18 @@ var sequenceConfig = {
 };
 var molstarConfig = {
     loadConfig: {
-        loadMethod: "loadPdbIds",
-        loadParams: [{
-            pdbId: "1ash",
+        loadMethod: "loadPdbId",
+        loadParams: {
+            entryId: "1ash",
             id: "1ash_model"
-        }]
+        }
     },
-    pluginConfig: {
-        showImportControls: true,
-        showSessionControls: false
-    }
+    structureViewerConfig: {
+        viewerProps:{
+            showImportControls: true,
+            showSessionControls: false
+        }
+    },
 };
 document.addEventListener("DOMContentLoaded", function (event) {
     var panel3d = new RcsbFv3D.custom({

@@ -2,6 +2,13 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [2.3.0] - 2022-11-08
+### Breaking Change 
+- Param `LoadMethod.loadPdbIds` has been removed. Multiple entries can be loaded passing a list of `LoadMolstarInterface` to `RcsbFvStructureConfigInterface.loadConfig`
+
+### Minor bug fixes
+- CDN examples fixed
+
 ## [2.2.1] - 2022-11-03
 ### Improvement
 - New attribute `RcsbViewInterface.additionalContent` to define the `additionalContent` React component

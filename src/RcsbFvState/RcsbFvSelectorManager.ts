@@ -37,7 +37,7 @@ export class RcsbFvSelectorManager {
         this.addSelectionFromMultipleRegions(regions, mode);
     }
 
-    private addSelectionFromMultipleRegions(regions: (SaguaroChain & {region: RegionSelectionInterface})[], mode:'select'|'hover'): void {
+    public addSelectionFromMultipleRegions(regions: (SaguaroChain & {region: RegionSelectionInterface})[], mode:'select'|'hover'): void {
         regions.forEach(r=>{
             this.addSelectionFromRegion(r.modelId, r.labelAsymId, r.region, mode, r.operatorName);
         });

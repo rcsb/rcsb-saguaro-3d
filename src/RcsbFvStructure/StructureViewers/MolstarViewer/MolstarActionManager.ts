@@ -24,7 +24,6 @@ import {TrajectoryHierarchyPresetProvider} from "molstar/lib/mol-plugin-state/bu
 
 export enum LoadMethod {
     loadPdbId = "loadPdbId",
-    loadPdbIds = "loadPdbIds",
     loadStructureFromUrl = "loadStructureFromUrl",
     loadSnapshotFromUrl = "loadSnapshotFromUrl",
     loadStructureFromData = "loadStructureFromData"
@@ -32,7 +31,7 @@ export enum LoadMethod {
 
 export interface LoadMolstarInterface<P=any> {
     loadMethod: LoadMethod;
-    loadParams: LoadParams<P> | Array<LoadParams<P>>;
+    loadParams: LoadParams<P>;
 }
 
 interface LoadParams<P=any,S={}> {
@@ -74,11 +73,6 @@ export class MolstarActionManager implements ViewerActionManagerInterface<LoadMo
                 if (lC.loadMethod == LoadMethod.loadPdbId) {
                     const config: LoadParams = lC.loadParams as LoadParams;
                     await this.viewer.loadPdbId(config.entryId!, {props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params});
-                } else if (lC.loadMethod == LoadMethod.loadPdbIds) {
-                    const config: Array<LoadParams> = lC.loadParams as Array<LoadParams>;
-                    await this.viewer.loadPdbIds(config.map((d) => {
-                        return {pdbId: d.entryId!, config:{props: d.props, matrix: d.matrix, reprProvider: d.reprProvider, params: d.params}}
-                    }));
                 } else if (lC.loadMethod == LoadMethod.loadStructureFromUrl) {
                     const config: LoadParams = lC.loadParams as LoadParams;
                     await this.viewer.loadStructureFromUrl(config.url!, config.format!, config.isBinary!,{props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params});
@@ -330,13 +324,6 @@ function checkLoadData(loadConfig: LoadMolstarInterface): boolean{
     if( method == LoadMethod.loadPdbId ){
         if(params instanceof Array || params.entryId == null)
             throw loadConfig.loadMethod+": missing pdbId";
-    }else if( method == LoadMethod.loadPdbIds ){
-        if(!(params instanceof Array))
-            throw loadConfig.loadMethod+": Array object spected";
-        for(const d of params){
-            if(d.entryId == null)
-                throw loadConfig.loadMethod+": missing pdbId"
-        }
     }else if( method == LoadMethod.loadStructureFromUrl ){
         if(params instanceof Array || params.url == null || params.isBinary == null || params.format == null)
             throw loadConfig.loadMethod+": arguments needed url, format, isBinary"

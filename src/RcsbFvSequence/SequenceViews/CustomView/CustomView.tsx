@@ -14,6 +14,7 @@ import {
     StructureViewerPublicInterface
 } from "../../../RcsbFvStructure/StructureViewerInterface";
 import {RcsbFvStateManager} from "../../../RcsbFvState/RcsbFvStateManager";
+import uniqid from "uniqid";
 
 export type CustomViewStateInterface<R> = Omit<CustomViewInterface<R>, "modelChangeCallback">;
 
@@ -114,10 +115,10 @@ export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomVi
         this.blockMap.clear();
         this.boardMap.clear();
         ( config instanceof Array ? config : [config]).forEach(block=>{
-            if(block.blockId == null)block.blockId = "block_"+Math.random().toString(36).substr(2);
+            if(block.blockId == null)block.blockId = uniqid("block_");
             if(!this.blockMap.has(block.blockId))this.blockMap.set(block.blockId, new Array<string>());
             (block.featureViewConfig instanceof Array ? block.featureViewConfig : [block.featureViewConfig]).forEach(board=>{
-                if(board.boardId == null)board.boardId = "board_"+Math.random().toString(36).substr(2);
+                if(board.boardId == null)board.boardId = uniqid("board_");
                 this.blockMap.get(block.blockId!)?.push(board.boardId);
                 this.boardMap.set(board.boardId, board);
             });
@@ -143,7 +144,6 @@ export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomVi
             document.getElementById("boardDiv_"+boardId)?.remove()
         });
         this.rcsbFvMap.clear();
-        this.props.structureViewer.unsubscribe();
     }
 
     private buildBlockFv(){

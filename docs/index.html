@@ -107,8 +107,8 @@ var fvConfigChainA = {
         includeAxis: true
     },
     rowConfig: rowConfigChainA,
-    sequenceSelectionChangeCallback: function (plugin, selectorManager, sequenceRegion) {
-        selectorManager.clearSelection("select", { modelId: "1acb_board", labelAsymId: "A" });
+    sequenceSelectionChangeCallback: function (plugin, stateManager, sequenceRegion) {
+        stateManager.selectionState.clearSelection("select", { modelId: "1acb_board", labelAsymId: "A" });
         plugin.clearSelection("select", { modelId: "1acb_board", labelAsymId: "A" });
         if (sequenceRegion.length > 0) {
             var regions = sequenceRegion.map(function (r) {
@@ -119,7 +119,7 @@ var fvConfigChainA = {
                     region: { begin: r.begin, end: (_a = r.end) !== null && _a !== void 0 ? _a : r.begin, source: "sequence" }
                 });
             });
-            selectorManager.addSelectionFromMultipleRegions(regions, "select");
+            stateManager.selectionState.addSelectionFromMultipleRegions(regions, "select");
             plugin.select(regions.map(function (r) { return (__assign(__assign({}, r), { begin: r.region.begin, end: r.region.end })); }), "select", "add");
         }
         else {
@@ -145,18 +145,17 @@ var fvConfigChainA = {
                 });
             }), "hover", "set");
     },
-    structureSelectionCallback: function (plugin, pfv, selection) {
-        var sel = selection.getSelectionWithCondition("1acb_board", "A", "select");
-        if (sel == null) {
+    structureSelectionCallback: function (plugin, pfv, stateManager) {
+        const sel = stateManager.selectionState.getSelectionWithCondition("1acb_board", "A", "select");
+        if(sel == null) {
             pfv.clearSelection("select");
             plugin.resetCamera();
-        }
-        else {
-            pfv.setSelection({ elements: sel.regions, mode: "select" });
+        }else {
+            pfv.setSelection({elements: sel.regions, mode: "select"});
         }
     },
-    structureHoverCallback: function (plugin, pfv, selection) {
-        var sel = selection.getSelectionWithCondition("1acb_board", "A", "hover");
+    structureHoverCallback: function (plugin, pfv, stateManager) {
+        var sel = stateManager.selectionState.getSelectionWithCondition("1acb_board", "A", "hover");
         if (sel == null)
             pfv.clearSelection("hover");
         else
@@ -176,8 +175,8 @@ var fvConfigChainB = {
         includeAxis: true
     },
     rowConfig: rowConfigChainB,
-    sequenceSelectionChangeCallback: function (plugin, selectorManager, sequenceRegion) {
-        selectorManager.clearSelection("select", { modelId: "1acb_board", labelAsymId: "B" });
+    sequenceSelectionChangeCallback: function (plugin, stateManager, sequenceRegion) {
+        stateManager.selectionState.clearSelection("select", { modelId: "1acb_board", labelAsymId: "B" });
         plugin.clearSelection("select", { modelId: "1acb_board", labelAsymId: "B" });
         if (sequenceRegion.length > 0) {
             var regions = sequenceRegion.map(function (r) {
@@ -188,7 +187,7 @@ var fvConfigChainB = {
                     region: { begin: r.begin, end: (_a = r.end) !== null && _a !== void 0 ? _a : r.begin, source: "sequence" }
                 });
             });
-            selectorManager.addSelectionFromMultipleRegions(regions, "select");
+            stateManager.selectionState.addSelectionFromMultipleRegions(regions, "select");
             plugin.select(regions.map(function (r) { return (__assign(__assign({}, r), { begin: r.region.begin, end: r.region.end })); }), "select", "add");
         }
         else {
@@ -214,8 +213,8 @@ var fvConfigChainB = {
                 });
             }), "hover", "set");
     },
-    structureSelectionCallback: function (plugin, pfv, selection) {
-        var sel = selection.getSelectionWithCondition("1acb_board", "B", "select");
+    structureSelectionCallback: function (plugin, pfv, stateManager) {
+        const sel = stateManager.selectionState.getSelectionWithCondition("1acb_board", "B", "select");
         if (sel == null) {
             pfv.clearSelection("select");
             plugin.resetCamera();
@@ -224,8 +223,8 @@ var fvConfigChainB = {
             pfv.setSelection({ elements: sel.regions, mode: "select" });
         }
     },
-    structureHoverCallback: function (plugin, pfv, selection) {
-        var sel = selection.getSelectionWithCondition("1acb_board", "B", "hover");
+    structureHoverCallback: function (plugin, pfv, stateManager) {
+        var sel = stateManager.selectionState.getSelectionWithCondition("1acb_board", "B", "hover");
         if (sel == null)
             pfv.clearSelection("hover");
         else
@@ -257,23 +256,25 @@ var sequenceConfig = {
     subtitle: undefined,
     config: customConfig
 };
-var MolstarConfig = {
+var molstarConfig = {
     loadConfig: {
-        loadMethod: "loadPdbIds",
-        loadParams: [{
-            pdbId: "1acb",
+        loadMethod: "loadPdbId",
+        loadParams: {
+            entryId: "1acb",
             id: "1acb_board"
-        }]
+        }
     },
-    pluginConfig: {
-        showImportControls: true,
-        showSessionControls: false
+    structureViewerConfig: {
+        viewerProps:{
+            showImportControls: true,
+            showSessionControls: false
+        }
     },
 };
 document.addEventListener("DOMContentLoaded", function (event) {
     var panel3d = new RcsbFv3D.custom({
         elementId: "pfv",
-        structurePanelConfig: MolstarConfig,
+        structurePanelConfig: molstarConfig,
         sequencePanelConfig: sequenceConfig,
         cssConfig: {
             overwriteCss:true,
@@ -318,10 +319,15 @@ document.addEventListener("DOMContentLoaded", function (event) {
 <a href="#testing" id="testing" style="color: inherit; text-decoration: none;">
   <h3>Testing</h3>
 </a>
+<p>Different testing example are available in the <code>src/examples</code> folder</p>
 <ul>
 <li><code>npm install</code></li>
 <li><code>npm run devServer</code></li>
-<li>Go to <code>http://localhost:9000/assembly.html</code></li>
+<li>Go to:</li>
+<li><code>http://localhost:9000/assembly.html</code></li>
+<li><code>http://localhost:9000/assembly-interface.html</code></li>
+<li><code>http://localhost:9000/uniprot.html</code>
+...</li>
 </ul>
 
 <a href="#library-documentation" id="library-documentation" style="color: inherit; text-decoration: none;">
@@ -344,7 +350,7 @@ The component will be mounted in the html element with id <code>elementId</code>
 a new div element will be added, and the component will be displayed in full screen mode. </p>
 <pre><code class="language-typescript"><span class="hl-2">interface</span><span class="hl-1"> </span><span class="hl-3">RcsbFv3DAssemblyInterface</span><span class="hl-1"> </span><span class="hl-2">extends</span><span class="hl-1"> </span><span class="hl-3">RcsbFv3DAbstractInterface</span><span class="hl-1"> {</span><br/><span class="hl-1">   </span><span class="hl-0">elementId</span><span class="hl-1">: </span><span class="hl-4">&quot;htmlElement&quot;</span><span class="hl-1">,</span><br/><span class="hl-1">   </span><span class="hl-0">config</span><span class="hl-1">: {</span><br/><span class="hl-1">        </span><span class="hl-0">entryId</span><span class="hl-1">: </span><span class="hl-3">string</span><span class="hl-1">;</span><br/><span class="hl-1">        </span><span class="hl-0">title</span><span class="hl-1">?: </span><span class="hl-3">string</span><span class="hl-1">;</span><br/><span class="hl-1">        </span><span class="hl-0">subtitle</span><span class="hl-1">?: </span><span class="hl-3">string</span><span class="hl-1">;</span><br/><span class="hl-1">    };</span><br/><span class="hl-1">    </span><span class="hl-0">additionalConfig</span><span class="hl-1">?: </span><span class="hl-3">RcsbFvAdditionalConfig</span><span class="hl-1">;</span><br/><span class="hl-1">}</span>
 </code></pre>
-<p>Source code example can be found in <code>src/examples/assembly/index.ts</code>.</p>
+<p>Source code example can be found in <code>src/examples/assembly/index.tsx</code>.</p>
 
 <a href="#custom-view" id="custom-view" style="color: inherit; text-decoration: none;">
   <h4>Custom view</h4>
@@ -389,7 +395,7 @@ with <code>blockId</code> <code>&quot;myBlock&quot;</code> (see <code>FeatureBlo
 when the displayed block changes.</p>
 <pre><code class="language-typescript"><span class="hl-2">interface</span><span class="hl-1"> </span><span class="hl-3">CustomViewInterface</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">blockConfig</span><span class="hl-1">: </span><span class="hl-3">FeatureBlockInterface</span><span class="hl-1"> | </span><span class="hl-3">Array</span><span class="hl-1">&lt;</span><span class="hl-3">FeatureBlockInterface</span><span class="hl-1">&gt;;</span><br/><span class="hl-1">    </span><span class="hl-6">blockSelectorElement</span><span class="hl-1">?: (</span><span class="hl-0">blockSelector</span><span class="hl-1">: </span><span class="hl-3">BlockSelectorManager</span><span class="hl-1">) </span><span class="hl-2">=&gt;</span><span class="hl-1"> </span><span class="hl-3">JSX</span><span class="hl-1">.</span><span class="hl-3">Element</span><span class="hl-1">;</span><br/><span class="hl-1">    </span><span class="hl-6">blockChangeCallback</span><span class="hl-1">?: (</span><span class="hl-0">plugin</span><span class="hl-1">: </span><span class="hl-3">SaguaroPluginPublicInterface</span><span class="hl-1">, </span><span class="hl-0">pfvList</span><span class="hl-1">: </span><span class="hl-3">Array</span><span class="hl-1">&lt;</span><span class="hl-3">RcsbFv</span><span class="hl-1">&gt;, </span><span class="hl-0">selection</span><span class="hl-1">: </span><span class="hl-3">RcsbFvSelectorManager</span><span class="hl-1">) </span><span class="hl-2">=&gt;</span><span class="hl-1"> </span><span class="hl-3">void</span><span class="hl-1">;</span><br/><span class="hl-1">}</span>
 </code></pre>
-<p>Source code example can be found in <code>src/examples/multiple-chain/index.ts</code>.</p>
+<p>Source code example can be found in <code>src/examples/multiple-chain/index.tsx</code>.</p>
 <p>Each block must contain a unique block identifier (<code>blockId</code>) and the configuration for all the feature viewers that will be rendered
 when the block is activated (<code>featureViewConfig</code>).</p>
 <pre><code class="language-typescript"><span class="hl-2">interface</span><span class="hl-1"> </span><span class="hl-3">FeatureBlockInterface</span><span class="hl-1"> {</span><br/><span class="hl-1">    </span><span class="hl-0">blockId</span><span class="hl-1">:</span><span class="hl-3">string</span><span class="hl-1">;</span><br/><span class="hl-1">    </span><span class="hl-0">featureViewConfig</span><span class="hl-1">: </span><span class="hl-3">Array</span><span class="hl-1">&lt;</span><span class="hl-3">FeatureViewInterface</span><span class="hl-1">&gt; | </span><span class="hl-3">FeatureViewInterface</span><span class="hl-1">;</span><br/><span class="hl-1">}</span>

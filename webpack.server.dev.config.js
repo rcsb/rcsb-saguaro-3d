@@ -1,5 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const path = require('path');
+const fs = require('fs')
 
 const commonConfig = {
     mode: "development",
@@ -39,8 +39,11 @@ const commonConfig = {
     devtool: 'source-map'
 };
 
-const examples = ['assembly','uniprot','structural-alignment','sequence-identity'];
-const entries = examples.reduce((prev,current)=>{prev[current]=`./src/examples/${current}/index.ts`;return prev;},{});
+const examples = ['assembly','uniprot','structural-alignment','sequence-identity','single-chain','multiple-chain'];
+const entries = examples.reduce((prev,current)=>{
+        prev[current]= fs.existsSync(`./src/examples/${current}/index.ts`) ? `./src/examples/${current}/index.ts` : `./src/examples/${current}/index.tsx`;
+        return prev;
+    },{});
 
 const server = {
     ...commonConfig,

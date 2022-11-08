@@ -1,4 +1,5 @@
 "use strict";
+
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -80,8 +81,8 @@ var fvConfigChainA = {
         includeAxis: true
     },
     rowConfig: rowConfigChainA,
-    sequenceSelectionChangeCallback: function (plugin, selectorManager, sequenceRegion) {
-        selectorManager.clearSelection("select", { modelId: "1acb_board", labelAsymId: "A" });
+    sequenceSelectionChangeCallback: function (plugin, stateManager, sequenceRegion) {
+        stateManager.selectionState.clearSelection("select", { modelId: "1acb_board", labelAsymId: "A" });
         plugin.clearSelection("select", { modelId: "1acb_board", labelAsymId: "A" });
         if (sequenceRegion.length > 0) {
             var regions = sequenceRegion.map(function (r) {
@@ -92,7 +93,7 @@ var fvConfigChainA = {
                     region: { begin: r.begin, end: (_a = r.end) !== null && _a !== void 0 ? _a : r.begin, source: "sequence" }
                 });
             });
-            selectorManager.addSelectionFromMultipleRegions(regions, "select");
+            stateManager.selectionState.addSelectionFromMultipleRegions(regions, "select");
             plugin.select(regions.map(function (r) { return (__assign(__assign({}, r), { begin: r.region.begin, end: r.region.end })); }), "select", "add");
         }
         else {
@@ -118,18 +119,17 @@ var fvConfigChainA = {
                 });
             }), "hover", "set");
     },
-    structureSelectionCallback: function (plugin, pfv, selection) {
-        var sel = selection.getSelectionWithCondition("1acb_board", "A", "select");
-        if (sel == null) {
+    structureSelectionCallback: function (plugin, pfv, stateManager) {
+        const sel = stateManager.selectionState.getSelectionWithCondition("1acb_board", "A", "select");
+        if(sel == null) {
             pfv.clearSelection("select");
             plugin.resetCamera();
-        }
-        else {
-            pfv.setSelection({ elements: sel.regions, mode: "select" });
+        }else {
+            pfv.setSelection({elements: sel.regions, mode: "select"});
         }
     },
-    structureHoverCallback: function (plugin, pfv, selection) {
-        var sel = selection.getSelectionWithCondition("1acb_board", "A", "hover");
+    structureHoverCallback: function (plugin, pfv, stateManager) {
+        var sel = stateManager.selectionState.getSelectionWithCondition("1acb_board", "A", "hover");
         if (sel == null)
             pfv.clearSelection("hover");
         else
@@ -149,8 +149,8 @@ var fvConfigChainB = {
         includeAxis: true
     },
     rowConfig: rowConfigChainB,
-    sequenceSelectionChangeCallback: function (plugin, selectorManager, sequenceRegion) {
-        selectorManager.clearSelection("select", { modelId: "1acb_board", labelAsymId: "B" });
+    sequenceSelectionChangeCallback: function (plugin, stateManager, sequenceRegion) {
+        stateManager.selectionState.clearSelection("select", { modelId: "1acb_board", labelAsymId: "B" });
         plugin.clearSelection("select", { modelId: "1acb_board", labelAsymId: "B" });
         if (sequenceRegion.length > 0) {
             var regions = sequenceRegion.map(function (r) {
@@ -161,7 +161,7 @@ var fvConfigChainB = {
                     region: { begin: r.begin, end: (_a = r.end) !== null && _a !== void 0 ? _a : r.begin, source: "sequence" }
                 });
             });
-            selectorManager.addSelectionFromMultipleRegions(regions, "select");
+            stateManager.selectionState.addSelectionFromMultipleRegions(regions, "select");
             plugin.select(regions.map(function (r) { return (__assign(__assign({}, r), { begin: r.region.begin, end: r.region.end })); }), "select", "add");
         }
         else {
@@ -187,8 +187,8 @@ var fvConfigChainB = {
                 });
             }), "hover", "set");
     },
-    structureSelectionCallback: function (plugin, pfv, selection) {
-        var sel = selection.getSelectionWithCondition("1acb_board", "B", "select");
+    structureSelectionCallback: function (plugin, pfv, stateManager) {
+        const sel = stateManager.selectionState.getSelectionWithCondition("1acb_board", "B", "select");
         if (sel == null) {
             pfv.clearSelection("select");
             plugin.resetCamera();
@@ -197,8 +197,8 @@ var fvConfigChainB = {
             pfv.setSelection({ elements: sel.regions, mode: "select" });
         }
     },
-    structureHoverCallback: function (plugin, pfv, selection) {
-        var sel = selection.getSelectionWithCondition("1acb_board", "B", "hover");
+    structureHoverCallback: function (plugin, pfv, stateManager) {
+        var sel = stateManager.selectionState.getSelectionWithCondition("1acb_board", "B", "hover");
         if (sel == null)
             pfv.clearSelection("hover");
         else
@@ -232,15 +232,17 @@ var sequenceConfig = {
 };
 var molstarConfig = {
     loadConfig: {
-        loadMethod: "loadPdbIds",
-        loadParams: [{
-            pdbId: "1acb",
+        loadMethod: "loadPdbId",
+        loadParams: {
+            entryId: "1acb",
             id: "1acb_board"
-        }]
+        }
     },
-    pluginConfig: {
-        showImportControls: true,
-        showSessionControls: false
+    structureViewerConfig: {
+        viewerProps:{
+            showImportControls: true,
+            showSessionControls: false
+        }
     },
 };
 document.addEventListener("DOMContentLoaded", function (event) {

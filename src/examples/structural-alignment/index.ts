@@ -11,11 +11,8 @@ import {
     RcsbFvRowConfigInterface,
     RcsbFvTrackDataElementInterface
 } from "@rcsb/rcsb-saguaro";
-import {
-    RcsbFvSelectorManager,
-    RegionSelectionInterface
-} from "../../RcsbFvState/RcsbFvSelectorManager";
-import {StructureViewerPublicInterface, SaguaroRegionList} from "../../RcsbFvStructure/StructureViewerInterface";
+import {RegionSelectionInterface} from "../../RcsbFvState/RcsbFvSelectorManager";
+import {SaguaroRegionList, StructureViewerPublicInterface} from "../../RcsbFvStructure/StructureViewerInterface";
 import {AlignmentManager} from "./AlignmentManager";
 import {Mat4} from "molstar/lib/mol-math/linear-algebra";
 import {
@@ -217,22 +214,25 @@ const sequenceConfig = {
 };
 
 const molstarConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface,{viewerProps:Partial<ViewerProps>}> = {
-    loadConfig: {
-        loadMethod: LoadMethod.loadPdbIds,
-        loadParams: [{
+    loadConfig: [{
+        loadMethod: LoadMethod.loadPdbId,
+        loadParams: {
             entryId: "1ash",
             id:"1ash_model"
-        },{
+        }
+    },{
+        loadMethod: LoadMethod.loadPdbId,
+        loadParams: {
             entryId: "101m",
-            id:"101m_model",
-            matrix:Mat4.ofRows([
+            id: "101m_model",
+            matrix: Mat4.ofRows([
                 [-0.7671995717115603, -0.5623954843039239, 0.30840904072376607, 46.883192662113345],
-                [-0.6011420900233072, 0.4627787494512096, -0.6515090303739346,4.6939156458869125],
+                [-0.6011420900233072, 0.4627787494512096, -0.6515090303739346, 4.6939156458869125],
                 [0.2236805864799372, -0.6852351043918645, -0.6931232552303105, 5.851782696060043],
                 [0, 0, 0, 1]
             ])
-        }]
-    },
+        }
+        }],
     structureViewerConfig: {
         viewerProps:{
             showImportControls: true,

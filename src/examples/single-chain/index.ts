@@ -133,11 +133,11 @@ const sequenceConfig = {
 
 const molstarConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface,{viewerProps:Partial<ViewerProps>}> = {
     loadConfig: {
-        loadMethod: LoadMethod.loadPdbIds,
-        loadParams: [{
+        loadMethod: LoadMethod.loadPdbId,
+        loadParams: {
             entryId: "1ash",
             id:"1ash_model"
-        }]
+        }
     },
     structureViewerConfig: {
         viewerProps:{
