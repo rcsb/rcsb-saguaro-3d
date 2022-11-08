@@ -297,14 +297,17 @@ document.addEventListener("DOMContentLoaded", function (event) {
 Different testing example are available in the `src/examples` folder
 - `npm install`
 - `npm run devServer`
-- Go to:
+
+Go to:
+
 - `http://localhost:9000/assembly.html`
 - `http://localhost:9000/assembly-interface.html`
 - `http://localhost:9000/uniprot.html`
 ...
 
 ### Library Documentation
-TypeScript full classes documentation can be found [here](https://rcsb.github.io/rcsb-saguaro-3d/globals.html).
+Documentation [page](https://rcsb.github.io/rcsb-saguaro-3d/index.html)
+TypeScript classes documentation can be found [here](https://rcsb.github.io/rcsb-saguaro-3d/modules.html).
 
 ### Main Classes and Interfaces
 
