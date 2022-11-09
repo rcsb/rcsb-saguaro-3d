@@ -360,7 +360,7 @@ interface RcsbFv3DCustomInterface  {
 ##### Structural Panel
 
 The structural panel configuration `structurePanelConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface,{viewerProps:Partial<ViewerProps>}>` includes the loading configuration for the 3D structural data
-and the Molstar plugin. A full description of the structural panel configuration can be found [here](https://rcsb.github.io/rcsb-saguaro-3d/interfaces/rcsbfvstructureinterface.html)
+and the Molstar plugin. A full description of the structural panel configuration can be found [here](https://rcsb.github.io/rcsb-saguaro-3d/interfaces/RcsbFv3DAssembly._internal_.RcsbFvStructureConfigInterface.html)
 
 ```typescript
 interface RcsbFvStructureConfigInterface<R,S> {
