@@ -344,7 +344,10 @@ their dynamic interaction.
 ```typescript
 interface RcsbFv3DCustomInterface  {
     elementId?: string;
-    structurePanelConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface,{viewerProps:Partial<ViewerProps>}>;
+    structurePanelConfig: RcsbFvStructureConfigInterface<
+        LoadMolstarInterface,
+        { viewerProps:Partial<ViewerProps> }
+    >;
     sequencePanelConfig: {
         config: CustomViewInterface<LoadMolstarInterface>;
         title?: string;
