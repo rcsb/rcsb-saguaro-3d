@@ -3,11 +3,9 @@ import {
     RcsbFvAdditionalConfig,
     RcsbFvModulePublicInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
-import {RcsbFvSelectorManager} from "../../../RcsbFvState/RcsbFvSelectorManager";
-import {AssemblyModelSate} from "../../../RcsbFvState/AssemblyModelSate";
 import {
     OperatorInfo,
-    SaguaroPluginModelMapType, ViewerCallbackManagerInterface, ViewerActionManagerInterface
+    ViewerCallbackManagerInterface, ViewerActionManagerInterface
 } from "../../../RcsbFvStructure/StructureViewerInterface";
 import {RcsbFvBoardConfigInterface} from "@rcsb/rcsb-saguaro";
 import {RcsbFvStateManager} from "../../../RcsbFvState/RcsbFvStateManager";

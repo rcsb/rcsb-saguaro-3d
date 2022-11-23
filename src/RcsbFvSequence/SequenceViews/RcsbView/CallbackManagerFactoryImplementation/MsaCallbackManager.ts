@@ -6,23 +6,33 @@ import {
 import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {
     AlignedRegion,
-    AlignmentResponse,
-    TargetAlignment
+    AlignmentResponse
 } from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {RegionSelectionInterface} from "../../../../RcsbFvState/RcsbFvSelectorManager";
 import {ChainInfo, SaguaroRegionList} from "../../../../RcsbFvStructure/StructureViewerInterface";
 import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {AlignmentMapper as AM} from "../../../../Utils/AlignmentMapper";
+import {DataContainer} from "../../../../Utils/DataContainer";
 
 export class MsaCallbackManagerFactory<R,U> implements CallbackManagerFactoryInterface<R,U> {
 
     private readonly pluginLoadParamsDefinition:(id: string)=>R;
-    constructor(config: {pluginLoadParamsDefinition:(id: string)=>R}) {
+    private readonly alignmentResponseContainer: DataContainer<AlignmentResponse>;
+
+    constructor(config: {
+        pluginLoadParamsDefinition:(id: string)=>R;
+        alignmentResponseContainer: DataContainer<AlignmentResponse>;
+    }) {
         this.pluginLoadParamsDefinition = config.pluginLoadParamsDefinition;
+        this.alignmentResponseContainer = config.alignmentResponseContainer;
     }
 
     getCallbackManager(config: CallbackConfigInterface<R>): CallbackManagerInterface<U> {
-        return new MsaCallbackManager( {...config, loadParamRequest:this.pluginLoadParamsDefinition});
+        return new MsaCallbackManager( {
+            ...config,
+            loadParamRequest:this.pluginLoadParamsDefinition,
+            alignmentResponseContainer:this.alignmentResponseContainer
+        });
     }
 
 }
@@ -32,11 +42,12 @@ class MsaCallbackManager<R,U>  extends AbstractCallbackManager<R,U>{
 
     private readonly loadParamRequest:(id: string)=>R;
     private readonly targetIds: {[key:string]:boolean} = {};
-    private alignmentResponse: AlignmentResponse;
+    private readonly alignmentResponseContainer: DataContainer<AlignmentResponse>;
 
-    constructor(config: CallbackConfigInterface<R> & {loadParamRequest:(id: string)=>R}) {
+    constructor(config: CallbackConfigInterface<R> & {loadParamRequest:(id: string)=>R;alignmentResponseContainer: DataContainer<AlignmentResponse>;}) {
         super(config);
         this.loadParamRequest = config.loadParamRequest;
+        this.alignmentResponseContainer = config.alignmentResponseContainer;
     }
 
     async featureClickCallback(e: RcsbFvTrackDataElementInterface): Promise<void> {
@@ -59,8 +70,8 @@ class MsaCallbackManager<R,U>  extends AbstractCallbackManager<R,U>{
         if(typeof this.rcsbFvContainer.get() === "undefined")
             return;
         const alignmentResponse: AlignmentResponse|undefined = await this.rcsbFvContainer.get()?.getAlignmentResponse();
-        if(!this.alignmentResponse && alignmentResponse) {
-            this.alignmentResponse = alignmentResponse;
+        if(!this.alignmentResponseContainer.get() && alignmentResponse) {
+            this.alignmentResponseContainer.set(alignmentResponse);
             alignmentResponse.target_alignment?.forEach(ta=> {if(ta?.target_id) this.targetIds[ta.target_id]=true})
         }else if(alignmentResponse) {
             const newTargetAlignments = alignmentResponse.target_alignment?.filter(ta=>{
@@ -69,10 +80,13 @@ class MsaCallbackManager<R,U>  extends AbstractCallbackManager<R,U>{
                     return true;
                 }
             });
-            if(newTargetAlignments)
-                this.alignmentResponse.target_alignment = this.alignmentResponse.target_alignment?.concat(
+            if(newTargetAlignments && this.alignmentResponseContainer.get()){
+                const ar = this.alignmentResponseContainer.get()!;
+                ar.target_alignment = ar.target_alignment?.concat(
                     newTargetAlignments
                 );
+                this.alignmentResponseContainer.set(ar)
+            }
         }
     }
 
@@ -122,7 +136,7 @@ class MsaCallbackManager<R,U>  extends AbstractCallbackManager<R,U>{
                 return;
             selection.forEach(s=>{
                 const alignedRegions = (alignment.target_alignment?.find(ta=>ta?.target_id === modelId)?.aligned_regions!.filter((o): o is AlignedRegion => o!=null) ?? []).concat(
-                    this.alignmentResponse?.target_alignment?.find(ta=>ta?.target_id === modelId)?.aligned_regions!.filter((o): o is AlignedRegion => o!=null) ?? []
+                    this.alignmentResponseContainer.get()?.target_alignment?.find(ta=>ta?.target_id === modelId)?.aligned_regions!.filter((o): o is AlignedRegion => o!=null) ?? []
                 );
 
                 if(!alignedRegions)

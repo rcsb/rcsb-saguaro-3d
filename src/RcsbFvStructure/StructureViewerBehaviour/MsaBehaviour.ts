@@ -21,6 +21,8 @@ import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {createSelectionExpressions} from "@rcsb/rcsb-molstar/build/src/viewer/helpers/selection";
 import {RegionSelectionInterface} from "../../RcsbFvState/RcsbFvSelectorManager";
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {FunctionCall} from "../../Utils/FunctionCall";
+import onetimeCall = FunctionCall.onetimeCall;
 
 export class MsaBehaviourObserver<R> implements StructureViewerBehaviourObserverInterface<R> {
 
@@ -111,7 +113,7 @@ class MsaBehaviour<R> implements StructureViewerBehaviourInterface {
                     return;
                 if(numRes == data?.length)
                     this.structureViewer.setFocus(modelId,labelAsymId,residues[0],residues[0],operatorName);
-                cameraFocus.call(d);
+                cameraFocus(d);
                 const ranges: SaguaroRange[] = regions.map(r=>({
                     modelId,
                     labelAsymId,
@@ -215,14 +217,4 @@ class MsaBehaviour<R> implements StructureViewerBehaviourInterface {
         }));
     }
 
-}
-
-function onetimeCall<P>(f:(x:P)=>void): {call: (x:P)=>void} {
-    const g = {
-        call:(x:P)=>{
-            f(x)
-            g.call = (x)=>{}
-        }
-    };
-    return g;
 }

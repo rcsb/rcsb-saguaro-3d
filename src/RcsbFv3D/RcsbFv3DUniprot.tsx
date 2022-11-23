@@ -26,6 +26,8 @@ import {MolstarAlignmentLoader} from "../RcsbFvStructure/StructureUtils/MolstarA
 import {MsaBehaviourObserver} from "../RcsbFvStructure/StructureViewerBehaviour/MsaBehaviour";
 import {SearchQuery} from "@rcsb/rcsb-api-tools/build/RcsbSearch/Types/SearchQueryInterface";
 import {HelpLinkComponent} from "../RcsbFvSequence/SequenceViews/RcsbView/Components/HelpLinkComponent";
+import {DataContainer} from "../Utils/DataContainer";
+import {AlignmentResponse} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 
 export interface RcsbFv3DUniprotInterface  {
     elementId?: string;
@@ -58,7 +60,10 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string; query?: Sea
                     },
                     buildPfvOnMount: true,
                     pfvManagerFactory: new UniprotPfvManagerFactory<LoadMolstarInterface>(),
-                    callbackManagerFactory: new MsaCallbackManagerFactory<LoadMolstarInterface, {context: UniprotSequenceOnchangeInterface;}>({pluginLoadParamsDefinition}),
+                    callbackManagerFactory: new MsaCallbackManagerFactory<LoadMolstarInterface, {context: UniprotSequenceOnchangeInterface;}>({
+                        pluginLoadParamsDefinition,
+                        alignmentResponseContainer: new DataContainer<AlignmentResponse>()
+                    }),
                     additionalContent:(props)=>(<HelpLinkComponent {...props} helpHref={"/docs/grouping-structures/groups-1d-3d-alignment"}/>)
                 }
             },

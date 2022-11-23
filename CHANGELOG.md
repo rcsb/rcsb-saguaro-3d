@@ -2,6 +2,14 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [2.3.1] - 2022-11-23
+### New Features
+- Sorting component `MsaUiSortComponent` for sequence identity MSA
+
+### Dependency update
+- rcsb-saguaro-app v4.5.1
+- rcsb-saguaro v2.5.4
+
 ## [2.3.0] - 2022-11-08
 ### Breaking Change 
 - Param `LoadMethod.loadPdbIds` has been removed. Multiple entries can be loaded passing a list of `LoadMolstarInterface` to `RcsbFvStructureConfigInterface.loadConfig`

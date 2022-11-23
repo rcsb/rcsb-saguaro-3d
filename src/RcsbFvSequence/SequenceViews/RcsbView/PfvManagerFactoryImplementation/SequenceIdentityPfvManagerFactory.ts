@@ -19,9 +19,12 @@ import {
     PolymerEntityInstanceInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
 import {SearchQuery} from "@rcsb/rcsb-api-tools/build/RcsbSearch/Types/SearchQueryInterface";
+import {DataContainer} from "../../../../Utils/DataContainer";
+import {MsaUiSortComponent} from "./MsaPfvComponents/MsaUiSortComponent";
 
 interface SequenceIdentityPfvManagerInterface<R> extends PfvManagerFactoryConfigInterface<R,{context: {groupId:string};}> {
     groupId:string;
+    alignmentResponseContainer: DataContainer<AlignmentResponse>;
     query?: SearchQuery;
 }
 
@@ -58,6 +61,18 @@ class SequenceIdentityPfvManager<R> extends AbstractPfvManager<{groupId:string},
             {
                 ... this.additionalConfig,
                 boardConfig: this.boardConfigContainer.get(),
+                externalTrackBuilder:{
+                    filterAlignments: (data: { alignments: AlignmentResponse; rcsbContext?: Partial<PolymerEntityInstanceInterface> }) => {
+                        const visAlignment = this.config.alignmentResponseContainer?.get()?.target_alignment
+                                ?.filter(ta=>ta?.target_id && this.config.stateManager.assemblyModelSate.getMap()?.has(ta.target_id));
+                        const otherAlignment = data.alignments.target_alignment
+                            ?.filter(ta=>ta?.target_id && !this.config.stateManager.assemblyModelSate.getMap()?.has(ta.target_id));
+                        return new Promise(resolve => resolve({
+                            ...data.alignments,
+                            target_alignment: (visAlignment ?? []).concat(otherAlignment ?? [])
+                        }));
+                    }
+                },
                 trackConfigModifier: {
                     alignment: (alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment) => new Promise((resolve)=>{
                         resolve({
@@ -79,13 +94,23 @@ class SequenceIdentityPfvManager<R> extends AbstractPfvManager<{groupId:string},
                                     stateManager: this.stateManager,
                                     titleClick: ()=> this.loadAlignment(alignmentContext,targetAlignment)
                                 }
+                            },
+                            metadata:{
+                                targetId:targetAlignment.target_id
                             }
                         });
                     })
                 },
                 beforeChangeCallback: (module) => {
                     this.config.pfvChangeCallback({context:{groupId:this.config.groupId}});
-                }
+                },
+                externalUiComponents:[{
+                    component:MsaUiSortComponent,
+                    props: {
+                        rcsbFvContainer: this.rcsbFvContainer,
+                        stateManager: this.stateManager
+                    }
+                }]
             }
         );
         this.rcsbFvContainer.set(module);

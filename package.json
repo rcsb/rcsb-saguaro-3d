@@ -1,6 +1,6 @@
 {
   "name": "@rcsb/rcsb-saguaro-3d",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "RCSB Molstar/Saguaro Web App",
   "main": "build/dist/app.js",
   "files": [
@@ -17,6 +17,7 @@
     "buildDoc": "typedoc --excludeExternals --externalPattern \"**/node_modules/**\" src/RcsbFv3D/RcsbFv3DAssembly.tsx src/RcsbFv3D/RcsbFv3DUniprot.tsx src/RcsbFv3D/RcsbFv3DSequenceIdentity.tsx src/RcsbFv3D/RcsbFv3DCustom.tsx && sed -i '' '/---/d' docs/index.html",
     "clean": "del-cli build/src",
     "cleanAll": "npm run clean && del-cli build/dist",
+    "publishApp": "npm publish",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -82,8 +83,8 @@
   "dependencies": {
     "@rcsb/rcsb-api-tools": "^4.1.1",
     "@rcsb/rcsb-molstar": "^2.5.5",
-    "@rcsb/rcsb-saguaro": "^2.2.16",
-    "@rcsb/rcsb-saguaro-app": "^4.4.15",
+    "@rcsb/rcsb-saguaro": "^2.5.4",
+    "@rcsb/rcsb-saguaro-app": "^4.5.1",
     "http-server": "^14.1.1",
     "molstar": "^3.13.0"
   },

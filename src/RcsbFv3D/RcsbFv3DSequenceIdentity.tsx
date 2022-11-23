@@ -26,6 +26,8 @@ import {
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
 import {SearchQuery} from "@rcsb/rcsb-api-tools/build/RcsbSearch/Types/SearchQueryInterface";
 import {HelpLinkComponent} from "../RcsbFvSequence/SequenceViews/RcsbView/Components/HelpLinkComponent";
+import {AlignmentResponse} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {DataContainer} from "../Utils/DataContainer";
 
 export interface RcsbFv3DSequenceIdentityInterface  {
     elementId?: string;
@@ -40,9 +42,10 @@ export interface RcsbFv3DSequenceIdentityInterface  {
     cssConfig?: RcsbFv3DCssConfig;
 }
 
-export class RcsbFv3DSequenceIdentity extends RcsbFv3DAbstract<{groupId:string; query?: SearchQuery;},LoadMolstarInterface|undefined,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>},{context:any,module:RcsbFvModulePublicInterface}> {
+export class RcsbFv3DSequenceIdentity extends RcsbFv3DAbstract<{groupId:string; query?: SearchQuery;alignmentResponseContainer: DataContainer<AlignmentResponse>;},LoadMolstarInterface|undefined,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>},{context:any,module:RcsbFvModulePublicInterface}> {
     constructor(params:RcsbFv3DSequenceIdentityInterface){
         const elementId: string = params.elementId ?? uniqid("RcsbFv3D_");
+        const alignmentResponseContainer:DataContainer<AlignmentResponse> = new DataContainer<AlignmentResponse>();
         super({
             elementId,
             sequenceConfig:{
@@ -54,11 +57,15 @@ export class RcsbFv3DSequenceIdentity extends RcsbFv3DAbstract<{groupId:string; 
                     additionalConfig: params.additionalConfig,
                     pfvParams:{
                         groupId:params.config.groupId,
-                        query:params.config.query
+                        query:params.config.query,
+                        alignmentResponseContainer
                     },
                     buildPfvOnMount: true,
                     pfvManagerFactory: new SequenceIdentityPfvManagerFactory<LoadMolstarInterface>(),
-                    callbackManagerFactory: new MsaCallbackManagerFactory<LoadMolstarInterface, {context:{groupId:string} & Partial<PolymerEntityInstanceInterface>}>({pluginLoadParamsDefinition}),
+                    callbackManagerFactory: new MsaCallbackManagerFactory<LoadMolstarInterface, {context:{groupId:string} & Partial<PolymerEntityInstanceInterface>}>({
+                        pluginLoadParamsDefinition,
+                        alignmentResponseContainer
+                    }),
                     additionalContent:(props)=>(<HelpLinkComponent {...props} helpHref={"/docs/grouping-structures/groups-1d-3d-alignment"}/>)
                 }
             },
