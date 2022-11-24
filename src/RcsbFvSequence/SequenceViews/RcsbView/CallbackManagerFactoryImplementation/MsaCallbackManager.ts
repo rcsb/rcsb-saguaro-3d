@@ -115,7 +115,7 @@ class MsaCallbackManager<R,U>  extends AbstractCallbackManager<R,U>{
     private async select(selection: Array<RcsbFvTrackDataElementInterface>, mode:"select"|"hover"): Promise<void> {
         const alignment: AlignmentResponse|undefined = await this.rcsbFvContainer.get()?.getAlignmentResponse();
         if(alignment){
-            const regions = this.getModelRegions(selection, alignment, Array.from(this.stateManager.assemblyModelSate.getMap().keys()), "query");
+            const regions = this.getModelRegions(selection, alignment, Array.from(this.stateManager.assemblyModelSate.getMap()?.keys() ?? []), "query");
             if(regions.length == 0)
                 this.stateManager.selectionState.clearSelection(mode);
             else

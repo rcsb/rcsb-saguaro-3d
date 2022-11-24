@@ -2,6 +2,10 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [2.3.2] - 2022-11-23
+### Dependency update
+- rcsb-saguaro-app v4.5.3
+
 ## [2.3.1] - 2022-11-23
 ### New Features
 - Sorting component `MsaUiSortComponent` for sequence identity MSA
