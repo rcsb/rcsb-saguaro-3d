@@ -24,12 +24,19 @@ import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borr
 import {FunctionCall} from "../../Utils/FunctionCall";
 import onetimeCall = FunctionCall.onetimeCall;
 
+type MsaBehaviourType<R> = StructureLoaderInterface<[
+        ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>,
+    {entryId:string;entityId:string;},
+    TargetAlignment,
+    RcsbFvStateInterface
+]>;
+
 export class MsaBehaviourObserver<R> implements StructureViewerBehaviourObserverInterface<R> {
 
     private structureBehaviour: StructureViewerBehaviourInterface;
-    private readonly structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;},TargetAlignment]>;
+    private readonly structureLoader: MsaBehaviourType<R>;
 
-    constructor(structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;},TargetAlignment]>) {
+    constructor(structureLoader: MsaBehaviourType<R>) {
         this.structureLoader = structureLoader
     }
     public observe(
@@ -58,7 +65,7 @@ class MsaBehaviour<R> implements StructureViewerBehaviourInterface {
     private readonly structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
     private readonly stateManager: RcsbFvStateInterface;
     private readonly subscription: Subscription;
-    private readonly structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;},TargetAlignment]>;
+    private readonly structureLoader: MsaBehaviourType<R>;
     private readonly componentList: string[] = [];
 
     private readonly CREATE_COMPONENT_THR: number = 5;
@@ -66,7 +73,7 @@ class MsaBehaviour<R> implements StructureViewerBehaviourInterface {
     constructor(
         structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>,
         stateManager: RcsbFvStateInterface,
-        structureLoader: StructureLoaderInterface<[ViewerCallbackManagerInterface & ViewerActionManagerInterface <R>,{entryId:string;entityId:string;},TargetAlignment]>
+        structureLoader: MsaBehaviourType<R>
     ) {
         this.structureViewer = structureViewer;
         this.stateManager = stateManager;
@@ -178,7 +185,7 @@ class MsaBehaviour<R> implements StructureViewerBehaviourInterface {
 
     async modelChange(data?:AlignmentDataType): Promise<void> {
         if(data)
-            await this.structureLoader.load(this.structureViewer, data.pdb, data.targetAlignment);
+            await this.structureLoader.load(this.structureViewer, data.pdb, data.targetAlignment, this.stateManager);
     }
 
     private select(mode:"select"|"hover"): void{

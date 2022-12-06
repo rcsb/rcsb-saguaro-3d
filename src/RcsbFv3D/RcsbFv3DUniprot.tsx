@@ -15,9 +15,6 @@ import {
 import {StructureViewer} from "../RcsbFvStructure/StructureViewers/StructureViewer";
 import {MolstarManagerFactory} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarManagerFactory";
 import {
-    UniprotPfvManagerFactory
-} from "../RcsbFvSequence/SequenceViews/RcsbView/PfvManagerFactoryImplementation/UniprotPfvManagerFactory";
-import {
     MsaCallbackManagerFactory
 } from "../RcsbFvSequence/SequenceViews/RcsbView/CallbackManagerFactoryImplementation/MsaCallbackManager";
 import {RcsbFvStructure} from "../RcsbFvStructure/RcsbFvStructure";
@@ -28,6 +25,11 @@ import {SearchQuery} from "@rcsb/rcsb-api-tools/build/RcsbSearch/Types/SearchQue
 import {HelpLinkComponent} from "../RcsbFvSequence/SequenceViews/RcsbView/Components/HelpLinkComponent";
 import {DataContainer} from "../Utils/DataContainer";
 import {AlignmentResponse} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {
+    MsaPfvManagerFactory,
+    MsaPfvManagerInterface
+} from "../RcsbFvSequence/SequenceViews/RcsbView/PfvManagerFactoryImplementation/MsaPfvManagerFactory";
+import {buildUniprotAlignmentFv} from "@rcsb/rcsb-saguaro-app";
 
 export interface RcsbFv3DUniprotInterface  {
     elementId?: string;
@@ -42,9 +44,15 @@ export interface RcsbFv3DUniprotInterface  {
     cssConfig?: RcsbFv3DCssConfig;
 }
 
-export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string; query?: SearchQuery;},LoadMolstarInterface|undefined,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>},{context:UniprotSequenceOnchangeInterface,module:RcsbFvModulePublicInterface}> {
+export class RcsbFv3DUniprot extends RcsbFv3DAbstract<
+        MsaPfvManagerInterface,
+        LoadMolstarInterface|undefined,
+        {viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>},
+        {context:{id:string},module:RcsbFvModulePublicInterface}
+    > {
     constructor(params:RcsbFv3DUniprotInterface){
         const elementId: string = params.elementId ?? uniqid("RcsbFv3D_");
+        const alignmentResponseContainer:DataContainer<AlignmentResponse> = new DataContainer<AlignmentResponse>();
         super({
             elementId,
             sequenceConfig:{
@@ -55,14 +63,16 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<{upAcc:string; query?: Sea
                     rcsbId: params.config.upAcc,
                     additionalConfig: params.additionalConfig,
                     pfvParams:{
-                        upAcc:params.config.upAcc,
-                        query:params.config.query
+                        id:params.config.upAcc,
+                        query:params.config.query,
+                        buildMsaAlignmentFv:buildUniprotAlignmentFv,
+                        alignmentResponseContainer
                     },
                     buildPfvOnMount: true,
-                    pfvManagerFactory: new UniprotPfvManagerFactory<LoadMolstarInterface>(),
-                    callbackManagerFactory: new MsaCallbackManagerFactory<LoadMolstarInterface, {context: UniprotSequenceOnchangeInterface;}>({
+                    pfvManagerFactory: new MsaPfvManagerFactory<LoadMolstarInterface>(),
+                    callbackManagerFactory: new MsaCallbackManagerFactory<LoadMolstarInterface, {context: {id:string};}>({
                         pluginLoadParamsDefinition,
-                        alignmentResponseContainer: new DataContainer<AlignmentResponse>()
+                        alignmentResponseContainer
                     }),
                     additionalContent:(props)=>(<HelpLinkComponent {...props} helpHref={"/docs/grouping-structures/groups-1d-3d-alignment"}/>)
                 }

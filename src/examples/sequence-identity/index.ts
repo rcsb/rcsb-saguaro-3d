@@ -3,7 +3,7 @@ import {RcsbFv3DSequenceIdentity} from "../../RcsbFv3D/RcsbFv3DSequenceIdentity"
 
 document.addEventListener("DOMContentLoaded", function(event) {
 
-    const groupId: string = "1_30";
+    const groupId: string = "584_30";
     const panel3d = new RcsbFv3DSequenceIdentity({
         config:{
             groupId,
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         },
         additionalConfig: {
             page: {
-                first: 200,
+                first: 50,
                 after: "0"
             }
         }

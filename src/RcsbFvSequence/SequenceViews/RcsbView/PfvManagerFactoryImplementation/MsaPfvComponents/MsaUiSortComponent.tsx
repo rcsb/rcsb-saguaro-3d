@@ -13,10 +13,9 @@ export interface MsaUiSortInterface {
 }
 export class MsaUiSortComponent extends React.Component<MsaUiSortInterface, {}>{
 
-    private readonly TRACK_HEADER_SHIFT: number = 2;
 
     render() {
-        return <div title={"Move selected entities to top"} onClick={()=>this.click()} style={{cursor: "pointer"}}>SORT</div>;
+        return <div title={"PIN selected entities to top"} onClick={()=>this.click()} style={{cursor: "pointer"}}>PIN ACTIVE</div>;
     }
 
     private async click(): Promise<void> {
@@ -26,6 +25,9 @@ export class MsaUiSortComponent extends React.Component<MsaUiSortInterface, {}>{
         if(!targets)
             return;
 
+        const headerShift: number|undefined = this.props.rcsbFvContainer.get()?.getFv().getBoardData().findIndex((d:RcsbFvRowConfigInterface<{},{},{},{targetId:string}>)=>d.metadata?.targetId);
+        if(!headerShift || headerShift<0)
+            return;
         const threshold: number = targets.findIndex(
             target => !this.props.stateManager.assemblyModelSate.getMap().has(target)
         );
@@ -35,8 +37,8 @@ export class MsaUiSortComponent extends React.Component<MsaUiSortInterface, {}>{
         const toMove: number[] = targets.reduce<number[]>((prev,curr, currIndex)=>{ if(this.props.stateManager.assemblyModelSate.getMap().has(curr) && currIndex > threshold) prev.push(currIndex); return prev;},[])
         for(const [n,i] of toMove.map((n,i)=>[n,threshold+i])){
            await this.props.rcsbFvContainer.get()?.getFv()?.moveTrack(
-                n+this.TRACK_HEADER_SHIFT,
-                i+this.TRACK_HEADER_SHIFT
+                n+headerShift,
+                i+headerShift
             )
         }
     }

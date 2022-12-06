@@ -39,10 +39,19 @@ import {
 } from "molstar/lib/extensions/model-archive/quality-assessment/prop";
 import {MmcifFormat} from "molstar/lib/mol-model-formats/structure/mmcif";
 import {CustomProperty} from "molstar/lib/mol-model-props/common/custom-property";
+import {RcsbFvStateInterface} from "../../../../RcsbFvState/RcsbFvStateInterface";
+
+type RepresentationParamsType = {
+    pdb?:{entryId:string;entityId:string;};
+    targetAlignment?:TargetAlignment;
+    stateManagerContainer?:{
+        data:RcsbFvStateInterface;
+    };
+}
 
 let refData: Structure|undefined = undefined;
 let refParams: StructureAlignmentParamsType|undefined = undefined;
-export const AlignmentRepresentationPresetProvider = StructureRepresentationPresetProvider<{pdb?:{entryId:string;entityId:string;};targetAlignment?:TargetAlignment;},any>({
+export const AlignmentRepresentationPresetProvider = StructureRepresentationPresetProvider<RepresentationParamsType,any>({
         id: 'alignment-to-reference',
         display: {
             name: 'Alignemnt to Reference'
@@ -50,9 +59,10 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
         isApplicable: (structureRef: PluginStateObject.Molecule.Structure, plugin: PluginContext): boolean => true,
         params: (structureRef: PluginStateObject.Molecule.Structure | undefined, plugin: PluginContext) => ({
             pdb: PD.Value<{entryId:string;entityId:string;}|undefined>(undefined),
-            targetAlignment: PD.Value<TargetAlignment|undefined>(undefined)
+            targetAlignment: PD.Value<TargetAlignment|undefined>(undefined),
+            stateManagerContainer: PD.Value<{data:RcsbFvStateInterface}|undefined>(undefined)
         }),
-        apply: async (structureRef: StateObjectRef<PluginStateObject.Molecule.Structure>, params: {pdb?:{entryId:string;entityId:string;};targetAlignment?: TargetAlignment;}, plugin: PluginContext) => {
+        apply: async (structureRef: StateObjectRef<PluginStateObject.Molecule.Structure>, params: RepresentationParamsType, plugin: PluginContext) => {
             const structureCell = StateObjectRef.resolveAndCheck(plugin.state.data, structureRef);
             if(!structureCell) return;
             const structure = structureCell.obj!.data;
@@ -161,6 +171,11 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
                 }
             });
             await update.commit({ revertOnError: false });
+            if(!comp && params.stateManagerContainer?.data){
+                params.stateManagerContainer.data.next<"missing-component", {tag:"aligned"|"polymer"|"non-polymer";entryId:string;entityId:string;}>({type:"missing-component", view: "3d-view", data:{tag:"polymer", entryId, entityId}})
+            }
+
+            let anyLigComp;
             for(const expression of createSelectionExpressions(entryId)){
                 if(expression.tag == "polymer")
                     continue;
@@ -185,6 +200,10 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
                     }
                 });
                 await update.commit({ revertOnError: false });
+                if(comp && expression.tag != "water") anyLigComp = comp;
+            }
+            if(!anyLigComp && params.stateManagerContainer?.data){
+                params.stateManagerContainer.data.next<"missing-component", {tag:"polymer"|"non-polymer";entryId:string;entityId:string;}>({type:"missing-component", view: "3d-view", data:{tag:"non-polymer", entryId, entityId}})
             }
             for (const c of plugin.managers.structure.hierarchy.currentComponentGroups){
                 for (const comp of c) {

@@ -15,6 +15,7 @@ import {Subscription} from "rxjs";
 import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {MsaRowTitleCheckbox} from "./MsaRowTitleCheckbox";
 import {MouseEvent} from "react";
+import {Property} from "csstype";
 
 interface MsaRowTitleInterface extends RcsbFvRowTitleInterface {
     alignmentContext: AlignmentRequestContextType;
@@ -27,19 +28,21 @@ interface MsaRowTitleState {
     expandTitle: boolean;
     disabled: boolean;
     titleColor: string;
+    blocked:boolean;
 }
 
 export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface, MsaRowTitleState> {
 
     private readonly configData : RcsbFvRowConfigInterface;
     private subscription: Subscription;
-    private readonly HOVER_COLOR: string = "#ccc";
+    private readonly INACTIVE_COLOR: string = "#ccc";
     private readonly ACTIVE_COLOR: string ="rgb(51, 122, 183)";
 
     readonly state = {
         expandTitle: false,
         disabled: true,
-        titleColor: this.HOVER_COLOR
+        titleColor: this.INACTIVE_COLOR,
+        blocked:false
     };
 
     constructor(props: MsaRowTitleInterface) {
@@ -59,7 +62,7 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
                            WebkitUserSelect:"none",
                            msUserSelect:"none",
                            color: this.state.titleColor,
-                           cursor: "pointer",
+                           cursor: this.state.blocked ? "wait" : "pointer",
                            maxWidth:100,
                            overflow: "hidden",
                            textOverflow: "ellipsis",
@@ -71,7 +74,7 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
                        {this.props.targetAlignment.target_id}
                    </div>
                </div>
-               <div  style={{cursor: this.state.disabled ? "pointer" : undefined}} onClick={(e: MouseEvent)=>this.altClick(e)} >
+               <div  style={{cursor: this.cursor()}} onClick={(e: MouseEvent)=>this.altClick(e)} >
                    <MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"aligned"} stateManager={this.props.stateManager}/>
                    <MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"polymer"} stateManager={this.props.stateManager}/>
                    <MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"non-polymer"} stateManager={this.props.stateManager}/>
@@ -91,17 +94,27 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
 
     private subscribe(): void{
         this.subscription = this.props.stateManager.subscribe<"representation-change",{label:string;isHidden:boolean;}>((o)=>{
+            if(o.type == "model-change" && o.view == "1d-view")
+                this.block();
             if(o.type == "model-change" && o.view == "3d-view")
                 this.modelChange();
         })
     }
 
+    private block(): void {
+        this.setState({blocked:true});
+    }
+
     private modelChange(): void {
         if(this.props.targetAlignment.target_id && this.props.stateManager.assemblyModelSate.getMap()?.has(this.props.targetAlignment.target_id)){
             if(this.state.disabled)
-                this.setState({disabled:false, titleColor:this.ACTIVE_COLOR});
+                this.setState({disabled:false, titleColor:this.ACTIVE_COLOR, blocked:false});
+            else
+                this.setState({blocked:false});
         }else if(!this.state.disabled){
-            this.setState({disabled:true, titleColor:this.HOVER_COLOR});
+            this.setState({disabled:true, titleColor:this.INACTIVE_COLOR, blocked:false});
+        }else if(this.state.blocked){
+            this.setState({blocked:false});
         }
     }
 
@@ -109,7 +122,7 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
         if(this.state.disabled && flag)
             this.setState({titleColor:this.ACTIVE_COLOR});
         else if(this.state.disabled && !flag)
-            this.setState({titleColor:this.HOVER_COLOR});
+            this.setState({titleColor:this.INACTIVE_COLOR});
     }
 
     private click(e: MouseEvent): void{
@@ -121,8 +134,17 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
             if(!newWin || newWin.closed || typeof newWin.closed === 'undefined')
                 document.location.href = `/structure/${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entryId}#entity-${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entityId}`;
         } else {
+            if(this.state.blocked)
+                return;
+            this.setState({blocked:true});
             this.props.titleClick();
         }
+    }
+
+    private cursor():Property.Cursor|undefined {
+        if(this.state.blocked)
+            return "wait"
+        return this.state.disabled ? "pointer" : undefined
     }
 
     private altClick(e: MouseEvent): void{

@@ -9,9 +9,6 @@ import {
 } from "../StructureViewerInterface";
 
 import {PluginContext} from "molstar/lib/mol-plugin/context";
-import {
-    RcsbFvSelectorManager
-} from "../../RcsbFvState/RcsbFvSelectorManager";
 import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/registry";
 import {ColorTheme} from "molstar/lib/mol-theme/color";
 import {RcsbFvStateManager} from "../../RcsbFvState/RcsbFvStateManager";

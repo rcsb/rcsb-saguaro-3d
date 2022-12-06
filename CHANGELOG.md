@@ -2,6 +2,15 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [2.3.5] - 2022-12-05
+### Improvement
+- `MsaPfvManagerFactory` generalizes and replaces `SequenceIdentityPfvManager` and `UniprotPfvManager`
+- `MsaRowTitleCheckboxState` is disabled if Mol* component is not generated
+- `MsaRowTitleComponent` is blocked while structure is loaded
+
+### Dependency update
+- rcsb-saguaro-app v4.5.7
+
 ## [2.3.4] - 2022-11-28
 ### Dependency update
 - rcsb-saguaro-app v4.5.6

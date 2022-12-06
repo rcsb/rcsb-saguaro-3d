@@ -17,10 +17,12 @@ import {
 import {PLDDTConfidenceColorThemeProvider} from "molstar/lib/extensions/model-archive/quality-assessment/color/plddt";
 import {AlignmentRepresentationPresetProvider} from "./AlignmentRepresentationPresetProvider";
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {RcsbFvStateInterface} from "../../../../RcsbFvState/RcsbFvStateInterface";
 
 export type TrajectoryParamsType = {
     pdb?: {entryId:string;entityId:string;};
     targetAlignment?: TargetAlignment;
+    stateManager?:RcsbFvStateInterface;
     assemblyId?: string;
     modelIndex?: number;
     plddt?: 'off' | 'single-chain' | 'on';
@@ -37,6 +39,7 @@ export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvid
     params: (trajectory: PluginStateObject.Molecule.Trajectory | undefined, plugin: PluginContext):ParamDefinition.For<TrajectoryParamsType> => ({
         pdb:PD.Value<{entryId:string;entityId:string;}|undefined>(undefined),
         targetAlignment: PD.Value<TargetAlignment|undefined>(undefined),
+        stateManager: PD.Value<RcsbFvStateInterface|undefined>(undefined),
         assemblyId:PD.Value<string|undefined>(undefined),
         modelIndex:PD.Value<number|undefined>(undefined),
         plddt:PD.Value<'off' | 'single-chain' | 'on' | undefined>(undefined)
@@ -64,7 +67,8 @@ export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvid
             AlignmentRepresentationPresetProvider,
             {
                 pdb:params.pdb,
-                targetAlignment:params.targetAlignment
+                targetAlignment:params.targetAlignment,
+                stateManagerContainer: params.stateManager ? {data:params.stateManager} : undefined
             }
         );
 

@@ -5,6 +5,7 @@ import {
     PfvManagerFactoryInterface
 } from "../PfvManagerFactoryInterface";
 import {
+    RcsbFvAdditionalConfig,
     RcsbFvModulePublicInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {TagDelimiter, buildSequenceIdentityAlignmentFv} from "@rcsb/rcsb-saguaro-app";
@@ -21,17 +22,21 @@ import {
 import {SearchQuery} from "@rcsb/rcsb-api-tools/build/RcsbSearch/Types/SearchQueryInterface";
 import {DataContainer} from "../../../../Utils/DataContainer";
 import {MsaUiSortComponent} from "./MsaPfvComponents/MsaUiSortComponent";
+import {ActionMethods} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvUI/Helper/ActionMethods";
 
-interface SequenceIdentityPfvManagerInterface<R> extends PfvManagerFactoryConfigInterface<R,{context: {groupId:string};}> {
-    groupId:string;
+export interface MsaPfvManagerInterface {
+    id:string;
     alignmentResponseContainer: DataContainer<AlignmentResponse>;
+    buildMsaAlignmentFv(elementId: string, upAcc: string, query?: SearchQuery, additionalConfig?: RcsbFvAdditionalConfig & ActionMethods.FvChangeConfigInterface): Promise<RcsbFvModulePublicInterface>;
     query?: SearchQuery;
 }
 
-export class SequenceIdentityPfvManagerFactory<R> implements PfvManagerFactoryInterface<{groupId:string},R,{context: {groupId:string};}> {
+type MsaPfvManagerInterType<R> = MsaPfvManagerInterface & PfvManagerFactoryConfigInterface<R,{context: {id:string};}>
 
-    getPfvManager(config: SequenceIdentityPfvManagerInterface<R>): PfvManagerInterface {
-        return new SequenceIdentityPfvManager(config);
+export class MsaPfvManagerFactory<R> implements PfvManagerFactoryInterface<{id:string},R,{context: {id:string};}> {
+
+    getPfvManager(config: MsaPfvManagerInterType<R>): PfvManagerInterface {
+        return new MsaPfvManager(config);
     }
 
 }
@@ -44,19 +49,20 @@ type AlignmentDataType = {
     targetAlignment: TargetAlignment;
 };
 
-class SequenceIdentityPfvManager<R> extends AbstractPfvManager<{groupId:string},R,{context: {groupId:string} &  Partial<PolymerEntityInstanceInterface>;}>{
+class MsaPfvManager<R> extends AbstractPfvManager<{id:string},R,{context: {id:string} &  Partial<PolymerEntityInstanceInterface>;}>{
 
-    private readonly config:SequenceIdentityPfvManagerInterface<R>;
+    private readonly config:MsaPfvManagerInterType<R>;
+    private module:RcsbFvModulePublicInterface;
 
-    constructor(config:SequenceIdentityPfvManagerInterface<R>) {
+    constructor(config:MsaPfvManagerInterType<R>) {
         super(config);
         this.config = config;
     }
 
     async create(): Promise<RcsbFvModulePublicInterface | undefined> {
-        const module:RcsbFvModulePublicInterface = await buildSequenceIdentityAlignmentFv(
+        const module:RcsbFvModulePublicInterface = await this.config.buildMsaAlignmentFv(
             this.rcsbFvDivId,
-            this.config.groupId,
+            this.config.id,
             this.config.query,
             {
                 ... this.additionalConfig,
@@ -102,7 +108,7 @@ class SequenceIdentityPfvManager<R> extends AbstractPfvManager<{groupId:string},
                     })
                 },
                 beforeChangeCallback: (module) => {
-                    this.config.pfvChangeCallback({context:{groupId:this.config.groupId}});
+                    this.config.pfvChangeCallback({context:{id:this.config.id}});
                 },
                 externalUiComponents:[{
                     component:MsaUiSortComponent,
@@ -121,7 +127,7 @@ class SequenceIdentityPfvManager<R> extends AbstractPfvManager<{groupId:string},
     private async readyStateLoad(): Promise<void> {
         const alignments: AlignmentResponse = await this.rcsbFvContainer.get()!.getAlignmentResponse();
         if(alignments.target_alignment && alignments.target_alignment.length > 0 && typeof alignments.target_alignment[0]?.target_id === "string"){
-            this.loadAlignment({queryId:this.config.groupId}, alignments.target_alignment[0]);
+            this.loadAlignment({queryId:this.config.id}, alignments.target_alignment[0]);
         }
     }
 
