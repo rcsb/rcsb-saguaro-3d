@@ -24,11 +24,11 @@ interface MsaRowTitleCheckboxState {
 //TODO keeps a global state of the (checkboxes <=> mol-star components) This needs further review!!!
 const globalState: {[key:string]: "active"|"inactive"|"disabled"|undefined;} = {};
 
-export class MsaRowTitleCheckbox extends React.Component <MsaRowTitleCheckboxInterface,MsaRowTitleCheckboxState> {
+export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCheckboxInterface,MsaRowTitleCheckboxState> {
 
     readonly state: MsaRowTitleCheckboxState = {
-        checked: globalState[ this.entityId()+this.props.tag ] == "active" ||  this.props.tag == "aligned" ? true : false,
-        disabled: globalState[ this.entityId()+this.props.tag ] == "disabled" ? true : false
+        checked: globalState[this.entityId() + this.props.tag] == "active" || this.props.tag == "aligned",
+        disabled: globalState[this.entityId() + this.props.tag] == "disabled"
     };
 
     private subscription: Subscription;
@@ -142,6 +142,7 @@ export class MsaRowTitleCheckbox extends React.Component <MsaRowTitleCheckboxInt
         return {
             width:7,
             height:7,
+            opacity: (this.props.disabled || this.state.disabled) && this.props.tag != "aligned" ? 0 : 1,
             backgroundColor: this.props.disabled || this.state.disabled ? color.disabled : color[ this.state.checked ? "checked" : "unchecked"],
             border: 1,
             borderStyle: "solid",

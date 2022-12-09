@@ -2,6 +2,10 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [2.3.6] - 2022-12-05
+### Display change
+- `MsaRowTitleCheckboxState` are hide unless Mol* component exists
+
 ## [2.3.5] - 2022-12-05
 ### Improvement
 - `MsaPfvManagerFactory` generalizes and replaces `SequenceIdentityPfvManager` and `UniprotPfvManager`

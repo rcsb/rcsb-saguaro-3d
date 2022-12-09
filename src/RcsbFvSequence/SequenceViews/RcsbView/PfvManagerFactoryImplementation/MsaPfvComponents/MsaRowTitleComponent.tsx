@@ -13,7 +13,7 @@ import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borr
 import {RcsbFvStateManager} from "../../../../../RcsbFvState/RcsbFvStateManager";
 import {Subscription} from "rxjs";
 import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
-import {MsaRowTitleCheckbox} from "./MsaRowTitleCheckbox";
+import {MsaRowTitleCheckboxComponent} from "./MsaRowTitleCheckboxComponent";
 import {MouseEvent} from "react";
 import {Property} from "csstype";
 
@@ -75,9 +75,9 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
                    </div>
                </div>
                <div  style={{cursor: this.cursor()}} onClick={(e: MouseEvent)=>this.altClick(e)} >
-                   <MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"aligned"} stateManager={this.props.stateManager}/>
-                   <MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"polymer"} stateManager={this.props.stateManager}/>
-                   <MsaRowTitleCheckbox disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"non-polymer"} stateManager={this.props.stateManager}/>
+                   <MsaRowTitleCheckboxComponent disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"aligned"} stateManager={this.props.stateManager}/>
+                   <MsaRowTitleCheckboxComponent disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"polymer"} stateManager={this.props.stateManager}/>
+                   <MsaRowTitleCheckboxComponent disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"non-polymer"} stateManager={this.props.stateManager}/>
                </div>
            </div>
        );
