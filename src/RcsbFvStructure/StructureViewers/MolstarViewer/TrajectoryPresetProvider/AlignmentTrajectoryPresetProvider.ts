@@ -18,12 +18,12 @@ import {PLDDTConfidenceColorThemeProvider} from "molstar/lib/extensions/model-ar
 import {AlignmentRepresentationPresetProvider} from "./AlignmentRepresentationPresetProvider";
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {RcsbFvStateInterface} from "../../../../RcsbFvState/RcsbFvStateInterface";
+import {Structure, StructureElement, StructureProperties as SP} from "molstar/lib/mol-model/structure";
 
 export type TrajectoryParamsType = {
     pdb?: {entryId:string;entityId:string;};
     targetAlignment?: TargetAlignment;
     stateManager?:RcsbFvStateInterface;
-    assemblyId?: string;
     modelIndex?: number;
     plddt?: 'off' | 'single-chain' | 'on';
 }
@@ -40,28 +40,48 @@ export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvid
         pdb:PD.Value<{entryId:string;entityId:string;}|undefined>(undefined),
         targetAlignment: PD.Value<TargetAlignment|undefined>(undefined),
         stateManager: PD.Value<RcsbFvStateInterface|undefined>(undefined),
-        assemblyId:PD.Value<string|undefined>(undefined),
         modelIndex:PD.Value<number|undefined>(undefined),
         plddt:PD.Value<'off' | 'single-chain' | 'on' | undefined>(undefined)
     }),
     apply: async (trajectory: StateObjectRef<PluginStateObject.Molecule.Trajectory>, params: TrajectoryParamsType, plugin: PluginContext) => {
-        const builder = plugin.builders.structure;
         const modelParams = { modelIndex: params.modelIndex || 0 };
         const structureParams: RootStructureDefinition.Params = { name: 'model', params: {} };
-        if (params.assemblyId && params.assemblyId !== '' && params.assemblyId !== '0') {
+        const builder = plugin.builders.structure;
+        let structure;
+        let model;
+        let modelProperties;
+        let unitcell: StateObjectSelector | undefined = undefined;
+        let assemblyId: number =  1;
+        let  entityCheck: boolean = false;
+        do{
             Object.assign(structureParams, {
                 name: 'assembly',
-                params: { id: params.assemblyId }
+                params: { id:  (assemblyId++).toString()}
             } as RootStructureDefinition.Params);
-        }
 
-        const model = await builder.createModel(trajectory, modelParams);
-        const modelProperties = await builder.insertModelProperties(model);
-
-        const unitcell: StateObjectSelector | undefined = undefined;
-        const structure = await builder.createStructure(modelProperties || model, structureParams);
+            model = await builder.createModel(trajectory, modelParams);
+            modelProperties = await builder.insertModelProperties(model);
+            structure = await builder.createStructure(modelProperties || model, structureParams);
+            if(structure.state?.cells)
+                for(const cell of structure.state?.cells.values()){
+                    const strData: Structure = (cell.obj as StateObject<Structure>).data;
+                    if(cell.obj?.type.name == "Structure" && strData.model.entryId == params.pdb?.entryId){
+                        const l = StructureElement.Location.create(strData);
+                        for(const unit of strData.units){
+                            StructureElement.Location.set(l, strData, unit, unit.elements[0]);
+                            entityCheck = SP.chain.label_entity_id(l) == params.pdb.entityId;
+                            if(entityCheck)
+                                break;
+                        }
+                        break;
+                    }
+                }
+            if(!entityCheck)
+                plugin.managers.structure.hierarchy.remove([
+                    plugin.managers.structure.hierarchy.current.structures[plugin.managers.structure.hierarchy.current.structures.length-1]
+                ]);
+        }while(!entityCheck);
         const structureProperties = await builder.insertStructureProperties(structure);
-
         const representation: StructureRepresentationPresetProvider.Result | undefined = await plugin.builders.structure.representation.applyPreset(
             structureProperties,
             AlignmentRepresentationPresetProvider,
@@ -71,7 +91,6 @@ export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvid
                 stateManagerContainer: params.stateManager ? {data:params.stateManager} : undefined
             }
         );
-
         //TODO what is the purpose of this return?
         return {
             model,

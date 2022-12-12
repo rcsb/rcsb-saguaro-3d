@@ -37,7 +37,6 @@ export class MolstarAlignmentLoader implements StructureLoaderInterface<[
                     entryId:pdb.entryId,
                     reprProvider: AlignmentTrajectoryPresetProvider,
                     params:{
-                        assemblyId: "1",
                         modelIndex: 0,
                         pdb,
                         targetAlignment,
@@ -45,13 +44,9 @@ export class MolstarAlignmentLoader implements StructureLoaderInterface<[
                     }
                 }
             });
-            structureViewer.pluginCall(async (plugin)=>{
-                this.structureMap.add(
-                    structureId
-                );
-
-            });
-
+            this.structureMap.add(
+                structureId
+            );
         } else {
             await structureViewer.removeStructure({
                 loadMethod: LoadMethod.loadPdbId,

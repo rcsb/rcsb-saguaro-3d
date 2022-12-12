@@ -2,6 +2,11 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [2.3.7] - 2022-12-12
+### Bug fix
+- `assemblyId` parameter has been removed from `AlignmentTrajectoryPresetProvider`
+  - The provider check the first assembly that includes the entity
+
 ## [2.3.6] - 2022-12-05
 ### Display change
 - `MsaRowTitleCheckboxState` are hide unless Mol* component exists

@@ -2,7 +2,7 @@
   "compilerOptions": {
     "outDir": "./build/src/",
     "noImplicitAny": true,
-    "target": "es5",
+    "target": "es2015",
     "module": "commonjs",
     "jsx": "react",
     "lib": [ "es6", "dom", "esnext.asynciterable", "es2016"  ],
