@@ -2,6 +2,11 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [2.3.8] - 2023-01-20
+### Dependency update
+- rcsb-saguaro v2.5.8
+- rcsb-saguaro-app v4.5.9
+ 
 ## [2.3.7] - 2022-12-12
 ### Bug fix
 - `assemblyId` parameter has been removed from `AlignmentTrajectoryPresetProvider`
