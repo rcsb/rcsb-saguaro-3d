@@ -24,101 +24,94 @@ import {DataContainer} from "../../../../Utils/DataContainer";
 import {MsaUiSortComponent} from "./MsaPfvComponents/MsaUiSortComponent";
 import {ActionMethods} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvUI/Helper/ActionMethods";
 
-export interface MsaPfvManagerInterface {
+export interface MsaPfvManagerInterface<T extends any[]> {
     id:string;
     alignmentResponseContainer: DataContainer<AlignmentResponse>;
-    buildMsaAlignmentFv(elementId: string, upAcc: string, query?: SearchQuery, additionalConfig?: RcsbFvAdditionalConfig & ActionMethods.FvChangeConfigInterface): Promise<RcsbFvModulePublicInterface>;
-    query?: SearchQuery;
+    pfvArgs: T;
+    buildMsaAlignmentFv(...args:[string, ...T, RcsbFvAdditionalConfig & ActionMethods.FvChangeConfigInterface]): Promise<RcsbFvModulePublicInterface>;
 }
 
-type MsaPfvManagerInterType<R> = MsaPfvManagerInterface & PfvManagerFactoryConfigInterface<R,{context: {id:string};}>
+type MsaPfvManagerInterType<T extends any[], R,L> = MsaPfvManagerInterface<T> & PfvManagerFactoryConfigInterface<R,L,{context: {id:string};}>
 
-export class MsaPfvManagerFactory<R> implements PfvManagerFactoryInterface<{id:string},R,{context: {id:string};}> {
+export class MsaPfvManagerFactory<T extends any[], R,L> implements PfvManagerFactoryInterface<{id:string},R,L,{context: {id:string};}> {
 
-    getPfvManager(config: MsaPfvManagerInterType<R>): PfvManagerInterface {
+    getPfvManager(config: MsaPfvManagerInterType<T,R,L>): PfvManagerInterface {
         return new MsaPfvManager(config);
     }
 
 }
 
 type AlignmentDataType = {
-    pdb:{
-        entryId:string;
-        entityId:string;
-    },
+    pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;},
     targetAlignment: TargetAlignment;
 };
 
-class MsaPfvManager<R> extends AbstractPfvManager<{id:string},R,{context: {id:string} &  Partial<PolymerEntityInstanceInterface>;}>{
+class MsaPfvManager<T extends any[],R,L> extends AbstractPfvManager<{id:string},R,L,{context: {id:string} &  Partial<PolymerEntityInstanceInterface>;}>{
 
-    private readonly config:MsaPfvManagerInterType<R>;
+    private readonly config:MsaPfvManagerInterType<T,R,L>;
     private module:RcsbFvModulePublicInterface;
 
-    constructor(config:MsaPfvManagerInterType<R>) {
+    constructor(config:MsaPfvManagerInterType<T,R,L>) {
         super(config);
         this.config = config;
     }
 
     async create(): Promise<RcsbFvModulePublicInterface | undefined> {
-        const module:RcsbFvModulePublicInterface = await this.config.buildMsaAlignmentFv(
-            this.rcsbFvDivId,
-            this.config.id,
-            this.config.query,
-            {
-                ... this.additionalConfig,
-                boardConfig: this.boardConfigContainer.get(),
-                externalTrackBuilder:{
-                    filterAlignments: (data: { alignments: AlignmentResponse; rcsbContext?: Partial<PolymerEntityInstanceInterface> }) => {
-                        const visAlignment = this.config.alignmentResponseContainer?.get()?.target_alignment
-                                ?.filter(ta=>ta?.target_id && this.config.stateManager.assemblyModelSate.getMap()?.has(ta.target_id));
-                        const otherAlignment = data.alignments.target_alignment
-                            ?.filter(ta=>ta?.target_id && !this.config.stateManager.assemblyModelSate.getMap()?.has(ta.target_id));
-                        return new Promise(resolve => resolve({
-                            ...data.alignments,
-                            target_alignment: (visAlignment ?? []).concat(otherAlignment ?? [])
-                        }));
-                    }
-                },
-                trackConfigModifier: {
-                    alignment: (alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment) => new Promise((resolve)=>{
-                        resolve({
-                            rowMark:{
-                                externalRowMark: {
-                                    component:MsaRowMarkComponent,
-                                    props:{
-                                        rowRef:TagDelimiter.parseEntity(targetAlignment.target_id!),
-                                        stateManager: this.stateManager
-                                    }
-                                },
-                                clickCallback:() => this.loadAlignment(alignmentContext,targetAlignment)
-                            },
-                            externalRowTitle: {
-                                rowTitleComponent:MsaRowTitleComponent,
-                                rowTitleAdditionalProps:{
-                                    alignmentContext,
-                                    targetAlignment,
-                                    stateManager: this.stateManager,
-                                    titleClick: ()=> this.loadAlignment(alignmentContext,targetAlignment)
+        const args: [string, ...T, RcsbFvAdditionalConfig & ActionMethods.FvChangeConfigInterface] = [this.rcsbFvDivId, ...this.config.pfvArgs, {
+            ... this.additionalConfig,
+            boardConfig: this.boardConfigContainer.get(),
+            externalTrackBuilder:{
+                filterAlignments: (data: { alignments: AlignmentResponse; rcsbContext?: Partial<PolymerEntityInstanceInterface> }) => {
+                    const visAlignment = this.config.alignmentResponseContainer?.get()?.target_alignment
+                        ?.filter(ta=>ta?.target_id && this.config.stateManager.assemblyModelSate.getMap()?.has(ta.target_id));
+                    const otherAlignment = data.alignments.target_alignment
+                        ?.filter(ta=>ta?.target_id && !this.config.stateManager.assemblyModelSate.getMap()?.has(ta.target_id));
+                    return new Promise(resolve => resolve({
+                        ...data.alignments,
+                        target_alignment: (visAlignment ?? []).concat(otherAlignment ?? [])
+                    }));
+                }
+            },
+            trackConfigModifier: {
+                alignment: (alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment) => new Promise((resolve)=>{
+                    resolve({
+                        rowMark:{
+                            externalRowMark: {
+                                component:MsaRowMarkComponent,
+                                props:{
+                                    rowRef:TagDelimiter.parseEntityOrInstance(targetAlignment.target_id!),
+                                    stateManager: this.stateManager
                                 }
                             },
-                            metadata:{
-                                targetId:targetAlignment.target_id
+                            clickCallback:() => this.loadAlignment(alignmentContext,targetAlignment)
+                        },
+                        externalRowTitle: {
+                            rowTitleComponent:MsaRowTitleComponent,
+                            rowTitleAdditionalProps:{
+                                alignmentContext,
+                                targetAlignment,
+                                stateManager: this.stateManager,
+                                titleClick: ()=> this.loadAlignment(alignmentContext,targetAlignment)
                             }
-                        });
-                    })
-                },
-                beforeChangeCallback: (module) => {
-                    this.config.pfvChangeCallback({context:{id:this.config.id}});
-                },
-                externalUiComponents:[{
-                    component:MsaUiSortComponent,
-                    props: {
-                        rcsbFvContainer: this.rcsbFvContainer,
-                        stateManager: this.stateManager
-                    }
-                }]
-            }
-        );
+                        },
+                        metadata:{
+                            targetId:targetAlignment.target_id
+                        }
+                    });
+                })
+            },
+            beforeChangeCallback: () => {
+                this.config.pfvChangeCallback({context:{id:this.config.id}});
+            },
+            externalUiComponents:[{
+                component:MsaUiSortComponent,
+                props: {
+                    rcsbFvContainer: this.rcsbFvContainer,
+                    stateManager: this.stateManager
+                }
+            }]
+        }];
+        const module:RcsbFvModulePublicInterface = await this.config.buildMsaAlignmentFv(...args);
         this.rcsbFvContainer.set(module);
         await this.readyStateLoad();
         return module;
@@ -137,7 +130,7 @@ class MsaPfvManager<R> extends AbstractPfvManager<{id:string},R,{context: {id:st
                 type:"model-change",
                 view:"1d-view",
                 data:{
-                    pdb:TagDelimiter.parseEntity(targetAlignment.target_id),
+                    pdb:TagDelimiter.parseEntityOrInstance(targetAlignment.target_id),
                     targetAlignment
                 }
             });

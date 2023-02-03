@@ -16,11 +16,20 @@ import {
 import {RcsbFvStateInterface} from "../../RcsbFvState/RcsbFvStateInterface";
 import {asyncScheduler, Subscription} from "rxjs";
 
-export class AssemblyBehaviourObserver<R> implements StructureViewerBehaviourObserverInterface<R> {
+export class AssemblyBehaviourObserver<R,L> implements StructureViewerBehaviourObserverInterface<R,L> {
 
     private structureBehaviour: StructureViewerBehaviourInterface;
-    public observe(structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>, stateManager: RcsbFvStateInterface): void {
+    private readonly assemblyLoadConfig: R;
+
+    constructor(assemblyLoadConfig: R) {
+        this.assemblyLoadConfig = assemblyLoadConfig;
+    }
+
+    public observe(structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>, stateManager: RcsbFvStateInterface): void {
         this.structureBehaviour = new AssemblyBehaviour(structureViewer, stateManager);
+        structureViewer.load(this.assemblyLoadConfig).then(()=>{
+            console.info("Assembly load complete");
+        })
     }
 
     public unsubscribe(): void {
@@ -29,15 +38,15 @@ export class AssemblyBehaviourObserver<R> implements StructureViewerBehaviourObs
 
 }
 
-class AssemblyBehaviour<R> implements StructureViewerBehaviourInterface {
+class AssemblyBehaviour<R,L> implements StructureViewerBehaviourInterface {
 
-    private readonly structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
+    private readonly structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>;
     private readonly stateManager: RcsbFvStateInterface;
     private readonly subscription: Subscription;
     private selectedComponentId: string|undefined;
     private readonly CREATE_COMPONENT_THR: number = 3;
 
-    constructor(structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>, stateManager: RcsbFvStateInterface) {
+    constructor(structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>, stateManager: RcsbFvStateInterface) {
         this.structureViewer = structureViewer;
         this.stateManager = stateManager;
         this.subscription = this.subscribe();

@@ -6,39 +6,28 @@ import {
 } from "../../StructureViewerInterface";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {Structure, StructureElement, StructureProperties as SP} from "molstar/lib/mol-model/structure";
-import {StructureRef} from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
 import {State} from "molstar/lib/mol-state";
 import {PluginStateObject as PSO} from "molstar/lib/mol-plugin-state/objects";
 import {Viewer} from "@rcsb/rcsb-molstar/build/src/viewer";
 import {LoadMethod} from "./MolstarActionManager";
 
-interface LoadParams<P=any,S={}> {
-    id?:string;
-    params?:P;
+interface LoadParams {
+    id:string;
 }
 
-export class MolstarModelMapManager implements ViewerModelMapManagerInterface<{loadMethod: LoadMethod; loadParams: LoadParams;}> {
+export class MolstarModelMapManager<L> implements ViewerModelMapManagerInterface<{loadMethod: LoadMethod; loadParams: LoadParams;},L> {
 
     private readonly viewer: Viewer;
     private readonly modelMap: Map<string,string|undefined> = new Map<string, string>();
+    private readonly delegateModelIdFromTrajectory: (trajectory:L)=>string|undefined;
 
-    constructor(viewer: Viewer) {
+    constructor(viewer: Viewer, delegateModelIdFromTrajectory: (trajectory:L)=>string|undefined) {
         this.viewer = viewer;
+        this.delegateModelIdFromTrajectory = delegateModelIdFromTrajectory;
     }
 
-    public add(lC: {loadMethod: LoadMethod; loadParams: LoadParams;}){
-        //TODO get rid of the getMap mechanics
-        if(typeof lC.loadParams.params?.getMap === "function") {
-            const map: Map<string,string> = lC.loadParams.params.getMap();
-            if(typeof map?.forEach === "function")
-                map.forEach((modelId: string, key: string) => {
-                    if (typeof modelId === "string" && typeof key === "string") {
-                        this.modelMap.set(key, modelId);
-                        this.modelMap.set(modelId, key);
-                    }
-                })
-        }
-        this.map(lC.loadParams);
+    public add(lC: {loadMethod: LoadMethod; loadParams: LoadParams;}, trajectory: L){
+        this.map(lC.loadParams, trajectory);
     }
 
     public delete(lC: {loadMethod: LoadMethod; loadParams: LoadParams;}) {
@@ -65,18 +54,17 @@ export class MolstarModelMapManager implements ViewerModelMapManagerInterface<{l
         return this.modelMap.get(id) ?? id;
     }
 
-    private map(loadParams: LoadParams): void{
-        const structureRefList = getStructureOptions(this.viewer.plugin);
-        if(structureRefList.length > 0) {
-            const structureRef = structureRefList[structureRefList.length - 1];
-            const structure = getStructure(structureRef[0], this.viewer.plugin.state.data);
-            let modelEntityId = getModelEntityOptions(structure)[0][0];
-            const chains: [{ modelId: string, entryId: string }, ChainInfo[]] = getChainValues(structure, modelEntityId);
-            if (!this.modelMap.has(chains[0].modelId)) {
-                this.modelMap.set(chains[0].modelId, loadParams.id);
-                if (loadParams.id != null)
-                    this.modelMap.set(loadParams.id!, chains[0].modelId);
-            }
+    public getModelIdFromTrajectory(trajectory: L): string|undefined {
+        return this.delegateModelIdFromTrajectory(trajectory);
+    }
+
+    private map(loadParams: LoadParams, trajectory: L): void{
+        const modelId = this.getModelIdFromTrajectory(trajectory);
+        if(!modelId || !loadParams.id)
+            throw new Error("modelId not found");
+        if(!this.modelMap.has(modelId)){
+            this.modelMap.set(modelId,loadParams.id);
+            this.modelMap.set(loadParams.id,modelId)
         }
     }
 }
@@ -107,17 +95,6 @@ function getChainValues(structure: Structure, modelEntityId: string): [{modelId:
     }
     const id: {modelId:string; entryId:string; assemblyId:string;} = {modelId:l.unit?.model?.id, entryId: l.unit?.model?.entryId, assemblyId: assemblyId};
     return [id,Array.from(chains.values())];
-}
-
-function getStructureWithModelId(structures: StructureRef[], modelId: string): Structure|undefined{
-    for(const structure of structures){
-        if(!structure.cell?.obj?.data?.units)
-            continue;
-        const unit =  structure.cell.obj.data.units[0];
-        const id:string = unit.model.id;
-        if(id === modelId)
-            return structure.cell.obj.data
-    }
 }
 
 function getStructure(ref: string, state: State) {
@@ -159,9 +136,6 @@ function splitModelEntityId(modelEntityId: string) {
 
 function opKey(l: StructureElement.Location): OperatorInfo {
     const ids = SP.unit.pdbx_struct_oper_list_ids(l);
-    const ncs = SP.unit.struct_ncs_oper_id(l);
-    const hkl = SP.unit.hkl(l);
-    const spgrOp = SP.unit.spgrOp(l);
     const name = SP.unit.operator_name(l);
     return {ids:ids,name:name};
 }

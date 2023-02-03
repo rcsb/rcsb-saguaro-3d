@@ -8,39 +8,37 @@ import {
     RcsbFvTrackDataElementInterface
 } from "@rcsb/rcsb-saguaro";
 import * as React from "react";
-import {RcsbFvSelectorManager} from "../../../RcsbFvState/RcsbFvSelectorManager";
 import {
-    SaguaroPluginModelMapType,
     StructureViewerPublicInterface
 } from "../../../RcsbFvStructure/StructureViewerInterface";
-import {RcsbFvStateManager} from "../../../RcsbFvState/RcsbFvStateManager";
 import uniqid from "uniqid";
+import {RcsbFvStateInterface} from "../../../RcsbFvState/RcsbFvStateInterface";
 
-export type CustomViewStateInterface<R> = Omit<CustomViewInterface<R>, "modelChangeCallback">;
+export type CustomViewStateInterface<R,L> = Omit<CustomViewInterface<R,L>, "modelChangeCallback">;
 
-export interface CustomViewInterface<R> {
-    blockConfig: FeatureBlockInterface<R> | Array<FeatureBlockInterface<R>>;
+export interface CustomViewInterface<R,L> {
+    blockConfig: FeatureBlockInterface<R,L> | Array<FeatureBlockInterface<R,L>>;
     blockSelectorElement?: (blockSelector: BlockSelectorManager) => JSX.Element;
-    modelChangeCallback?: () => CustomViewStateInterface<R>;
-    blockChangeCallback?: (plugin: StructureViewerPublicInterface<R>, pfvList: Array<RcsbFv>, stateManager: RcsbFvStateManager) => void;
+    modelChangeCallback?: () => CustomViewStateInterface<R,L>;
+    blockChangeCallback?: (plugin: StructureViewerPublicInterface<R,L>, pfvList: Array<RcsbFv>, stateManager: RcsbFvStateInterface) => void;
 }
 
-export interface FeatureBlockInterface<R> {
+export interface FeatureBlockInterface<R,L> {
     blockId:string;
     blockTitle?: string;
     blockShortName?: string;
-    featureViewConfig: Array<FeatureViewInterface<R>> | FeatureViewInterface<R>;
+    featureViewConfig: Array<FeatureViewInterface<R,L>> | FeatureViewInterface<R,L>;
 }
 
-export interface FeatureViewInterface<R> {
+export interface FeatureViewInterface<R,L> {
     boardId?:string;
     boardConfig: RcsbFvBoardConfigInterface;
     rowConfig: Array<RcsbFvRowConfigInterface>;
-    sequenceSelectionChangeCallback: (plugin: StructureViewerPublicInterface<R>, stateManager: RcsbFvStateManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => void;
-    sequenceElementClickCallback: (plugin: StructureViewerPublicInterface<R>, stateManager: RcsbFvStateManager, d: RcsbFvTrackDataElementInterface) => void;
-    sequenceHoverCallback: (plugin: StructureViewerPublicInterface<R>, stateManager: RcsbFvStateManager, hoverRegion: Array<RcsbFvTrackDataElementInterface>) => void;
-    structureSelectionCallback: (plugin: StructureViewerPublicInterface<R>, pfv: RcsbFv, stateManager: RcsbFvStateManager) => void;
-    structureHoverCallback: (plugin: StructureViewerPublicInterface<R>, pfv: RcsbFv, stateManager: RcsbFvStateManager) => void;
+    sequenceSelectionChangeCallback: (plugin: StructureViewerPublicInterface<R,L>, stateManager: RcsbFvStateInterface, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => void;
+    sequenceElementClickCallback: (plugin: StructureViewerPublicInterface<R,L>, stateManager: RcsbFvStateInterface, d: RcsbFvTrackDataElementInterface) => void;
+    sequenceHoverCallback: (plugin: StructureViewerPublicInterface<R,L>, stateManager: RcsbFvStateInterface, hoverRegion: Array<RcsbFvTrackDataElementInterface>) => void;
+    structureSelectionCallback: (plugin: StructureViewerPublicInterface<R,L>, pfv: RcsbFv, stateManager: RcsbFvStateInterface) => void;
+    structureHoverCallback: (plugin: StructureViewerPublicInterface<R,L>, pfv: RcsbFv, stateManager: RcsbFvStateInterface) => void;
 }
 
 export class BlockSelectorManager {
@@ -63,23 +61,23 @@ export class BlockSelectorManager {
     }
 }
 
-export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomViewStateInterface<R>,R> {
+export class CustomView<R,L> extends AbstractView<CustomViewInterface<R,L>, CustomViewStateInterface<R,L>,R,L> {
 
     private blockViewSelector: BlockSelectorManager = new BlockSelectorManager( this.blockChange.bind(this) );
-    private boardMap: Map<string, FeatureViewInterface<R>> = new Map<string, FeatureViewInterface<R>>();
+    private boardMap: Map<string, FeatureViewInterface<R,L>> = new Map<string, FeatureViewInterface<R,L>>();
     private blockMap: Map<string, Array<string>> = new Map<string, Array<string>>();
     private rcsbFvMap: Map<string, RcsbFv> = new Map<string, RcsbFv>();
     private firstModelLoad: boolean = true;
     private innerSelectionFlag: boolean = false;
     private updateContext:"state-change"|null = null;
 
-    readonly state: CustomViewStateInterface<R> = {
+    readonly state: CustomViewStateInterface<R,L> = {
         blockConfig: this.props.blockConfig,
         blockSelectorElement: this.props.blockSelectorElement,
         blockChangeCallback: this.props.blockChangeCallback
     };
 
-    constructor(props: CustomViewInterface<R> & AbstractViewInterface<R>) {
+    constructor(props: CustomViewInterface<R,L> & AbstractViewInterface<R,L>) {
         super(props);
         this.mapBlocks(props.blockConfig);
     }
@@ -96,7 +94,7 @@ export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomVi
         });
     }
 
-    componentDidUpdate(prevProps: Readonly<CustomViewInterface<R> & AbstractViewInterface<R>>, prevState: Readonly<CustomViewStateInterface<R>>, snapshot?: any) {
+    componentDidUpdate(prevProps: Readonly<CustomViewInterface<R,L> & AbstractViewInterface<R,L>>, prevState: Readonly<CustomViewStateInterface<R,L>>, snapshot?: any) {
         if(this.updateContext != "state-change") {
             this.updateContext = "state-change";
             this.mapBlocks(this.props.blockConfig);
@@ -108,7 +106,7 @@ export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomVi
         }
     }
 
-    private mapBlocks(config: FeatureBlockInterface<R> | Array<FeatureBlockInterface<R>>){
+    private mapBlocks(config: FeatureBlockInterface<R,L> | Array<FeatureBlockInterface<R,L>>){
         this.rcsbFvMap.forEach((pfv, id) => {
             pfv.unmount();
         });
@@ -219,7 +217,7 @@ export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomVi
             return;
         }
         if(typeof this.props.modelChangeCallback === "function") {
-            let newConfig: CustomViewStateInterface<R> = this.props.modelChangeCallback();
+            let newConfig: CustomViewStateInterface<R,L> = this.props.modelChangeCallback();
             if(newConfig != null ){
                 this.updateContext = "state-change";
                 if(newConfig.blockConfig != null && newConfig.blockSelectorElement != null){
@@ -235,7 +233,12 @@ export class CustomView<R> extends AbstractView<CustomViewInterface<R>, CustomVi
         }
     }
 
-    setState<K extends keyof CustomViewStateInterface<R>>(state: ((prevState: Readonly<CustomViewStateInterface<R>>, props: Readonly<CustomViewInterface<R> & AbstractViewInterface<R>>) => (Pick<CustomViewStateInterface<R>, K> | CustomViewStateInterface<R> | null)) | Pick<CustomViewStateInterface<R>, K> | CustomViewStateInterface<R> | null, callback?: () => void) {
+    setState<K extends keyof CustomViewStateInterface<R,L>>(
+        state: ((
+            prevState: Readonly<CustomViewStateInterface<R,L>>,
+            props: Readonly<CustomViewInterface<R,L> & AbstractViewInterface<R,L>>
+        ) => (Pick<CustomViewStateInterface<R,L>, K> | CustomViewStateInterface<R,L> | null)) | Pick<CustomViewStateInterface<R,L>, K> | CustomViewStateInterface<R,L> | null, callback?: () => void
+    ) {
         super.setState(state, ()=>{
             this.blockViewSelector.setActiveBlock( (this.state.blockConfig instanceof Array ? this.state.blockConfig : [this.state.blockConfig])[0].blockId! )
             if(typeof callback === "function") callback();

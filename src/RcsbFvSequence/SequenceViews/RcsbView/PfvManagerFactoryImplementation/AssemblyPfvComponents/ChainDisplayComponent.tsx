@@ -3,7 +3,7 @@ import {
     StructureViewerInterface
 } from "../../../../../RcsbFvStructure/StructureViewerInterface";
 
-type DisplayComponentMethod = (StructureViewerInterface<undefined,[]>)["displayComponent"]
+type DisplayComponentMethod = (StructureViewerInterface<undefined,undefined,[]>)["displayComponent"]
 interface ChainDisplayInterface {
     structureViewer: {
         displayComponent:DisplayComponentMethod

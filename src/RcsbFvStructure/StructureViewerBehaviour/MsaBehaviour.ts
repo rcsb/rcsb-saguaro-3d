@@ -23,27 +23,29 @@ import {RegionSelectionInterface} from "../../RcsbFvState/RcsbFvSelectorManager"
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {FunctionCall} from "../../Utils/FunctionCall";
 import onetimeCall = FunctionCall.onetimeCall;
+import {ComponentActionFactoryInterface, ComponentActionInterface} from "../StructureUtils/ComponentActionInterface";
 
-type MsaBehaviourType<R> = StructureLoaderInterface<[
-        ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>,
-    {entryId:string;entityId:string;},
-    TargetAlignment,
-    RcsbFvStateInterface
-]>;
+type MsaBehaviourType<R,L> = StructureLoaderInterface<[
+    ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>,
+    { entryId:string; entityId:string; } | { entryId:string; instanceId:string; },
+    TargetAlignment
+],L>;
 
-export class MsaBehaviourObserver<R> implements StructureViewerBehaviourObserverInterface<R> {
+export class MsaBehaviourObserver<R,L> implements StructureViewerBehaviourObserverInterface<R,L> {
 
     private structureBehaviour: StructureViewerBehaviourInterface;
-    private readonly structureLoader: MsaBehaviourType<R>;
+    private readonly structureLoader: MsaBehaviourType<R,L>;
+    private readonly componentActionFactory: ComponentActionFactoryInterface<L>;
 
-    constructor(structureLoader: MsaBehaviourType<R>) {
-        this.structureLoader = structureLoader
+    constructor(structureLoader: MsaBehaviourType<R,L>, componentActionFactory: ComponentActionFactoryInterface<L>) {
+        this.structureLoader = structureLoader;
+        this.componentActionFactory = componentActionFactory;
     }
     public observe(
-        structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>,
+        structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>,
         stateManager: RcsbFvStateInterface
     ): void {
-        this.structureBehaviour = new MsaBehaviour(structureViewer, stateManager, this.structureLoader);
+        this.structureBehaviour = new MsaBehaviour(structureViewer, stateManager, this.structureLoader, this.componentActionFactory.getComponentAction({stateManager}));
     }
 
     public unsubscribe(): void {
@@ -54,30 +56,30 @@ export class MsaBehaviourObserver<R> implements StructureViewerBehaviourObserver
 
 type SelectedRegion = {modelId: string, labelAsymId: string, region: RegionSelectionInterface, operatorName?: string};
 type AlignmentDataType = {
-    pdb:{
-        entryId:string;
-        entityId:string;
-    },
+    pdb:{ entryId:string; entityId:string; } | { entryId:string; instanceId:string; },
     targetAlignment: TargetAlignment;
 };
-class MsaBehaviour<R> implements StructureViewerBehaviourInterface {
+class MsaBehaviour<R,L> implements StructureViewerBehaviourInterface {
 
-    private readonly structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
+    private readonly structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>;
     private readonly stateManager: RcsbFvStateInterface;
     private readonly subscription: Subscription;
-    private readonly structureLoader: MsaBehaviourType<R>;
+    private readonly structureLoader: MsaBehaviourType<R,L>;
+    private readonly componentAction: ComponentActionInterface<L>;
     private readonly componentList: string[] = [];
 
     private readonly CREATE_COMPONENT_THR: number = 5;
 
     constructor(
-        structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>,
+        structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>,
         stateManager: RcsbFvStateInterface,
-        structureLoader: MsaBehaviourType<R>
+        structureLoader: MsaBehaviourType<R,L>,
+        componentAction: ComponentActionInterface<L>
     ) {
         this.structureViewer = structureViewer;
         this.stateManager = stateManager;
         this.structureLoader = structureLoader;
+        this.componentAction = componentAction;
         this.subscription = this.subscribe();
     }
 
@@ -157,26 +159,28 @@ class MsaBehaviour<R> implements StructureViewerBehaviourInterface {
     unsubscribe(): void {
     }
 
-    reprChange(data?:{pdb:{entryId:string;entityId:string;}} & {tag:"aligned"|"polymer"|"non-polymer";isHidden:boolean;}): void {
+    reprChange(data?:{pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;}} & {tag:"aligned"|"polymer"|"non-polymer";isHidden:boolean;}): void {
         if(data){
+            const chainInfo: ChainInfo|undefined = this.stateManager.assemblyModelSate.getModelChainInfo(this.getRcsbId(data.pdb))?.chains.find(
+                ch=>(("entityId" in data.pdb && ch.entityId==data.pdb.entityId) || ("instanceId" in data.pdb && ch.label==data.pdb.instanceId))
+            );
+            if(!chainInfo)
+                return;
             switch (data.tag){
                 case "aligned":
-                    const chain: ChainInfo|undefined = this.stateManager.assemblyModelSate.getModelChainInfo(`${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}`)?.chains.find(ch=>ch.entityId==data.pdb.entityId);
-                    if(chain){
-                        const asymId: string|undefined = chain.label;
-                        const operatorInfo: OperatorInfo[] = chain.operators ?? [];
-                        const componentId: string = `${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}${TagDelimiter.instance}${asymId}${TagDelimiter.assembly}${operatorInfo[0].ids.join(",")}${TagDelimiter.assembly}${"polymer"}`;
-                        this.structureViewer.displayComponent(componentId, !data.isHidden);
-                    }
+                    const asymId: string|undefined = chainInfo.label;
+                    const operatorInfo: OperatorInfo[] = chainInfo.operators ?? [];
+                    const alignedCompId: string = `${data.pdb.entryId}${TagDelimiter.entity}${chainInfo.entityId}${TagDelimiter.instance}${asymId}${TagDelimiter.assembly}${operatorInfo[0].ids.join(",")}${TagDelimiter.assembly}${"polymer"}`;
+                    this.structureViewer.displayComponent(alignedCompId, !data.isHidden);
                     break;
                 case "polymer":
-                    const componentId: string = `${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}${TagDelimiter.assembly}${data.tag}`;
-                    this.structureViewer.displayComponent(componentId, !data.isHidden);
+                    const polymerCompId: string = `${data.pdb.entryId}${TagDelimiter.entity}${chainInfo.entityId}${TagDelimiter.assembly}${data.tag}`;
+                    this.structureViewer.displayComponent(polymerCompId, !data.isHidden);
                     break;
                 case "non-polymer":
                     createSelectionExpressions(data.pdb.entryId).map(expression=>expression.tag).filter(tag=>(tag!="water" && tag != "polymer")).forEach(tag=>{
-                        const componentId: string = `${data.pdb.entryId}${TagDelimiter.entity}${data.pdb.entityId}${TagDelimiter.assembly}${tag}`;
-                        this.structureViewer.displayComponent(componentId, !data.isHidden);
+                        const nonPolymerCompId: string = `${data.pdb.entryId}${TagDelimiter.entity}${chainInfo.entityId}${TagDelimiter.assembly}${tag}`;
+                        this.structureViewer.displayComponent(nonPolymerCompId, !data.isHidden);
                     });
                     break;
             }
@@ -184,8 +188,12 @@ class MsaBehaviour<R> implements StructureViewerBehaviourInterface {
     }
 
     async modelChange(data?:AlignmentDataType): Promise<void> {
-        if(data)
-            await this.structureLoader.load(this.structureViewer, data.pdb, data.targetAlignment, this.stateManager);
+        if(data) {
+            const trajectory = await this.structureLoader.load(this.structureViewer, data.pdb, data.targetAlignment);
+            if(trajectory){
+                this.componentAction.accept(trajectory, data.pdb);
+            }
+        }
     }
 
     private select(mode:"select"|"hover"): void{
@@ -222,6 +230,13 @@ class MsaBehaviour<R> implements StructureViewerBehaviourInterface {
         await Promise.all(this.componentList.map(async compId=>{
             await this.structureViewer.removeComponent(compId);
         }));
+    }
+
+    private getRcsbId(pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;}): string {
+        if("instanceId" in pdb)
+            return `${pdb.entryId}${TagDelimiter.instance}${pdb.instanceId}`;
+        else
+           return `${pdb.entryId}${TagDelimiter.entity}${pdb.entityId}`;
     }
 
 }

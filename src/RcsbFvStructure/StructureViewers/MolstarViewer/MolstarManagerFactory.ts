@@ -4,12 +4,17 @@ import {Viewer, ViewerProps} from "@rcsb/rcsb-molstar/build/src/viewer";
 import {MolstarModelMapManager} from "./MolstarModelMapManager";
 import {MolstarCallbackManager} from "./MolstarCallbackManager";
 import {DataContainer} from "../../../Utils/DataContainer";
-import {RcsbFvSelectorManager} from "../../../RcsbFvState/RcsbFvSelectorManager";
-import {RcsbFvStateManager} from "../../../RcsbFvState/RcsbFvStateManager";
+import {RcsbFvStateInterface} from "../../../RcsbFvState/RcsbFvStateInterface";
 
-export class MolstarManagerFactory implements ViewerManagerFactoryInterface<LoadMolstarInterface,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}> {
+export class MolstarManagerFactory<P,L> implements ViewerManagerFactoryInterface<LoadMolstarInterface<P,L>,L,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}> {
 
-    public getViewerManagerFactory(stateManager: RcsbFvStateManager, viewerParams: {viewerElement: string | HTMLElement, viewerProps: Partial<ViewerProps>}) {
+    private readonly getModelIdFromTrajectory: (trajectory: L) => string|undefined;
+
+    constructor(getModelIdFromTrajectory: (trajectory: L) => string|undefined) {
+        this.getModelIdFromTrajectory = getModelIdFromTrajectory;
+    }
+
+    public getViewerManagerFactory(stateManager: RcsbFvStateInterface, viewerParams: {viewerElement: string | HTMLElement, viewerProps: Partial<ViewerProps>}) {
         const loadingFlag: DataContainer<boolean> = new DataContainer(false);
         const innerSelectionFlag: DataContainer<boolean> = new DataContainer(false);
         const innerReprChangeFlag: DataContainer<boolean> = new DataContainer(false);
@@ -24,7 +29,7 @@ export class MolstarManagerFactory implements ViewerManagerFactoryInterface<Load
             }
         });
         viewer.plugin.selectionMode = true;
-        const modelMapManager:MolstarModelMapManager = new MolstarModelMapManager(viewer);
+        const modelMapManager:MolstarModelMapManager<L> = new MolstarModelMapManager(viewer, this.getModelIdFromTrajectory);
         const callbackManager: MolstarCallbackManager =  new MolstarCallbackManager({
             viewer: viewer,
             stateManager: stateManager,
@@ -33,7 +38,7 @@ export class MolstarManagerFactory implements ViewerManagerFactoryInterface<Load
             innerSelectionFlag: innerSelectionFlag,
             innerReprChangeFlag: innerReprChangeFlag
         });
-        const actionManager = new MolstarActionManager({
+        const actionManager = new MolstarActionManager<P,L>({
             viewer: viewer,
             modelMapManager: modelMapManager,
             innerSelectionFlag: innerSelectionFlag,

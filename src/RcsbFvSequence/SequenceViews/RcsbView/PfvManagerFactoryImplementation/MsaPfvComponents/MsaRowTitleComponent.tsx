@@ -10,17 +10,17 @@ import {
     AlignmentRequestContextType
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvFactories/RcsbFvTrackFactory/TrackFactoryImpl/AlignmentTrackFactory";
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
-import {RcsbFvStateManager} from "../../../../../RcsbFvState/RcsbFvStateManager";
 import {Subscription} from "rxjs";
 import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {MsaRowTitleCheckboxComponent} from "./MsaRowTitleCheckboxComponent";
 import {MouseEvent} from "react";
 import {Property} from "csstype";
+import {RcsbFvStateInterface} from "../../../../../RcsbFvState/RcsbFvStateInterface";
 
 interface MsaRowTitleInterface extends RcsbFvRowTitleInterface {
     alignmentContext: AlignmentRequestContextType;
     targetAlignment: TargetAlignment;
-    stateManager:RcsbFvStateManager;
+    stateManager:RcsbFvStateInterface;
     titleClick: ()=>void;
 }
 
@@ -75,9 +75,9 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
                    </div>
                </div>
                <div  style={{cursor: this.cursor()}} onClick={(e: MouseEvent)=>this.altClick(e)} >
-                   <MsaRowTitleCheckboxComponent disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"aligned"} stateManager={this.props.stateManager}/>
-                   <MsaRowTitleCheckboxComponent disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"polymer"} stateManager={this.props.stateManager}/>
-                   <MsaRowTitleCheckboxComponent disabled={this.state.disabled} {...TagDelimiter.parseEntity(this.props.targetAlignment.target_id!)} tag={"non-polymer"} stateManager={this.props.stateManager}/>
+                   <MsaRowTitleCheckboxComponent disabled={this.state.disabled} {...TagDelimiter.parseEntityOrInstance(this.props.targetAlignment.target_id!)} tag={"aligned"} stateManager={this.props.stateManager}/>
+                   <MsaRowTitleCheckboxComponent disabled={this.state.disabled} {...TagDelimiter.parseEntityOrInstance(this.props.targetAlignment.target_id!)} tag={"polymer"} stateManager={this.props.stateManager}/>
+                   <MsaRowTitleCheckboxComponent disabled={this.state.disabled} {...TagDelimiter.parseEntityOrInstance(this.props.targetAlignment.target_id!)} tag={"non-polymer"} stateManager={this.props.stateManager}/>
                </div>
            </div>
        );
@@ -126,17 +126,19 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
     }
 
     private click(e: MouseEvent): void{
+        const rcsbId = TagDelimiter.parseEntityOrInstance(this.props.targetAlignment.target_id!);
+        const entityTag = "entityId" in rcsbId ? `#entity-${rcsbId.entityId}` : "";
         if(e.shiftKey) {
             const newWin: Window|null = window.open(
-                `/structure/${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entryId}#entity-${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entityId}`,
+                `/structure/${rcsbId.entryId}${entityTag}`,
                 "_blank"
             );
             if(!newWin || newWin.closed || typeof newWin.closed === 'undefined')
-                document.location.href = `/structure/${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entryId}#entity-${TagDelimiter.parseEntity(this.props.targetAlignment.target_id!).entityId}`;
+                document.location.href = `/structure/${rcsbId.entryId}${entityTag}`;
         } else {
             if(this.state.blocked)
                 return;
-            this.setState({blocked:true});
+            this.block();
             this.props.titleClick();
         }
     }

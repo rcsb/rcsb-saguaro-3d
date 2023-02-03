@@ -14,7 +14,7 @@ import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {AlignmentMapper as AM} from "../../../../Utils/AlignmentMapper";
 import {DataContainer} from "../../../../Utils/DataContainer";
 
-export class MsaCallbackManagerFactory<R,U> implements CallbackManagerFactoryInterface<R,U> {
+export class MsaCallbackManagerFactory<R,L,U> implements CallbackManagerFactoryInterface<R,L,U> {
 
     private readonly pluginLoadParamsDefinition:(id: string)=>R;
     private readonly alignmentResponseContainer: DataContainer<AlignmentResponse>;
@@ -27,7 +27,7 @@ export class MsaCallbackManagerFactory<R,U> implements CallbackManagerFactoryInt
         this.alignmentResponseContainer = config.alignmentResponseContainer;
     }
 
-    getCallbackManager(config: CallbackConfigInterface<R>): CallbackManagerInterface<U> {
+    getCallbackManager(config: CallbackConfigInterface<R,L>): CallbackManagerInterface<U> {
         return new MsaCallbackManager( {
             ...config,
             loadParamRequest:this.pluginLoadParamsDefinition,
@@ -38,13 +38,13 @@ export class MsaCallbackManagerFactory<R,U> implements CallbackManagerFactoryInt
 }
 
 type SelectedRegion = {modelId: string, labelAsymId: string, region: RegionSelectionInterface, operatorName?: string};
-class MsaCallbackManager<R,U>  extends AbstractCallbackManager<R,U>{
+class MsaCallbackManager<R,L,U>  extends AbstractCallbackManager<R,L,U>{
 
     private readonly loadParamRequest:(id: string)=>R;
     private readonly targetIds: {[key:string]:boolean} = {};
     private readonly alignmentResponseContainer: DataContainer<AlignmentResponse>;
 
-    constructor(config: CallbackConfigInterface<R> & {loadParamRequest:(id: string)=>R;alignmentResponseContainer: DataContainer<AlignmentResponse>;}) {
+    constructor(config: CallbackConfigInterface<R,L> & {loadParamRequest:(id: string)=>R;alignmentResponseContainer: DataContainer<AlignmentResponse>;}) {
         super(config);
         this.loadParamRequest = config.loadParamRequest;
         this.alignmentResponseContainer = config.alignmentResponseContainer;
@@ -96,7 +96,9 @@ class MsaCallbackManager<R,U>  extends AbstractCallbackManager<R,U>{
         let regions: SelectedRegion[] = [];
         if(alignment) {
             allSel.forEach(sel => {
-                const chain: ChainInfo | undefined = this.stateManager.assemblyModelSate.getModelChainInfo(sel.modelId)?.chains.find(ch => ch.entityId == TagDelimiter.parseEntity(sel.modelId).entityId && ch.label == sel.labelAsymId);
+                const chain: ChainInfo | undefined = this.stateManager.assemblyModelSate.getModelChainInfo(sel.modelId)?.chains.find(
+                    ch => (ch.entityId == TagDelimiter.parseRcsbId(sel.modelId).entityId || ch.label == TagDelimiter.parseRcsbId(sel.modelId).instanceId) && ch.label == sel.labelAsymId
+                );
                 if (chain) {
                     regions = regions.concat(this.getModelRegions(sel.regions.map(r => ({
                         begin: r.begin,
@@ -127,7 +129,9 @@ class MsaCallbackManager<R,U>  extends AbstractCallbackManager<R,U>{
     private getModelRegions(selection: Array<RcsbFvTrackDataElementInterface>, alignment: AlignmentResponse, modelList: string[], pointer:"query"|"target"): SelectedRegion[] {
         const regions: SelectedRegion[] = [];
         modelList.forEach(modelId=>{
-            const chain: ChainInfo|undefined = this.stateManager.assemblyModelSate.getModelChainInfo(modelId)?.chains.find(ch=>ch.entityId==TagDelimiter.parseEntity(modelId).entityId);
+            const chain: ChainInfo|undefined = this.stateManager.assemblyModelSate.getModelChainInfo(modelId)?.chains.find(
+                ch=>ch.entityId==TagDelimiter.parseRcsbId(modelId).entityId || ch.label==TagDelimiter.parseRcsbId(modelId).instanceId
+            );
             if(!chain)
                 return;
             const labelAsymId: string | undefined = chain.label;

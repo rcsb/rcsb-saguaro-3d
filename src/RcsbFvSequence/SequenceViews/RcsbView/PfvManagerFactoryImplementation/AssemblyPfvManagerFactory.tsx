@@ -32,25 +32,25 @@ import {
 import {ColorTheme} from "molstar/lib/mol-theme/color";
 import {PLDDTConfidenceColorThemeProvider} from "molstar/lib/extensions/model-archive/quality-assessment/color/plddt";
 
-interface AssemblyPfvManagerInterface<R> extends PfvManagerFactoryConfigInterface<R,undefined>{
-    useOperatorsFlag: boolean | undefined;
-    instanceSequenceConfig: InstanceSequenceConfig | undefined;
+interface AssemblyPfvManagerInterface<R,L> extends PfvManagerFactoryConfigInterface<R,L,undefined>{
+    useOperatorsFlag?: boolean;
+    instanceSequenceConfig?: InstanceSequenceConfig;
 }
 
-export class AssemblyPfvManagerFactory<R> implements PfvManagerFactoryInterface<{instanceSequenceConfig: InstanceSequenceConfig|undefined;useOperatorsFlag: boolean | undefined;},R,undefined> {
-    public getPfvManager(config:  AssemblyPfvManagerInterface<R>): PfvManagerInterface {
-        return new AssemblyPfvManager<R>(config);
+export class AssemblyPfvManagerFactory<R,L> implements PfvManagerFactoryInterface<{instanceSequenceConfig: InstanceSequenceConfig|undefined;useOperatorsFlag: boolean | undefined;},R,L,undefined> {
+    public getPfvManager(config:  AssemblyPfvManagerInterface<R,L>): PfvManagerInterface {
+        return new AssemblyPfvManager<R,L>(config);
     }
 }
 
-class AssemblyPfvManager<R> extends AbstractPfvManager<{instanceSequenceConfig: InstanceSequenceConfig|undefined;useOperatorsFlag: boolean | undefined;},R,undefined> {
+class AssemblyPfvManager<R,L> extends AbstractPfvManager<{instanceSequenceConfig?: InstanceSequenceConfig;useOperatorsFlag?: boolean;},R,L,undefined> {
 
     private readonly instanceSequenceConfig: InstanceSequenceConfig|undefined;
     private readonly useOperatorsFlag:boolean | undefined;
     private readonly OPERATOR_DROPDOWN_TITLE: string = "Symmetry Partner";
     private module: RcsbFvModulePublicInterface | undefined = undefined;
 
-    constructor(config: AssemblyPfvManagerInterface<R>) {
+    constructor(config: AssemblyPfvManagerInterface<R,L>) {
         super(config);
         this.instanceSequenceConfig = config.instanceSequenceConfig;
         this.useOperatorsFlag = config.useOperatorsFlag;
@@ -113,7 +113,7 @@ class AssemblyPfvManager<R> extends AbstractPfvManager<{instanceSequenceConfig: 
             );
         }
         if(!config.defaultAuthId)
-            await createComponents<R>(this.structureViewer, this.stateManager.assemblyModelSate.getMap());
+            await createComponents<R,L>(this.structureViewer, this.stateManager.assemblyModelSate.getMap());
         return this.module;
     }
 
@@ -153,8 +153,8 @@ class AssemblyPfvManager<R> extends AbstractPfvManager<{instanceSequenceConfig: 
                 if(ann.source == Source.PdbInterface && ann.target_id && data.rcsbContext?.asymId) {
                     const interfaceToInstance: InterfaceInstanceTranslate = await RcsbRequestContextManager.getInterfaceToInstance(ann.target_id);
                     if(typeof ann.target_identifiers?.interface_partner_index === "number" && ann.target_identifiers.assembly_id === this.stateManager.assemblyModelSate.getString("assemblyId") && Array.isArray(interfaceToInstance.getOperatorIds(ann.target_id))) {
-                        const operatorIds:string[][] = interfaceToInstance.getOperatorIds(ann.target_id)[ann.target_identifiers.interface_partner_index];
-                        if(ann.features && this.stateManager.assemblyModelSate.getOperator() && operatorIds.map(o=>o.join("|")).includes( this.stateManager.assemblyModelSate.getOperator()!.ids.join("|") )){
+                        const operatorIds:string[][]|undefined = interfaceToInstance.getOperatorIds(ann.target_id)?.[ann.target_identifiers.interface_partner_index];
+                        if(ann.features && this.stateManager.assemblyModelSate.getOperator() && operatorIds?.map(o=>o.join("|")).includes( this.stateManager.assemblyModelSate.getOperator()!.ids.join("|") )){
                             ann.features = ann.features.filter(f=>(f && f.type == FeatureType.BurialFraction));
                             if(ann.features.length > 0)
                                 return ann;
@@ -176,7 +176,7 @@ class AssemblyPfvManager<R> extends AbstractPfvManager<{instanceSequenceConfig: 
 
 }
 
-async function createComponents<R>(plugin: ViewerActionManagerInterface<R>, modelMap:SaguaroPluginModelMapType): Promise<void> {
+async function createComponents<R,L>(plugin: ViewerActionManagerInterface<R,L>, modelMap:SaguaroPluginModelMapType): Promise<void> {
     plugin.displayComponent("Water", false);
     await plugin.colorComponent("Polymer", 'chain-id');
     const chains: Array<{modelId: string; auth: string; label: string;}> = new Array<{modelId: string; auth: string; label: string;}>();

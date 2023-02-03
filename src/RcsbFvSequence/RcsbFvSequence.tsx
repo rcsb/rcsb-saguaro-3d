@@ -7,11 +7,11 @@ import {
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {RcsbFv, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {RcsbView, RcsbViewInterface} from "./SequenceViews/RcsbView/RcsbView";
-import {RcsbFvStateManager} from "../RcsbFvState/RcsbFvStateManager";
+import {RcsbFvStateInterface} from "../RcsbFvState/RcsbFvStateInterface";
 
-export interface RcsbFvSequenceInterface<T,R,U>{
+export interface RcsbFvSequenceInterface<T,R,L,U>{
     type: "custom" | "rcsb";
-    config: RcsbViewInterface<T,R,U> | CustomViewInterface<R>;
+    config: RcsbViewInterface<T,R,L,U> | CustomViewInterface<R,L>;
     title?: string;
     subtitle?: string;
 }
@@ -21,13 +21,13 @@ interface CallbackConfig {
     sequenceCallback?: (rcsbFv: RcsbFv)=>void;
 }
 
-type StructureViewerType<R> = ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
-export class RcsbFvSequence<T,R,U> extends React.Component <RcsbFvSequenceInterface<T,R,U> & CallbackConfig & {unmount:(flag:boolean)=>void, structureViewer: StructureViewerType<R>,  stateManager: RcsbFvStateManager, componentId:string}, RcsbFvSequenceInterface<T,R,U> > {
+type StructureViewerType<R,L> = ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>;
+export class RcsbFvSequence<T,R,L,U> extends React.Component <RcsbFvSequenceInterface<T,R,L,U> & CallbackConfig & {unmount:(flag:boolean)=>void, structureViewer: StructureViewerType<R,L>,  stateManager: RcsbFvStateInterface, componentId:string}, RcsbFvSequenceInterface<T,R,L,U> > {
 
     render() {
         if(this.props.type == "custom"){
-            const config: CustomViewInterface<R> = this.props.config as CustomViewInterface<R>;
-            return (<CustomView<R>
+            const config: CustomViewInterface<R,L> = this.props.config as CustomViewInterface<R,L>;
+            return (<CustomView<R,L>
                 {...config}
                 componentId={this.props.componentId}
                 structureViewer={this.props.structureViewer}
@@ -37,8 +37,8 @@ export class RcsbFvSequence<T,R,U> extends React.Component <RcsbFvSequenceInterf
                 unmount={this.props.unmount}
             />)
         }else if(this.props.type == "rcsb"){
-            const config: RcsbViewInterface<T,R,U> = this.props.config as unknown as RcsbViewInterface<T,R,U>;
-            return (<RcsbView<T,R,U>
+            const config: RcsbViewInterface<T,R,L,U> = this.props.config as unknown as RcsbViewInterface<T,R,L,U>;
+            return (<RcsbView<T,R,L,U>
                 {...config}
                 componentId={this.props.componentId}
                 structureViewer={this.props.structureViewer}

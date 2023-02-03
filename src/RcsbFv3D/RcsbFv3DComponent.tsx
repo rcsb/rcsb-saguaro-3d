@@ -1,7 +1,6 @@
 import * as React from "react";
 import classes from '../styles/RcsbFvStyle.module.scss';
 
-import {StructureViewer} from '../RcsbFvStructure/StructureViewers/StructureViewer';
 import {StructureViewerInterface} from '../RcsbFvStructure/StructureViewerInterface';
 
 import '../styles/RcsbFvMolstarStyle.module.scss';
@@ -15,10 +14,10 @@ import {
 } from "../RcsbFvContextManager/RcsbFvContextManager";
 import {Subscription} from "rxjs";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
-import {RcsbFvSelectorManager} from "../RcsbFvState/RcsbFvSelectorManager";
 import {CSSProperties, MouseEvent} from "react";
-import {RcsbFvStateManager} from "../RcsbFvState/RcsbFvStateManager";
 import {StructureViewerBehaviourObserverInterface} from "../RcsbFvStructure/StructureViewerBehaviourInterface";
+import {RcsbFvStateInterface} from "../RcsbFvState/RcsbFvStateInterface";
+import {RcsbFvStateManager} from "../RcsbFvState/RcsbFvStateManager";
 
 export interface RcsbFv3DCssConfig {
     overwriteCss?: boolean;
@@ -27,31 +26,31 @@ export interface RcsbFv3DCssConfig {
     sequencePanel?: CSSProperties;
 }
 
-export interface RcsbFv3DComponentInterface<T,R,S,U> {
+export interface RcsbFv3DComponentInterface<T,R,L,S,U> {
     structurePanelConfig:RcsbFvStructureConfigInterface<R,S>;
-    sequencePanelConfig: RcsbFvSequenceInterface<T,R,U>;
+    sequencePanelConfig: RcsbFvSequenceInterface<T,R,L,U>;
     id: string;
-    ctxManager: RcsbFvContextManager<T,R,S,U>;
+    ctxManager: RcsbFvContextManager<T,R,L,S,U>;
     cssConfig?:RcsbFv3DCssConfig;
     unmount:(flag:boolean)=>void;
     fullScreen: boolean;
-    structureViewer: StructureViewerInterface<R,S>;
-    structureViewerBehaviourObserver: StructureViewerBehaviourObserverInterface<R>;
+    structureViewer: StructureViewerInterface<R,L,S>;
+    structureViewerBehaviourObserver: StructureViewerBehaviourObserverInterface<R,L>;
 }
 
-interface RcsbFv3DComponentState<T,R,S,U> {
+interface RcsbFv3DComponentState<T,R,L,S,U> {
     structurePanelConfig:RcsbFvStructureConfigInterface<R,S>;
-    sequencePanelConfig:RcsbFvSequenceInterface<T,R,U>;
+    sequencePanelConfig:RcsbFvSequenceInterface<T,R,L,U>;
     pfvScreenFraction: number;
 }
 
-export class RcsbFv3DComponent<T,R,S,U> extends React.Component <RcsbFv3DComponentInterface<T,R,S,U>, RcsbFv3DComponentState<T,R,S,U>> {
+export class RcsbFv3DComponent<T,R,L,S,U> extends React.Component <RcsbFv3DComponentInterface<T,R,L,S,U>, RcsbFv3DComponentState<T,R,L,S,U>> {
 
-    private readonly stateManager: RcsbFvStateManager = new RcsbFvStateManager();
+    private readonly stateManager: RcsbFvStateInterface = new RcsbFvStateManager();
     private subscription: Subscription;
     private readonly ROOT_DIV_ID: string = "rootPanelDiv";
 
-    readonly state: RcsbFv3DComponentState<T,R,S,U> = {
+    readonly state: RcsbFv3DComponentState<T,R,L,S,U> = {
         structurePanelConfig: this.props.structurePanelConfig,
         sequencePanelConfig: this.props.sequencePanelConfig,
         pfvScreenFraction: 0.55
@@ -68,7 +67,7 @@ export class RcsbFv3DComponent<T,R,S,U> extends React.Component <RcsbFv3DCompone
                     onMouseUp={ (e)=>{this.splitPanelMouseUp()} }
                 >
                     <div style={this.structureCssConfig(this.props.cssConfig?.structurePanel)} >
-                        <RcsbFvStructure<R,S>
+                        <RcsbFvStructure<R,L,S>
                             {...this.state.structurePanelConfig}
                             componentId={this.props.id}
                             structureViewer={this.props.structureViewer}
@@ -77,7 +76,7 @@ export class RcsbFv3DComponent<T,R,S,U> extends React.Component <RcsbFv3DCompone
                         />
                     </div>
                     <div style={this.sequenceCssConfig(this.props.cssConfig?.sequencePanel)}  >
-                        <RcsbFvSequence<T,R,U>
+                        <RcsbFvSequence<T,R,L,U>
                             type={this.state.sequencePanelConfig.type}
                             config={this.state.sequencePanelConfig.config}
                             componentId={this.props.id}
@@ -139,9 +138,9 @@ export class RcsbFv3DComponent<T,R,S,U> extends React.Component <RcsbFv3DCompone
     }
 
     private subscribe(): Subscription{
-        return this.props.ctxManager.subscribe((obj:RcsbFvContextManagerInterface<T,R,S,U>)=>{
+        return this.props.ctxManager.subscribe((obj:RcsbFvContextManagerInterface<T,R,L,S,U>)=>{
             if(obj.eventType == EventType.UPDATE_CONFIG){
-                this.updateConfig(obj.eventData as UpdateConfigInterface<T,R,S,U>)
+                this.updateConfig(obj.eventData as UpdateConfigInterface<T,R,L,S,U>)
             }else if(obj.eventType == EventType.PLUGIN_CALL){
                 this.props.structureViewer.pluginCall(obj.eventData as ((f:PluginContext)=>void));
             }
@@ -153,9 +152,9 @@ export class RcsbFv3DComponent<T,R,S,U> extends React.Component <RcsbFv3DCompone
         this.subscription.unsubscribe();
     }
 
-    private updateConfig(config:UpdateConfigInterface<T,R,S,U>){
+    private updateConfig(config:UpdateConfigInterface<T,R,L,S,U>){
         const structureConfig: Partial<RcsbFvStructureConfigInterface<R,S>> | undefined = config.structurePanelConfig;
-        const sequenceConfig: Partial<RcsbFvSequenceInterface<T,R,U>> | undefined = config.sequencePanelConfig;
+        const sequenceConfig: Partial<RcsbFvSequenceInterface<T,R,L,U>> | undefined = config.sequencePanelConfig;
         if(structureConfig != null && sequenceConfig != null){
             this.setState({structurePanelConfig:{...this.state.structurePanelConfig, ...structureConfig}, sequencePanelConfig:{...this.state.sequencePanelConfig, ...sequenceConfig}});
         }else if(structureConfig != null){

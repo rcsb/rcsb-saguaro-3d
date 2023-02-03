@@ -7,24 +7,24 @@ import {
     ViewerCallbackManagerInterface, ViewerActionManagerInterface
 } from "../../RcsbFvStructure/StructureViewerInterface";
 import {SequenceViewInterface} from "./SequenceViewInterface";
-import {RcsbFvStateManager} from "../../RcsbFvState/RcsbFvStateManager";
+import {RcsbFvStateInterface} from "../../RcsbFvState/RcsbFvStateInterface";
 
-export interface AbstractViewInterface<R> {
+export interface AbstractViewInterface<R,L> {
     componentId: string;
     title?: string;
     subtitle?: string;
-    structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
-    stateManager: RcsbFvStateManager;
+    structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>;
+    stateManager: RcsbFvStateInterface;
     unmount:(flag:boolean,callback:()=>void)=>void;
 }
 
-export abstract class AbstractView<P,S,R> extends React.Component <P & AbstractViewInterface<R>, S> implements SequenceViewInterface {
+export abstract class AbstractView<P,S,R,L> extends React.Component <P & AbstractViewInterface<R,L>, S> implements SequenceViewInterface {
 
     protected readonly componentDivId: string;
     protected readonly rcsbFvDivId: string;
     private updateDimTask: Subscription | null = null;
 
-    protected constructor(props:P & AbstractViewInterface<R>) {
+    protected constructor(props:P & AbstractViewInterface<R,L>) {
         super(props);
         this.componentDivId = props.componentId+"_"+RcsbFvDOMConstants.PFV_DIV;
         this.rcsbFvDivId = props.componentId+"_"+RcsbFvDOMConstants.PFV_APP_ID;

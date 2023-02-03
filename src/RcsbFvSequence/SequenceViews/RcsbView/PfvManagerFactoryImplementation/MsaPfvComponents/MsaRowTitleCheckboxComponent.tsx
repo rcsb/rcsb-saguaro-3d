@@ -4,17 +4,18 @@
 */
 
 import * as React from "react";
-import {RcsbFvStateManager} from "../../../../../RcsbFvState/RcsbFvStateManager";
 import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {Subscription} from "rxjs";
+import {RcsbFvStateInterface} from "../../../../../RcsbFvState/RcsbFvStateInterface";
 
 interface MsaRowTitleCheckboxInterface {
     disabled:boolean;
     entryId: string;
-    entityId: string;
     tag:"aligned"|"polymer"|"non-polymer";
-    stateManager:RcsbFvStateManager
+    stateManager:RcsbFvStateInterface
 }
+
+type MsaRowTitleCheckboxType = MsaRowTitleCheckboxInterface & {entityId:string} | MsaRowTitleCheckboxInterface & {instanceId:string;}
 
 interface MsaRowTitleCheckboxState {
     checked:boolean;
@@ -24,16 +25,16 @@ interface MsaRowTitleCheckboxState {
 //TODO keeps a global state of the (checkboxes <=> mol-star components) This needs further review!!!
 const globalState: {[key:string]: "active"|"inactive"|"disabled"|undefined;} = {};
 
-export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCheckboxInterface,MsaRowTitleCheckboxState> {
+export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCheckboxType,MsaRowTitleCheckboxState> {
 
     readonly state: MsaRowTitleCheckboxState = {
-        checked: globalState[this.entityId() + this.props.tag] == "active" || this.props.tag == "aligned",
-        disabled: globalState[this.entityId() + this.props.tag] == "disabled"
+        checked: globalState[this.compId() + this.props.tag] == "active" || this.props.tag == "aligned",
+        disabled: globalState[this.compId() + this.props.tag] == "disabled"
     };
 
     private subscription: Subscription;
 
-    constructor(props: MsaRowTitleCheckboxInterface) {
+    constructor(props: MsaRowTitleCheckboxType) {
         super(props);
     }
 
@@ -52,7 +53,7 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
 
     public componentDidUpdate(prevProps: Readonly<MsaRowTitleCheckboxInterface>, prevState: Readonly<MsaRowTitleCheckboxState>, snapshot?: any) {
         if(prevProps.disabled != this.props.disabled && !this.props.disabled ) {
-            switch (globalState[ this.entityId()+this.props.tag ]){
+            switch (globalState[ this.compId()+this.props.tag ]){
                 case "active":
                     this.setState({checked: true, disabled:false});
                     break;
@@ -67,7 +68,7 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
             }
         }else if(prevProps.disabled != this.props.disabled) {
             this.setState({checked: this.props.tag == "aligned"},()=>{
-                globalState[ this.entityId()+this.props.tag ]  = this.state.checked ? "active" : "inactive";
+                globalState[ this.compId()+this.props.tag ]  = this.state.checked ? "active" : "inactive";
             });
         }
     }
@@ -79,7 +80,7 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
     private subscribe(): void{
         this.subscription = this.props.stateManager.subscribe<
             "representation-change"|"missing-component",
-            {label:string;isHidden:boolean;} & {tag:MsaRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;};}
+            {label:string;isHidden:boolean;} & {tag:MsaRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};}
         >((o)=>{
             if(o.type == "representation-change" && o.view == "3d-view" && o.data)
                 this.structureViewerRepresentationChange(o.data);
@@ -89,10 +90,10 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
     }
 
     private missingComponent(pdb:{entryId:string;entityId:string;tag:string;}): void{
-       if(this.entityId() == `${pdb.entryId}${TagDelimiter.entity}${pdb.entityId}` && this.props.tag == pdb.tag){
-           globalState[this.entityId()+this.props.tag] = "disabled"
-           this.setState({disabled:true});
-       }
+        if(this.compId() == this.getRcsbId(pdb) && this.props.tag == pdb.tag){
+            globalState[this.compId()+this.props.tag] = "disabled"
+            this.setState({disabled:true});
+        }
 
     }
 
@@ -101,7 +102,7 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
         const suffix: string = row.pop()!;
         const entryId: string = row.join(TagDelimiter.entity);
         const entityId: string = suffix.substring(0,1);
-        if( this.entityId() == `${entryId}${TagDelimiter.entity}${entityId}` ){
+        if( this.compId() == `${entryId}${TagDelimiter.entity}${entityId}` ){
             //TODO this is a one to many relationship
             /*if( d.label.includes("polymer") && this.props.tag == "polymer" && d.isHidden == this.state.checked){
                 this.setState({checked:!this.state.checked});
@@ -117,14 +118,17 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
         if(this.props.disabled || this.state.disabled)
             return;
         this.setState({checked:!this.state.checked},()=>{
-            globalState[this.entityId()+this.props.tag] = this.state.checked ? "active" : "inactive";
-            this.props.stateManager.next<"representation-change",{tag:MsaRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;};}>({
+            globalState[this.compId()+this.props.tag] = this.state.checked ? "active" : "inactive";
+            this.props.stateManager.next<"representation-change",{tag:MsaRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};}>({
                 view:"1d-view",
                 type: "representation-change",
                 data:{
-                    pdb:{
+                    pdb: "entityId" in this.props ? {
                         entryId: this.props.entryId,
-                        entityId: this.props.entityId
+                        entityId: this.props.entityId,
+                    } :  {
+                        entryId: this.props.entryId,
+                        instanceId: this.props.instanceId
                     },
                     isHidden:!this.state.checked,
                     tag:this.props.tag
@@ -153,8 +157,11 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
         };
     }
 
-    private entityId(): string {
-        return `${this.props.entryId}${TagDelimiter.entity}${this.props.entityId}`;
+    private compId(): string {
+        if("entityId" in this.props)
+            return `${this.props.entryId}${TagDelimiter.entity}${this.props.entityId}`;
+        else
+            return `${this.props.entryId}${TagDelimiter.instance}${this.props.instanceId}`;
     };
 
     private title(): string | undefined{
@@ -169,4 +176,12 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
                 return `${this.state.checked ? "Hide" : "Show"} Non-polymer Chains`;
         }
     }
+
+    private getRcsbId(pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;}): string {
+        if("instanceId" in pdb)
+            return `${pdb.entryId}${TagDelimiter.instance}${pdb.instanceId}`;
+        else
+            return `${pdb.entryId}${TagDelimiter.entity}${pdb.entityId}`;
+    }
+
 }

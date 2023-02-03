@@ -21,6 +21,12 @@ import {Mat4} from "molstar/lib/mol-math/linear-algebra";
 import {BuiltInTrajectoryFormat} from "molstar/lib/mol-plugin-state/formats/trajectory";
 import {PluginState} from "molstar/lib/mol-plugin/state";
 import {TrajectoryHierarchyPresetProvider} from "molstar/lib/mol-plugin-state/builder/structure/hierarchy-preset";
+import {StateObject, StateObjectSelector} from "molstar/lib/mol-state";
+import {PluginStateObject} from "molstar/lib/mol-plugin-state/objects";
+import {StateTransformer} from "molstar/lib/mol-state/transformer";
+import {
+    StructureRepresentationPresetProvider
+} from "molstar/lib/mol-plugin-state/builder/structure/representation-preset";
 
 export enum LoadMethod {
     loadPdbId = "loadPdbId",
@@ -29,12 +35,20 @@ export enum LoadMethod {
     loadStructureFromData = "loadStructureFromData"
 }
 
-export interface LoadMolstarInterface<P=any> {
+export interface LoadMolstarInterface<P,L> {
     loadMethod: LoadMethod;
-    loadParams: LoadParams<P>;
+    loadParams: LoadParams<P,L>;
 }
 
-interface LoadParams<P=any,S={}> {
+export type LoadMolstarReturnType = {
+    model?: StateObjectSelector<PluginStateObject.Molecule.Model, StateTransformer<StateObject<any, StateObject.Type<any>>, StateObject<any, StateObject.Type<any>>, any>>,
+    modelProperties?: StateObjectSelector<PluginStateObject.Molecule.Model, StateTransformer<StateObject<any, StateObject.Type<any>>, StateObject<any, StateObject.Type<any>>, any>>,
+    structure?: StateObjectSelector<PluginStateObject.Molecule.Structure, StateTransformer<StateObject<any, StateObject.Type<any>>, StateObject<any, StateObject.Type<any>>, any>>,
+    structureProperties?: StateObjectSelector<PluginStateObject.Molecule.Structure, StateTransformer<StateObject<any, StateObject.Type<any>>, StateObject<any, StateObject.Type<any>>, any>>,
+    representation?: StructureRepresentationPresetProvider.Result
+};
+
+interface LoadParams<P,L> {
     entryId?: string;
     props?: PresetProps;
     matrix?: Mat4;
@@ -44,21 +58,21 @@ interface LoadParams<P=any,S={}> {
     type?: PluginState.SnapshotType,
     data?: string | number[]
     id?:string;
-    reprProvider?: TrajectoryHierarchyPresetProvider<P,S>;
+    reprProvider?: TrajectoryHierarchyPresetProvider<P,L>;
     params?:P;
 }
 
-export class MolstarActionManager implements ViewerActionManagerInterface<LoadMolstarInterface>{
+export class MolstarActionManager<P,L> implements ViewerActionManagerInterface<LoadMolstarInterface<P,L>,L>{
 
     private readonly viewer: Viewer;
 
     private readonly innerSelectionFlag: DataContainer<boolean>;
     private readonly innerReprChangeFlag: DataContainer<boolean>;
-    private readonly modelMapManager: ViewerModelMapManagerInterface<LoadMolstarInterface>;
+    private readonly modelMapManager: ViewerModelMapManagerInterface<LoadMolstarInterface<P,L>,L>;
     private readonly componentMap: Map<string, StructureComponentRef> = new Map<string, StructureComponentRef>();
     private readonly loadingFlag: DataContainer<boolean>;
 
-    constructor(config:{viewer: Viewer;modelMapManager: ViewerModelMapManagerInterface<LoadMolstarInterface>;innerSelectionFlag: DataContainer<boolean>;  innerReprChangeFlag: DataContainer<boolean>; loadingFlag: DataContainer<boolean>;}) {
+    constructor(config:{viewer: Viewer;modelMapManager: ViewerModelMapManagerInterface<LoadMolstarInterface<P,L>,L>;innerSelectionFlag: DataContainer<boolean>;  innerReprChangeFlag: DataContainer<boolean>; loadingFlag: DataContainer<boolean>;}) {
         this.viewer = config.viewer;
         this.modelMapManager = config.modelMapManager;
         this.innerSelectionFlag = config.innerSelectionFlag;
@@ -66,30 +80,36 @@ export class MolstarActionManager implements ViewerActionManagerInterface<LoadMo
         this.loadingFlag = config.loadingFlag;
     }
 
-    async load(loadConfig: LoadMolstarInterface|Array<LoadMolstarInterface>): Promise<void>{
+    async load(loadConfig: LoadMolstarInterface<P,L>): Promise<L|undefined>;
+    async load(loadConfig: LoadMolstarInterface<P,L>[]): Promise<(L|undefined)[]>;
+    async load(loadConfig: LoadMolstarInterface<P,L>|LoadMolstarInterface<P,L>[]): Promise<L|undefined|(L|undefined)[]>{
         this.loadingFlag.set(true);
+        const out: (L|undefined)[] = [];
         for (const lC of (Array.isArray(loadConfig) ? loadConfig : [loadConfig])) {
             if(checkLoadData(lC)) {
                 if (lC.loadMethod == LoadMethod.loadPdbId) {
-                    const config: LoadParams = lC.loadParams as LoadParams;
-                    await this.viewer.loadPdbId(config.entryId!, {props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params});
+                    const config: LoadParams<P,L> = lC.loadParams as LoadParams<P,L>;
+                    out.push(await this.viewer.loadPdbId(config.entryId!, {props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params}) as L|undefined);
                 } else if (lC.loadMethod == LoadMethod.loadStructureFromUrl) {
-                    const config: LoadParams = lC.loadParams as LoadParams;
-                    await this.viewer.loadStructureFromUrl(config.url!, config.format!, config.isBinary!,{props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params});
+                    const config: LoadParams<P,L> = lC.loadParams as LoadParams<P,L>;
+                    out.push(await this.viewer.loadStructureFromUrl(config.url!, config.format!, config.isBinary!,{props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params}) as L|undefined);
                 } else if (lC.loadMethod == LoadMethod.loadSnapshotFromUrl) {
-                    const config: LoadParams = lC.loadParams as LoadParams;
-                    await this.viewer.loadSnapshotFromUrl(config.url!, config.type!);
+                    const config: LoadParams<P,L> = lC.loadParams as LoadParams<P,L>;
+                   await this.viewer.loadSnapshotFromUrl(config.url!, config.type!);
                 } else if (lC.loadMethod == LoadMethod.loadStructureFromData) {
-                    const config: LoadParams = lC.loadParams as LoadParams;
-                    await this.viewer.loadStructureFromData(config.data!, config.format!, config.isBinary!, {props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params});
+                    const config: LoadParams<P,L> = lC.loadParams as LoadParams<P,L>;
+                    out.push(await this.viewer.loadStructureFromData(config.data!, config.format!, config.isBinary!, {props: config.props, matrix: config.matrix, reprProvider: config.reprProvider, params: config.params}) as L|undefined);
                 }
-                this.modelMapManager.add(lC);
+                const trajectory = out[out.length-1];
+                if(trajectory)
+                    this.modelMapManager.add(lC,trajectory);
             }
         }
         this.loadingFlag.set(false);
+        return out.length == 1 ? out[0] : out;
     }
 
-    async removeStructure(loadConfig: LoadMolstarInterface|Array<LoadMolstarInterface>): Promise<void>{
+    async removeStructure(loadConfig: LoadMolstarInterface<P,L>|Array<LoadMolstarInterface<P,L>>): Promise<void>{
         loadConfig = Array.isArray(loadConfig) ? loadConfig : [loadConfig];
         loadConfig.forEach(lC=>{
             (Array.isArray(lC.loadParams) ? lC.loadParams : [lC.loadParams]).forEach(loadParams=>{
@@ -317,10 +337,9 @@ function getStructureWithModelId(structures: StructureRef[], modelId: string): S
     }
 }
 
-
-function checkLoadData(loadConfig: LoadMolstarInterface): boolean{
+function checkLoadData<P,S>(loadConfig: LoadMolstarInterface<P,S>): boolean{
     const method: LoadMethod = loadConfig.loadMethod;
-    const params: LoadParams | Array<LoadParams> = loadConfig.loadParams;
+    const params: LoadParams<P,S> | Array<LoadParams<P,S>> = loadConfig.loadParams;
     if( method == LoadMethod.loadPdbId ){
         if(params instanceof Array || params.entryId == null)
             throw loadConfig.loadMethod+": missing pdbId";

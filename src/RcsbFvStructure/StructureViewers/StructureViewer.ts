@@ -1,7 +1,6 @@
 import {
     SaguaroChain,
     StructureViewerInterface,
-    SaguaroPluginModelMapType,
     SaguaroPosition,
     SaguaroRange,
     ViewerCallbackManagerInterface,
@@ -11,21 +10,19 @@ import {
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/registry";
 import {ColorTheme} from "molstar/lib/mol-theme/color";
-import {RcsbFvStateManager} from "../../RcsbFvState/RcsbFvStateManager";
 import {Subscription} from "rxjs";
+import {RcsbFvStateInterface} from "../../RcsbFvState/RcsbFvStateInterface";
 
-
-
-export class StructureViewer<R,S> implements StructureViewerInterface<R,S> {
-    private readonly structureViewerManagerFactory:  ViewerManagerFactoryInterface<R,S>;
+export class StructureViewer<R,L,S> implements StructureViewerInterface<R,L,S> {
+    private readonly structureViewerManagerFactory:  ViewerManagerFactoryInterface<R,L,S>;
     private callbackManager: ViewerCallbackManagerInterface;
-    private actionManager: ViewerActionManagerInterface<R>;
+    private actionManager: ViewerActionManagerInterface<R,L>;
 
-    constructor(structureViewerManagerFactory:  ViewerManagerFactoryInterface<R,S>) {
+    constructor(structureViewerManagerFactory:  ViewerManagerFactoryInterface<R,L,S>) {
         this.structureViewerManagerFactory = structureViewerManagerFactory;
     }
 
-    public init( stateManager: RcsbFvStateManager, args:S): void {
+    public init( stateManager: RcsbFvStateInterface, args:S): void {
         const {actionManager,callbackManager} = this.structureViewerManagerFactory.getViewerManagerFactory(stateManager, args);
         this.actionManager = actionManager;
         this.callbackManager = callbackManager;
@@ -40,12 +37,15 @@ export class StructureViewer<R,S> implements StructureViewerInterface<R,S> {
         await this.actionManager.clear();
     }
 
-    async load(loadConfig: R|Array<R>): Promise<void>{
-      await this.actionManager.load(loadConfig);
+    async load(loadConfig: R): Promise<L|undefined>;
+    async load(loadConfig: R[]): Promise<(L|undefined)[]>;
+    async load(loadConfig: R|R[]): Promise<(L|undefined)|(L|undefined)[]>{
+      const out = await this.actionManager.load(Array.isArray(loadConfig) ? loadConfig: [loadConfig]);
       this.modelChange();
+      return out;
     }
 
-    async removeStructure(loadConfig: R|Array<R>): Promise<void>{
+    async removeStructure(loadConfig: R|R[]): Promise<void>{
         await this.actionManager.removeStructure(loadConfig);
         this.modelChange();
     }

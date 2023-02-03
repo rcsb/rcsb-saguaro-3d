@@ -7,9 +7,9 @@ import {StructureViewerBehaviourObserverInterface} from "../StructureViewerBehav
 import {ViewerActionManagerInterface, ViewerCallbackManagerInterface} from "../StructureViewerInterface";
 import {RcsbFvStateInterface} from "../../RcsbFvState/RcsbFvStateInterface";
 
-export class NullBehaviourObserver<R> implements StructureViewerBehaviourObserverInterface<R> {
+export class NullBehaviourObserver<R,L> implements StructureViewerBehaviourObserverInterface<R,L> {
 
-    observe(structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>, stateManager: RcsbFvStateInterface): void {
+    observe(structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>, stateManager: RcsbFvStateInterface): void {
     }
 
     unsubscribe(): void {

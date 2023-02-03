@@ -9,9 +9,11 @@
     "allowJs": true,
     "declaration": true,
     "sourceMap": true,
+    //"noUnusedLocals": true,
     "strictNullChecks": true,
     "declarationDir": "./build/dist",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
   "include": [ "src/*", "src/**/*", "src/**/**/*", "src/**/**/**/*" ],
   "exclude": [

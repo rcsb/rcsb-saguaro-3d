@@ -7,7 +7,7 @@ import {
     RcsbFvModulePublicInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {PfvManagerInterface} from "./PfvManagerFactoryInterface";
-import {RcsbFvStateManager} from "../../../RcsbFvState/RcsbFvStateManager";
+import {RcsbFvStateInterface} from "../../../RcsbFvState/RcsbFvStateInterface";
 
 export interface CallbackManagerInterface<U> {
     structureViewerSelectionCallback(mode:'select'|'hover'): Promise<void>;
@@ -18,25 +18,25 @@ export interface CallbackManagerInterface<U> {
     pfvChangeCallback(args:U): Promise<void>;
 }
 
-export interface CallbackManagerFactoryInterface<R,U> {
-    getCallbackManager(config: CallbackConfigInterface<R>): CallbackManagerInterface<U>;
+export interface CallbackManagerFactoryInterface<R,L,U> {
+    getCallbackManager(config: CallbackConfigInterface<R,L>): CallbackManagerInterface<U>;
 }
 
-export interface CallbackConfigInterface<R> {
+export interface CallbackConfigInterface<R,L> {
     rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
-    stateManager: RcsbFvStateManager;
-    structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
+    stateManager: RcsbFvStateInterface;
+    structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>;
     pfvFactory: PfvManagerInterface;
 }
 
-export abstract class AbstractCallbackManager<R,U> implements CallbackManagerInterface<U> {
+export abstract class AbstractCallbackManager<R,L,U> implements CallbackManagerInterface<U> {
     protected readonly rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
-    protected readonly stateManager: RcsbFvStateManager;
-    protected readonly structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>;
+    protected readonly stateManager: RcsbFvStateInterface;
+    protected readonly structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>;
     protected pfvFactory: PfvManagerInterface;
     private readonly isInnerSelection: DataContainer<boolean> = new DataContainer<boolean>();
 
-    constructor(config: CallbackConfigInterface<R>) {
+    constructor(config: CallbackConfigInterface<R,L>) {
         this.rcsbFvContainer = config.rcsbFvContainer;
         this.stateManager = config.stateManager;
         this.structureViewer = config.structureViewer;

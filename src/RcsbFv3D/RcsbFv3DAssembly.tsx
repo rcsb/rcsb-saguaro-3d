@@ -1,10 +1,17 @@
 import * as React from "react";
 import {RcsbFv3DAbstract} from "./RcsbFv3DAbstract";
-import {RcsbRepresentationPreset} from "../RcsbFvStructure/StructureViewers/MolstarViewer/StructureRepresentation";
+import {
+    AssemblyTrajectoryParamsType,
+    AssemblyTrajectoryPresetProvider
+} from "../RcsbFvStructure/StructureViewers/MolstarViewer/TrajectoryPresetProvider/AssemblyTrajectoryPresetProvider";
 import {RcsbFvAdditionalConfig} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {InstanceSequenceConfig} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
 import {OperatorInfo} from "../RcsbFvStructure/StructureViewerInterface";
-import {LoadMethod, LoadMolstarInterface} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarActionManager";
+import {
+    LoadMethod,
+    LoadMolstarInterface,
+    LoadMolstarReturnType
+} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarActionManager";
 import {ViewerProps} from "@rcsb/rcsb-molstar/build/src/viewer";
 import {StructureViewer} from "../RcsbFvStructure/StructureViewers/StructureViewer";
 import {MolstarManagerFactory} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarManagerFactory";
@@ -19,6 +26,8 @@ import {
 } from "../RcsbFvSequence/SequenceViews/RcsbView/CallbackManagerFactoryImplementation/AssemblyCallbackManager";
 import {AssemblyBehaviourObserver} from "../RcsbFvStructure/StructureViewerBehaviour/AssemblyBehaviour";
 import {HelpLinkComponent} from "../RcsbFvSequence/SequenceViews/RcsbView/Components/HelpLinkComponent";
+import {MolstarTools} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarUtils/MolstarTools";
+import getModelIdFromTrajectory = MolstarTools.getModelIdFromTrajectory;
 
 type RcsbFv3DAssemblyAdditionalConfig = RcsbFvAdditionalConfig & {operatorChangeCallback?:(operatorInfo: OperatorInfo)=>void};
 
@@ -37,7 +46,14 @@ export interface RcsbFv3DAssemblyInterface {
     cssConfig?: RcsbFv3DCssConfig;
 }
 
-export class RcsbFv3DAssembly extends RcsbFv3DAbstract<{instanceSequenceConfig?:InstanceSequenceConfig},LoadMolstarInterface,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>},undefined>{
+type AssemblyLoadMolstarType = LoadMolstarInterface<AssemblyTrajectoryParamsType,LoadMolstarReturnType>;
+export class RcsbFv3DAssembly extends RcsbFv3DAbstract<
+    {instanceSequenceConfig?:InstanceSequenceConfig},
+    AssemblyLoadMolstarType,
+    LoadMolstarReturnType,
+    {viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>},
+    undefined
+>{
 
     constructor(params: RcsbFv3DAssemblyInterface) {
         const elementId: string = params.elementId ?? uniqid("RcsbFv3D_");
@@ -55,31 +71,33 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract<{instanceSequenceConfig?:
                         instanceSequenceConfig:params.instanceSequenceConfig
                     },
                     pfvManagerFactory: new AssemblyPfvManagerFactory(),
-                    callbackManagerFactory: new AssemblyCallbackManagerFactory<LoadMolstarInterface>(),
+                    callbackManagerFactory: new AssemblyCallbackManagerFactory<AssemblyLoadMolstarType,LoadMolstarReturnType>(),
                     additionalContent:(props)=>(<HelpLinkComponent {...props} helpHref={"/docs/sequence-viewers/3d-protein-feature-view"}/>)
                 }
             },
             structureConfig: {
-                loadConfig: {
-                    loadMethod: LoadMethod.loadPdbId,
-                    loadParams: {
-                        entryId: params.config.entryId,
-                        id: params.config.entryId,
-                        reprProvider: RcsbRepresentationPreset,
-                        params: {
-                            preset: {
-                                assemblyId: typeof (params.config.assemblyId) === "string" && params.config.assemblyId?.length > 0 ? params.config.assemblyId : '1'
-                            }
-                        }
-                    }
-                },
                 structureViewerConfig: {
                     viewerElement: RcsbFvStructure.componentId(elementId),
                     viewerProps:params.molstarProps ?? {}
                 }
             },
-            structureViewer: new StructureViewer<LoadMolstarInterface,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}>(new MolstarManagerFactory()),
-            structureViewerBehaviourObserver: new AssemblyBehaviourObserver<LoadMolstarInterface>(),
+            structureViewer: new StructureViewer<
+                AssemblyLoadMolstarType,
+                LoadMolstarReturnType,
+                {viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}
+            >(new MolstarManagerFactory(getModelIdFromTrajectory)),
+            structureViewerBehaviourObserver: new AssemblyBehaviourObserver<AssemblyLoadMolstarType,LoadMolstarReturnType>({
+                loadMethod: LoadMethod.loadPdbId,
+                loadParams: {
+                    entryId: params.config.entryId,
+                    id: params.config.entryId,
+                    reprProvider: AssemblyTrajectoryPresetProvider,
+                    params: {
+                        assemblyId: typeof (params.config.assemblyId) === "string" && params.config.assemblyId?.length > 0 ? params.config.assemblyId : '1',
+                        modelIndex: 0
+                    }
+                }
+            }),
             cssConfig: params.cssConfig
         });
     }

@@ -6,8 +6,8 @@
 import {ViewerActionManagerInterface, ViewerCallbackManagerInterface} from "./StructureViewerInterface";
 import {RcsbFvStateInterface} from "../RcsbFvState/RcsbFvStateInterface";
 
-export interface StructureViewerBehaviourObserverInterface<R> {
-    observe(structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R>, stateManager: RcsbFvStateInterface): void;
+export interface StructureViewerBehaviourObserverInterface<R,L> {
+    observe(structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>, stateManager: RcsbFvStateInterface): void;
     unsubscribe(): void;
 }
 

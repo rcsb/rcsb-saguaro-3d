@@ -6,12 +6,13 @@ import {
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import uniqid from "uniqid";
 
-import {LoadMethod, LoadMolstarInterface} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarActionManager";
+import {
+    LoadMethod,
+    LoadMolstarInterface,
+    LoadMolstarReturnType
+} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarActionManager";
 import {ViewerProps} from "@rcsb/rcsb-molstar/build/src/viewer";
 
-import {
-    UniprotSequenceOnchangeInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvUniprotBuilder";
 import {StructureViewer} from "../RcsbFvStructure/StructureViewers/StructureViewer";
 import {MolstarManagerFactory} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarManagerFactory";
 import {
@@ -19,7 +20,7 @@ import {
 } from "../RcsbFvSequence/SequenceViews/RcsbView/CallbackManagerFactoryImplementation/MsaCallbackManager";
 import {RcsbFvStructure} from "../RcsbFvStructure/RcsbFvStructure";
 import {RcsbFv3DCssConfig} from "./RcsbFv3DComponent";
-import {MolstarAlignmentLoader} from "../RcsbFvStructure/StructureUtils/MolstarAlignmentLoader";
+import {MolstarAlignmentLoader} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarUtils/MolstarAlignmentLoader";
 import {MsaBehaviourObserver} from "../RcsbFvStructure/StructureViewerBehaviour/MsaBehaviour";
 import {SearchQuery} from "@rcsb/rcsb-api-tools/build/RcsbSearch/Types/SearchQueryInterface";
 import {HelpLinkComponent} from "../RcsbFvSequence/SequenceViews/RcsbView/Components/HelpLinkComponent";
@@ -30,6 +31,14 @@ import {
     MsaPfvManagerInterface
 } from "../RcsbFvSequence/SequenceViews/RcsbView/PfvManagerFactoryImplementation/MsaPfvManagerFactory";
 import {buildUniprotAlignmentFv} from "@rcsb/rcsb-saguaro-app";
+import {
+    AlignmentTrajectoryParamsType
+} from "../RcsbFvStructure/StructureViewers/MolstarViewer/TrajectoryPresetProvider/AlignmentTrajectoryPresetProvider";
+import {
+    MolstarComponentActionFactory
+} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarUtils/MolstarComponentAction";
+import {MolstarTools} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarUtils/MolstarTools";
+import getModelIdFromTrajectory = MolstarTools.getModelIdFromTrajectory;
 
 export interface RcsbFv3DUniprotInterface  {
     elementId?: string;
@@ -44,9 +53,12 @@ export interface RcsbFv3DUniprotInterface  {
     cssConfig?: RcsbFv3DCssConfig;
 }
 
+
+type AlignmentLoadMolstarType = LoadMolstarInterface<AlignmentTrajectoryParamsType,LoadMolstarReturnType>;
 export class RcsbFv3DUniprot extends RcsbFv3DAbstract<
-        MsaPfvManagerInterface,
-        LoadMolstarInterface|undefined,
+        MsaPfvManagerInterface<[string,SearchQuery?]>,
+        AlignmentLoadMolstarType,
+        LoadMolstarReturnType,
         {viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>},
         {context:{id:string},module:RcsbFvModulePublicInterface}
     > {
@@ -64,13 +76,13 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<
                     additionalConfig: params.additionalConfig,
                     pfvParams:{
                         id:params.config.upAcc,
-                        query:params.config.query,
+                        pfvArgs:[params.config.upAcc,params.config.query],
                         buildMsaAlignmentFv:buildUniprotAlignmentFv,
                         alignmentResponseContainer
                     },
                     buildPfvOnMount: true,
-                    pfvManagerFactory: new MsaPfvManagerFactory<LoadMolstarInterface>(),
-                    callbackManagerFactory: new MsaCallbackManagerFactory<LoadMolstarInterface, {context: {id:string};}>({
+                    pfvManagerFactory: new MsaPfvManagerFactory<[string,SearchQuery?],AlignmentLoadMolstarType, LoadMolstarReturnType>(),
+                    callbackManagerFactory: new MsaCallbackManagerFactory<AlignmentLoadMolstarType, LoadMolstarReturnType, {context: {id:string};}>({
                         pluginLoadParamsDefinition,
                         alignmentResponseContainer
                     }),
@@ -78,14 +90,20 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<
                 }
             },
             structureConfig: {
-                loadConfig: undefined,
                 structureViewerConfig: {
                     viewerElement:RcsbFvStructure.componentId(elementId),
                     viewerProps: params.molstarProps ?? {}
                 }
             },
-            structureViewer: new StructureViewer<LoadMolstarInterface,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}>( new MolstarManagerFactory() ),
-            structureViewerBehaviourObserver: new MsaBehaviourObserver<LoadMolstarInterface>(new MolstarAlignmentLoader())
+            structureViewer: new StructureViewer<
+                AlignmentLoadMolstarType,
+                LoadMolstarReturnType,
+                {viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}
+            >( new MolstarManagerFactory(getModelIdFromTrajectory) ),
+            structureViewerBehaviourObserver: new MsaBehaviourObserver<AlignmentLoadMolstarType,LoadMolstarReturnType>(
+                new MolstarAlignmentLoader(),
+                new MolstarComponentActionFactory()
+            )
         });
     }
 

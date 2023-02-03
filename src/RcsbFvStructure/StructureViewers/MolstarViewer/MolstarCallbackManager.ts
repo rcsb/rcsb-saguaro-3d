@@ -1,5 +1,4 @@
 import {
-    SaguaroPluginModelMapType,
     SaguaroSet,
     ViewerCallbackManagerInterface,
     ViewerModelMapManagerInterface
@@ -15,18 +14,16 @@ import {
 import {OrderedSet} from "molstar/lib/mol-data/int";
 import {Queries as Q} from "molstar/lib/mol-model/structure/query";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
-import {StateObject} from "molstar/lib/mol-state";
 import {Viewer} from "@rcsb/rcsb-molstar/build/src/viewer";
 import {Subscription} from "rxjs";
-import {RcsbFvSelectorManager} from "../../../RcsbFvState/RcsbFvSelectorManager";
 import {DataContainer, DataContainerReader} from "../../../Utils/DataContainer";
-import {RcsbFvStateManager} from "../../../RcsbFvState/RcsbFvStateManager";
+import {RcsbFvStateInterface} from "../../../RcsbFvState/RcsbFvStateInterface";
 
-type ModelMapType = Omit<ViewerModelMapManagerInterface<null>,'add'|'delete'>;
+type ModelMapType = Omit<ViewerModelMapManagerInterface<unknown,unknown>,'add'|'delete'>;
 export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
 
     private readonly viewer: Viewer;
-    private readonly  stateManager: RcsbFvStateManager;
+    private readonly  stateManager: RcsbFvStateInterface;
     private readonly loadingFlag: DataContainerReader<boolean>;
     private readonly modelMapManager: ModelMapType;
     private readonly innerSelectionFlag: DataContainer<boolean>;
@@ -37,7 +34,7 @@ export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
     private modelChangeSubs: Subscription;
     private reprChangeSubs: Subscription;
 
-    constructor(config:{viewer: Viewer; stateManager: RcsbFvStateManager;loadingFlag: DataContainerReader<boolean>;modelMapManager: ModelMapType;innerSelectionFlag: DataContainer<boolean>; innerReprChangeFlag: DataContainer<boolean>;}) {
+    constructor(config:{viewer: Viewer; stateManager: RcsbFvStateInterface;loadingFlag: DataContainerReader<boolean>;modelMapManager: ModelMapType;innerSelectionFlag: DataContainer<boolean>; innerReprChangeFlag: DataContainer<boolean>;}) {
         this.viewer = config.viewer;
         this.stateManager = config.stateManager;
         this.loadingFlag = config.loadingFlag;

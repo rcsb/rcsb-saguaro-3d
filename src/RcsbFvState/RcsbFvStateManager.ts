@@ -13,7 +13,7 @@ export class RcsbFvStateManager implements RcsbFvStateInterface {
     readonly assemblyModelSate: AssemblyModelSate = new AssemblyModelSate();
     readonly selectionState: RcsbFvSelectorManager = new RcsbFvSelectorManager();
 
-    private readonly subject: Subject<RcsbFvStateType<any,any>> = new Subject<RcsbFvStateType>();
+    readonly subject: Subject<RcsbFvStateType<any,any>> = new Subject<RcsbFvStateType>();
 
     next<T,D>(state: RcsbFvStateType<T,D>): void {
         this.subject.next(state);

@@ -39,7 +39,7 @@ const commonConfig = {
     devtool: 'source-map'
 };
 
-const examples = ['assembly','uniprot','structural-alignment','sequence-identity','single-chain','multiple-chain'];
+const examples = ['assembly','uniprot','structural-alignment','sequence-identity','single-chain','multiple-chain','alignment-provider'];
 const entries = examples.reduce((prev,current)=>{
         prev[current]= fs.existsSync(`./src/examples/${current}/index.ts`) ? `./src/examples/${current}/index.ts` : `./src/examples/${current}/index.tsx`;
         return prev;

@@ -2,6 +2,15 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [2.4.0] - 2023-02-03
+### Improvements
+- New entry method `RcsbFv3DDataProviderInterface` that ingests and displays external alignments
+- New interface `ComponentActionInterface` used to define what actions are triggered after a new structure is loaded
+- Interface `LoadMolstarInterface<P,L>` requires two generics: `P` load argument type and `L` load return type
+- Interface `ViewerModelMapManagerInterface<R,L>` needs a new generic that defines the type returned by the loading method in `LoadMolstarInterface`.
+  - It defines a new method `getModelIdFromTrajectory(trajectory: L): string|undefined` 
+that is used to map loaded structure ids with user provided ids in `LoadParams`
+
 ## [2.3.7] - 2022-12-12
 ### Bug fix
 - `assemblyId` parameter has been removed from `AlignmentTrajectoryPresetProvider`

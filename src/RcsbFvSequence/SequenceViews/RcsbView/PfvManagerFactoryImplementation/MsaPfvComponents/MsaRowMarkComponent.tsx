@@ -7,15 +7,15 @@ import React from "react";
 import classes from '../../../../../styles/MsaPfvStyle.module.scss';
 import {Property} from "csstype";
 import {asyncScheduler, Subscription} from "rxjs";
-import {RcsbFvStateManager} from "../../../../../RcsbFvState/RcsbFvStateManager";
 import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
+import {RcsbFvStateInterface} from "../../../../../RcsbFvState/RcsbFvStateInterface";
 
 interface MsaRowMarkInterface  {
     isGlowing:boolean;
     clickCallback?:()=>void;
     hoverCallback?:()=>void;
-    rowRef:{entryId:string;entityId:string;};
-    stateManager: RcsbFvStateManager;
+    rowRef:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};
+    stateManager: RcsbFvStateInterface;
 }
 
 interface MsaRowMarkState {
@@ -67,7 +67,9 @@ export class MsaRowMarkComponent extends React.Component <MsaRowMarkInterface,Ms
     }
 
     private modelChange(): void {
-       if(Array.from(this.props.stateManager.assemblyModelSate.getMap()?.keys() ?? []).includes(`${this.props.rowRef.entryId}${TagDelimiter.entity}${this.props.rowRef.entityId}`))
+       if(Array.from(this.props.stateManager.assemblyModelSate.getMap()?.keys() ?? []).includes(
+           "entityId" in this.props.rowRef ? `${this.props.rowRef.entryId}${TagDelimiter.entity}${this.props.rowRef.entityId}` : `${this.props.rowRef.entryId}${TagDelimiter.instance}${this.props.rowRef.instanceId}`
+       ))
            this.setState({visibility: "visible", borderLeftColor: this.ACTIVE_COLOR});
        else if(this.state.visibility == "visible")
            this.setState({visibility: undefined, borderLeftColor: undefined});

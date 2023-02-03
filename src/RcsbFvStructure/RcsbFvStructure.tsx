@@ -1,23 +1,22 @@
 import * as React from "react";
 import {StructureViewerInterface} from "./StructureViewerInterface";
 import {RcsbFvDOMConstants} from "../RcsbFvConstants/RcsbFvConstants";
-import {RcsbFvSelectorManager} from "../RcsbFvState/RcsbFvSelectorManager";
-import {RcsbFvStateManager} from "../RcsbFvState/RcsbFvStateManager";
 import {StructureViewerBehaviourObserverInterface} from "./StructureViewerBehaviourInterface";
+import {RcsbFvStateInterface} from "../RcsbFvState/RcsbFvStateInterface";
 
 export interface RcsbFvStructureConfigInterface<R,S> {
-    loadConfig: R | Array<R>;
+    loadConfig?: R | R[];
     structureViewerConfig: S;
 }
 
-interface RcsbFvStructureAdditionalInterface<R,S>{
+interface RcsbFvStructureAdditionalInterface<R,L,S>{
     componentId: string;
-    structureViewer: StructureViewerInterface<R,S>;
-    stateManager: RcsbFvStateManager;
-    structureViewerBehaviourObserver: StructureViewerBehaviourObserverInterface<R>;
+    structureViewer: StructureViewerInterface<R,L,S>;
+    stateManager: RcsbFvStateInterface;
+    structureViewerBehaviourObserver: StructureViewerBehaviourObserverInterface<R,L>;
 }
 
-export class RcsbFvStructure<R,S> extends React.Component <RcsbFvStructureConfigInterface<R,S> & RcsbFvStructureAdditionalInterface<R,S>, RcsbFvStructureConfigInterface<R,S> > {
+export class RcsbFvStructure<R,L,S> extends React.Component <RcsbFvStructureConfigInterface<R,S> & RcsbFvStructureAdditionalInterface<R,L,S>, RcsbFvStructureConfigInterface<R,S> > {
 
     render():JSX.Element {
         return (

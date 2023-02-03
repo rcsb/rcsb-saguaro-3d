@@ -2,8 +2,8 @@ import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/registry";
 import {ColorTheme} from "molstar/lib/mol-theme/color";
 import {RegionSelectionInterface} from "../RcsbFvState/RcsbFvSelectorManager";
-import {RcsbFvStateManager} from "../RcsbFvState/RcsbFvStateManager";
 import {Subscription} from "rxjs";
+import {RcsbFvStateInterface} from "../RcsbFvState/RcsbFvStateInterface";
 
 export type ChainType = "polymer"|"water"|"branched"|"non-polymer"|"macrolide";
 export type OperatorInfo = {ids:string[], name: string};
@@ -33,14 +33,14 @@ export interface SaguaroRegionList extends SaguaroChain{
     regions: Array<RegionSelectionInterface>;
 }
 
-export interface StructureViewerInterface<R,S> extends StructureViewerPublicInterface<R>,ViewerCallbackManagerInterface {
-    init: (stateManager: RcsbFvStateManager, args:S) => void;
+export interface StructureViewerInterface<R,L,S> extends StructureViewerPublicInterface<R,L>,ViewerCallbackManagerInterface {
+    init: (stateManager: RcsbFvStateInterface, args:S) => void;
 }
 
-export interface StructureViewerPublicInterface<R> extends ViewerActionManagerInterface<R>{}
+export interface StructureViewerPublicInterface<R,L> extends ViewerActionManagerInterface<R,L>{}
 
-export interface ViewerManagerFactoryInterface<R,S extends {}> {
-    getViewerManagerFactory(stateManager: RcsbFvStateManager, args: S): {callbackManager:ViewerCallbackManagerInterface;actionManager:ViewerActionManagerInterface<R>};
+export interface ViewerManagerFactoryInterface<R,L,S extends {}> {
+    getViewerManagerFactory(stateManager: RcsbFvStateInterface, args: S): {callbackManager:ViewerCallbackManagerInterface;actionManager:ViewerActionManagerInterface<R,L>};
 }
 
 export interface ViewerCallbackManagerInterface {
@@ -53,8 +53,8 @@ export interface ViewerCallbackManagerInterface {
     pluginCall(f: (plugin: PluginContext) => void): void;
 }
 
-export interface ViewerActionManagerInterface<R> {
-    load(loadConfig: R|Array<R>): Promise<void>;
+export interface ViewerActionManagerInterface<R,L> {
+    load<Z extends R|R[]>(loadConfig: Z): Z extends R ? Promise<L|undefined> : Promise<(L|undefined)[]>;
     removeStructure(removeConfig: R|Array<R>): Promise<void>;
     select(modelId:string, labelAsymId: string, begin: number, end: number, mode: 'select'|'hover', operation:'add'|'set', operatorName?:string): void;
     select(selection: Array<SaguaroPosition>, mode: 'select'|'hover', operation:'add'|'set'): void;
@@ -78,8 +78,9 @@ export interface ViewerActionManagerInterface<R> {
     resetCamera(): void;
 }
 
-export interface ViewerModelMapManagerInterface<R> {
-    add(lC: R): void;
+export interface ViewerModelMapManagerInterface<R,L> {
+    add(lC: R, trajectory: L): void;
+    getModelIdFromTrajectory(trajectory: L): string|undefined;
     delete(lC: R): void;
     getChains(): SaguaroPluginModelMapType;
     getModelId(id: string): string;

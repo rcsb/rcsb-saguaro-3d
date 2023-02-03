@@ -19,32 +19,32 @@ import {AlignmentRepresentationPresetProvider} from "./AlignmentRepresentationPr
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {Structure, StructureElement, StructureProperties as SP} from "molstar/lib/mol-model/structure";
 import {RigidTransformType, TransformMatrixType} from "../../../StructureUtils/StructureLoaderInterface";
+import {FlexibleAlignmentRepresentationPresetProvider} from "./FlexibleAlignmentRepresentationPresetProvider";
+import {FlexibleAlignmentBuiltIn} from "./FlexibleAlignmentBuiltIn";
+import {CustomStructureProperties} from "molstar/lib/mol-plugin-state/transforms/model";
 
-
-export type AlignmentTrajectoryParamsType = {
+export type FelxibleAlignmentTrajectoryParamsType = {
     pdb?:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};
-    matrix?: TransformMatrixType;
-    targetAlignment?: TargetAlignment;
+    transform?: RigidTransformType[];
     modelIndex?: number;
     plddt?: 'off' | 'single-chain' | 'on';
 }
 
 type StructureObject = StateObjectSelector<PluginStateObject.Molecule.Structure, StateTransformer<StateObject<any, StateObject.Type<any>>, StateObject<any, StateObject.Type<any>>, any>>
 
-export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvider({
+export const FlexibleAlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvider({
     id: 'alignment-to-reference',
     display: {
         name: 'Alignment to Reference'
     },
     isApplicable: (trajectory: PluginStateObject.Molecule.Trajectory, plugin: PluginContext): boolean => true,
-    params: (trajectory: PluginStateObject.Molecule.Trajectory | undefined, plugin: PluginContext): ParamDefinition.For<AlignmentTrajectoryParamsType> => ({
+    params: (trajectory: PluginStateObject.Molecule.Trajectory | undefined, plugin: PluginContext): ParamDefinition.For<FelxibleAlignmentTrajectoryParamsType> => ({
         pdb:PD.Value<{entryId:string;entityId:string;}|{entryId:string;instanceId:string;}|undefined>(undefined),
-        targetAlignment: PD.Value<TargetAlignment|undefined>(undefined),
         modelIndex:PD.Value<number|undefined>(undefined),
         plddt:PD.Value<'off' | 'single-chain' | 'on' | undefined>(undefined),
-        matrix:PD.Value<TransformMatrixType|undefined>(undefined)
+        transform:PD.Value<RigidTransformType[]|undefined>(undefined)
     }),
-    apply: async (trajectory: StateObjectRef<PluginStateObject.Molecule.Trajectory>, params: AlignmentTrajectoryParamsType, plugin: PluginContext) => {
+    apply: async (trajectory: StateObjectRef<PluginStateObject.Molecule.Trajectory>, params: FelxibleAlignmentTrajectoryParamsType, plugin: PluginContext) => {
         if(!params.pdb)
             return {};
         const modelParams = { modelIndex: params.modelIndex || 0 };
@@ -81,16 +81,18 @@ export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvid
                     plugin.managers.structure.hierarchy.current.structures[plugin.managers.structure.hierarchy.current.structures.length-1]
                 ]);
         }while(!entityCheck);
+        plugin.managers.structure.hierarchy.remove([
+            plugin.managers.structure.hierarchy.current.structures[plugin.managers.structure.hierarchy.current.structures.length-1]
+        ]);
+        structure = await plugin.state.data.build().to(modelProperties).apply(FlexibleAlignmentBuiltIn, {
+            pdb: params.pdb,
+            transform: params.transform
+        }).commit();
 
         const structureProperties = await builder.insertStructureProperties(structure);
         const representation = await plugin.builders.structure.representation.applyPreset(
-            structureProperties,
-            AlignmentRepresentationPresetProvider,
-            {
-                pdb:params.pdb,
-                targetAlignment:params.targetAlignment,
-                matrix: params.matrix
-            }
+            structure,
+            FlexibleAlignmentRepresentationPresetProvider
         );
         //TODO what is the purpose of this return?
         return {
