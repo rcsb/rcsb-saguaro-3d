@@ -11,8 +11,7 @@ export interface MsaUiSortInterface {
     rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
     stateManager: RcsbFvStateInterface;
 }
-export class MsaUiSortComponent extends React.Component<MsaUiSortInterface, {}>{
-
+export class MsaUiSortComponent extends React.Component<MsaUiSortInterface>{
 
     render() {
         return <div title={"PIN selected entities to top"} onClick={()=>this.click()} style={{cursor: "pointer"}}>PIN ACTIVE</div>;
@@ -26,7 +25,7 @@ export class MsaUiSortComponent extends React.Component<MsaUiSortInterface, {}>{
             return;
 
         const headerShift: number|undefined = this.props.rcsbFvContainer.get()?.getFv().getBoardData().findIndex((d:RcsbFvRowConfigInterface<{},{},{},{targetId:string}>)=>d.metadata?.targetId);
-        if(!headerShift || headerShift<0)
+        if(typeof headerShift === "undefined" || headerShift<0)
             return;
         const threshold: number = targets.findIndex(
             target => !this.props.stateManager.assemblyModelSate.getMap().has(target)
@@ -42,4 +41,5 @@ export class MsaUiSortComponent extends React.Component<MsaUiSortInterface, {}>{
             )
         }
     }
+
 }

@@ -134,7 +134,7 @@ function buildRegions(alignment:AlignmentRefType): AlignedRegion[] {
                     query_begin: begIndex,
                     target_begin: begPos,
                     query_end: n,
-                    target_end: alignment[n-1] as number
+                    target_end: begPos+(n-begIndex)
                 });
                 begIndex = 0;
                 begPos = 0;

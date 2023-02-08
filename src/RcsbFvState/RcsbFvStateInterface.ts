@@ -10,7 +10,7 @@ import {Subject, Subscription} from "rxjs";
 
 export type RcsbFvStateType<T="feature-click",D=undefined> = {
     type: "feature-click"|"selection-change"|"hover-change"|"model-change"|"representation-change"|"pfv-change"|T;
-    view: "1d-view" | "3d-view";
+    view: "1d-view" | "3d-view" | "ui-view";
     data?:D;
 };
 

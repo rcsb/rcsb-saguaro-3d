@@ -8,7 +8,7 @@ import {
     RcsbFvAdditionalConfig,
     RcsbFvModulePublicInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
-import {TagDelimiter, buildSequenceIdentityAlignmentFv} from "@rcsb/rcsb-saguaro-app";
+import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 
 import {
     AlignmentRequestContextType
@@ -19,10 +19,11 @@ import {MsaRowMarkComponent} from "./MsaPfvComponents/MsaRowMarkComponent";
 import {
     PolymerEntityInstanceInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
-import {SearchQuery} from "@rcsb/rcsb-api-tools/build/RcsbSearch/Types/SearchQueryInterface";
 import {DataContainer} from "../../../../Utils/DataContainer";
 import {MsaUiSortComponent} from "./MsaPfvComponents/MsaUiSortComponent";
 import {ActionMethods} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvUI/Helper/ActionMethods";
+import {MsaUiSequenceAlignmentDownload} from "./MsaPfvComponents/MsaUiSequenceAlignmentDownload";
+import {MsaUiStructureDownload} from "./MsaPfvComponents/MsaUiStructureDownload";
 
 export interface MsaPfvManagerInterface<T extends any[]> {
     id:string;
@@ -109,12 +110,23 @@ class MsaPfvManager<T extends any[],R,L> extends AbstractPfvManager<{id:string},
                     rcsbFvContainer: this.rcsbFvContainer,
                     stateManager: this.stateManager
                 }
+            },{
+                component: MsaUiSequenceAlignmentDownload,
+                props:{
+                    rcsbFvContainer: this.rcsbFvContainer,
+                    stateManager: this.stateManager
+                }
+            },{
+                component: MsaUiStructureDownload,
+                props:{
+                    stateManager: this.stateManager
+                }
             }]
         }];
-        const module:RcsbFvModulePublicInterface = await this.config.buildMsaAlignmentFv(...args);
-        this.rcsbFvContainer.set(module);
+        this.module = await this.config.buildMsaAlignmentFv(...args);
+        this.rcsbFvContainer.set(this.module);
         await this.readyStateLoad();
-        return module;
+        return this.module;
     }
 
     private async readyStateLoad(): Promise<void> {

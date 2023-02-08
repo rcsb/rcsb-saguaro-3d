@@ -324,6 +324,10 @@ export class MolstarActionManager<P,L> implements ViewerActionManagerInterface<L
         this.viewer.plugin.managers.camera.reset();
     }
 
+    public async exportLoadedStructures(): Promise<void> {
+        await this.viewer.exportLoadedStructures();
+    }
+
 }
 
 function getStructureWithModelId(structures: StructureRef[], modelId: string): Structure|undefined{

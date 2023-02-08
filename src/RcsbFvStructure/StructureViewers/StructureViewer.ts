@@ -139,4 +139,7 @@ export class StructureViewer<R,L,S> implements StructureViewerInterface<R,L,S> {
         this.actionManager.resetCamera();
     }
 
+    public async exportLoadedStructures(): Promise<void>{
+        await this.actionManager.exportLoadedStructures();
+    }
 }

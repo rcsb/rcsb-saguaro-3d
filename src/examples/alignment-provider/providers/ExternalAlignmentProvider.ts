@@ -1,5 +1,5 @@
 import {
-    AlignmentResponse,
+    AlignmentResponse, GroupReference,
     SequenceReference,
 } from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {
@@ -1814,6 +1814,7 @@ export const dataProvider: RcsbModuleDataProviderInterface = {
         collector: new RcsbStructuralAlignmentProvider(structuralAlignment),
         context:{
             queryId: "structural-alignment",
+            group: GroupReference.MatchingUniprotAccession,
             to: SequenceReference.PdbInstance
         }
     }

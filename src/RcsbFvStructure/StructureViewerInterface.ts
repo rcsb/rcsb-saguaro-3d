@@ -76,6 +76,7 @@ export interface ViewerActionManagerInterface<R,L> {
     displayComponent(componentLabel: string): boolean;
     displayComponent(componentLabel: string, visibilityFlag: boolean): void;
     resetCamera(): void;
+    exportLoadedStructures(): Promise<void>;
 }
 
 export interface ViewerModelMapManagerInterface<R,L> {

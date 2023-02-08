@@ -84,7 +84,7 @@ class MsaBehaviour<R,L> implements StructureViewerBehaviourInterface {
     }
 
     private subscribe(): Subscription {
-        return this.stateManager.subscribe<"model-change"|"representation-change"|"feature-click",AlignmentDataType & {tag:"polymer"|"non-polymer";isHidden:boolean;} & SelectedRegion[]>(async o=>{
+        return this.stateManager.subscribe<"model-change"|"representation-change"|"feature-click"|"structure-download",AlignmentDataType & {tag:"polymer"|"non-polymer";isHidden:boolean;} & SelectedRegion[]>(async o=>{
             if(o.type == "model-change" && o.view == "1d-view" && o.data)
                 await this.modelChange(o.data);
             if(o.type == "representation-change" && o.view == "1d-view" && o.data)
@@ -97,6 +97,8 @@ class MsaBehaviour<R,L> implements StructureViewerBehaviourInterface {
                 await this.featureClick(o.data)
             if(o.type == "selection-change" && o.view == "3d-view")
                 await this.isSelectionEmpty();
+            if(o.type == "structure-download" && o.view == "ui-view")
+                this.downloadStructures();
         });
     }
 
@@ -237,6 +239,12 @@ class MsaBehaviour<R,L> implements StructureViewerBehaviourInterface {
             return `${pdb.entryId}${TagDelimiter.instance}${pdb.instanceId}`;
         else
            return `${pdb.entryId}${TagDelimiter.entity}${pdb.entityId}`;
+    }
+
+    private downloadStructures(): void{
+        this.structureViewer.exportLoadedStructures().then(()=>{
+            console.info("Download structures");
+        });
     }
 
 }

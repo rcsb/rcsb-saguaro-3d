@@ -86,7 +86,7 @@
     "@rcsb/rcsb-api-tools": "^4.1.1",
     "@rcsb/rcsb-molstar": "^2.5.11",
     "@rcsb/rcsb-saguaro": "^2.5.5",
-    "@rcsb/rcsb-saguaro-app": "^4.6.0-data-provider.7",
+    "@rcsb/rcsb-saguaro-app": "file:../rcsb-saguaro-app/rcsb-rcsb-saguaro-app-4.6.0-data-provider.7.tgz",
     "http-server": "^14.1.1",
     "molstar": "^3.29.0"
   },
