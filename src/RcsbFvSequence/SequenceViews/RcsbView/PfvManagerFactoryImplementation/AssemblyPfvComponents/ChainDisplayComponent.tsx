@@ -1,13 +1,10 @@
 import * as React from "react";
-import {
-    StructureViewerInterface
-} from "../../../../../RcsbFvStructure/StructureViewerInterface";
 
-type DisplayComponentMethod = (StructureViewerInterface<undefined,undefined,[]>)["displayComponent"]
+import {RcsbFvStateInterface} from "../../../../../RcsbFvState/RcsbFvStateInterface";
+
 interface ChainDisplayInterface {
-    structureViewer: {
-        displayComponent:DisplayComponentMethod
-    };
+
+    stateManager: RcsbFvStateInterface;
     label: string;
 }
 
@@ -18,17 +15,21 @@ interface ChainDisplayState {
 export class ChainDisplayComponent extends React.Component<ChainDisplayInterface, ChainDisplayState>{
 
     readonly state: ChainDisplayState = {
-        display: this.props.structureViewer.displayComponent(this.props.label) ? 'visible' : 'hidden'
+        display: 'visible'
     };
 
     private changeDisplay(): void{
-        if(this.state.display === 'visible') {
-            this.props.structureViewer.displayComponent(this.props.label, false);
-            this.setState({display: 'hidden'});
-        }else{
-            this.props.structureViewer.displayComponent(this.props.label, true);
-            this.setState({display: 'visible'});
-        }
+        const display = this.state.display === "visible" ? "hidden" : "visible";
+        this.setState({display}, ()=>{
+            this.props.stateManager.next<"visibility-change",ChainDisplayState & {label: string}>({
+                data:{
+                    display,
+                    label: this.props.label
+                },
+                type:"visibility-change",
+                view:"1d-view"
+            });
+        });
     }
 
     render(): JSX.Element{

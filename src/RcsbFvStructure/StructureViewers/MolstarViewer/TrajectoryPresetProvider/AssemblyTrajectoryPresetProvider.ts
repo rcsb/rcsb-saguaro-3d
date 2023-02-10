@@ -10,6 +10,7 @@ import {StateObject} from "molstar/lib/mol-state/object";
 import {StateTransformer} from "molstar/lib/mol-state/transformer";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {AlignmentTrajectoryParamsType} from "./AlignmentTrajectoryPresetProvider";
+import {AssemblyRepresentationPresetProvider} from "./AssemblyRepresentationPresetProvider";
 
 type StructureObject = StateObjectSelector<PluginStateObject.Molecule.Structure, StateTransformer<StateObject<any, StateObject.Type<any>>, StateObject<any, StateObject.Type<any>>, any>>
 
@@ -40,25 +41,8 @@ export const AssemblyTrajectoryPresetProvider = TrajectoryHierarchyPresetProvide
         );
         const structureProperties: StructureObject = await builder.insertStructureProperties(structure);
         const unitcell: StateObjectSelector | undefined = await builder.tryCreateUnitcell(modelProperties, undefined, { isHidden: true });
-        const representation: StructureRepresentationPresetProvider.Result | undefined = await plugin.builders.structure.representation.applyPreset(structureProperties, PresetStructureRepresentations.auto);
-        water:
-        for (const c of plugin.managers.structure.hierarchy.currentComponentGroups) {
-            for (const comp of c) {
-                if(comp.cell.obj?.label === "Water") {
-                    plugin.managers.structure.component.toggleVisibility(c);
-                    break water;
-                }
-            }
-        }
-        polymer:
-        for (const c of plugin.managers.structure.hierarchy.currentComponentGroups) {
-            for (const comp of c) {
-                if(comp.cell.obj?.label === "Polymer") {
-                    plugin.managers.structure.component.updateRepresentationsTheme([comp], { color: 'chain-id' });
-                    break polymer;
-                }
-            }
-        }
+        const representation: StructureRepresentationPresetProvider.Result | undefined = await plugin.builders.structure.representation.applyPreset(structureProperties, AssemblyRepresentationPresetProvider);
+
         return {
             model,
             modelProperties,
@@ -68,4 +52,5 @@ export const AssemblyTrajectoryPresetProvider = TrajectoryHierarchyPresetProvide
             representation
         };
     }
+
 });

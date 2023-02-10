@@ -13,13 +13,13 @@ import {
 import {RegionSelectionInterface} from "../../../../RcsbFvState/RcsbFvSelectorManager";
 import {DataContainer} from "../../../../Utils/DataContainer";
 
-export class AssemblyCallbackManagerFactory<R,L> implements CallbackManagerFactoryInterface<R,L,undefined> {
-    getCallbackManager(config: CallbackConfigInterface<R,L>): CallbackManagerInterface<undefined> {
-        return new AssemblyCallbackManager<R,L>(config);
+export class AssemblyCallbackManagerFactory implements CallbackManagerFactoryInterface<undefined> {
+    getCallbackManager(config: CallbackConfigInterface): CallbackManagerInterface<undefined> {
+        return new AssemblyCallbackManager(config);
     }
 }
 
-class AssemblyCallbackManager<R,L> extends AbstractCallbackManager<R,L,undefined> {
+class AssemblyCallbackManager extends AbstractCallbackManager<undefined> {
 
     public featureClickCallback(e:RcsbFvTrackDataElementInterface): void {
         if(e == null){

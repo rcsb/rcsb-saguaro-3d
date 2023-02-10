@@ -14,12 +14,13 @@ import {RcsbFv3DCssConfig} from "./RcsbFv3DComponent";
 import {NullBehaviourObserver} from "../RcsbFvStructure/StructureViewerBehaviour/NullBehaviour";
 import {MolstarTools} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarUtils/MolstarTools";
 import getModelIdFromTrajectory = MolstarTools.getModelIdFromTrajectory;
+import {RcsbFv3DCustomAbstract} from "./RcsbFv3DCustomAbstract";
 
 export interface RcsbFv3DCustomInterface  {
     elementId?: string;
-    structurePanelConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface<undefined,undefined>,{viewerProps:Partial<ViewerProps>}>;
+    structurePanelConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface<unknown,unknown>,{viewerProps:Partial<ViewerProps>}>;
     sequencePanelConfig: {
-        config: CustomViewInterface<LoadMolstarInterface<undefined,undefined>,LoadMolstarReturnType>;
+        config: CustomViewInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>;
         title?: string;
         subtitle?: string;
     }
@@ -27,7 +28,7 @@ export interface RcsbFv3DCustomInterface  {
 
 }
 
-export class RcsbFv3DCustom extends RcsbFv3DAbstract<{},LoadMolstarInterface<undefined,undefined>,LoadMolstarReturnType,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>},undefined> {
+export class RcsbFv3DCustom extends RcsbFv3DCustomAbstract<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType,{viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}> {
 
     constructor(params: RcsbFv3DCustomInterface) {
         const elementId: string = params.elementId ?? uniqid("RcsbFv3D_");
@@ -42,14 +43,13 @@ export class RcsbFv3DCustom extends RcsbFv3DAbstract<{},LoadMolstarInterface<und
             },
             sequenceConfig:{
                 ...params.sequencePanelConfig,
-                type:"custom",
             },
             structureViewer:new StructureViewer<
-                LoadMolstarInterface<undefined,undefined>,
+                LoadMolstarInterface<unknown,unknown>,
                 LoadMolstarReturnType,
                 {viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}
-            >( new MolstarManagerFactory(()=>undefined) ),
-            structureViewerBehaviourObserver: new NullBehaviourObserver<LoadMolstarInterface<undefined,undefined>,LoadMolstarReturnType>(),
+            >( new MolstarManagerFactory(getModelIdFromTrajectory) ),
+            structureViewerBehaviourObserver: new NullBehaviourObserver<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>(),
             cssConfig: params.cssConfig
         });
     }

@@ -15,21 +15,22 @@ import {
 } from "../StructureViewerInterface";
 import {RcsbFvStateInterface} from "../../RcsbFvState/RcsbFvStateInterface";
 import {asyncScheduler, Subscription} from "rxjs";
+import {StructureLoaderInterface} from "../StructureUtils/StructureLoaderInterface";
 
 export class AssemblyBehaviourObserver<R,L> implements StructureViewerBehaviourObserverInterface<R,L> {
 
     private structureBehaviour: StructureViewerBehaviourInterface;
-    private readonly assemblyLoadConfig: R;
+    private readonly structureLoader: StructureLoaderInterface<[ViewerActionManagerInterface<R,L>],L>;
 
-    constructor(assemblyLoadConfig: R) {
-        this.assemblyLoadConfig = assemblyLoadConfig;
+    constructor(structureLoader: StructureLoaderInterface<[ViewerActionManagerInterface<R,L>],L>) {
+        this.structureLoader = structureLoader;
     }
 
     public observe(structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>, stateManager: RcsbFvStateInterface): void {
         this.structureBehaviour = new AssemblyBehaviour(structureViewer, stateManager);
-        structureViewer.load(this.assemblyLoadConfig).then(()=>{
+        this.structureLoader.load(structureViewer).then(()=>{
             console.info("Assembly load complete");
-        })
+        });
     }
 
     public unsubscribe(): void {
@@ -57,7 +58,7 @@ class AssemblyBehaviour<R,L> implements StructureViewerBehaviourInterface {
     }
 
     private subscribe(): Subscription {
-        return this.stateManager.subscribe(async o=>{
+        return this.stateManager.subscribe<"visibility-change",{display:'visible' | 'hidden'; label:string;}>(async o=>{
             if(o.type == "selection-change" && o.view == "1d-view")
                 this.selectionChange();
             if(o.type == "hover-change" && o.view == "1d-view")
@@ -68,6 +69,8 @@ class AssemblyBehaviour<R,L> implements StructureViewerBehaviourInterface {
                 await this.isSelectionEmpty();
             if(o.type == "pfv-change" && o.view == "1d-view")
                 this.resetPluginView();
+            if(o.type == "visibility-change" && o.view == "1d-view" && o.data)
+                this.visibilityChange(o.data);
         });
     }
 
@@ -154,10 +157,17 @@ class AssemblyBehaviour<R,L> implements StructureViewerBehaviourInterface {
             await this.structureViewer.removeComponent(this.selectedComponentId);
     }
 
-
     private resetPluginView(): void {
         this.structureViewer.clearFocus();
         this.structureViewer.resetCamera();
+    }
+
+    private visibilityChange(data: {display: 'visible' | 'hidden'; label: string;}): void {
+        if(data.display === 'visible') {
+            this.structureViewer.displayComponent(data.label, true);
+        }else{
+            this.structureViewer.displayComponent(data.label, false);
+        }
     }
 
 }

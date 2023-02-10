@@ -9,14 +9,15 @@ import {
 } from "@rcsb/rcsb-saguaro";
 import * as React from "react";
 import {
-    StructureViewerPublicInterface
+    StructureViewerPublicInterface, ViewerActionManagerInterface, ViewerCallbackManagerInterface
 } from "../../../RcsbFvStructure/StructureViewerInterface";
 import uniqid from "uniqid";
 import {RcsbFvStateInterface} from "../../../RcsbFvState/RcsbFvStateInterface";
 
-export type CustomViewStateInterface<R,L> = Omit<CustomViewInterface<R,L>, "modelChangeCallback">;
+export type CustomViewStateInterface<R,L> = Omit<Omit<CustomViewInterface<R,L>, "modelChangeCallback">, "structureViewer">;
 
 export interface CustomViewInterface<R,L> {
+
     blockConfig: FeatureBlockInterface<R,L> | Array<FeatureBlockInterface<R,L>>;
     blockSelectorElement?: (blockSelector: BlockSelectorManager) => JSX.Element;
     modelChangeCallback?: () => CustomViewStateInterface<R,L>;
@@ -61,7 +62,7 @@ export class BlockSelectorManager {
     }
 }
 
-export class CustomView<R,L> extends AbstractView<CustomViewInterface<R,L>, CustomViewStateInterface<R,L>,R,L> {
+export class CustomView<R,L> extends AbstractView<CustomViewInterface<R,L> & {structureViewer: ViewerActionManagerInterface<R,L>;}, CustomViewStateInterface<R,L>> {
 
     private blockViewSelector: BlockSelectorManager = new BlockSelectorManager( this.blockChange.bind(this) );
     private boardMap: Map<string, FeatureViewInterface<R,L>> = new Map<string, FeatureViewInterface<R,L>>();
@@ -77,7 +78,7 @@ export class CustomView<R,L> extends AbstractView<CustomViewInterface<R,L>, Cust
         blockChangeCallback: this.props.blockChangeCallback
     };
 
-    constructor(props: CustomViewInterface<R,L> & AbstractViewInterface<R,L>) {
+    constructor(props: CustomViewInterface<R,L> & {structureViewer: ViewerActionManagerInterface<R,L>;} & AbstractViewInterface) {
         super(props);
         this.mapBlocks(props.blockConfig);
     }
@@ -94,7 +95,7 @@ export class CustomView<R,L> extends AbstractView<CustomViewInterface<R,L>, Cust
         });
     }
 
-    componentDidUpdate(prevProps: Readonly<CustomViewInterface<R,L> & AbstractViewInterface<R,L>>, prevState: Readonly<CustomViewStateInterface<R,L>>, snapshot?: any) {
+    componentDidUpdate(prevProps: Readonly<CustomViewInterface<R,L> & AbstractViewInterface>, prevState: Readonly<CustomViewStateInterface<R,L>>, snapshot?: any) {
         if(this.updateContext != "state-change") {
             this.updateContext = "state-change";
             this.mapBlocks(this.props.blockConfig);
@@ -236,7 +237,7 @@ export class CustomView<R,L> extends AbstractView<CustomViewInterface<R,L>, Cust
     setState<K extends keyof CustomViewStateInterface<R,L>>(
         state: ((
             prevState: Readonly<CustomViewStateInterface<R,L>>,
-            props: Readonly<CustomViewInterface<R,L> & AbstractViewInterface<R,L>>
+            props: Readonly<CustomViewInterface<R,L> & AbstractViewInterface>
         ) => (Pick<CustomViewStateInterface<R,L>, K> | CustomViewStateInterface<R,L> | null)) | Pick<CustomViewStateInterface<R,L>, K> | CustomViewStateInterface<R,L> | null, callback?: () => void
     ) {
         super.setState(state, ()=>{

@@ -18,28 +18,25 @@ export interface CallbackManagerInterface<U> {
     pfvChangeCallback(args:U): Promise<void>;
 }
 
-export interface CallbackManagerFactoryInterface<R,L,U> {
-    getCallbackManager(config: CallbackConfigInterface<R,L>): CallbackManagerInterface<U>;
+export interface CallbackManagerFactoryInterface<U> {
+    getCallbackManager(config: CallbackConfigInterface): CallbackManagerInterface<U>;
 }
 
-export interface CallbackConfigInterface<R,L> {
+export interface CallbackConfigInterface {
     rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
     stateManager: RcsbFvStateInterface;
-    structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>;
     pfvFactory: PfvManagerInterface;
 }
 
-export abstract class AbstractCallbackManager<R,L,U> implements CallbackManagerInterface<U> {
+export abstract class AbstractCallbackManager<U> implements CallbackManagerInterface<U> {
     protected readonly rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
     protected readonly stateManager: RcsbFvStateInterface;
-    protected readonly structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>;
     protected pfvFactory: PfvManagerInterface;
     private readonly isInnerSelection: DataContainer<boolean> = new DataContainer<boolean>();
 
-    constructor(config: CallbackConfigInterface<R,L>) {
+    constructor(config: CallbackConfigInterface) {
         this.rcsbFvContainer = config.rcsbFvContainer;
         this.stateManager = config.stateManager;
-        this.structureViewer = config.structureViewer;
         this.pfvFactory = config.pfvFactory;
     }
 

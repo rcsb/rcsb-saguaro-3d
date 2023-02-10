@@ -49,8 +49,8 @@ var fvConfig = {
         includeAxis: true
     },
     rowConfig: rowConfig,
-    sequenceSelectionChangeCallback: function (plugin, selectorManager, sequenceRegion) {
-        selectorManager.clearSelection("select", { modelId: "1ash_model", labelAsymId: "A" });
+    sequenceSelectionChangeCallback: function (plugin, stateManager, sequenceRegion) {
+        stateManager.selectionState.clearSelection("select", { modelId: "1ash_model", labelAsymId: "A" });
         if (sequenceRegion.length > 0) {
             var regions = sequenceRegion.map(function (r) {
                 var _a;
@@ -60,7 +60,7 @@ var fvConfig = {
                     region: { begin: r.begin, end: (_a = r.end) !== null && _a !== void 0 ? _a : r.begin, source: "sequence" }
                 });
             });
-            selectorManager.addSelectionFromMultipleRegions(regions, "select");
+            stateManager.selectionState.addSelectionFromMultipleRegions(regions, "select");
             plugin.select(regions.map(function (r) { return (__assign(__assign({}, r), { begin: r.region.begin, end: r.region.end })); }), "select", "set");
         }
         else {
@@ -68,12 +68,12 @@ var fvConfig = {
             plugin.resetCamera();
         }
     },
-    sequenceElementClickCallback: function (plugin, selectorManager, d) {
+    sequenceElementClickCallback: function (plugin, stateManager, d) {
         var _a;
         if (d != null)
             plugin.cameraFocus("1ash_model", "A", d.begin, (_a = d.end) !== null && _a !== void 0 ? _a : d.begin);
     },
-    sequenceHoverCallback: function (plugin, selectorManager, elements) {
+    sequenceHoverCallback: function (plugin, stateManager, elements) {
         if (elements == null || elements.length == 0)
             plugin.clearSelection("hover");
         else

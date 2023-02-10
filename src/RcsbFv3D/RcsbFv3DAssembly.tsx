@@ -28,6 +28,9 @@ import {AssemblyBehaviourObserver} from "../RcsbFvStructure/StructureViewerBehav
 import {HelpLinkComponent} from "../RcsbFvSequence/SequenceViews/RcsbView/Components/HelpLinkComponent";
 import {MolstarTools} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarUtils/MolstarTools";
 import getModelIdFromTrajectory = MolstarTools.getModelIdFromTrajectory;
+import {
+    MolstarAssemblyLoader
+} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarUtils/MolstarAssemblyLoader";
 
 type RcsbFv3DAssemblyAdditionalConfig = RcsbFvAdditionalConfig & {operatorChangeCallback?:(operatorInfo: OperatorInfo)=>void};
 
@@ -60,7 +63,6 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract<
         super({
             elementId: params.elementId ?? elementId,
             sequenceConfig:{
-                type:"rcsb",
                 title: params.config.title,
                 subtitle: params.config.subtitle,
                 config:{
@@ -71,7 +73,7 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract<
                         instanceSequenceConfig:params.instanceSequenceConfig
                     },
                     pfvManagerFactory: new AssemblyPfvManagerFactory(),
-                    callbackManagerFactory: new AssemblyCallbackManagerFactory<AssemblyLoadMolstarType,LoadMolstarReturnType>(),
+                    callbackManagerFactory: new AssemblyCallbackManagerFactory(),
                     additionalContent:(props)=>(<HelpLinkComponent {...props} helpHref={"/docs/sequence-viewers/3d-protein-feature-view"}/>)
                 }
             },
@@ -86,18 +88,12 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract<
                 LoadMolstarReturnType,
                 {viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}
             >(new MolstarManagerFactory(getModelIdFromTrajectory)),
-            structureViewerBehaviourObserver: new AssemblyBehaviourObserver<AssemblyLoadMolstarType,LoadMolstarReturnType>({
-                loadMethod: LoadMethod.loadPdbId,
-                loadParams: {
+            structureViewerBehaviourObserver: new AssemblyBehaviourObserver<AssemblyLoadMolstarType,LoadMolstarReturnType>(
+                new MolstarAssemblyLoader({
                     entryId: params.config.entryId,
-                    id: params.config.entryId,
-                    reprProvider: AssemblyTrajectoryPresetProvider,
-                    params: {
-                        assemblyId: typeof (params.config.assemblyId) === "string" && params.config.assemblyId?.length > 0 ? params.config.assemblyId : '1',
-                        modelIndex: 0
-                    }
-                }
-            }),
+                    assemblyId: typeof (params.config.assemblyId) === "string" && params.config.assemblyId?.length > 0 ? params.config.assemblyId : '1'
+                })
+            ),
             cssConfig: params.cssConfig
         });
     }

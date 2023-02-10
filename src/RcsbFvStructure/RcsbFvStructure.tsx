@@ -31,7 +31,7 @@ export class RcsbFvStructure<R,L,S> extends React.Component <RcsbFvStructureConf
         this.props.structureViewer.init(this.props.stateManager, this.props.structureViewerConfig);
         this.props.structureViewerBehaviourObserver.observe(this.props.structureViewer, this.props.stateManager);
         if(this.props.loadConfig)
-            await this.props.structureViewer.load(this.props.loadConfig);
+            await this.props.structureViewer.load(this.props.loadConfig as any);
         window.addEventListener('resize', this.updateDimensions.bind(this));
     }
 

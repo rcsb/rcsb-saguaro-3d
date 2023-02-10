@@ -32,25 +32,25 @@ import {
 import {ColorTheme} from "molstar/lib/mol-theme/color";
 import {PLDDTConfidenceColorThemeProvider} from "molstar/lib/extensions/model-archive/quality-assessment/color/plddt";
 
-interface AssemblyPfvManagerInterface<R,L> extends PfvManagerFactoryConfigInterface<R,L,undefined>{
+interface AssemblyPfvManagerInterface extends PfvManagerFactoryConfigInterface<undefined>{
     useOperatorsFlag?: boolean;
     instanceSequenceConfig?: InstanceSequenceConfig;
 }
 
-export class AssemblyPfvManagerFactory<R,L> implements PfvManagerFactoryInterface<{instanceSequenceConfig: InstanceSequenceConfig|undefined;useOperatorsFlag: boolean | undefined;},R,L,undefined> {
-    public getPfvManager(config:  AssemblyPfvManagerInterface<R,L>): PfvManagerInterface {
-        return new AssemblyPfvManager<R,L>(config);
+export class AssemblyPfvManagerFactory implements PfvManagerFactoryInterface<{instanceSequenceConfig: InstanceSequenceConfig|undefined;useOperatorsFlag: boolean | undefined;},undefined> {
+    public getPfvManager(config:  AssemblyPfvManagerInterface): PfvManagerInterface {
+        return new AssemblyPfvManager(config);
     }
 }
 
-class AssemblyPfvManager<R,L> extends AbstractPfvManager<{instanceSequenceConfig?: InstanceSequenceConfig;useOperatorsFlag?: boolean;},R,L,undefined> {
+class AssemblyPfvManager extends AbstractPfvManager<{instanceSequenceConfig?: InstanceSequenceConfig;useOperatorsFlag?: boolean;},undefined> {
 
     private readonly instanceSequenceConfig: InstanceSequenceConfig|undefined;
     private readonly useOperatorsFlag:boolean | undefined;
     private readonly OPERATOR_DROPDOWN_TITLE: string = "Symmetry Partner";
     private module: RcsbFvModulePublicInterface | undefined = undefined;
 
-    constructor(config: AssemblyPfvManagerInterface<R,L>) {
+    constructor(config: AssemblyPfvManagerInterface) {
         super(config);
         this.instanceSequenceConfig = config.instanceSequenceConfig;
         this.useOperatorsFlag = config.useOperatorsFlag;
@@ -99,9 +99,10 @@ class AssemblyPfvManager<R,L> extends AbstractPfvManager<{instanceSequenceConfig
                     filterInstances: assemblyInstances.get(this.stateManager.assemblyModelSate.getString("entryId")),
                     selectButtonOptionProps: (props: SelectOptionProps) => (
                         <div style={{display: 'flex'}}>
-                            <ChainDisplayComponent structureViewer={this.structureViewer} label={props.data.label}/>
+                            <ChainDisplayComponent stateManager={this.stateManager} label={props.data.label}/>
                             {props.children}
-                        </div>)
+                        </div>
+                    )
                 },
                 {
                     ...this.additionalConfig,
@@ -112,8 +113,6 @@ class AssemblyPfvManager<R,L> extends AbstractPfvManager<{instanceSequenceConfig
                 }
             );
         }
-        if(!config.defaultAuthId)
-            await createComponents<R,L>(this.structureViewer, this.stateManager.assemblyModelSate.getMap());
         return this.module;
     }
 
@@ -174,29 +173,6 @@ class AssemblyPfvManager<R,L> extends AbstractPfvManager<{instanceSequenceConfig
         });
     }
 
-}
-
-async function createComponents<R,L>(plugin: ViewerActionManagerInterface<R,L>, modelMap:SaguaroPluginModelMapType): Promise<void> {
-    plugin.displayComponent("Water", false);
-    await plugin.colorComponent("Polymer", 'chain-id');
-    const chains: Array<{modelId: string; auth: string; label: string;}> = new Array<{modelId: string; auth: string; label: string;}>();
-    modelMap.forEach((entry, modelId)=>{
-        entry.chains.forEach(ch=>{
-            if(ch.type === "polymer") {
-                chains.push({modelId: modelId, auth: ch.auth, label: ch.label});
-            }
-        });
-    });
-    await plugin.removeComponent();
-    plugin.clearFocus();
-    //TODO improve colorTheme condition (PLDDTConfidenceColorThemeProvider.isApplicable)
-    const colorTheme: ColorTheme.BuiltIn = (chains.length === 1 && chains[0].modelId.includes("AF_AF")) ? PLDDTConfidenceColorThemeProvider.name as ColorTheme.BuiltIn : "chain-id";
-    for(const ch of chains) {
-        const label: string = ch.auth === ch.label ? ch.label : `${ch.label} [auth ${ch.auth}]`;
-        await plugin.createComponent(label, ch.modelId, ch.label, 'cartoon');
-        await plugin.colorComponent(label, colorTheme);
-    }
-    await plugin.removeComponent("Polymer");
 }
 
 function getOperator(entryInfo: {entryId: string; assemblyId: string, chains:Array<ChainInfo>;}, defaultAuthId?: string, defaultOperatorName?:string): OperatorInfo | undefined{

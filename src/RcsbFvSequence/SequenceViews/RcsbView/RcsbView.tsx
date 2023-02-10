@@ -14,32 +14,32 @@ import {
     CallbackManagerFactoryInterface,
     CallbackManagerInterface
 } from "./CallbackManagerFactoryInterface";
+import {RcsbFvStateInterface} from "../../../RcsbFvState/RcsbFvStateInterface";
 
-export interface RcsbViewInterface<T,R,L,U> {
+export interface RcsbViewInterface<T,U> {
     rcsbId: string;
     additionalConfig?: RcsbFvAdditionalConfig & {operatorChangeCallback?:(operatorInfo: OperatorInfo)=>void};
     useOperatorsFlag?:boolean;
     pfvParams:T;
-    pfvManagerFactory: PfvManagerFactoryInterface<T,R,L,U>;
-    callbackManagerFactory: CallbackManagerFactoryInterface<R,L,U>;
-    additionalContent?(props:RcsbViewInterface<T,R,L,U> & AbstractViewInterface<R,L>): JSX.Element;
+    pfvManagerFactory: PfvManagerFactoryInterface<T,U>;
+    callbackManagerFactory: CallbackManagerFactoryInterface<U>;
+    additionalContent?(props:RcsbViewInterface<T,U> & AbstractViewInterface): JSX.Element;
     buildPfvOnMount?: boolean;
 }
 
-export class RcsbView<T,R,L,U> extends AbstractView<RcsbViewInterface<T,R,L,U>, {}, R,L>{
+export class RcsbView<T,U> extends AbstractView<RcsbViewInterface<T,U>, {}>{
 
     private boardConfigContainer: DataContainer<Partial<RcsbFvBoardConfigInterface>> = new DataContainer();
     private rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface> = new DataContainer<RcsbFvModulePublicInterface>();
     private readonly callbackManager: CallbackManagerInterface<U>;
     private readonly pfvFactory: PfvManagerInterface;
 
-    constructor(props:RcsbViewInterface<T,R,L,U> & AbstractViewInterface<R,L>) {
+    constructor(props:RcsbViewInterface<T,U> & AbstractViewInterface) {
         super(props);
         this.pfvFactory = this.props.pfvManagerFactory.getPfvManager({
             ...this.props.pfvParams,
             rcsbFvContainer: this.rcsbFvContainer,
             stateManager: this.props.stateManager,
-            structureViewer: this.props.structureViewer,
             boardConfigContainer: this.boardConfigContainer,
             rcsbFvDivId: this.rcsbFvDivId,
             pfvChangeCallback: this.pfvChangeCallback.bind(this),
@@ -49,7 +49,6 @@ export class RcsbView<T,R,L,U> extends AbstractView<RcsbViewInterface<T,R,L,U>, 
         this.callbackManager = this.props.callbackManagerFactory.getCallbackManager({
             rcsbFvContainer: this.rcsbFvContainer,
             stateManager: this.props.stateManager,
-            structureViewer: this.props.structureViewer,
             pfvFactory: this.pfvFactory
         });
     }

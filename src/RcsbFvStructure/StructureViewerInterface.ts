@@ -54,7 +54,9 @@ export interface ViewerCallbackManagerInterface {
 }
 
 export interface ViewerActionManagerInterface<R,L> {
-    load<Z extends R|R[]>(loadConfig: Z): Z extends R ? Promise<L|undefined> : Promise<(L|undefined)[]>;
+    //load<Z extends R|R[]>(loadConfig: Z): Z extends R ? Promise<L|undefined> : Promise<(L|undefined)[]>;
+    load(loadConfig: R): Promise<L|undefined>;
+    load(loadConfig: R[]): Promise<(L|undefined)[]>;
     removeStructure(removeConfig: R|Array<R>): Promise<void>;
     select(modelId:string, labelAsymId: string, begin: number, end: number, mode: 'select'|'hover', operation:'add'|'set', operatorName?:string): void;
     select(selection: Array<SaguaroPosition>, mode: 'select'|'hover', operation:'add'|'set'): void;

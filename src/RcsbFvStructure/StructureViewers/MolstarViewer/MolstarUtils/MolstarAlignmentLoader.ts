@@ -8,7 +8,7 @@ import {
     StructureLoaderInterface,
     TransformProviderInterface
 } from "../../../StructureUtils/StructureLoaderInterface";
-import {ViewerActionManagerInterface, ViewerCallbackManagerInterface} from "../../../StructureViewerInterface";
+import {ViewerActionManagerInterface} from "../../../StructureViewerInterface";
 import {
     LoadMethod,
     LoadMolstarInterface,
@@ -20,15 +20,13 @@ import {
     AlignmentTrajectoryParamsType
 } from "../TrajectoryPresetProvider/AlignmentTrajectoryPresetProvider";
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
-import {RcsbFvStateInterface} from "../../../../RcsbFvState/RcsbFvStateInterface";
-import {Mat4} from "molstar/lib/mol-math/linear-algebra";
 import {
     FelxibleAlignmentTrajectoryParamsType,
     FlexibleAlignmentTrajectoryPresetProvider
 } from "../TrajectoryPresetProvider/FlexibleAlignmentTrajectoryPresetProvider";
 
 export class MolstarAlignmentLoader implements StructureLoaderInterface<[
-        ViewerCallbackManagerInterface & ViewerActionManagerInterface<LoadMolstarInterface<AlignmentTrajectoryParamsType|FelxibleAlignmentTrajectoryParamsType,LoadMolstarReturnType>,LoadMolstarReturnType>,
+        ViewerActionManagerInterface<LoadMolstarInterface<AlignmentTrajectoryParamsType|FelxibleAlignmentTrajectoryParamsType,LoadMolstarReturnType>,LoadMolstarReturnType>,
         {entryId:string;entityId:string;}|{entryId:string;instanceId:string;},
         TargetAlignment
     ], LoadMolstarReturnType> {
@@ -42,7 +40,7 @@ export class MolstarAlignmentLoader implements StructureLoaderInterface<[
     private readonly structureMap: Set<string> = new Set<string>();
 
     async load(
-        structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<LoadMolstarInterface<AlignmentTrajectoryParamsType|FelxibleAlignmentTrajectoryParamsType,LoadMolstarReturnType>,LoadMolstarReturnType>,
+        structureViewer: ViewerActionManagerInterface<LoadMolstarInterface<AlignmentTrajectoryParamsType|FelxibleAlignmentTrajectoryParamsType,LoadMolstarReturnType>,LoadMolstarReturnType>,
         pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;},
         targetAlignment: TargetAlignment
     ): Promise<undefined|LoadMolstarReturnType> {

@@ -42,6 +42,7 @@ import {CustomProperty} from "molstar/lib/mol-model-props/common/custom-property
 import {StructureBuilder} from "molstar/lib/mol-plugin-state/builder/structure";
 import {StructureRepresentationBuilder} from "molstar/lib/mol-plugin-state/builder/structure/representation";
 import {RigidTransformType, TransformMatrixType} from "../../../StructureUtils/StructureLoaderInterface";
+import {StateTransform} from "molstar/lib/mol-state/transform";
 
 type RepresentationParamsType = {
     pdb?:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};
@@ -191,6 +192,9 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
                 isHidden:true
             }
         });
+        if (comp?.cell?.state ) {
+            StateTransform.assignState(comp?.cell?.state, { isHidden: true });
+        }
 
         await update.commit({ revertOnError: false });
 
@@ -220,16 +224,14 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
                 }
             });
 
+            if (comp?.cell?.state ) {
+                StateTransform.assignState(comp?.cell?.state, { isHidden: true });
+            }
+
             await update.commit({ revertOnError: false });
             if(comp && expression.tag != "water") anyLigComp = comp;
         }
 
-        for (const c of plugin.managers.structure.hierarchy.currentComponentGroups){
-            for (const comp of c) {
-                if(typeof comp.cell.state.isHidden === "undefined" && comp.representations[0].cell.state.isHidden)
-                    plugin.managers.structure.component.toggleVisibility(c);
-            }
-        }
         return {
             components: componentMap,
             representations: representationMap

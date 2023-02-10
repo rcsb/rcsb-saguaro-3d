@@ -75,7 +75,6 @@ export class RcsbFv3DAlignmentProvider extends RcsbFv3DAbstract<
         super({
             elementId,
             sequenceConfig:{
-                type: "rcsb",
                 title: params.config.title,
                 subtitle: params.config.subtitle,
                 config:{
@@ -88,8 +87,8 @@ export class RcsbFv3DAlignmentProvider extends RcsbFv3DAbstract<
                         alignmentResponseContainer
                     },
                     buildPfvOnMount: true,
-                    pfvManagerFactory: new MsaPfvManagerFactory<[RcsbModuleDataProviderInterface],AlignmentLoadMolstarType,LoadMolstarReturnType>(),
-                    callbackManagerFactory: new MsaCallbackManagerFactory<AlignmentLoadMolstarType|undefined, LoadMolstarReturnType, {context:{id:string} & Partial<PolymerEntityInstanceInterface>}>({
+                    pfvManagerFactory: new MsaPfvManagerFactory<[RcsbModuleDataProviderInterface]>(),
+                    callbackManagerFactory: new MsaCallbackManagerFactory<{context:{id:string} & Partial<PolymerEntityInstanceInterface>}>({
                         pluginLoadParamsDefinition,
                         alignmentResponseContainer
                     }),

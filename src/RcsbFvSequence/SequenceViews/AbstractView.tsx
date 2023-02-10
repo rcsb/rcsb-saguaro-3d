@@ -9,22 +9,21 @@ import {
 import {SequenceViewInterface} from "./SequenceViewInterface";
 import {RcsbFvStateInterface} from "../../RcsbFvState/RcsbFvStateInterface";
 
-export interface AbstractViewInterface<R,L> {
+export interface AbstractViewInterface {
     componentId: string;
     title?: string;
     subtitle?: string;
-    structureViewer: ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>;
     stateManager: RcsbFvStateInterface;
     unmount:(flag:boolean,callback:()=>void)=>void;
 }
 
-export abstract class AbstractView<P,S,R,L> extends React.Component <P & AbstractViewInterface<R,L>, S> implements SequenceViewInterface {
+export abstract class AbstractView<P,S> extends React.Component <P & AbstractViewInterface,S> implements SequenceViewInterface {
 
     protected readonly componentDivId: string;
     protected readonly rcsbFvDivId: string;
     private updateDimTask: Subscription | null = null;
 
-    protected constructor(props:P & AbstractViewInterface<R,L>) {
+    protected constructor(props:P & AbstractViewInterface) {
         super(props);
         this.componentDivId = props.componentId+"_"+RcsbFvDOMConstants.PFV_DIV;
         this.rcsbFvDivId = props.componentId+"_"+RcsbFvDOMConstants.PFV_APP_ID;
@@ -58,7 +57,6 @@ export abstract class AbstractView<P,S,R,L> extends React.Component <P & Abstrac
     }
 
     componentWillUnmount() {
-        this.props.structureViewer.unsubscribe();
         window.removeEventListener('resize', this.resizeCallback);
     }
 

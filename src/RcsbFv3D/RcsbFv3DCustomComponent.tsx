@@ -4,21 +4,19 @@ import classes from '../styles/RcsbFvStyle.module.scss';
 import {StructureViewerInterface} from '../RcsbFvStructure/StructureViewerInterface';
 
 import '../styles/RcsbFvMolstarStyle.module.scss';
-import {RcsbFvSequence, RcsbFvSequenceInterface} from "../RcsbFvSequence/RcsbFvSequence";
 import {RcsbFvStructure, RcsbFvStructureConfigInterface} from "../RcsbFvStructure/RcsbFvStructure";
-import {
-    EventType,
-    RcsbFvContextManager,
-    RcsbFvContextManagerInterface,
-    UpdateConfigInterface
-} from "../RcsbFvContextManager/RcsbFvContextManager";
 import {Subscription} from "rxjs";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {CSSProperties, MouseEvent} from "react";
 import {StructureViewerBehaviourObserverInterface} from "../RcsbFvStructure/StructureViewerBehaviourInterface";
 import {RcsbFvStateInterface} from "../RcsbFvState/RcsbFvStateInterface";
 import {RcsbFvStateManager} from "../RcsbFvState/RcsbFvStateManager";
-import {RcsbFvCustomSequenceInterface} from "../RcsbFvSequence/RcsbFvCustomSequence";
+import {RcsbFvCustomSequence, RcsbFvCustomSequenceInterface} from "../RcsbFvSequence/RcsbFvCustomSequence";
+import {
+    EventType,
+    RcsbFvCustomContextManager,
+    RcsbFvCustomContextManagerInterface, UpdateConfigInterface
+} from "../RcsbFvContextManager/RcsbFvCustomContextManager";
 
 export interface RcsbFv3DCssConfig {
     overwriteCss?: boolean;
@@ -27,11 +25,11 @@ export interface RcsbFv3DCssConfig {
     sequencePanel?: CSSProperties;
 }
 
-export interface RcsbFv3DComponentInterface<T,R,L,S,U> {
+export interface RcsbFv3DCustomComponentInterface<R,L,S> {
     structurePanelConfig:RcsbFvStructureConfigInterface<R,S>;
-    sequencePanelConfig: RcsbFvSequenceInterface<T,U>;
+    sequencePanelConfig: RcsbFvCustomSequenceInterface<R,L>;
     id: string;
-    ctxManager: RcsbFvContextManager<T,R,S,U>;
+    ctxManager: RcsbFvCustomContextManager<R,L,S>;
     cssConfig?:RcsbFv3DCssConfig;
     unmount:(flag:boolean)=>void;
     fullScreen: boolean;
@@ -39,19 +37,19 @@ export interface RcsbFv3DComponentInterface<T,R,L,S,U> {
     structureViewerBehaviourObserver: StructureViewerBehaviourObserverInterface<R,L>;
 }
 
-interface RcsbFv3DComponentState<T,R,S,U> {
+interface RcsbFv3DCustomComponentState<R,L,S> {
     structurePanelConfig:RcsbFvStructureConfigInterface<R,S>;
-    sequencePanelConfig:RcsbFvSequenceInterface<T,U>;
+    sequencePanelConfig:RcsbFvCustomSequenceInterface<R,L>;
     pfvScreenFraction: number;
 }
 
-export class RcsbFv3DComponent<T,R,L,S,U> extends React.Component <RcsbFv3DComponentInterface<T,R,L,S,U>, RcsbFv3DComponentState<T,R,S,U>> {
+export class RcsbFv3DCustomComponent<R,L,S> extends React.Component <RcsbFv3DCustomComponentInterface<R,L,S>, RcsbFv3DCustomComponentState<R,L,S>> {
 
     private readonly stateManager: RcsbFvStateInterface = new RcsbFvStateManager();
     private subscription: Subscription;
     private readonly ROOT_DIV_ID: string = "rootPanelDiv";
 
-    readonly state: RcsbFv3DComponentState<T,R,S,U> = {
+    readonly state: RcsbFv3DCustomComponentState<R,L,S> = {
         structurePanelConfig: this.props.structurePanelConfig,
         sequencePanelConfig: this.props.sequencePanelConfig,
         pfvScreenFraction: 0.55
@@ -62,7 +60,7 @@ export class RcsbFv3DComponent<T,R,L,S,U> extends React.Component <RcsbFv3DCompo
             <div className={this.props.fullScreen ? classes.fullScreen : classes.fullHeight} >
                 <div
                     id={this.ROOT_DIV_ID}
-                    style={RcsbFv3DComponent.mainDivCssConfig(this.props.cssConfig?.rootPanel)}
+                    style={RcsbFv3DCustomComponent.mainDivCssConfig(this.props.cssConfig?.rootPanel)}
                     className={this.useDefaultCss() ? classes.rcsbFvMain : ""}
                     onMouseMove={(evt: MouseEvent<HTMLDivElement>)=>{this.mouseMove(evt)}}
                     onMouseUp={ (e)=>{this.splitPanelMouseUp()} }
@@ -77,8 +75,9 @@ export class RcsbFv3DComponent<T,R,L,S,U> extends React.Component <RcsbFv3DCompo
                         />
                     </div>
                     <div style={this.sequenceCssConfig(this.props.cssConfig?.sequencePanel)}  >
-                        <RcsbFvSequence<T,U>
+                        <RcsbFvCustomSequence<R,L>
                             config={this.state.sequencePanelConfig.config}
+                            structureViewer={this.props.structureViewer}
                             componentId={this.props.id}
                             stateManager={this.stateManager}
                             title={this.state.sequencePanelConfig.title}
@@ -137,9 +136,9 @@ export class RcsbFv3DComponent<T,R,L,S,U> extends React.Component <RcsbFv3DCompo
     }
 
     private subscribe(): Subscription{
-        return this.props.ctxManager.subscribe((obj:RcsbFvContextManagerInterface<T,R,S,U>)=>{
+        return this.props.ctxManager.subscribe((obj:RcsbFvCustomContextManagerInterface<R,L,S>)=>{
             if(obj.eventType == EventType.UPDATE_CONFIG){
-                this.updateConfig(obj.eventData as UpdateConfigInterface<T,R,S,U>)
+                this.updateConfig(obj.eventData as UpdateConfigInterface<R,L,S>)
             }else if(obj.eventType == EventType.PLUGIN_CALL){
                 this.props.structureViewer.pluginCall(obj.eventData as ((f:PluginContext)=>void));
             }
@@ -151,9 +150,9 @@ export class RcsbFv3DComponent<T,R,L,S,U> extends React.Component <RcsbFv3DCompo
         this.subscription.unsubscribe();
     }
 
-    private updateConfig(config:UpdateConfigInterface<T,R,S,U>){
+    private updateConfig(config:UpdateConfigInterface<R,L,S>){
         const structureConfig: Partial<RcsbFvStructureConfigInterface<R,S>> | undefined = config.structurePanelConfig;
-        const sequenceConfig: Partial<RcsbFvSequenceInterface<T,U>> | undefined = config.sequencePanelConfig;
+        const sequenceConfig = config.sequencePanelConfig;
         if(structureConfig != null && sequenceConfig != null){
             this.setState({structurePanelConfig:{...this.state.structurePanelConfig, ...structureConfig}, sequencePanelConfig:{...this.state.sequencePanelConfig, ...sequenceConfig}});
         }else if(structureConfig != null){

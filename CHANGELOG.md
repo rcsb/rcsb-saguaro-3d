@@ -10,6 +10,8 @@
 - Interface `ViewerModelMapManagerInterface<R,L>` needs a new generic that defines the type returned by the loading method in `LoadMolstarInterface`.
   - It defines a new method `getModelIdFromTrajectory(trajectory: L): string|undefined` 
 that is used to map loaded structure ids with user provided ids in `LoadParams`
+- Custom View has been decoupled from RCSB view
+- No `StructureViewer` data is passed to `RcsbFvSequence` all communication between panels is dne through the `StateManager`
 
 ## [2.3.7] - 2022-12-12
 ### Bug fix

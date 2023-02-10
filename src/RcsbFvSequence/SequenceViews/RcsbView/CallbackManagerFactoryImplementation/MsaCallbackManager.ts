@@ -14,20 +14,20 @@ import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {AlignmentMapper as AM} from "../../../../Utils/AlignmentMapper";
 import {DataContainer} from "../../../../Utils/DataContainer";
 
-export class MsaCallbackManagerFactory<R,L,U> implements CallbackManagerFactoryInterface<R,L,U> {
+export class MsaCallbackManagerFactory<U> implements CallbackManagerFactoryInterface<U> {
 
-    private readonly pluginLoadParamsDefinition:(id: string)=>R;
+    private readonly pluginLoadParamsDefinition:(id: string)=>void;
     private readonly alignmentResponseContainer: DataContainer<AlignmentResponse>;
 
     constructor(config: {
-        pluginLoadParamsDefinition:(id: string)=>R;
+        pluginLoadParamsDefinition:(id: string)=>void;
         alignmentResponseContainer: DataContainer<AlignmentResponse>;
     }) {
         this.pluginLoadParamsDefinition = config.pluginLoadParamsDefinition;
         this.alignmentResponseContainer = config.alignmentResponseContainer;
     }
 
-    getCallbackManager(config: CallbackConfigInterface<R,L>): CallbackManagerInterface<U> {
+    getCallbackManager(config: CallbackConfigInterface): CallbackManagerInterface<U> {
         return new MsaCallbackManager( {
             ...config,
             loadParamRequest:this.pluginLoadParamsDefinition,
@@ -38,13 +38,13 @@ export class MsaCallbackManagerFactory<R,L,U> implements CallbackManagerFactoryI
 }
 
 type SelectedRegion = {modelId: string, labelAsymId: string, region: RegionSelectionInterface, operatorName?: string};
-class MsaCallbackManager<R,L,U>  extends AbstractCallbackManager<R,L,U>{
+class MsaCallbackManager<U>  extends AbstractCallbackManager<U>{
 
-    private readonly loadParamRequest:(id: string)=>R;
+    private readonly loadParamRequest:(id: string)=>void;
     private readonly targetIds: {[key:string]:boolean} = {};
     private readonly alignmentResponseContainer: DataContainer<AlignmentResponse>;
 
-    constructor(config: CallbackConfigInterface<R,L> & {loadParamRequest:(id: string)=>R;alignmentResponseContainer: DataContainer<AlignmentResponse>;}) {
+    constructor(config: CallbackConfigInterface & {loadParamRequest:(id: string)=>void;alignmentResponseContainer: DataContainer<AlignmentResponse>;}) {
         super(config);
         this.loadParamRequest = config.loadParamRequest;
         this.alignmentResponseContainer = config.alignmentResponseContainer;

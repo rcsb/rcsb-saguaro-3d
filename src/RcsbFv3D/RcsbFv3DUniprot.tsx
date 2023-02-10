@@ -39,6 +39,7 @@ import {
 } from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarUtils/MolstarComponentAction";
 import {MolstarTools} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarUtils/MolstarTools";
 import getModelIdFromTrajectory = MolstarTools.getModelIdFromTrajectory;
+import {AbstractViewInterface} from "../RcsbFvSequence/SequenceViews/AbstractView";
 
 export interface RcsbFv3DUniprotInterface  {
     elementId?: string;
@@ -68,7 +69,6 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<
         super({
             elementId,
             sequenceConfig:{
-                type: "rcsb",
                 title: params.config.title,
                 subtitle: params.config.subtitle,
                 config:{
@@ -81,8 +81,8 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<
                         alignmentResponseContainer
                     },
                     buildPfvOnMount: true,
-                    pfvManagerFactory: new MsaPfvManagerFactory<[string,SearchQuery?],AlignmentLoadMolstarType, LoadMolstarReturnType>(),
-                    callbackManagerFactory: new MsaCallbackManagerFactory<AlignmentLoadMolstarType, LoadMolstarReturnType, {context: {id:string};}>({
+                    pfvManagerFactory: new MsaPfvManagerFactory<[string,SearchQuery?]>(),
+                    callbackManagerFactory: new MsaCallbackManagerFactory<{context: {id:string};}>({
                         pluginLoadParamsDefinition,
                         alignmentResponseContainer
                     }),

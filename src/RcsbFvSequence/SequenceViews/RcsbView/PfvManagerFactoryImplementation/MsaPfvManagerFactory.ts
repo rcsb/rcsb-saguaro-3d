@@ -32,11 +32,11 @@ export interface MsaPfvManagerInterface<T extends any[]> {
     buildMsaAlignmentFv(...args:[string, ...T, RcsbFvAdditionalConfig & ActionMethods.FvChangeConfigInterface]): Promise<RcsbFvModulePublicInterface>;
 }
 
-type MsaPfvManagerInterType<T extends any[], R,L> = MsaPfvManagerInterface<T> & PfvManagerFactoryConfigInterface<R,L,{context: {id:string};}>
+type MsaPfvManagerInterType<T extends any[]> = MsaPfvManagerInterface<T> & PfvManagerFactoryConfigInterface<{context: {id:string};}>
 
-export class MsaPfvManagerFactory<T extends any[], R,L> implements PfvManagerFactoryInterface<{id:string},R,L,{context: {id:string};}> {
+export class MsaPfvManagerFactory<T extends any[]> implements PfvManagerFactoryInterface<{id:string},{context: {id:string};}> {
 
-    getPfvManager(config: MsaPfvManagerInterType<T,R,L>): PfvManagerInterface {
+    getPfvManager(config: MsaPfvManagerInterType<T>): PfvManagerInterface {
         return new MsaPfvManager(config);
     }
 
@@ -47,12 +47,12 @@ type AlignmentDataType = {
     targetAlignment: TargetAlignment;
 };
 
-class MsaPfvManager<T extends any[],R,L> extends AbstractPfvManager<{id:string},R,L,{context: {id:string} &  Partial<PolymerEntityInstanceInterface>;}>{
+class MsaPfvManager<T extends any[]> extends AbstractPfvManager<{id:string},{context: {id:string} &  Partial<PolymerEntityInstanceInterface>;}>{
 
-    private readonly config:MsaPfvManagerInterType<T,R,L>;
+    private readonly config:MsaPfvManagerInterType<T>;
     private module:RcsbFvModulePublicInterface;
 
-    constructor(config:MsaPfvManagerInterType<T,R,L>) {
+    constructor(config:MsaPfvManagerInterType<T>) {
         super(config);
         this.config = config;
     }
