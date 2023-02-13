@@ -45,7 +45,7 @@ const commonConfig = {
 const appConfig = {
     ...commonConfig,
     entry: {
-        'app':'./build/src/RcsbSaguaro3D.js'
+        'app':'./build/src/app.js'
     },
     mode: "production",
     output: {
