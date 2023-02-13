@@ -3,6 +3,8 @@ import {RcsbFv3DAssembly as assembly} from "./RcsbFv3D/RcsbFv3DAssembly";
 import {RcsbFv3DUniprot as uniprot} from "./RcsbFv3D/RcsbFv3DUniprot";
 import {RcsbFv3DSequenceIdentity as sequenceIdentity} from "./RcsbFv3D/RcsbFv3DSequenceIdentity";
 
+export {RcsbFv3DAlignmentProvider} from "./RcsbFv3D/RcsbFv3DAlignmentProvider";
+
 export {custom, assembly, uniprot, sequenceIdentity};
 
 export {
