@@ -17,7 +17,7 @@
     "buildDoc": "typedoc --excludeExternals --externalPattern \"**/node_modules/**\" src/RcsbFv3D/RcsbFv3DAssembly.tsx src/RcsbFv3D/RcsbFv3DUniprot.tsx src/RcsbFv3D/RcsbFv3DSequenceIdentity.tsx src/RcsbFv3D/RcsbFv3DCustom.tsx && sed -i '' '/---/d' docs/index.html",
     "clean": "del-cli build/src",
     "cleanAll": "npm run clean && del-cli build/dist",
-    "publishApp": "npm publish",
+    "publishApp": "npm publish --tag data-provider",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
