@@ -45,6 +45,7 @@ import {
 } from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarUtils/MolstarComponentAction";
 import {MolstarTools} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarUtils/MolstarTools";
 import getModelIdFromTrajectory = MolstarTools.getModelIdFromTrajectory;
+import {AbstractViewInterface} from "../RcsbFvSequence/SequenceViews/AbstractView";
 
 export interface RcsbFv3DDataProviderInterface  {
     elementId?: string;
@@ -54,6 +55,7 @@ export interface RcsbFv3DDataProviderInterface  {
         structureLocationProvider?: LocationProviderInterface;
         title?: string;
         subtitle?: string;
+        additionalContent?(props: AbstractViewInterface): JSX.Element;
     };
     additionalConfig?:RcsbFvAdditionalConfig;
     molstarProps?: Partial<ViewerProps>;
@@ -92,7 +94,7 @@ export class RcsbFv3DAlignmentProvider extends RcsbFv3DAbstract<
                         pluginLoadParamsDefinition,
                         alignmentResponseContainer
                     }),
-                    additionalContent:(props)=>(<HelpLinkComponent {...props} helpHref={"/docs/grouping-structures/groups-1d-3d-alignment"}/>)
+                    additionalContent: params.config.additionalContent ?? ((props)=>(<HelpLinkComponent {...props} helpHref={"/docs/grouping-structures/groups-1d-3d-alignment"}/>))
                 }
             },
             structureConfig: {

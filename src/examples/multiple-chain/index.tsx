@@ -84,7 +84,7 @@ const rowConfigChainB: Array<RcsbFvRowConfigInterface> = [
     }
 ];
 
-const fvConfigChainA: FeatureViewInterface<LoadMolstarInterface<undefined,undefined>,LoadMolstarReturnType> = {
+const fvConfigChainA: FeatureViewInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType> = {
     boardId:"1acb.A_board",
     boardConfig: {
         range: {
@@ -95,7 +95,7 @@ const fvConfigChainA: FeatureViewInterface<LoadMolstarInterface<undefined,undefi
         includeAxis: true
     },
     rowConfig: rowConfigChainA,
-    sequenceSelectionChangeCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<undefined,undefined>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => {
+    sequenceSelectionChangeCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => {
         stateManager.selectionState.clearSelection("select", {modelId:"1acb_board", labelAsymId:"A"});
         plugin.clearSelection("select", {modelId: "1acb_board", labelAsymId: "A"})
         if(sequenceRegion.length > 0) {
@@ -114,11 +114,11 @@ const fvConfigChainA: FeatureViewInterface<LoadMolstarInterface<undefined,undefi
             plugin.resetCamera();
         }
     },
-    sequenceElementClickCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<undefined,undefined>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, d: RcsbFvTrackDataElementInterface) => {
+    sequenceElementClickCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, d: RcsbFvTrackDataElementInterface) => {
         if(d!=null)
             plugin.cameraFocus("1acb_board", "A", d.begin, d.end ?? d.begin);
     },
-    sequenceHoverCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<undefined,undefined>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, elements: Array<RcsbFvTrackDataElementInterface>) => {
+    sequenceHoverCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, elements: Array<RcsbFvTrackDataElementInterface>) => {
         if(elements == null || elements.length == 0)
             plugin.clearSelection("hover");
         else
@@ -129,7 +129,7 @@ const fvConfigChainA: FeatureViewInterface<LoadMolstarInterface<undefined,undefi
                 end: e.end ?? e.begin
             })), "hover", "set");
     },
-    structureSelectionCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<undefined,undefined>,LoadMolstarReturnType>, pfv: RcsbFv, stateManager: RcsbFvStateManager) => {
+    structureSelectionCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, pfv: RcsbFv, stateManager: RcsbFvStateManager) => {
         const sel: SaguaroRegionList | undefined = stateManager.selectionState.getSelectionWithCondition("1acb_board", "A", "select");
         if(sel == null) {
             pfv.clearSelection("select");
@@ -138,7 +138,7 @@ const fvConfigChainA: FeatureViewInterface<LoadMolstarInterface<undefined,undefi
             pfv.setSelection({elements: sel.regions, mode: "select"});
         }
     },
-    structureHoverCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<undefined,undefined>,LoadMolstarReturnType>, pfv: RcsbFv, stateManager: RcsbFvStateManager) => {
+    structureHoverCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, pfv: RcsbFv, stateManager: RcsbFvStateManager) => {
         const sel: SaguaroRegionList | undefined = stateManager.selectionState.getSelectionWithCondition("1acb_board", "A", "hover");
         if(sel == null)
             pfv.clearSelection("hover");
@@ -147,7 +147,7 @@ const fvConfigChainA: FeatureViewInterface<LoadMolstarInterface<undefined,undefi
     }
 }
 
-const fvConfigChainB: FeatureViewInterface<LoadMolstarInterface<undefined,undefined>,LoadMolstarReturnType> = {
+const fvConfigChainB: FeatureViewInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType> = {
     boardId:"1acb.B_board",
     boardConfig: {
         range: {
@@ -158,7 +158,7 @@ const fvConfigChainB: FeatureViewInterface<LoadMolstarInterface<undefined,undefi
         includeAxis: true
     },
     rowConfig: rowConfigChainB,
-    sequenceSelectionChangeCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<undefined,undefined>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => {
+    sequenceSelectionChangeCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => {
         stateManager.selectionState.clearSelection("select", {modelId:"1acb_board", labelAsymId:"B"});
         plugin.clearSelection("select", {modelId: "1acb_board", labelAsymId: "B"})
         if(sequenceRegion.length > 0) {
@@ -177,11 +177,11 @@ const fvConfigChainB: FeatureViewInterface<LoadMolstarInterface<undefined,undefi
             plugin.resetCamera();
         }
     },
-    sequenceElementClickCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<undefined,undefined>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, d: RcsbFvTrackDataElementInterface) => {
+    sequenceElementClickCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, d: RcsbFvTrackDataElementInterface) => {
         if(d!=null)
             plugin.cameraFocus("1acb_board", "B", d.begin, d.end ?? d.begin);
     },
-    sequenceHoverCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<undefined,undefined>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, elements: Array<RcsbFvTrackDataElementInterface>) => {
+    sequenceHoverCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, elements: Array<RcsbFvTrackDataElementInterface>) => {
         if(elements == null || elements.length == 0)
             plugin.clearSelection("hover");
         else
@@ -192,7 +192,7 @@ const fvConfigChainB: FeatureViewInterface<LoadMolstarInterface<undefined,undefi
                 end: e.end ?? e.begin
             })), "hover", "set");
     },
-    structureSelectionCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<undefined,undefined>,LoadMolstarReturnType>, pfv: RcsbFv, stateManager: RcsbFvStateManager) => {
+    structureSelectionCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, pfv: RcsbFv, stateManager: RcsbFvStateManager) => {
         const sel: SaguaroRegionList | undefined = stateManager.selectionState.getSelectionWithCondition("1acb_board", "B", "select");
         if(sel == null) {
             pfv.clearSelection("select");
@@ -201,7 +201,7 @@ const fvConfigChainB: FeatureViewInterface<LoadMolstarInterface<undefined,undefi
             pfv.setSelection({elements: sel.regions, mode: "select"});
         }
     },
-    structureHoverCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<undefined,undefined>,LoadMolstarReturnType>, pfv: RcsbFv, stateManager: RcsbFvStateManager) => {
+    structureHoverCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, pfv: RcsbFv, stateManager: RcsbFvStateManager) => {
         const sel: SaguaroRegionList | undefined = stateManager.selectionState.getSelectionWithCondition("1acb_board", "B", "hover");
         if(sel == null)
             pfv.clearSelection("hover");
@@ -210,12 +210,12 @@ const fvConfigChainB: FeatureViewInterface<LoadMolstarInterface<undefined,undefi
     }
 }
 
-const blockChainA: FeatureBlockInterface<LoadMolstarInterface<undefined,undefined>,LoadMolstarReturnType> = {
+const blockChainA: FeatureBlockInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType> = {
     blockId:"chainA",
     featureViewConfig: [fvConfigChainA]
 };
 
-const blockChainB: FeatureBlockInterface<LoadMolstarInterface<undefined,undefined>,LoadMolstarReturnType> = {
+const blockChainB: FeatureBlockInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType> = {
     blockId:"chainB",
     featureViewConfig: [fvConfigChainB]
 };
@@ -233,7 +233,7 @@ const blockSelectorElement: (blockSelectorManager: BlockSelectorManager) => JSX.
     );
 }
 
-const customConfig: CustomViewInterface<LoadMolstarInterface<undefined,undefined>,LoadMolstarReturnType> = {
+const customConfig: CustomViewInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType> = {
     blockConfig:[blockChainA, blockChainB],
     blockSelectorElement: blockSelectorElement
 }
@@ -244,7 +244,7 @@ const sequenceConfig = {
     config: customConfig
 };
 
-const molstarConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface<undefined,undefined>,{viewerProps:Partial<ViewerProps>}> = {
+const molstarConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface<unknown,unknown>,{viewerProps:Partial<ViewerProps>}> = {
     loadConfig: {
         loadMethod: LoadMethod.loadPdbId,
         loadParams: {

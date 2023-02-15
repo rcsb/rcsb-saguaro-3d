@@ -8,6 +8,7 @@ import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {CSSProperties} from "react";
 import {StructureViewerInterface} from "../RcsbFvStructure/StructureViewerInterface";
 import {StructureViewerBehaviourObserverInterface} from "../RcsbFvStructure/StructureViewerBehaviourInterface";
+import {AbstractViewInterface} from "../RcsbFvSequence/SequenceViews/AbstractView";
 
 export interface RcsbFv3DAbstractInterface<T,R,L,S,U> {
     elementId: string;
@@ -16,6 +17,7 @@ export interface RcsbFv3DAbstractInterface<T,R,L,S,U> {
     structureConfig: RcsbFvStructureConfigInterface<R,S>;
     structureViewer: StructureViewerInterface<R,L,S>;
     structureViewerBehaviourObserver: StructureViewerBehaviourObserverInterface<R,L>;
+    additionalContent?(props: AbstractViewInterface): JSX.Element;
 }
 
 export abstract class RcsbFv3DAbstract<T,R,L,S,U> {
@@ -46,7 +48,7 @@ export abstract class RcsbFv3DAbstract<T,R,L,S,U> {
 
     public render(): void{
         if(this.elementId == null )
-            throw "HTML element not found";
+            throw new Error("HTML element not found");
         const element: HTMLElement = document.getElementById(this.elementId) ?? document.createElement<"div">("div");
         if(element.getAttribute("id") == null) {
             element.setAttribute("id", this.elementId);

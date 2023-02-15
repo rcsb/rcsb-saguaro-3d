@@ -75,29 +75,32 @@ class MsaPfvManager<T extends any[]> extends AbstractPfvManager<{id:string},{con
             },
             trackConfigModifier: {
                 alignment: (alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment) => new Promise((resolve)=>{
-                    resolve({
-                        rowMark:{
-                            externalRowMark: {
-                                component:MsaRowMarkComponent,
-                                props:{
-                                    rowRef:TagDelimiter.parseEntityOrInstance(targetAlignment.target_id!),
-                                    stateManager: this.stateManager
+                    this.additionalConfig?.trackConfigModifier?.alignment?.(alignmentContext, targetAlignment).then((rc)=>{
+                        resolve({
+                            ...rc,
+                            rowMark:{
+                                externalRowMark: {
+                                    component:MsaRowMarkComponent,
+                                    props:{
+                                        rowRef:TagDelimiter.parseEntityOrInstance(targetAlignment.target_id!),
+                                        stateManager: this.stateManager
+                                    }
+                                },
+                                clickCallback:() => this.loadAlignment(alignmentContext,targetAlignment)
+                            },
+                            externalRowTitle: {
+                                rowTitleComponent:MsaRowTitleComponent,
+                                rowTitleAdditionalProps:{
+                                    alignmentContext,
+                                    targetAlignment,
+                                    stateManager: this.stateManager,
+                                    titleClick: ()=> this.loadAlignment(alignmentContext,targetAlignment)
                                 }
                             },
-                            clickCallback:() => this.loadAlignment(alignmentContext,targetAlignment)
-                        },
-                        externalRowTitle: {
-                            rowTitleComponent:MsaRowTitleComponent,
-                            rowTitleAdditionalProps:{
-                                alignmentContext,
-                                targetAlignment,
-                                stateManager: this.stateManager,
-                                titleClick: ()=> this.loadAlignment(alignmentContext,targetAlignment)
+                            metadata:{
+                                targetId:targetAlignment.target_id
                             }
-                        },
-                        metadata:{
-                            targetId:targetAlignment.target_id
-                        }
+                        });
                     });
                 })
             },

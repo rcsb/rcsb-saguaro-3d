@@ -14,7 +14,6 @@ import {
     CallbackManagerFactoryInterface,
     CallbackManagerInterface
 } from "./CallbackManagerFactoryInterface";
-import {RcsbFvStateInterface} from "../../../RcsbFvState/RcsbFvStateInterface";
 
 export interface RcsbViewInterface<T,U> {
     rcsbId: string;
@@ -59,15 +58,12 @@ export class RcsbView<T,U> extends AbstractView<RcsbViewInterface<T,U>, {}>{
 
     async componentDidMount (): Promise<void> {
         super.componentDidMount();
-        const width: number | undefined = document.getElementById(this.componentDivId)?.getBoundingClientRect().width;
-        if(width == null)
-            return;
-        const trackWidth: number = width - 190 - 55;
+        const trackWidth: number = this.getwidth();
         this.boardConfigContainer.set({
-            ...this.props.additionalConfig?.boardConfig,
             trackWidth: trackWidth,
             highlightHoverPosition:true,
             highlightHoverElement:true,
+            ...this.props.additionalConfig?.boardConfig,
             elementClickCallBack:(e:RcsbFvTrackDataElementInterface)=>{
                 this.elementClickCallback(e);
                 if(typeof this.props.additionalConfig?.boardConfig?.elementClickCallBack === "function")
@@ -106,8 +102,7 @@ export class RcsbView<T,U> extends AbstractView<RcsbViewInterface<T,U>, {}>{
     }
 
     async updateDimensions(): Promise<void> {
-        const width: number = window.document.getElementById(this.componentDivId)?.getBoundingClientRect().width ?? 0;
-        const trackWidth: number = width - 190 - 55;
+        const trackWidth: number = this.getwidth();
         this.boardConfigContainer.set({...this.boardConfigContainer.get(), trackWidth});
         const select = this.rcsbFvContainer.get()?.getFv().getSelection("select");
         const dom = this.rcsbFvContainer.get()?.getFv().getDomain();
@@ -143,6 +138,11 @@ export class RcsbView<T,U> extends AbstractView<RcsbViewInterface<T,U>, {}>{
 
     private elementClickCallback(e:RcsbFvTrackDataElementInterface): void {
         this.callbackManager.featureClickCallback(e);
+    }
+
+    private getwidth(): number {
+        const width: number = window.document.getElementById(this.componentDivId)?.getBoundingClientRect().width ?? 0;
+        return width - (this.props.additionalConfig?.boardConfig?.rowTitleWidth ?? 190) - (this.props.additionalConfig?.boardConfig?.disableMenu ? 10 : 55);
     }
 
 }

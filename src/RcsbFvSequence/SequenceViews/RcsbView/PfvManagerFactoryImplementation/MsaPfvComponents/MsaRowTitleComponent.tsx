@@ -63,10 +63,11 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
                            msUserSelect:"none",
                            color: this.state.titleColor,
                            cursor: this.state.blocked ? "wait" : "pointer",
-                           maxWidth:100,
+                           maxWidth: (this.configData.rowTitleWidth ?? 190) - 60,
                            overflow: "hidden",
                            textOverflow: "ellipsis",
-                           whiteSpace: "nowrap"
+                           whiteSpace: "nowrap",
+                           textAlign: "right"
                        }}
                        onClick={(e: MouseEvent)=>this.click(e)}
                        title={this.props.targetAlignment.target_id ?? undefined}
@@ -74,7 +75,7 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
                        {this.props.targetAlignment.target_id}
                    </div>
                </div>
-               <div  style={{cursor: this.cursor()}} onClick={(e: MouseEvent)=>this.altClick(e)} >
+               <div  style={{cursor: this.cursor(), width:39}} onClick={(e: MouseEvent)=>this.altClick(e)} >
                    <MsaRowTitleCheckboxComponent disabled={this.state.disabled} {...TagDelimiter.parseEntityOrInstance(this.props.targetAlignment.target_id!)} tag={"aligned"} stateManager={this.props.stateManager}/>
                    <MsaRowTitleCheckboxComponent disabled={this.state.disabled} {...TagDelimiter.parseEntityOrInstance(this.props.targetAlignment.target_id!)} tag={"polymer"} stateManager={this.props.stateManager}/>
                    <MsaRowTitleCheckboxComponent disabled={this.state.disabled} {...TagDelimiter.parseEntityOrInstance(this.props.targetAlignment.target_id!)} tag={"non-polymer"} stateManager={this.props.stateManager}/>

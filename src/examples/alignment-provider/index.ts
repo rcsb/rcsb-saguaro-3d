@@ -10,6 +10,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
             structureLocationProvider: structureLocationProvider,
             title: "Title >> Alignment Provider",
             subtitle: "Subtitle >> Alignment Provider"
+        },
+        additionalConfig: {
+            boardConfig: {
+                rowTitleWidth: 100
+            }
         }
     });
     panel3D.render();
