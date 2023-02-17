@@ -12,6 +12,7 @@
 that is used to map loaded structure ids with user provided ids in `LoadParams`
 - Custom View has been decoupled from RCSB view
 - No `StructureViewer` data is passed to `RcsbFvSequence` all communication between panels is dne through the `StateManager`
+- New `RcsbViewBehaviourInterface` interface to extend "1d" behaviour to events
 
 ## [2.3.7] - 2022-12-12
 ### Bug fix

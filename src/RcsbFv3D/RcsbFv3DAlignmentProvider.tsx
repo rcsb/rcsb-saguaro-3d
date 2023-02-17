@@ -46,6 +46,9 @@ import {
 import {MolstarTools} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarUtils/MolstarTools";
 import getModelIdFromTrajectory = MolstarTools.getModelIdFromTrajectory;
 import {AbstractViewInterface} from "../RcsbFvSequence/SequenceViews/AbstractView";
+import {
+    AlignmentProviderBehaviour
+} from "../RcsbFvSequence/SequenceViews/RcsbView/RcsbViewBehaviour/AlignmentProviderBehaviour";
 
 export interface RcsbFv3DDataProviderInterface  {
     elementId?: string;
@@ -95,7 +98,8 @@ export class RcsbFv3DAlignmentProvider extends RcsbFv3DAbstract<
                         alignmentResponseContainer
                     }),
                     additionalContent: params.config.additionalContent ?? ((props)=>(<HelpLinkComponent {...props} helpHref={"/docs/grouping-structures/groups-1d-3d-alignment"}/>))
-                }
+                },
+                rcsbViewBehaviour: new AlignmentProviderBehaviour()
             },
             structureConfig: {
                 loadConfig: undefined,

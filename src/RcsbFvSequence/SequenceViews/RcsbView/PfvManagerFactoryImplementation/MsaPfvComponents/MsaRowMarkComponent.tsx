@@ -28,7 +28,6 @@ export class MsaRowMarkComponent extends React.Component <MsaRowMarkInterface,Ms
 
     private readonly HOVER_COLOR: string = "rgb(51, 122, 183)";
     private readonly ACTIVE_COLOR: string ="rgb(51, 122, 183)";
-    private subscription: Subscription;
 
     constructor(props:MsaRowMarkInterface) {
         super(props);
@@ -48,31 +47,6 @@ export class MsaRowMarkComponent extends React.Component <MsaRowMarkInterface,Ms
                 </div>
             </>
         );
-    }
-
-    componentDidMount() {
-        /*this.subscribe();
-        this.modelChange();*/
-    }
-
-    componentWillUnmount() {
-        this.subscription?.unsubscribe();
-    }
-
-    private subscribe(): void{
-        this.subscription = this.props.stateManager.subscribe( async o=>{
-            if(o.type == "model-change" && o.view == "3d-view")
-                this.modelChange();
-        });
-    }
-
-    private modelChange(): void {
-       if(Array.from(this.props.stateManager.assemblyModelSate.getMap()?.keys() ?? []).includes(
-           "entityId" in this.props.rowRef ? `${this.props.rowRef.entryId}${TagDelimiter.entity}${this.props.rowRef.entityId}` : `${this.props.rowRef.entryId}${TagDelimiter.instance}${this.props.rowRef.instanceId}`
-       ))
-           this.setState({visibility: "visible", borderLeftColor: this.ACTIVE_COLOR});
-       else if(this.state.visibility == "visible")
-           this.setState({visibility: undefined, borderLeftColor: undefined});
     }
 
     private click(): void {

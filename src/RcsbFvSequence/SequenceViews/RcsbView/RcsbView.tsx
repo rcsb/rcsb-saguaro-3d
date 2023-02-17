@@ -14,6 +14,7 @@ import {
     CallbackManagerFactoryInterface,
     CallbackManagerInterface
 } from "./CallbackManagerFactoryInterface";
+import {RcsbViewBehaviourInterface} from "./RcsbViewBehaviourInterface";
 
 export interface RcsbViewInterface<T,U> {
     rcsbId: string;
@@ -24,6 +25,7 @@ export interface RcsbViewInterface<T,U> {
     callbackManagerFactory: CallbackManagerFactoryInterface<U>;
     additionalContent?(props:RcsbViewInterface<T,U> & AbstractViewInterface): JSX.Element;
     buildPfvOnMount?: boolean;
+    rcsbViewBehaviour?: RcsbViewBehaviourInterface;
 }
 
 export class RcsbView<T,U> extends AbstractView<RcsbViewInterface<T,U>, {}>{
@@ -50,6 +52,7 @@ export class RcsbView<T,U> extends AbstractView<RcsbViewInterface<T,U>, {}>{
             stateManager: this.props.stateManager,
             pfvFactory: this.pfvFactory
         });
+        this.props.rcsbViewBehaviour?.observe(this.rcsbFvContainer, this.props.stateManager);
     }
 
     additionalContent(): JSX.Element {
@@ -87,6 +90,7 @@ export class RcsbView<T,U> extends AbstractView<RcsbViewInterface<T,U>, {}>{
     componentWillUnmount() {
         super.componentWillUnmount();
         unmount(this.rcsbFvDivId);
+        this.props.rcsbViewBehaviour?.unsubscribe();
     }
 
     async structureSelectionCallback(): Promise<void> {

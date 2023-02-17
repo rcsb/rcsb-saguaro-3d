@@ -8,11 +8,13 @@ import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {RcsbFv, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {RcsbView, RcsbViewInterface} from "./SequenceViews/RcsbView/RcsbView";
 import {RcsbFvStateInterface} from "../RcsbFvState/RcsbFvStateInterface";
+import {RcsbViewBehaviourInterface} from "./SequenceViews/RcsbView/RcsbViewBehaviourInterface";
 
 export interface RcsbFvSequenceInterface<T,U>{
     config: RcsbViewInterface<T,U>;
     title?: string;
     subtitle?: string;
+    rcsbViewBehaviour?: RcsbViewBehaviourInterface;
 }
 
 export class RcsbFvSequence<T,U> extends React.Component <RcsbFvSequenceInterface<T,U> & {unmount:(flag:boolean)=>void,  stateManager: RcsbFvStateInterface, componentId:string}, RcsbFvSequenceInterface<T,U> > {
@@ -26,6 +28,7 @@ export class RcsbFvSequence<T,U> extends React.Component <RcsbFvSequenceInterfac
             title={this.props.title}
             subtitle={this.props.subtitle}
             unmount={this.props.unmount}
+            rcsbViewBehaviour={this.props.rcsbViewBehaviour}
         />)
     }
 

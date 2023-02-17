@@ -18,7 +18,6 @@ import {CSSProperties, MouseEvent} from "react";
 import {StructureViewerBehaviourObserverInterface} from "../RcsbFvStructure/StructureViewerBehaviourInterface";
 import {RcsbFvStateInterface} from "../RcsbFvState/RcsbFvStateInterface";
 import {RcsbFvStateManager} from "../RcsbFvState/RcsbFvStateManager";
-import {RcsbFvCustomSequenceInterface} from "../RcsbFvSequence/RcsbFvCustomSequence";
 
 export interface RcsbFv3DCssConfig {
     overwriteCss?: boolean;
@@ -84,6 +83,7 @@ export class RcsbFv3DComponent<T,R,L,S,U> extends React.Component <RcsbFv3DCompo
                             title={this.state.sequencePanelConfig.title}
                             subtitle={this.state.sequencePanelConfig.subtitle}
                             unmount={this.props.unmount}
+                            rcsbViewBehaviour={this.props.sequencePanelConfig.rcsbViewBehaviour}
                         />
                     </div>
                     {

@@ -75,40 +75,46 @@ class MsaPfvManager<T extends any[]> extends AbstractPfvManager<{id:string},{con
             },
             trackConfigModifier: {
                 alignment: (alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment) => new Promise((resolve)=>{
-                    this.additionalConfig?.trackConfigModifier?.alignment?.(alignmentContext, targetAlignment).then((rc)=>{
-                        resolve({
-                            ...rc,
-                            rowMark:{
-                                externalRowMark: {
-                                    component:MsaRowMarkComponent,
-                                    props:{
-                                        rowRef:TagDelimiter.parseEntityOrInstance(targetAlignment.target_id!),
-                                        stateManager: this.stateManager
-                                    }
-                                },
-                                clickCallback:() => this.loadAlignment(alignmentContext,targetAlignment)
-                            },
-                            externalRowTitle: {
-                                rowTitleComponent:MsaRowTitleComponent,
-                                rowTitleAdditionalProps:{
-                                    alignmentContext,
-                                    targetAlignment,
-                                    stateManager: this.stateManager,
-                                    titleClick: ()=> this.loadAlignment(alignmentContext,targetAlignment)
+                    const alignmentMod = {
+                        rowMark:{
+                            externalRowMark: {
+                                component:MsaRowMarkComponent,
+                                props:{
+                                    rowRef:TagDelimiter.parseEntityOrInstance(targetAlignment.target_id!),
+                                    stateManager: this.stateManager
                                 }
                             },
-                            metadata:{
-                                targetId:targetAlignment.target_id
+                            clickCallback:() => this.loadAlignment(alignmentContext,targetAlignment)
+                        },
+                        externalRowTitle: {
+                            rowTitleComponent:MsaRowTitleComponent,
+                            rowTitleAdditionalProps:{
+                                alignmentContext,
+                                targetAlignment,
+                                stateManager: this.stateManager,
+                                titleClick: ()=> this.loadAlignment(alignmentContext,targetAlignment)
                             }
+                        },
+                        metadata:{
+                            targetId:targetAlignment.target_id
+                        }
+                    };
+                    if(this.additionalConfig?.trackConfigModifier?.alignment)
+                        this.additionalConfig.trackConfigModifier.alignment(alignmentContext, targetAlignment).then((rc)=>{
+                            resolve({
+                                ...rc,
+                                ...alignmentMod
+                            });
                         });
-                    });
+                    else
+                        resolve(alignmentMod);
                 })
             },
             beforeChangeCallback: () => {
                 this.config.pfvChangeCallback({context:{id:this.config.id}});
             },
             externalUiComponents:[{
-                component:MsaUiSortComponent,
+                component: MsaUiSortComponent,
                 props: {
                     rcsbFvContainer: this.rcsbFvContainer,
                     stateManager: this.stateManager

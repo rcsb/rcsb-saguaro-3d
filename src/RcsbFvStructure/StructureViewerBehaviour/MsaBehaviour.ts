@@ -195,6 +195,11 @@ class MsaBehaviour<R,L> implements StructureViewerBehaviourInterface {
             if(trajectory){
                 this.componentAction.accept(trajectory, data.pdb);
             }
+            this.stateManager.next({
+                type: "model-ready",
+                view: "3d-view",
+                data
+            });
         }
     }
 
