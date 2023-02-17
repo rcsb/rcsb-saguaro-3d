@@ -11,6 +11,7 @@ import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borr
 type AlignmentDataType = {
     pdb:{entryId:string;instanceId:string;},
     targetAlignment: TargetAlignment;
+    who: "user"|"auto";
 };
 
 export class AlignmentProviderBehaviour implements RcsbViewBehaviourInterface {
@@ -33,6 +34,8 @@ async function loadNextModel(data:AlignmentDataType, rcsbFvContainer: DataContai
     const alignments = await rcsbFvContainer.get()?.getAlignmentResponse();
     if(!alignments || !alignments.target_alignment)
         return;
+    if(data.who == "user")
+        return;
     const pdb = data.pdb;
     const targetAlignment = data.targetAlignment;
     const index = alignments.target_alignment.findIndex( ta=>ta?.target_id == `${pdb.entryId}${TagDelimiter.instance}${pdb.instanceId}`);
@@ -46,7 +49,8 @@ async function loadNextModel(data:AlignmentDataType, rcsbFvContainer: DataContai
         view:"1d-view",
         data:{
             pdb: TagDelimiter.parseInstance(targetId),
-            targetAlignment
+            targetAlignment,
+            who: "auto"
         }
     });
 }

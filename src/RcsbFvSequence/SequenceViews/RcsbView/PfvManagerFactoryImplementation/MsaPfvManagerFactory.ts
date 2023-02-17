@@ -45,6 +45,7 @@ export class MsaPfvManagerFactory<T extends any[]> implements PfvManagerFactoryI
 type AlignmentDataType = {
     pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;},
     targetAlignment: TargetAlignment;
+    who: "user"|"auto";
 };
 
 class MsaPfvManager<T extends any[]> extends AbstractPfvManager<{id:string},{context: {id:string} &  Partial<PolymerEntityInstanceInterface>;}>{
@@ -141,18 +142,19 @@ class MsaPfvManager<T extends any[]> extends AbstractPfvManager<{id:string},{con
     private async readyStateLoad(): Promise<void> {
         const alignments: AlignmentResponse = await this.rcsbFvContainer.get()!.getAlignmentResponse();
         if(alignments.target_alignment && alignments.target_alignment.length > 0 && typeof alignments.target_alignment[0]?.target_id === "string"){
-            this.loadAlignment({queryId:this.config.id}, alignments.target_alignment[0]);
+            this.loadAlignment({queryId:this.config.id}, alignments.target_alignment[0], "auto");
         }
     }
 
-    private loadAlignment(alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment):void {
+    private loadAlignment(alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment, who: "user"|"auto" = "user"):void {
         if(typeof targetAlignment.target_id === "string") {
             this.stateManager.next<"model-change",AlignmentDataType>({
                 type:"model-change",
                 view:"1d-view",
                 data:{
                     pdb:TagDelimiter.parseEntityOrInstance(targetAlignment.target_id),
-                    targetAlignment
+                    targetAlignment,
+                    who
                 }
             });
         }
