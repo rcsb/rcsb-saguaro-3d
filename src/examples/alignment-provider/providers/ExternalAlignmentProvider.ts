@@ -1807,7 +1807,7 @@ async function getSequences(results: Alignment[]): Promise<InstanceSequenceInter
     return  out.concat(await RcsbRequestContextManager.getInstanceSequences(missingIds));
 }
 
-const structuralAlignment: StructureAlignmentResponse = flexAlignment as StructureAlignmentResponse;
+const structuralAlignment: StructureAlignmentResponse = alignmentExample as StructureAlignmentResponse;
 
 export const dataProvider: RcsbModuleDataProviderInterface = {
     alignments: {

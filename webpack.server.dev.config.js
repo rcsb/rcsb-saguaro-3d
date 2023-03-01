@@ -50,7 +50,7 @@ const server = {
     entry: entries,
     devServer: {
         compress: true,
-        port: 9000,
+        port: 9090,
     },
     plugins: Object.keys(entries).map(key=>new HtmlWebpackPlugin({
         filename:`${key}.html`,

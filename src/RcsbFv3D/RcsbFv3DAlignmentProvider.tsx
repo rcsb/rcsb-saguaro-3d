@@ -49,6 +49,10 @@ import {AbstractViewInterface} from "../RcsbFvSequence/SequenceViews/AbstractVie
 import {
     AlignmentProviderBehaviour
 } from "../RcsbFvSequence/SequenceViews/RcsbView/RcsbViewBehaviour/AlignmentProviderBehaviour";
+import {
+    FelxibleAlignmentTrajectoryParamsType
+} from "../RcsbFvStructure/StructureViewers/MolstarViewer/TrajectoryPresetProvider/FlexibleAlignmentTrajectoryPresetProvider";
+import {TrajectoryHierarchyPresetProvider} from "molstar/lib/mol-plugin-state/builder/structure/hierarchy-preset";
 
 export interface RcsbFv3DDataProviderInterface  {
     elementId?: string;
@@ -60,12 +64,13 @@ export interface RcsbFv3DDataProviderInterface  {
         subtitle?: string;
         additionalContent?(props: AbstractViewInterface): JSX.Element;
     };
-    additionalConfig?:RcsbFvAdditionalConfig;
+    additionalConfig?: RcsbFvAdditionalConfig;
     molstarProps?: Partial<ViewerProps>;
     cssConfig?: RcsbFv3DCssConfig;
+    trajectoryProvider?: TrajectoryHierarchyPresetProvider<AlignmentTrajectoryParamsType|FelxibleAlignmentTrajectoryParamsType,LoadMolstarReturnType>;
 }
 
-type AlignmentLoadMolstarType = LoadMolstarInterface<AlignmentTrajectoryParamsType,LoadMolstarReturnType>;
+type AlignmentLoadMolstarType = LoadMolstarInterface<AlignmentTrajectoryParamsType|FelxibleAlignmentTrajectoryParamsType,LoadMolstarReturnType>;
 export class RcsbFv3DAlignmentProvider extends RcsbFv3DAbstract<
         MsaPfvManagerInterface<[RcsbModuleDataProviderInterface]>,
         AlignmentLoadMolstarType|undefined,
@@ -116,7 +121,8 @@ export class RcsbFv3DAlignmentProvider extends RcsbFv3DAbstract<
             structureViewerBehaviourObserver: new MsaBehaviourObserver<AlignmentLoadMolstarType,LoadMolstarReturnType>(
                 new MolstarAlignmentLoader({
                     transformProvider: params.config.transformProvider,
-                    structureLocationProvider: params.config.structureLocationProvider
+                    structureLocationProvider: params.config.structureLocationProvider,
+                    trajectoryProvider: params.trajectoryProvider
                 }),
                 new MolstarComponentActionFactory()
             )

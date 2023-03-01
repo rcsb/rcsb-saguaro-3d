@@ -46,7 +46,7 @@ export abstract class RcsbFv3DAbstract<T,R,L,S,U> {
        this.structureViewerBehaviourObserver = config.structureViewerBehaviourObserver;
     }
 
-    public render(): void{
+    public async render(): Promise<void>{
         if(this.elementId == null )
             throw new Error("HTML element not found");
         const element: HTMLElement = document.getElementById(this.elementId) ?? document.createElement<"div">("div");
@@ -56,18 +56,21 @@ export abstract class RcsbFv3DAbstract<T,R,L,S,U> {
             this.fullScreen("on");
         }
         this.reactRoot = createRoot(element);
-        this.reactRoot.render(
-            <RcsbFv3DComponent<T,R,L,S,U>
-                structurePanelConfig={this.structureConfig}
-                sequencePanelConfig={this.sequenceConfig}
-                id={this.elementId}
-                ctxManager={this.ctxManager}
-                cssConfig={this.cssConfig}
-                unmount={this.unmount.bind(this)}
-                fullScreen={this.fullScreenFlag}
-                structureViewer={this.structureViewer}
-                structureViewerBehaviourObserver={this.structureViewerBehaviourObserver}
-            />);
+        return new Promise((resolve)=>{
+            this.reactRoot.render(
+                <RcsbFv3DComponent<T,R,L,S,U>
+                    structurePanelConfig={this.structureConfig}
+                    sequencePanelConfig={this.sequenceConfig}
+                    id={this.elementId}
+                    ctxManager={this.ctxManager}
+                    cssConfig={this.cssConfig}
+                    unmount={this.unmount.bind(this)}
+                    fullScreen={this.fullScreenFlag}
+                    structureViewer={this.structureViewer}
+                    structureViewerBehaviourObserver={this.structureViewerBehaviourObserver}
+                    resolve={resolve}
+                />);
+        });
     }
 
     public unmount(removeHtmlElement?:boolean, unmountCallback?:()=>{}): void{
@@ -88,7 +91,7 @@ export abstract class RcsbFv3DAbstract<T,R,L,S,U> {
     }
 
     public pluginCall(f: (plugin: PluginContext) => void){
-        this.ctxManager.next({eventType: EventType.PLUGIN_CALL, eventData:f});
+        this.structureViewer.pluginCall(f);
     }
 
     private fullScreen(mode: "on" | "off"): void {

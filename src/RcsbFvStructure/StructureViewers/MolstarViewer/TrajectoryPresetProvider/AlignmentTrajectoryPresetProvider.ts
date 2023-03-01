@@ -11,14 +11,12 @@ import {StateObjectRef, StateObjectSelector} from "molstar/lib/mol-state";
 import {RootStructureDefinition} from "molstar/lib/mol-plugin-state/helpers/root-structure";
 import {StateTransformer} from "molstar/lib/mol-state/transformer";
 import {StateObject} from "molstar/lib/mol-state/object";
-import {
-    StructureRepresentationPresetProvider
-} from "molstar/lib/mol-plugin-state/builder/structure/representation-preset";
+
 import {PLDDTConfidenceColorThemeProvider} from "molstar/lib/extensions/model-archive/quality-assessment/color/plddt";
 import {AlignmentRepresentationPresetProvider} from "./AlignmentRepresentationPresetProvider";
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {Structure, StructureElement, StructureProperties as SP} from "molstar/lib/mol-model/structure";
-import {RigidTransformType, TransformMatrixType} from "../../../StructureUtils/StructureLoaderInterface";
+import {TransformMatrixType} from "../../../StructureUtils/StructureLoaderInterface";
 
 
 export type AlignmentTrajectoryParamsType = {

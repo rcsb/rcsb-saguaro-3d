@@ -15,3 +15,9 @@ export {RcsbFv3DAlignmentProvider} from "./RcsbFv3D/RcsbFv3DAlignmentProvider";
 export {
     RcsbRequestContextManager
 } from "@rcsb/rcsb-saguaro-app";
+
+export {
+    AlignmentMapper
+} from "./Utils/AlignmentMapper";
+
+export {TransformStructureConformation} from "molstar/lib/mol-plugin-state/transforms/model";

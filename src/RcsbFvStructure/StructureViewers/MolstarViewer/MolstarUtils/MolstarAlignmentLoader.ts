@@ -24,6 +24,7 @@ import {
     FelxibleAlignmentTrajectoryParamsType,
     FlexibleAlignmentTrajectoryPresetProvider
 } from "../TrajectoryPresetProvider/FlexibleAlignmentTrajectoryPresetProvider";
+import {TrajectoryHierarchyPresetProvider} from "molstar/lib/mol-plugin-state/builder/structure/hierarchy-preset";
 
 export class MolstarAlignmentLoader implements StructureLoaderInterface<[
         ViewerActionManagerInterface<LoadMolstarInterface<AlignmentTrajectoryParamsType|FelxibleAlignmentTrajectoryParamsType,LoadMolstarReturnType>,LoadMolstarReturnType>,
@@ -33,9 +34,15 @@ export class MolstarAlignmentLoader implements StructureLoaderInterface<[
 
     private readonly transformProvider?: TransformProviderInterface;
     private readonly structureLocationProvider?: LocationProviderInterface;
-    constructor(loadConfig?:{transformProvider?: TransformProviderInterface; structureLocationProvider?: LocationProviderInterface}) {
+    private readonly trajectoryProvider?: TrajectoryHierarchyPresetProvider<AlignmentTrajectoryParamsType|FelxibleAlignmentTrajectoryParamsType,LoadMolstarReturnType>;
+    constructor(loadConfig?:{
+        transformProvider?: TransformProviderInterface;
+        structureLocationProvider?: LocationProviderInterface,
+        trajectoryProvider?: TrajectoryHierarchyPresetProvider<AlignmentTrajectoryParamsType|FelxibleAlignmentTrajectoryParamsType,LoadMolstarReturnType>
+    }) {
         this.transformProvider = loadConfig?.transformProvider;
         this.structureLocationProvider = loadConfig?.structureLocationProvider;
+        this.trajectoryProvider = loadConfig?.trajectoryProvider;
     }
     private readonly structureMap: Set<string> = new Set<string>();
 
@@ -49,7 +56,7 @@ export class MolstarAlignmentLoader implements StructureLoaderInterface<[
             const url: string|undefined = this.structureLocationProvider?.get(pdb.entryId);
             const transform = ("instanceId" in pdb ? this.transformProvider?.get(pdb.entryId, pdb.instanceId) : undefined) ?? undefined;
             const provider = !transform?.length || transform.length == 1 ? {
-                reprProvider: AlignmentTrajectoryPresetProvider,
+                reprProvider: this.trajectoryProvider ?? AlignmentTrajectoryPresetProvider,
                 params:{
                     modelIndex: 0,
                     pdb,
@@ -57,7 +64,7 @@ export class MolstarAlignmentLoader implements StructureLoaderInterface<[
                     matrix: transform?.[0].transform
                 }
             } : {
-                reprProvider: FlexibleAlignmentTrajectoryPresetProvider,
+                reprProvider: this.trajectoryProvider ?? FlexibleAlignmentTrajectoryPresetProvider,
                 params:{
                     modelIndex: 0,
                     pdb,

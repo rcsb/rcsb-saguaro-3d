@@ -44,7 +44,7 @@ interface RcsbFv3DComponentState<T,R,S,U> {
     pfvScreenFraction: number;
 }
 
-export class RcsbFv3DComponent<T,R,L,S,U> extends React.Component <RcsbFv3DComponentInterface<T,R,L,S,U>, RcsbFv3DComponentState<T,R,S,U>> {
+export class RcsbFv3DComponent<T,R,L,S,U> extends React.Component <RcsbFv3DComponentInterface<T,R,L,S,U> & {resolve:()=>void;}, RcsbFv3DComponentState<T,R,S,U>> {
 
     private readonly stateManager: RcsbFvStateInterface = new RcsbFvStateManager();
     private subscription: Subscription;
@@ -96,6 +96,7 @@ export class RcsbFv3DComponent<T,R,L,S,U> extends React.Component <RcsbFv3DCompo
 
     componentDidMount() {
         this.subscription = this.subscribe();
+        this.props.resolve();
     }
 
     componentWillUnmount() {

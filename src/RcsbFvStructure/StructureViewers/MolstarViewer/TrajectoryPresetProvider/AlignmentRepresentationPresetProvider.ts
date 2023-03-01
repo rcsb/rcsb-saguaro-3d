@@ -28,7 +28,6 @@ import {Loci} from "molstar/lib/mol-model/loci";
 import {superpose} from "molstar/lib/mol-model/structure/structure/util/superposition";
 import {Mat4} from "molstar/lib/mol-math/linear-algebra";
 import {SymmetryOperator} from "molstar/lib/mol-math/geometry/symmetry-operator";
-import {StateTransforms} from "molstar/lib/mol-plugin-state/transforms";
 import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {AlignedRegion, TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {AlignmentMapper as AM} from "../../../../Utils/AlignmentMapper";
@@ -41,8 +40,9 @@ import {MmcifFormat} from "molstar/lib/mol-model-formats/structure/mmcif";
 import {CustomProperty} from "molstar/lib/mol-model-props/common/custom-property";
 import {StructureBuilder} from "molstar/lib/mol-plugin-state/builder/structure";
 import {StructureRepresentationBuilder} from "molstar/lib/mol-plugin-state/builder/structure/representation";
-import {RigidTransformType, TransformMatrixType} from "../../../StructureUtils/StructureLoaderInterface";
+import {TransformMatrixType} from "../../../StructureUtils/StructureLoaderInterface";
 import {StateTransform} from "molstar/lib/mol-state/transform";
+import {TransformStructureConformation} from "molstar/lib/mol-plugin-state/transforms/model";
 
 type RepresentationParamsType = {
     pdb?:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};
@@ -254,7 +254,7 @@ async function matrixAlign(plugin: PluginContext,  structureRef: StateObjectRef<
         }
     };
     const b = plugin.state.data.build().to(structureRef)
-        .insert(StateTransforms.Model.TransformStructureConformation,trans);
+        .insert(TransformStructureConformation,trans);
     await plugin.runTask(plugin.state.data.updateTree(b));
 }
 
@@ -367,7 +367,7 @@ const SuperpositionTag = 'SuperpositionTransform';
 async function transform(plugin:PluginContext, s: StateObjectRef<PluginStateObject.Molecule.Structure>, matrix: Mat4, coordinateSystem?: SymmetryOperator): Promise<void>{
     const r = StateObjectRef.resolveAndCheck(plugin.state.data, s);
     if (!r) return;
-    const o = plugin.state.data.selectQ(q => q.byRef(r.transform.ref).subtree().withTransformer(StateTransforms.Model.TransformStructureConformation))[0];
+    const o = plugin.state.data.selectQ(q => q.byRef(r.transform.ref).subtree().withTransformer(TransformStructureConformation))[0];
 
     const transform = coordinateSystem && !Mat4.isIdentity(coordinateSystem.matrix)
         ? Mat4.mul(Mat4(), coordinateSystem.matrix, matrix)
@@ -382,7 +382,7 @@ async function transform(plugin:PluginContext, s: StateObjectRef<PluginStateObje
     const b = o
         ? plugin.state.data.build().to(o).update(params)
         : plugin.state.data.build().to(s)
-            .insert(StateTransforms.Model.TransformStructureConformation, params, { tags: SuperpositionTag });
+            .insert(TransformStructureConformation, params, { tags: SuperpositionTag });
     await plugin.runTask(plugin.state.data.updateTree(b));
 }
 
