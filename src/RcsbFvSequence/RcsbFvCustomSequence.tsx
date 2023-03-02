@@ -1,14 +1,11 @@
 import * as React from "react";
 import {CustomView, CustomViewInterface} from "./SequenceViews/CustomView/CustomView";
 import {
-    ViewerActionManagerInterface,
-    ViewerCallbackManagerInterface
+    ViewerActionManagerInterface
 } from "../RcsbFvStructure/StructureViewerInterface";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {RcsbFv, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
-import {RcsbView, RcsbViewInterface} from "./SequenceViews/RcsbView/RcsbView";
 import {RcsbFvStateInterface} from "../RcsbFvState/RcsbFvStateInterface";
-import {RcsbFvSequenceInterface} from "./RcsbFvSequence";
 
 export interface RcsbFvCustomSequenceInterface<R,L>{
     config: CustomViewInterface<R,L>;

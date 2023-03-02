@@ -14,6 +14,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
         additionalConfig: {
             boardConfig: {
                 rowTitleWidth: 100
+            },
+            externalUiComponents: {
+                replace: []
             }
         }
     });

@@ -114,24 +114,27 @@ class MsaPfvManager<T extends any[]> extends AbstractPfvManager<{id:string},{con
             beforeChangeCallback: () => {
                 this.config.pfvChangeCallback({context:{id:this.config.id}});
             },
-            externalUiComponents:[{
-                component: MsaUiSortComponent,
-                props: {
-                    rcsbFvContainer: this.rcsbFvContainer,
-                    stateManager: this.stateManager
-                }
-            },{
-                component: MsaUiSequenceAlignmentDownload,
-                props:{
-                    rcsbFvContainer: this.rcsbFvContainer,
-                    stateManager: this.stateManager
-                }
-            },{
-                component: MsaUiStructureDownload,
-                props:{
-                    stateManager: this.stateManager
-                }
-            }]
+            externalUiComponents: this.additionalConfig?.externalUiComponents?.replace ? {
+                replace: this.additionalConfig?.externalUiComponents?.replace
+            } : {
+                add: [{
+                    component: MsaUiSortComponent,
+                    props: {
+                        rcsbFvContainer: this.rcsbFvContainer,
+                        stateManager: this.stateManager
+                    }
+                },{
+                    component: MsaUiSequenceAlignmentDownload,
+                    props:{
+                        rcsbFvContainer: this.rcsbFvContainer,
+                        stateManager: this.stateManager
+                    }
+                },{
+                    component: MsaUiStructureDownload,
+                    props: {
+                        stateManager: this.stateManager
+                    }
+                }]}
         }];
         this.module = await this.config.buildMsaAlignmentFv(...args);
         this.rcsbFvContainer.set(this.module);
