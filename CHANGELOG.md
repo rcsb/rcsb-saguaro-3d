@@ -2,7 +2,7 @@
 
 [Semantic Versioning](https://semver.org/)
 
-## [2.4.0] - 2023-02-03
+## [3.0.0] - 2023-02-03
 ### Improvements
 - New entry method `RcsbFv3DDataProviderInterface` that ingests and displays external alignments
 - New interface `ComponentActionInterface` used to define what actions are triggered after a new structure is loaded
@@ -15,6 +15,8 @@ that is used to map loaded structure ids with user provided ids in `LoadParams`
 - New `RcsbViewBehaviourInterface` interface to extend "1d" behaviour to events
 - `RcsbFv3DAbstract.render` converted to async method
 - Exposed molstar trajectory preset configuration
+### Configuration
+- All packages are transpiled and included in the final module
 
 ## [2.3.7] - 2022-12-12
 ### Bug fix

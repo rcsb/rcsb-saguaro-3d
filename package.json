@@ -1,21 +1,24 @@
 {
   "name": "@rcsb/rcsb-saguaro-3d",
-  "version": "2.4.0-data-provider.15",
+  "version": "2.4.0-data-provider.16",
   "description": "RCSB Molstar/Saguaro Web App",
   "main": "build/dist/app.js",
   "files": [
-    "build/dist"
+    "build/dist",
+    "lib"
   ],
   "scripts": {
     "devServer": "webpack-dev-server --config webpack.server.dev.config.js",
     "tsc": "tsc --incremental",
     "build": "webpack --config ./webpack.config.js",
-    "buildAll": "npm run cleanAll && npm run tsc && npm run cpStyles && npm run copyConfig && npm run build && npm run buildDoc",
-    "buildApp": "npm run cleanAll && npm run tsc && npm run cpStyles && npm run copyConfig && npm run build && npm run clean",
-    "cpStyles": "ncp src/styles build/src/styles",
-    "copyConfig": "ncp build/src/config.js build/dist/config.js",
+    "buildAll": "npm run cleanAll && npm run tsc && npm run cpStyles && npm run mkDist && npm run copyConfig && npm run copyDef && npm run build && npm run buildDoc",
+    "buildApp": "npm run cleanAll && npm run tsc && npm run cpStyles && npm run mkDist && npm run copyConfig && npm run copyDef && npm run build",
+    "cpStyles": "ncp src/styles lib/styles",
+    "mkDist": "mkdirp build/dist",
+    "copyConfig": "ncp lib/config.js build/dist/config.js",
+    "copyDef": "ncp lib/app.d.ts build/dist/app.d.ts",
     "buildDoc": "typedoc --excludeExternals --externalPattern \"**/node_modules/**\" src/RcsbFv3D/RcsbFv3DAssembly.tsx src/RcsbFv3D/RcsbFv3DUniprot.tsx src/RcsbFv3D/RcsbFv3DSequenceIdentity.tsx src/RcsbFv3D/RcsbFv3DCustom.tsx && sed -i '' '/---/d' docs/index.html",
-    "clean": "del-cli build/src",
+    "clean": "del-cli lib",
     "cleanAll": "npm run clean && del-cli build/dist",
     "publishApp": "npm publish --tag data-provider",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -62,6 +65,7 @@
     "html-webpack-plugin": "^5.5.0",
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "^2.6.1",
+    "mkdirp": "^2.1.5",
     "ncp": "^2.0.0",
     "path-browserify": "^1.0.1",
     "react": "^18.1.0",

@@ -61,7 +61,7 @@ export class MolstarAlignmentLoader implements StructureLoaderInterface<[
                     modelIndex: 0,
                     pdb,
                     targetAlignment,
-                    matrix: transform?.[0].transform
+                    transform: transform
                 }
             } : {
                 reprProvider: this.trajectoryProvider ?? FlexibleAlignmentTrajectoryPresetProvider,

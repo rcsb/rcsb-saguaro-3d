@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "./build/src/",
+    "outDir": "./lib",
     "noImplicitAny": true,
     "target": "es2015",
     "module": "commonjs",
@@ -8,10 +8,10 @@
     "lib": [ "es6", "dom", "esnext.asynciterable", "es2016"  ],
     "allowJs": true,
     "declaration": true,
-    "sourceMap": true,
-    //"noUnusedLocals": true,
+    "sourceMap": false,
+    // "noUnusedLocals": true,
     "strictNullChecks": true,
-    "declarationDir": "./build/dist",
+    "declarationDir": "./lib",
     "esModuleInterop": true,
     "skipLibCheck": true
   },

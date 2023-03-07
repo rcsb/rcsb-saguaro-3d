@@ -6,18 +6,6 @@ import {RcsbFv3DAlignmentProvider as alignmentProvider} from "./RcsbFv3D/RcsbFv3
 
 export {custom, assembly, uniprot, sequenceIdentity, alignmentProvider};
 
-export {RcsbFv3DCustom} from "./RcsbFv3D/RcsbFv3DCustom";
-export {RcsbFv3DAssembly} from "./RcsbFv3D/RcsbFv3DAssembly";
-export {RcsbFv3DUniprot} from "./RcsbFv3D/RcsbFv3DUniprot";
-export {RcsbFv3DSequenceIdentity} from "./RcsbFv3D/RcsbFv3DSequenceIdentity";
-export {RcsbFv3DAlignmentProvider} from "./RcsbFv3D/RcsbFv3DAlignmentProvider";
-
 export {
     RcsbRequestContextManager
 } from "@rcsb/rcsb-saguaro-app";
-
-export {
-    AlignmentMapper
-} from "./Utils/AlignmentMapper";
-
-export {TransformStructureConformation} from "molstar/lib/mol-plugin-state/transforms/model";

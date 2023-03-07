@@ -11,20 +11,17 @@ import {StateObjectRef, StateObjectSelector} from "molstar/lib/mol-state";
 import {RootStructureDefinition} from "molstar/lib/mol-plugin-state/helpers/root-structure";
 import {StateTransformer} from "molstar/lib/mol-state/transformer";
 import {StateObject} from "molstar/lib/mol-state/object";
-
-import {PLDDTConfidenceColorThemeProvider} from "molstar/lib/extensions/model-archive/quality-assessment/color/plddt";
 import {AlignmentRepresentationPresetProvider} from "./AlignmentRepresentationPresetProvider";
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {Structure, StructureElement, StructureProperties as SP} from "molstar/lib/mol-model/structure";
-import {TransformMatrixType} from "../../../StructureUtils/StructureLoaderInterface";
+import {RigidTransformType, TransformMatrixType} from "../../../StructureUtils/StructureLoaderInterface";
 
 
 export type AlignmentTrajectoryParamsType = {
     pdb?:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};
-    matrix?: TransformMatrixType;
+    transform?: RigidTransformType[];
     targetAlignment?: TargetAlignment;
     modelIndex?: number;
-    plddt?: 'off' | 'single-chain' | 'on';
 }
 
 type StructureObject = StateObjectSelector<PluginStateObject.Molecule.Structure, StateTransformer<StateObject<any, StateObject.Type<any>>, StateObject<any, StateObject.Type<any>>, any>>
@@ -39,8 +36,7 @@ export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvid
         pdb:PD.Value<{entryId:string;entityId:string;}|{entryId:string;instanceId:string;}|undefined>(undefined),
         targetAlignment: PD.Value<TargetAlignment|undefined>(undefined),
         modelIndex:PD.Value<number|undefined>(undefined),
-        plddt:PD.Value<'off' | 'single-chain' | 'on' | undefined>(undefined),
-        matrix:PD.Value<TransformMatrixType|undefined>(undefined)
+        transform: PD.Value<RigidTransformType[]|undefined>(undefined)
     }),
     apply: async (trajectory: StateObjectRef<PluginStateObject.Molecule.Trajectory>, params: AlignmentTrajectoryParamsType, plugin: PluginContext) => {
         if(!params.pdb)
@@ -87,7 +83,7 @@ export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvid
             {
                 pdb:params.pdb,
                 targetAlignment:params.targetAlignment,
-                matrix: params.matrix
+                transform: params.transform
             }
         );
         //TODO what is the purpose of this return?
@@ -100,10 +96,3 @@ export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvid
         };
     }
 });
-
-function checkPlddtColorTheme(structure: StructureObject | undefined, plddt: 'on' | 'single-chain' | 'off') {
-    if (!structure?.data) return false;
-    if (plddt === 'off') return false;
-    if (plddt === 'single-chain' && structure.data?.polymerUnitCount !== 1) return false;
-    return PLDDTConfidenceColorThemeProvider.isApplicable({ structure: structure.data });
-}

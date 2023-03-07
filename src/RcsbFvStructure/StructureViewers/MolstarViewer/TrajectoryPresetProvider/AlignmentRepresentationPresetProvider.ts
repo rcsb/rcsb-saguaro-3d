@@ -40,13 +40,14 @@ import {MmcifFormat} from "molstar/lib/mol-model-formats/structure/mmcif";
 import {CustomProperty} from "molstar/lib/mol-model-props/common/custom-property";
 import {StructureBuilder} from "molstar/lib/mol-plugin-state/builder/structure";
 import {StructureRepresentationBuilder} from "molstar/lib/mol-plugin-state/builder/structure/representation";
-import {TransformMatrixType} from "../../../StructureUtils/StructureLoaderInterface";
+import {RigidTransformType, TransformMatrixType} from "../../../StructureUtils/StructureLoaderInterface";
 import {StateTransform} from "molstar/lib/mol-state/transform";
 import {TransformStructureConformation} from "molstar/lib/mol-plugin-state/transforms/model";
 
 type RepresentationParamsType = {
     pdb?:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};
-    matrix?: TransformMatrixType;
+
+    transform?: RigidTransformType[];
     targetAlignment?:TargetAlignment;
 }
 
@@ -67,7 +68,7 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
     params: (structureRef: PluginStateObject.Molecule.Structure | undefined, plugin: PluginContext) => ({
         pdb: PD.Value<{entryId:string;entityId:string;}|{entryId:string;instanceId:string;}|undefined>(undefined),
         targetAlignment: PD.Value<TargetAlignment|undefined>(undefined),
-        matrix:PD.Value<TransformMatrixType|undefined>(undefined)
+        transform:PD.Value<RigidTransformType[]|undefined>(undefined)
     }),
     apply: async (structureRef: StateObjectRef<PluginStateObject.Molecule.Structure>, params: RepresentationParamsType, plugin: PluginContext) => {
         const structureCell = StateObjectRef.resolveAndCheck(plugin.state.data, structureRef);
@@ -107,15 +108,15 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
                         targetAlignment:params.targetAlignment!
                     };
                 }
-                if(refParams && params.pdb && !params.matrix){
+                if(refParams && params.pdb && !params.transform){
                     await structuralAlignment(plugin, refParams, {
                         entryId: entryId,
                         labelAsymId: alignedAsymId,
                         operatorName:alignedOperatorName,
                         targetAlignment:params.targetAlignment!
                     }, structure);
-                }else if(params.matrix){
-                    await matrixAlign(plugin, structureRef, params.matrix);
+                }else if(params.transform?.[0].transform){
+                    await matrixAlign(plugin, structureRef, params.transform?.[0].transform);
                 }
                 const comp = await plugin.builders.structure.tryCreateComponentFromExpression(
                     structureCell,

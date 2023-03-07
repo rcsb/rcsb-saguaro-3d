@@ -30,7 +30,7 @@ const commonConfig = {
     resolve: {
         modules: [
             'node_modules',
-            path.resolve(__dirname, 'build/src/')
+            path.resolve(__dirname, 'lib/')
         ],
         fallback: {
             fs: false,
@@ -45,7 +45,7 @@ const commonConfig = {
 const appConfig = {
     ...commonConfig,
     entry: {
-        'app':'./build/src/app.js'
+        'app':'./lib/app.js'
     },
     mode: "production",
     output: {
