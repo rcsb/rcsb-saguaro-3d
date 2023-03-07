@@ -149,7 +149,9 @@ export class RcsbFv3DComponent<T,R,L,S,U> extends React.Component <RcsbFv3DCompo
 
     /**Unsubscribe className to rxjs events. Useful if many panels are created an destroyed.*/
     private unsubscribe(): void{
+        console.warn('Unsubscribing all observers');
         this.subscription.unsubscribe();
+        this.stateManager.unsubscribe();
     }
 
     private updateConfig(config:UpdateConfigInterface<T,R,S,U>){

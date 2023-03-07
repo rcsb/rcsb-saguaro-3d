@@ -23,7 +23,7 @@ interface MsaRowTitleCheckboxState {
 }
 
 //TODO keeps a global state of the (checkboxes <=> mol-star components) This needs further review!!!
-const globalState: {[key:string]: "active"|"inactive"|"disabled"|undefined;} = {};
+let globalState: {[key:string]: "active"|"inactive"|"disabled"|undefined;} = {};
 
 export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCheckboxType,MsaRowTitleCheckboxState> {
 
@@ -75,6 +75,7 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
 
     public componentWillUnmount() {
         this.subscription.unsubscribe();
+        globalState = {};
     }
 
     private subscribe(): void{

@@ -23,4 +23,8 @@ export class RcsbFvStateManager implements RcsbFvStateInterface {
        return  this.subject.subscribe(o);
     }
 
+    unsubscribe(): void {
+        this.subject.unsubscribe();
+    }
+
 }

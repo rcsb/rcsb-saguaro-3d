@@ -22,15 +22,15 @@ class MolstarComponentAction implements ComponentActionInterface<LoadMolstarRetu
         const components = trajectory.representation?.components;
         if(!components)
             return;
-        if(!components["polymer"]){
+        if(!components["polymer"]) {
             this.stateManager.next<
                 "missing-component",
-                {tag:"aligned"|"polymer"|"non-polymer";entryId:string;entityId:string;}|{tag:"aligned"|"polymer"|"non-polymer";entryId:string;instanceId:string;}
+                { tag: "aligned" | "polymer" | "non-polymer"; entryId: string; entityId: string; } | { tag: "aligned" | "polymer" | "non-polymer"; entryId: string; instanceId: string; }
             >({
-                type:"missing-component",
+                type: "missing-component",
                 view: "3d-view",
                 data: {
-                    tag:"polymer",
+                    tag: "polymer",
                     ...context
                 }
             });

@@ -20,9 +20,8 @@ export interface RcsbFvStateInterface {
     readonly assemblyModelSate: AssemblyModelSate;
     readonly subject: Subject<RcsbFvStateType<any,any>>
 
-
     subscribe<T,D>(o:(state:RcsbFvStateType<T,D>)=>void): Subscription;
-
     next<T,D>(state:RcsbFvStateType<T,D>): void;
+    unsubscribe(): void;
 
 }
