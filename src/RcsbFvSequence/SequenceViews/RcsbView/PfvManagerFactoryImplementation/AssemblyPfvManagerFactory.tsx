@@ -3,7 +3,6 @@ import {
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {
     ChainInfo, OperatorInfo,
-    SaguaroPluginModelMapType, ViewerActionManagerInterface
 } from "../../../../RcsbFvStructure/StructureViewerInterface";
 import {
     InstanceSequenceConfig
@@ -29,8 +28,6 @@ import {
     PfvManagerInterface,
     PfvManagerFactoryInterface
 } from "../PfvManagerFactoryInterface";
-import {ColorTheme} from "molstar/lib/mol-theme/color";
-import {PLDDTConfidenceColorThemeProvider} from "molstar/lib/extensions/model-archive/quality-assessment/color/plddt";
 
 interface AssemblyPfvManagerInterface extends PfvManagerFactoryConfigInterface<undefined>{
     useOperatorsFlag?: boolean;
@@ -76,7 +73,7 @@ class AssemblyPfvManager extends AbstractPfvManager<{instanceSequenceConfig?: In
                 this.stateManager.assemblyModelSate.getString("entryId"),
                 {
                     ...this.instanceSequenceConfig,
-                    defaultValue: config.defaultAuthId,
+                    defaultValue: config.defaultAuthId ?? this.instanceSequenceConfig?.defaultValue,
                     onChangeCallback: onChangeCallback.get(this.stateManager.assemblyModelSate.getString("entryId")),
                     beforeChangeCallback: (x: PolymerEntityInstanceInterface)=>{
                         this.stateManager.assemblyModelSate.set({entryId:x.entryId, labelAsymId: x.asymId});

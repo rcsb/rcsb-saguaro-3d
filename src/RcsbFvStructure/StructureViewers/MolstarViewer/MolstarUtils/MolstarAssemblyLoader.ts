@@ -18,9 +18,11 @@ export class MolstarAssemblyLoader implements StructureLoaderInterface<
 
     private readonly entryId: string;
     private readonly assemblyId: string;
-    constructor(config: {entryId: string; assemblyId: string;}){
+    private readonly asymId?: string;
+    constructor(config: {entryId: string; assemblyId: string; asymId?:string;}){
         this.entryId = config.entryId;
         this.assemblyId = config.assemblyId;
+        this.asymId = config.asymId;
     }
 
     async load(structureViewer: ViewerActionManagerInterface<LoadMolstarInterface<AssemblyTrajectoryParamsType, LoadMolstarReturnType>, LoadMolstarReturnType>): Promise<LoadMolstarReturnType|undefined> {
@@ -32,7 +34,8 @@ export class MolstarAssemblyLoader implements StructureLoaderInterface<
                 id: this.entryId,
                 params: {
                     assemblyId: this.assemblyId,
-                    modelIndex: 0
+                    modelIndex: 0,
+                    asymId: this.asymId
                 }
             }
         });

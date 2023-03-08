@@ -39,6 +39,7 @@ export interface RcsbFv3DAssemblyInterface {
     config: {
         entryId: string;
         assemblyId?: string;
+        asymId?: string;
         title?: string;
         subtitle?: string;
     };
@@ -91,7 +92,8 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract<
             structureViewerBehaviourObserver: new AssemblyBehaviourObserver<AssemblyLoadMolstarType,LoadMolstarReturnType>(
                 new MolstarAssemblyLoader({
                     entryId: params.config.entryId,
-                    assemblyId: typeof (params.config.assemblyId) === "string" && params.config.assemblyId?.length > 0 ? params.config.assemblyId : '1'
+                    assemblyId: typeof (params.config.assemblyId) === "string" && params.config.assemblyId?.length > 0 ? params.config.assemblyId : '1',
+                    asymId: params.config.asymId
                 })
             ),
             cssConfig: params.cssConfig

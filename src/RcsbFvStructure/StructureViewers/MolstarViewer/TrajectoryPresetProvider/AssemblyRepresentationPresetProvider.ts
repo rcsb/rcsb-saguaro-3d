@@ -95,7 +95,7 @@ export const AssemblyRepresentationPresetProvider = StructureRepresentationPrese
                 type: expression.type
             },{
                 initialState:{
-                    isHidden: expression.tag == "water" ? true : false
+                    isHidden: expression.tag == "water"
                 }
             });
             if (comp?.cell?.state && expression.tag == "water") {

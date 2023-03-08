@@ -21,20 +21,22 @@ document.addEventListener("DOMContentLoaded", function(event) {
         return result;
     }
 
-    const args: {pdbId:string} = getJsonFromUrl().pdbId ? getJsonFromUrl() : {pdbId:"1A6D"};
+    const args: {pdbId:string} = getJsonFromUrl().pdbId ? getJsonFromUrl() : {pdbId:"1XXX"};
 
-    const sequenceConfig = {
+    const config = {
         entryId: args.pdbId,
         title: "Title " + args.pdbId,
-        subtitle: "Subtitle for " + args.pdbId
+        subtitle: "Subtitle for " + args.pdbId,
+        asymId: "E"
     };
 
     const panel3d = new RcsbFv3DAssembly({
         elementId: "null",
-        config: sequenceConfig,
+        config: config,
         instanceSequenceConfig:{
             dropdownTitle: "Chain",
-            module: "interface"
+            module: "interface",
+            defaultValue: "E"
         },
         additionalConfig: {
             boardConfig: {
