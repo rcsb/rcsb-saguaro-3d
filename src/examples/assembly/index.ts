@@ -21,13 +21,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
         return result;
     }
 
-    const args: {pdbId:string} = getJsonFromUrl().pdbId ? getJsonFromUrl() : {pdbId:"1XXX"};
-
+    const args: {pdbId:string} = getJsonFromUrl().pdbId ? getJsonFromUrl() : {pdbId:"1A6D"};
+    const defaultAsymId = "A"
     const config = {
         entryId: args.pdbId,
         title: "Title " + args.pdbId,
         subtitle: "Subtitle for " + args.pdbId,
-        asymId: "E"
+        asymId: defaultAsymId
     };
 
     const panel3d = new RcsbFv3DAssembly({
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         instanceSequenceConfig:{
             dropdownTitle: "Chain",
             module: "interface",
-            defaultValue: "E"
+            defaultValue: defaultAsymId
         },
         additionalConfig: {
             boardConfig: {
