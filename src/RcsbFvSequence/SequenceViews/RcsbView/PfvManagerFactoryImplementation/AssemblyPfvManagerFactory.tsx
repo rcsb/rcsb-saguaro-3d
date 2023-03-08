@@ -75,10 +75,11 @@ class AssemblyPfvManager extends AbstractPfvManager<{instanceSequenceConfig?: In
                     ...this.instanceSequenceConfig,
                     defaultValue: config.defaultAuthId ?? this.instanceSequenceConfig?.defaultValue,
                     onChangeCallback: (context,module)=>{
-                        onChangeCallback.get(this.stateManager.assemblyModelSate.getString("entryId"))
+                        onChangeCallback.get(this.stateManager.assemblyModelSate.getString("entryId"));
                         const entryMap:[string, {entryId: string, assemblyId: string, chains: ChainInfo[]}] | undefined = Array.from(this.stateManager.assemblyModelSate.entries()).find((e)=>(e[1].entryId === context.entryId));
                         const operator: OperatorInfo|undefined = entryMap && entryMap[0] ? getOperator(this.stateManager.assemblyModelSate.getMap().get(entryMap[0])!, config.defaultAuthId, operatorNameContainer.get()) : undefined;
                         this.stateManager.pfvContext.set({...context, operator});
+                        this.instanceSequenceConfig?.onChangeCallback?.(context, module);
                     },
                     beforeChangeCallback: (x: PolymerEntityInstanceInterface)=>{
                         this.stateManager.assemblyModelSate.set({entryId:x.entryId, labelAsymId: x.asymId});

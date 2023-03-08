@@ -24,7 +24,7 @@ export class HelpLinkComponent extends React.Component<HelpLinkInterface> {
                         Help
                     </a>
                     <a style={{textDecoration:"none", color: "#337ab7", cursor:"pointer"}} onClick={()=>{this.props.unmount(true, ()=>{
-                        window.location.href = document.referrer + '?asymId=' + this.props.stateManager.pfvContext.get()?.asymId
+                        window.history.back();
                     })}}>
                         Back
                     </a>

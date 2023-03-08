@@ -36,7 +36,10 @@ document.addEventListener("DOMContentLoaded", function(event) {
         instanceSequenceConfig:{
             dropdownTitle: "Chain",
             module: "interface",
-            defaultValue: defaultAsymId
+            defaultValue: defaultAsymId,
+            onChangeCallback: (context, module)=>{
+               console.log(context);
+            }
         },
         additionalConfig: {
             boardConfig: {
