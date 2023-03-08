@@ -5,7 +5,7 @@ interface AssemblyModelStateInterface {
     entryId:string;
     assemblyId:string;
     labelAsymId:string;
-    operator: OperatorInfo
+    operator: OperatorInfo;
 }
 
 export class AssemblyModelSate {

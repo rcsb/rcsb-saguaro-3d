@@ -1,9 +1,11 @@
 import * as React from "react";
 import {RcsbFvDOMConstants} from "../../../../RcsbFvConstants/RcsbFvConstants";
+import {RcsbFvStateInterface} from "../../../../RcsbFvState/RcsbFvStateInterface";
 
 interface HelpLinkInterface {
     unmount:(flag:boolean,callback:()=>void)=>void;
     helpHref:string;
+    stateManager: RcsbFvStateInterface;
 }
 
 export class HelpLinkComponent extends React.Component<HelpLinkInterface> {
@@ -22,7 +24,7 @@ export class HelpLinkComponent extends React.Component<HelpLinkInterface> {
                         Help
                     </a>
                     <a style={{textDecoration:"none", color: "#337ab7", cursor:"pointer"}} onClick={()=>{this.props.unmount(true, ()=>{
-                        window.history.back();
+                        window.location.href = document.referrer + '?asymId=' + this.props.stateManager.pfvContext.get()?.asymId
                     })}}>
                         Back
                     </a>

@@ -7,6 +7,8 @@
 import {RcsbFvSelectorManager} from "./RcsbFvSelectorManager";
 import {AssemblyModelSate} from "./AssemblyModelSate";
 import {Subject, Subscription} from "rxjs";
+import {DataContainer} from "../Utils/DataContainer";
+import {OperatorInfo} from "../RcsbFvStructure/StructureViewerInterface";
 
 export type RcsbFvStateType<T="feature-click",D=undefined> = {
     type: "feature-click"|"selection-change"|"hover-change"|"model-change"|"representation-change"|"pfv-change"|T;
@@ -18,6 +20,7 @@ export interface RcsbFvStateInterface {
 
     readonly selectionState: RcsbFvSelectorManager;
     readonly assemblyModelSate: AssemblyModelSate;
+    readonly pfvContext: DataContainer<{entryId:string;asymId?:string;operator?:OperatorInfo;}>;
     readonly subject: Subject<RcsbFvStateType<any,any>>
 
     subscribe<T,D>(o:(state:RcsbFvStateType<T,D>)=>void): Subscription;
