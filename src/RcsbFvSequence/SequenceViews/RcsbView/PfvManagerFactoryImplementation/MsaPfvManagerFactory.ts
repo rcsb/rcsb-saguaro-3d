@@ -75,7 +75,7 @@ class MsaPfvManager<T extends any[]> extends AbstractPfvManager<{id:string},{con
                 }
             },
             trackConfigModifier: {
-                alignment: (alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment) => new Promise((resolve)=>{
+                alignment: (alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment, alignmentResponse: AlignmentResponse, alignmentIndex: number) => new Promise((resolve)=>{
                     const alignmentMod = {
                         rowMark:{
                             externalRowMark: {
@@ -101,7 +101,7 @@ class MsaPfvManager<T extends any[]> extends AbstractPfvManager<{id:string},{con
                         }
                     };
                     if(this.additionalConfig?.trackConfigModifier?.alignment)
-                        this.additionalConfig.trackConfigModifier.alignment(alignmentContext, targetAlignment).then((rc)=>{
+                        this.additionalConfig.trackConfigModifier.alignment(alignmentContext, targetAlignment, alignmentResponse, alignmentIndex).then((rc)=>{
                             resolve({
                                 ...rc,
                                 ...alignmentMod

@@ -75,7 +75,6 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
 
     public componentWillUnmount() {
         this.subscription.unsubscribe();
-        globalState = {};
     }
 
     private subscribe(): void{
