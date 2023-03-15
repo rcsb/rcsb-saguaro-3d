@@ -12,10 +12,7 @@ export type RigidTransformType =  {
     transform: TransformMatrixType,
     regions?: [number,number][]
 };
-export interface TransformProviderInterface {
-    get(entryId:string, asymId?:string): RigidTransformType[] | undefined;
-}
 
-export interface LocationProviderInterface {
-    get(entryId:string): string | undefined;
+export interface LoadParamsProviderInterface<X,R> {
+    get(args: X): R;
 }

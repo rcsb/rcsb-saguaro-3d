@@ -33,8 +33,7 @@ import {
 } from "../RcsbFvSequence/SequenceViews/RcsbView/PfvManagerFactoryImplementation/MsaPfvManagerFactory";
 import {buildDataProviderFv} from "@rcsb/rcsb-saguaro-app";
 import {
-    LocationProviderInterface,
-    TransformProviderInterface
+    LoadParamsProviderInterface
 } from "../RcsbFvStructure/StructureUtils/StructureLoaderInterface";
 
 import {
@@ -49,17 +48,13 @@ import {AbstractViewInterface} from "../RcsbFvSequence/SequenceViews/AbstractVie
 import {
     AlignmentProviderBehaviour
 } from "../RcsbFvSequence/SequenceViews/RcsbView/RcsbViewBehaviour/AlignmentProviderBehaviour";
-import {
-    FelxibleAlignmentTrajectoryParamsType
-} from "../RcsbFvStructure/StructureViewers/MolstarViewer/TrajectoryPresetProvider/FlexibleAlignmentTrajectoryPresetProvider";
 import {TrajectoryHierarchyPresetProvider} from "molstar/lib/mol-plugin-state/builder/structure/hierarchy-preset";
 
 export interface RcsbFv3DDataProviderInterface  {
     elementId?: string;
     config: {
         dataProvider: RcsbModuleDataProviderInterface;
-        transformProvider?: TransformProviderInterface;
-        structureLocationProvider?: LocationProviderInterface;
+        loadParamsProvider?: LoadParamsProviderInterface<{entryId: string; instanceId: string;},LoadMolstarInterface<AlignmentTrajectoryParamsType,LoadMolstarReturnType>>;
         title?: string;
         subtitle?: string;
         additionalContent?(props: AbstractViewInterface): JSX.Element;
@@ -67,10 +62,10 @@ export interface RcsbFv3DDataProviderInterface  {
     additionalConfig?: RcsbFvAdditionalConfig;
     molstarProps?: Partial<ViewerProps>;
     cssConfig?: RcsbFv3DCssConfig;
-    trajectoryProvider?: TrajectoryHierarchyPresetProvider<AlignmentTrajectoryParamsType|FelxibleAlignmentTrajectoryParamsType,LoadMolstarReturnType>;
+    trajectoryProvider?: TrajectoryHierarchyPresetProvider<AlignmentTrajectoryParamsType,LoadMolstarReturnType>;
 }
 
-type AlignmentLoadMolstarType = LoadMolstarInterface<AlignmentTrajectoryParamsType|FelxibleAlignmentTrajectoryParamsType,LoadMolstarReturnType>;
+type AlignmentLoadMolstarType = LoadMolstarInterface<AlignmentTrajectoryParamsType,LoadMolstarReturnType>;
 export class RcsbFv3DAlignmentProvider extends RcsbFv3DAbstract<
         MsaPfvManagerInterface<[RcsbModuleDataProviderInterface]>,
         AlignmentLoadMolstarType|undefined,
@@ -119,11 +114,7 @@ export class RcsbFv3DAlignmentProvider extends RcsbFv3DAbstract<
                 {viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}
             >( new MolstarManagerFactory(getModelIdFromTrajectory) ),
             structureViewerBehaviourObserver: new MsaBehaviourObserver<AlignmentLoadMolstarType,LoadMolstarReturnType>(
-                new MolstarAlignmentLoader({
-                    transformProvider: params.config.transformProvider,
-                    structureLocationProvider: params.config.structureLocationProvider,
-                    trajectoryProvider: params.trajectoryProvider
-                }),
+                new MolstarAlignmentLoader(params.config.loadParamsProvider),
                 new MolstarComponentActionFactory()
             )
         });

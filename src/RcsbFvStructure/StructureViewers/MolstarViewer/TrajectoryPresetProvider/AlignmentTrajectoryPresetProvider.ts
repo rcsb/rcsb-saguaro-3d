@@ -14,7 +14,7 @@ import {StateObject} from "molstar/lib/mol-state/object";
 import {AlignmentRepresentationPresetProvider} from "./AlignmentRepresentationPresetProvider";
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {Structure, StructureElement, StructureProperties as SP} from "molstar/lib/mol-model/structure";
-import {RigidTransformType, TransformMatrixType} from "../../../StructureUtils/StructureLoaderInterface";
+import {RigidTransformType} from "../../../StructureUtils/StructureLoaderInterface";
 
 
 export type AlignmentTrajectoryParamsType = {

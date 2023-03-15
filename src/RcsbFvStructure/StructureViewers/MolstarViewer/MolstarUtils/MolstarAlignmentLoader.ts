@@ -4,9 +4,8 @@
 */
 
 import {
-    LocationProviderInterface,
-    StructureLoaderInterface,
-    TransformProviderInterface
+    LoadParamsProviderInterface,
+    StructureLoaderInterface
 } from "../../../StructureUtils/StructureLoaderInterface";
 import {ViewerActionManagerInterface} from "../../../StructureViewerInterface";
 import {
@@ -20,73 +19,44 @@ import {
     AlignmentTrajectoryParamsType
 } from "../TrajectoryPresetProvider/AlignmentTrajectoryPresetProvider";
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
-import {
-    FelxibleAlignmentTrajectoryParamsType,
-    FlexibleAlignmentTrajectoryPresetProvider
-} from "../TrajectoryPresetProvider/FlexibleAlignmentTrajectoryPresetProvider";
-import {TrajectoryHierarchyPresetProvider} from "molstar/lib/mol-plugin-state/builder/structure/hierarchy-preset";
+
 
 export class MolstarAlignmentLoader implements StructureLoaderInterface<[
-        ViewerActionManagerInterface<LoadMolstarInterface<AlignmentTrajectoryParamsType|FelxibleAlignmentTrajectoryParamsType,LoadMolstarReturnType>,LoadMolstarReturnType>,
+        ViewerActionManagerInterface<LoadMolstarInterface<AlignmentTrajectoryParamsType,LoadMolstarReturnType>,LoadMolstarReturnType>,
         {entryId:string;entityId:string;}|{entryId:string;instanceId:string;},
         TargetAlignment
     ], LoadMolstarReturnType> {
 
-    private readonly transformProvider?: TransformProviderInterface;
-    private readonly structureLocationProvider?: LocationProviderInterface;
-    private readonly trajectoryProvider?: TrajectoryHierarchyPresetProvider<AlignmentTrajectoryParamsType|FelxibleAlignmentTrajectoryParamsType,LoadMolstarReturnType>;
-    constructor(loadConfig?:{
-        transformProvider?: TransformProviderInterface;
-        structureLocationProvider?: LocationProviderInterface,
-        trajectoryProvider?: TrajectoryHierarchyPresetProvider<AlignmentTrajectoryParamsType|FelxibleAlignmentTrajectoryParamsType,LoadMolstarReturnType>
-    }) {
-        this.transformProvider = loadConfig?.transformProvider;
-        this.structureLocationProvider = loadConfig?.structureLocationProvider;
-        this.trajectoryProvider = loadConfig?.trajectoryProvider;
+    private readonly loadParamsProvider?: LoadParamsProviderInterface<{entryId: string; instanceId: string;}, LoadMolstarInterface<AlignmentTrajectoryParamsType,LoadMolstarReturnType>>;
+    constructor(loadParamsProvider?: LoadParamsProviderInterface<{entryId: string; instanceId: string;}, LoadMolstarInterface<AlignmentTrajectoryParamsType,LoadMolstarReturnType>>) {
+        this.loadParamsProvider = loadParamsProvider;
     }
     private readonly structureMap: Set<string> = new Set<string>();
 
     async load(
-        structureViewer: ViewerActionManagerInterface<LoadMolstarInterface<AlignmentTrajectoryParamsType|FelxibleAlignmentTrajectoryParamsType,LoadMolstarReturnType>,LoadMolstarReturnType>,
+        structureViewer: ViewerActionManagerInterface<LoadMolstarInterface<AlignmentTrajectoryParamsType,LoadMolstarReturnType>,LoadMolstarReturnType>,
         pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;},
         targetAlignment: TargetAlignment
     ): Promise<undefined|LoadMolstarReturnType> {
         const structureId: string = `${pdb.entryId}${"entityId" in pdb ? TagDelimiter.entity : TagDelimiter.instance}${"entityId" in pdb ? pdb.entityId : pdb.instanceId}`;
         if(!this.structureMap.has(structureId)){
-            const url: string|undefined = this.structureLocationProvider?.get(pdb.entryId);
-            const transform = ("instanceId" in pdb ? this.transformProvider?.get(pdb.entryId, pdb.instanceId) : undefined) ?? undefined;
-            const provider = !transform?.length || transform.length == 1 ? {
-                reprProvider: this.trajectoryProvider ?? AlignmentTrajectoryPresetProvider,
-                params:{
-                    modelIndex: 0,
-                    pdb,
-                    targetAlignment,
-                    transform: transform
-                }
-            } : {
-                reprProvider: this.trajectoryProvider ?? FlexibleAlignmentTrajectoryPresetProvider,
-                params:{
-                    modelIndex: 0,
-                    pdb,
-                    targetAlignment,
-                    transform: transform
-                }
-            };
-            const trajectory = await structureViewer.load({
-                loadMethod: url ? LoadMethod.loadStructureFromUrl : LoadMethod.loadPdbId,
-                loadParams: {
-                    url,
-                    format: url ? "mmcif" : undefined,
-                    isBinary: url ? false : undefined,
-                    id: structureId,
-                    entryId:pdb.entryId,
-                    ...provider
-                }
-            });
             this.structureMap.add(
                 structureId
             );
-            return trajectory;
+            const loadParams = 'instanceId' in pdb ? this.loadParamsProvider?.get(pdb) : undefined;
+            return loadParams ? await structureViewer.load(loadParams) : await structureViewer.load({
+                loadMethod: LoadMethod.loadPdbId,
+                loadParams: {
+                    id: structureId,
+                    entryId: pdb.entryId,
+                    reprProvider: AlignmentTrajectoryPresetProvider,
+                    params:{
+                        modelIndex: 0,
+                        pdb,
+                        targetAlignment
+                    }
+                }
+            });
         } else {
             await structureViewer.removeStructure({
                 loadMethod: LoadMethod.loadPdbId,

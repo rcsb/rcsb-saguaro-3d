@@ -3,6 +3,11 @@ import {
     AlignedRegion,
     AlignmentResponse,
 } from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {Alignment} from "./alignment-response";
+import {RcsbRequestContextManager, TagDelimiter} from "@rcsb/rcsb-saguaro-app";
+import {
+    InstanceSequenceInterface
+} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/DataCollectors/MultipleInstanceSequencesCollector";
 
 type AlignmentRefType = (number|undefined)[];
 type AlignmentMemberType = {
@@ -12,15 +17,18 @@ type AlignmentMemberType = {
     target: AlignmentRefType;
 };
 export class AlignmentReference {
-    private readonly alignmentRefMap: AlignmentRefType;
-    private readonly refId:string;
-    private readonly alignmentRefGaps: Record<number, number>;
+    private alignmentRefMap: AlignmentRefType;
+    private refId:string;
+    private readonly alignmentRefGaps: Record<number, number> = {};
     private readonly memberRefList: AlignmentMemberType[] = [];
 
-    constructor(refId: string, length: number) {
+    private readonly alignmentMap = new Map<string,{entryId: string; instanceId: string; alignmentId: string; sequence: string; alignmentIndex:number; pairIndex: number;}>();
+
+    public async init(result: Alignment) {
+        this.alignmentMap.clear();
+        this.refId = this.addUniqueAlignmentId(result,0,0);
+        const length = (await this.getSequences())[0].sequence.length;
         this.alignmentRefMap = Array(length).fill(0).map((v,n)=>n+1);
-        this.alignmentRefGaps = {};
-        this.refId = refId;
     }
 
     public addAlignment(id:string, alignment: AlignmentRefType, target: AlignmentRefType): void {
@@ -43,6 +51,70 @@ export class AlignmentReference {
 
     public buildAlignments(): AlignmentResponse {
         return buildAlignments(this.refId, this.alignmentRefMap, this.memberRefList);
+    }
+
+    public addUniqueAlignmentId(result: Alignment, alignmentIndex: number, pairIndex: 0|1 = 1): string {
+        const res = result.structures[pairIndex];
+        if(!res.selection)
+            throw new Error("Missing entry_id and name from result");
+        let entryId: string | undefined = undefined;
+        const asymId = 'asym_id' in res.selection ? res.selection.asym_id : undefined;
+        if("entry_id" in res && res.entry_id && res.selection && "asym_id" in res.selection)
+            entryId = res.entry_id;
+        else if("name" in res && res.selection &&"asym_id" in res.selection)
+            entryId = res.name;
+        if(!entryId || !asymId)
+            throw new Error("Missing entry_id and name from result");
+        if(!this.alignmentMap.has(`${entryId}${TagDelimiter.instance}${asymId}`)) {
+            this.alignmentMap.set(`${entryId}${TagDelimiter.instance}${asymId}`, {
+                entryId,
+                instanceId: asymId,
+                sequence: result.sequence_alignment?.[pairIndex].sequence ?? "",
+                alignmentIndex: alignmentIndex,
+                pairIndex: pairIndex,
+                alignmentId: `${entryId}${TagDelimiter.instance}${asymId}`
+            });
+            return `${entryId}${TagDelimiter.instance}${asymId}`;
+        }else{
+            let tag = 1;
+            while(this.alignmentMap.has(`${entryId}[${tag}]${TagDelimiter.instance}${asymId}`)){
+                tag ++;
+            }
+            this.alignmentMap.set(`${entryId}[${tag}]${TagDelimiter.instance}${asymId}`, {
+                entryId,
+                instanceId: asymId,
+                sequence: result.sequence_alignment?.[pairIndex].sequence ?? "",
+                alignmentIndex: alignmentIndex,
+                pairIndex: pairIndex,
+                alignmentId: `${entryId}[${tag}]${TagDelimiter.instance}${asymId}`
+            });
+            return `${entryId}[${tag}]${TagDelimiter.instance}${asymId}`;
+        }
+    }
+
+    public getAlignmentEntry(alignmentId: string): {entryId: string; instanceId: string; sequence: string; alignmentIndex:number; pairIndex: number; alignmentId:string;} {
+        const pdb = this.alignmentMap.get(alignmentId)
+        if(pdb)
+            return pdb;
+        throw new Error("Alignment Id not found");
+    }
+
+    public async getSequences(): Promise<InstanceSequenceInterface[]> {
+        const out = Array.from(this.alignmentMap.values()).filter(v=>v.sequence.length > 0).map(v=>({
+            rcsbId: v.alignmentId,
+            sequence: v.sequence
+        }));
+        const missingSeq = await RcsbRequestContextManager.getInstanceSequences(
+                Array.from(this.alignmentMap.values()).filter(v=>v.sequence.length == 0).map(
+                    v=>`${v.entryId}${TagDelimiter.instance}${v.instanceId}`
+                ).filter((value,index,list)=> list.indexOf(value) === index)
+            );
+        return out.concat(
+            Array.from(this.alignmentMap.values()).filter(v=>v.sequence.length == 0).map(v=>({
+                rcsbId: v.alignmentId,
+                sequence: missingSeq.find(s=>s.rcsbId === `${v.entryId}${TagDelimiter.instance}${v.instanceId}`)?.sequence ?? ""
+            }))
+        );
     }
 
     private addRef(id: string, alignment: AlignmentRefType, target: AlignmentRefType): void {

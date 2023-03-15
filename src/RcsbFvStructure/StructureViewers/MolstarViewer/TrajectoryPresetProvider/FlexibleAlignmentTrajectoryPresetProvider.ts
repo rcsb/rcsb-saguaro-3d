@@ -9,20 +9,13 @@ import {PluginStateObject} from "molstar/lib/mol-plugin-state/objects";
 import {ParamDefinition, ParamDefinition as PD} from "molstar/lib/mol-util/param-definition";
 import {StateObjectRef, StateObjectSelector} from "molstar/lib/mol-state";
 import {RootStructureDefinition} from "molstar/lib/mol-plugin-state/helpers/root-structure";
-import {StateTransformer} from "molstar/lib/mol-state/transformer";
 import {StateObject} from "molstar/lib/mol-state/object";
 import {Structure, StructureElement, StructureProperties as SP} from "molstar/lib/mol-model/structure";
 import {RigidTransformType, TransformMatrixType} from "../../../StructureUtils/StructureLoaderInterface";
 import {FlexibleAlignmentRepresentationPresetProvider} from "./FlexibleAlignmentRepresentationPresetProvider";
 import {FlexibleAlignmentBuiltIn} from "./FlexibleAlignmentBuiltIn";
-
-export type FelxibleAlignmentTrajectoryParamsType = {
-    pdb?:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};
-    transform?: RigidTransformType[];
-    modelIndex?: number;
-}
-
-type StructureObject = StateObjectSelector<PluginStateObject.Molecule.Structure, StateTransformer<StateObject<any, StateObject.Type<any>>, StateObject<any, StateObject.Type<any>>, any>>
+import {AlignmentTrajectoryParamsType} from "./AlignmentTrajectoryPresetProvider";
+import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 
 export const FlexibleAlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvider({
     id: 'alignment-to-reference',
@@ -30,12 +23,13 @@ export const FlexibleAlignmentTrajectoryPresetProvider = TrajectoryHierarchyPres
         name: 'Alignment to Reference'
     },
     isApplicable: (trajectory: PluginStateObject.Molecule.Trajectory, plugin: PluginContext): boolean => true,
-    params: (trajectory: PluginStateObject.Molecule.Trajectory | undefined, plugin: PluginContext): ParamDefinition.For<FelxibleAlignmentTrajectoryParamsType> => ({
+    params: (trajectory: PluginStateObject.Molecule.Trajectory | undefined, plugin: PluginContext): ParamDefinition.For<AlignmentTrajectoryParamsType> => ({
         pdb:PD.Value<{entryId:string;entityId:string;}|{entryId:string;instanceId:string;}|undefined>(undefined),
         modelIndex:PD.Value<number|undefined>(undefined),
-        transform:PD.Value<RigidTransformType[]|undefined>(undefined)
+        transform:PD.Value<RigidTransformType[]|undefined>(undefined),
+        targetAlignment: PD.Value<TargetAlignment|undefined>(undefined),
     }),
-    apply: async (trajectory: StateObjectRef<PluginStateObject.Molecule.Trajectory>, params: FelxibleAlignmentTrajectoryParamsType, plugin: PluginContext) => {
+    apply: async (trajectory: StateObjectRef<PluginStateObject.Molecule.Trajectory>, params: AlignmentTrajectoryParamsType, plugin: PluginContext) => {
         if(!params.pdb)
             return {};
         const modelParams = { modelIndex: params.modelIndex || 0 };
