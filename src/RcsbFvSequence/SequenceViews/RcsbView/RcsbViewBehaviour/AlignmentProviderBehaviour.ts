@@ -20,7 +20,7 @@ export class AlignmentProviderBehaviour implements RcsbViewBehaviourInterface {
     observe(rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>, stateManager: RcsbFvStateInterface): void {
         this.subscription = stateManager.subscribe<"model-ready",AlignmentDataType>(async o=>{
             if(o.type == "model-ready" && o.data)
-                loadNextModel(o.data, rcsbFvContainer, stateManager);
+                await loadNextModel(o.data, rcsbFvContainer, stateManager);
         })
     }
 

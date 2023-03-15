@@ -15,6 +15,7 @@ that is used to map loaded structure ids with user provided ids in `LoadParams`
 - New `RcsbViewBehaviourInterface` interface to extend "1d" behaviour to events
 - `RcsbFv3DAbstract.render` converted to async method
 - Exposed molstar trajectory preset configuration
+- Removed global state for MSA checkboxes
 ### Configuration
 - All packages are transpiled and included in the final module
 ### Breaking Changes

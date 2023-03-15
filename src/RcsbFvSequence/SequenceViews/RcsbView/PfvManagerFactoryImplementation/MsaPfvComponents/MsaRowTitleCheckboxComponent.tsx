@@ -22,14 +22,11 @@ interface MsaRowTitleCheckboxState {
     disabled:boolean;
 }
 
-//TODO keeps a global state of the (checkboxes <=> mol-star components) This needs further review!!!
-let globalState: {[key:string]: "active"|"inactive"|"disabled"|undefined;} = {};
-
 export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCheckboxType,MsaRowTitleCheckboxState> {
 
     readonly state: MsaRowTitleCheckboxState = {
-        checked: globalState[this.compId() + this.props.tag] == "active" || this.props.tag == "aligned",
-        disabled: globalState[this.compId() + this.props.tag] == "disabled"
+        checked: this.props.tag == "aligned",
+        disabled: false
     };
 
     private subscription: Subscription;
@@ -49,28 +46,20 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
 
     public componentDidMount() {
         this.subscribe();
-    }
-
-    public componentDidUpdate(prevProps: Readonly<MsaRowTitleCheckboxInterface>, prevState: Readonly<MsaRowTitleCheckboxState>, snapshot?: any) {
-        if(prevProps.disabled != this.props.disabled && !this.props.disabled ) {
-            switch (globalState[ this.compId()+this.props.tag ]){
-                case "active":
-                    this.setState({checked: true, disabled:false});
-                    break;
-                case "inactive":
-                    this.setState({checked: false, disabled:false});
-                    break;
-                case "disabled":
-                    this.setState({disabled:true})
-                    break;
-                case undefined:
-                    break;
+        this.props.stateManager.next<"component-info", {pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};tag:MsaRowTitleCheckboxInterface["tag"];}>({
+            type: "component-info",
+            view: "1d-view",
+            data: {
+                pdb: "entityId" in this.props ? {
+                    entryId: this.props.entryId,
+                    entityId: this.props.entityId,
+                } :  {
+                    entryId: this.props.entryId,
+                    instanceId: this.props.instanceId
+                },
+                tag: this.props.tag
             }
-        }else if(prevProps.disabled != this.props.disabled) {
-            this.setState({checked: this.props.tag == "aligned"},()=>{
-                globalState[ this.compId()+this.props.tag ]  = this.state.checked ? "active" : "inactive";
-            });
-        }
+        })
     }
 
     public componentWillUnmount() {
@@ -79,19 +68,20 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
 
     private subscribe(): void{
         this.subscription = this.props.stateManager.subscribe<
-            "representation-change"|"missing-component",
-            {label:string;isHidden:boolean;} & {tag:MsaRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};}
+            "representation-change"|"missing-component"|"component-info",
+            {label:string;isHidden:boolean;} & {tag:MsaRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};} & {isComponent: boolean;}
         >((o)=>{
             if(o.type == "representation-change" && o.view == "3d-view" && o.data)
-                this.structureViewerRepresentationChange(o.data);
+                this.structureViewerRepresentationChange(o.data as any);
             if(o.type == "missing-component" && o.view == "3d-view" && o.data)
-                this.missingComponent(o.data as any);
+                this.missingComponent(o.data);
+            if(o.type == "component-info" && o.view == "3d-view" && o.data)
+                this.componentInfo(o.data);
         })
     }
 
-    private missingComponent(pdb:{entryId:string;entityId:string;tag:string;}): void{
-        if(this.compId() == this.getRcsbId(pdb) && this.props.tag == pdb.tag){
-            globalState[this.compId()+this.props.tag] = "disabled"
+    private missingComponent(data: {tag:MsaRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};}): void{
+        if(this.compId() == this.getRcsbId(data.pdb) && this.props.tag == data.tag){
             this.setState({disabled:true});
         }
 
@@ -118,7 +108,6 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
         if(this.props.disabled || this.state.disabled)
             return;
         this.setState({checked:!this.state.checked},()=>{
-            globalState[this.compId()+this.props.tag] = this.state.checked ? "active" : "inactive";
             this.props.stateManager.next<"representation-change",{tag:MsaRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};}>({
                 view:"1d-view",
                 type: "representation-change",
@@ -182,6 +171,13 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
             return `${pdb.entryId}${TagDelimiter.instance}${pdb.instanceId}`;
         else
             return `${pdb.entryId}${TagDelimiter.entity}${pdb.entityId}`;
+    }
+
+    private componentInfo(data: {tag:MsaRowTitleCheckboxInterface["tag"];isComponent:boolean;pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};}): void {
+        if(this.compId() == this.getRcsbId(data.pdb) && this.props.tag == data.tag){
+            if( !data.isComponent )
+                this.setState({disabled: true})
+        }
     }
 
 }

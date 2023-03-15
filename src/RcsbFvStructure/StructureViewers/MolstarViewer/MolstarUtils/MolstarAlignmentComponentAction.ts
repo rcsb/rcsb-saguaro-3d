@@ -6,12 +6,12 @@ import {LoadMolstarReturnType} from "../MolstarActionManager";
 import {RcsbFvStateInterface} from "../../../../RcsbFvState/RcsbFvStateInterface";
 import {createSelectionExpressions} from "@rcsb/rcsb-molstar/build/src/viewer/helpers/selection";
 
-export class MolstarComponentActionFactory implements ComponentActionFactoryInterface<LoadMolstarReturnType> {
+export class MolstarAlignmentComponentActionFactory implements ComponentActionFactoryInterface<LoadMolstarReturnType> {
     getComponentAction(config: { stateManager: RcsbFvStateInterface }): ComponentActionInterface<LoadMolstarReturnType> {
-        return new MolstarComponentAction(config.stateManager);
+        return new MolstarAlignmentComponentAction(config.stateManager);
     }
 }
-class MolstarComponentAction implements ComponentActionInterface<LoadMolstarReturnType> {
+class MolstarAlignmentComponentAction implements ComponentActionInterface<LoadMolstarReturnType> {
 
     private readonly stateManager: RcsbFvStateInterface;
     constructor(stateManager: RcsbFvStateInterface) {
@@ -25,13 +25,13 @@ class MolstarComponentAction implements ComponentActionInterface<LoadMolstarRetu
         if(!components["polymer"]) {
             this.stateManager.next<
                 "missing-component",
-                { tag: "aligned" | "polymer" | "non-polymer"; entryId: string; entityId: string; } | { tag: "aligned" | "polymer" | "non-polymer"; entryId: string; instanceId: string; }
+                { tag: "aligned" | "polymer" | "non-polymer"; pdb: {entryId:string;entityId:string;}|{entryId:string;instanceId:string;}; }
             >({
                 type: "missing-component",
                 view: "3d-view",
                 data: {
                     tag: "polymer",
-                    ...context
+                    pdb: context
                 }
             });
         }
@@ -41,13 +41,13 @@ class MolstarComponentAction implements ComponentActionInterface<LoadMolstarRetu
         }
         this.stateManager.next<
             "missing-component",
-            {tag:"aligned"|"polymer"|"non-polymer";entryId:string;entityId:string;}|{tag:"aligned"|"polymer"|"non-polymer";entryId:string;instanceId:string;}
+            { tag: "aligned" | "polymer" | "non-polymer"; pdb: {entryId:string;entityId:string;}|{entryId:string;instanceId:string;}; }
         >({
             type:"missing-component",
             view: "3d-view",
             data: {
                 tag:"non-polymer",
-               ...context
+                pdb: context
             }
         });
     }

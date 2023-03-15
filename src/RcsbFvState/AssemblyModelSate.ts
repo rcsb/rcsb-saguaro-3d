@@ -59,7 +59,7 @@ export class AssemblyModelSate {
     }
 
     public getModelChainInfo(modelId: string): {entryId: string; assemblyId: string, chains:Array<ChainInfo>;} | undefined {
-        return this.modelMap.get(modelId);
+        return this.modelMap?.get(modelId);
     }
 
     public getChainInfo(asymId?:string): ChainInfo | undefined{

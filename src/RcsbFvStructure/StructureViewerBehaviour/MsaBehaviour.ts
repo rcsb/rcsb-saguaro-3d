@@ -84,7 +84,10 @@ class MsaBehaviour<R,L> implements StructureViewerBehaviourInterface {
     }
 
     private subscribe(): Subscription {
-        return this.stateManager.subscribe<"model-change"|"representation-change"|"feature-click"|"structure-download",AlignmentDataType & {tag:"polymer"|"non-polymer";isHidden:boolean;} & SelectedRegion[]>(async o=>{
+        return this.stateManager.subscribe<
+            "model-change"|"representation-change"|"feature-click"|"structure-download"|"component-info",
+            AlignmentDataType & {tag:"polymer"|"non-polymer";isHidden:boolean;} & SelectedRegion[]
+        >(async o=>{
             if(o.type == "model-change" && o.view == "1d-view" && o.data)
                 await this.modelChange(o.data);
             if(o.type == "representation-change" && o.view == "1d-view" && o.data)
@@ -99,6 +102,8 @@ class MsaBehaviour<R,L> implements StructureViewerBehaviourInterface {
                 await this.isSelectionEmpty();
             if(o.type == "structure-download" && o.view == "ui-view")
                 this.downloadStructures();
+            if(o.type == "component-info" && o.view == "1d-view" && o.data)
+                this.componentInfo(o.data);
         });
     }
 
@@ -249,6 +254,45 @@ class MsaBehaviour<R,L> implements StructureViewerBehaviourInterface {
     private downloadStructures(): void{
         this.structureViewer.exportLoadedStructures().then(()=>{
             console.info("Download structures");
+        });
+    }
+
+    private componentInfo(data:{pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;}} & {tag:"aligned"|"polymer"|"non-polymer";}): void {
+        const chainInfo: ChainInfo|undefined = this.stateManager.assemblyModelSate.getModelChainInfo(this.getRcsbId(data.pdb))?.chains.find(
+            ch=>(("entityId" in data.pdb && ch.entityId==data.pdb.entityId) || ("instanceId" in data.pdb && ch.label==data.pdb.instanceId))
+        );
+        if(!chainInfo)
+            return;
+        let isComponent: boolean = false;
+        switch (data.tag){
+            case "aligned":
+                const asymId: string|undefined = chainInfo.label;
+                const operatorInfo: OperatorInfo[] = chainInfo.operators ?? [];
+                const alignedCompId: string = `${data.pdb.entryId}${TagDelimiter.entity}${chainInfo.entityId}${TagDelimiter.instance}${asymId}${TagDelimiter.assembly}${operatorInfo[0].ids.join(",")}${TagDelimiter.assembly}${"polymer"}`;
+                isComponent = this.structureViewer.isComponent(alignedCompId);
+                break;
+            case "polymer":
+                const polymerCompId: string = `${data.pdb.entryId}${TagDelimiter.entity}${chainInfo.entityId}${TagDelimiter.assembly}${data.tag}`;
+                this.structureViewer.displayComponent(polymerCompId,);
+                isComponent = this.structureViewer.isComponent(polymerCompId);
+                break;
+            case "non-polymer":
+                for (const tag of createSelectionExpressions(data.pdb.entryId).map(expression=>expression.tag).filter(tag=>(tag!="water" && tag != "polymer")) ) {
+                    const nonPolymerCompId: string = `${data.pdb.entryId}${TagDelimiter.entity}${chainInfo.entityId}${TagDelimiter.assembly}${tag}`;
+                    this.structureViewer.displayComponent(nonPolymerCompId);
+                    isComponent = this.structureViewer.isComponent(nonPolymerCompId);
+                    if(isComponent)
+                        break;
+                }
+                break;
+        }
+        this.stateManager.next<"component-info",{pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;}} & {tag:"aligned"|"polymer"|"non-polymer";} & {isComponent: boolean;}>({
+            type: "component-info",
+            view: "3d-view",
+            data: {
+                ...data,
+                isComponent
+            }
         });
     }
 
