@@ -17,6 +17,8 @@ that is used to map loaded structure ids with user provided ids in `LoadParams`
 - Exposed molstar trajectory preset configuration
 ### Configuration
 - All packages are transpiled and included in the final module
+### Breaking Changes
+- rcsb-saguaro-app configuration `RcsbFvAdditionalConfig.trackConfigModifier.alignment` signature changed
 
 ## [2.3.7] - 2022-12-12
 ### Bug fix
