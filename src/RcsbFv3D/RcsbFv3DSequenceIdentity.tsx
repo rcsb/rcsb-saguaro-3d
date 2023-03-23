@@ -36,9 +36,6 @@ import {buildSequenceIdentityAlignmentFv} from "@rcsb/rcsb-saguaro-app";
 import {
     AlignmentTrajectoryParamsType
 } from "../RcsbFvStructure/StructureViewers/MolstarViewer/TrajectoryPresetProvider/AlignmentTrajectoryPresetProvider";
-import {
-    MolstarAlignmentComponentActionFactory
-} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarUtils/MolstarAlignmentComponentAction";
 import {MolstarTools} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarUtils/MolstarTools";
 import getModelIdFromTrajectory = MolstarTools.getModelIdFromTrajectory;
 
@@ -101,8 +98,7 @@ export class RcsbFv3DSequenceIdentity extends RcsbFv3DAbstract<
                 {viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}
             >( new MolstarManagerFactory(getModelIdFromTrajectory) ),
             structureViewerBehaviourObserver: new MsaBehaviourObserver<AlignmentLoadMolstarType,LoadMolstarReturnType>(
-                new MolstarAlignmentLoader(),
-                new MolstarAlignmentComponentActionFactory()
+                new MolstarAlignmentLoader()
             )
         });
     }

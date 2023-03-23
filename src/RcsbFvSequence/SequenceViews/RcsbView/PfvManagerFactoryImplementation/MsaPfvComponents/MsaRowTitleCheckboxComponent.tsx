@@ -46,45 +46,28 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
 
     public componentDidMount() {
         this.subscribe();
-        this.props.stateManager.next<"component-info", {pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};tag:MsaRowTitleCheckboxInterface["tag"];}>({
-            type: "component-info",
-            view: "1d-view",
-            data: {
-                pdb: "entityId" in this.props ? {
-                    entryId: this.props.entryId,
-                    entityId: this.props.entityId,
-                } :  {
-                    entryId: this.props.entryId,
-                    instanceId: this.props.instanceId
-                },
-                tag: this.props.tag
-            }
-        })
+        this.requestInfo();
     }
 
     public componentWillUnmount() {
         this.subscription.unsubscribe();
     }
 
+    public componentDidUpdate(prevProps: Readonly<MsaRowTitleCheckboxType>, prevState: Readonly<MsaRowTitleCheckboxState>, snapshot?: any) {
+        if(!this.props.disabled && prevProps.disabled)
+            this.requestInfo();
+    }
+
     private subscribe(): void{
         this.subscription = this.props.stateManager.subscribe<
             "representation-change"|"missing-component"|"component-info",
-            {label:string;isHidden:boolean;} & {tag:MsaRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};} & {isComponent: boolean;}
+            {label:string;isHidden:boolean;} & {tag:MsaRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};} & {isComponent: boolean; isVisible: boolean;}
         >((o)=>{
             if(o.type == "representation-change" && o.view == "3d-view" && o.data)
                 this.structureViewerRepresentationChange(o.data as any);
-            if(o.type == "missing-component" && o.view == "3d-view" && o.data)
-                this.missingComponent(o.data);
             if(o.type == "component-info" && o.view == "3d-view" && o.data)
                 this.componentInfo(o.data);
         })
-    }
-
-    private missingComponent(data: {tag:MsaRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};}): void{
-        if(this.compId() == this.getRcsbId(data.pdb) && this.props.tag == data.tag){
-            this.setState({disabled:true});
-        }
-
     }
 
     private structureViewerRepresentationChange(d:{label:string;isHidden:boolean;}): void {
@@ -173,11 +156,32 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
             return `${pdb.entryId}${TagDelimiter.entity}${pdb.entityId}`;
     }
 
-    private componentInfo(data: {tag:MsaRowTitleCheckboxInterface["tag"];isComponent:boolean;pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};}): void {
+    private componentInfo(data: {tag:MsaRowTitleCheckboxInterface["tag"];isComponent:boolean;isVisible:boolean;pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};}): void {
         if(this.compId() == this.getRcsbId(data.pdb) && this.props.tag == data.tag){
             if( !data.isComponent )
                 this.setState({disabled: true})
+            else if( data.isVisible)
+                this.setState({checked: true})
+            else
+                this.setState({checked: false})
         }
+    }
+
+    private requestInfo(): void {
+        this.props.stateManager.next<"component-info", {pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};tag:MsaRowTitleCheckboxInterface["tag"];}>({
+            type: "component-info",
+            view: "1d-view",
+            data: {
+                pdb: "entityId" in this.props ? {
+                    entryId: this.props.entryId,
+                    entityId: this.props.entityId,
+                } :  {
+                    entryId: this.props.entryId,
+                    instanceId: this.props.instanceId
+                },
+                tag: this.props.tag
+            }
+        })
     }
 
 }

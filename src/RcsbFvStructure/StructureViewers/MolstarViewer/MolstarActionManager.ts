@@ -13,7 +13,7 @@ import {MolScriptBuilder as MS} from "molstar/lib/mol-script/language/builder";
 import {Script} from "molstar/lib/mol-script/script";
 import {SetUtils} from "molstar/lib/mol-util/set";
 import {Loci} from "molstar/lib/mol-model/loci";
-import {StructureComponentRef, StructureRef} from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
+import {StructureRef} from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
 import {ColorTheme} from "molstar/lib/mol-theme/color";
 import {StructureRepresentationRegistry} from "molstar/lib/mol-repr/structure/registry";
 import {PresetProps} from "@rcsb/rcsb-molstar/build/src/viewer/helpers/preset";
@@ -69,7 +69,6 @@ export class MolstarActionManager<P,L> implements ViewerActionManagerInterface<L
     private readonly innerSelectionFlag: DataContainer<boolean>;
     private readonly innerReprChangeFlag: DataContainer<boolean>;
     private readonly modelMapManager: ViewerModelMapManagerInterface<LoadMolstarInterface<P,L>,L>;
-    private readonly componentMap: Map<string, StructureComponentRef> = new Map<string, StructureComponentRef>();
     private readonly loadingFlag: DataContainer<boolean>;
 
     constructor(config:{viewer: Viewer;modelMapManager: ViewerModelMapManagerInterface<LoadMolstarInterface<P,L>,L>;innerSelectionFlag: DataContainer<boolean>;  innerReprChangeFlag: DataContainer<boolean>; loadingFlag: DataContainer<boolean>;}) {
@@ -236,7 +235,6 @@ export class MolstarActionManager<P,L> implements ViewerActionManagerInterface<L
         }else{
             await this.viewer.createComponent(args[0], {modelId: this.modelMapManager.getModelId(args[1]), labelAsymId:args[2], operatorName: args[4]}, args[3]);
         }
-        this.componentMap.set(args[0], this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups[this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups.length-1][0]);
         this.innerReprChangeFlag.set(false);
     }
 
@@ -278,13 +276,9 @@ export class MolstarActionManager<P,L> implements ViewerActionManagerInterface<L
 
     public async removeComponent(componentLabel?: string): Promise<void>{
         if(componentLabel == null){
-            await Promise.all(Array.from(this.componentMap.entries()).map(async ([id,comp], n)=>{
-                await this.viewer.removeComponent(id);
-                this.componentMap.delete(id);
-            }))
+            this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups.forEach(c=>this.viewer.plugin.managers.structure.hierarchy.remove(c))
         }else{
             await this.viewer.removeComponent(componentLabel);
-            this.componentMap.delete(componentLabel);
         }
     }
 
@@ -298,16 +292,12 @@ export class MolstarActionManager<P,L> implements ViewerActionManagerInterface<L
     }
     private changeComponentDisplay(componentLabel: string, visibilityFlag: boolean): void{
         this.innerReprChangeFlag.set(true);
-        if(this.componentMap.has(componentLabel) && this.getComponentDisplay(componentLabel) != visibilityFlag) {
-            this.viewer.plugin.managers.structure.component.toggleVisibility([this.componentMap.get(componentLabel)!]);
-        }else if(!this.componentMap.has(componentLabel)){
-            for (const c of this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups) {
-                for (const comp of c) {
-                    if(comp.cell.obj?.label === componentLabel) {
-                        if(!comp.cell.state.isHidden != visibilityFlag) {
-                            this.viewer.plugin.managers.structure.component.toggleVisibility(c);
-                            return void 0;
-                        }
+        for (const c of this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups) {
+            for (const comp of c) {
+                if(comp.cell.obj?.label === componentLabel) {
+                    if(!comp.cell.state.isHidden != visibilityFlag) {
+                        this.viewer.plugin.managers.structure.component.toggleVisibility(c);
+                        return void 0;
                     }
                 }
             }
@@ -315,9 +305,14 @@ export class MolstarActionManager<P,L> implements ViewerActionManagerInterface<L
         this.innerReprChangeFlag.set(false);
     }
     private getComponentDisplay(componentLabel: string): boolean | undefined{
-        if(this.componentMap.has(componentLabel)) {
-            return !this.componentMap.get(componentLabel)!.cell.state.isHidden!;
+        for (const c of this.viewer.plugin.managers.structure.hierarchy.currentComponentGroups) {
+            for (const comp of c) {
+                if(comp.cell.obj?.label === componentLabel) {
+                    return !comp.cell.state.isHidden;
+                }
+            }
         }
+        return false;
     }
 
     public resetCamera(): void {

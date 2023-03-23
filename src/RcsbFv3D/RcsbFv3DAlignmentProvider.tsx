@@ -39,9 +39,6 @@ import {
 import {
     AlignmentTrajectoryParamsType
 } from "../RcsbFvStructure/StructureViewers/MolstarViewer/TrajectoryPresetProvider/AlignmentTrajectoryPresetProvider";
-import {
-    MolstarAlignmentComponentActionFactory
-} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarUtils/MolstarAlignmentComponentAction";
 import {MolstarTools} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarUtils/MolstarTools";
 import getModelIdFromTrajectory = MolstarTools.getModelIdFromTrajectory;
 import {AbstractViewInterface} from "../RcsbFvSequence/SequenceViews/AbstractView";
@@ -114,8 +111,7 @@ export class RcsbFv3DAlignmentProvider extends RcsbFv3DAbstract<
                 {viewerElement:string|HTMLElement,viewerProps:Partial<ViewerProps>}
             >( new MolstarManagerFactory(getModelIdFromTrajectory) ),
             structureViewerBehaviourObserver: new MsaBehaviourObserver<AlignmentLoadMolstarType,LoadMolstarReturnType>(
-                new MolstarAlignmentLoader(params.config.loadParamsProvider),
-                new MolstarAlignmentComponentActionFactory()
+                new MolstarAlignmentLoader(params.config.loadParamsProvider)
             )
         });
     }
