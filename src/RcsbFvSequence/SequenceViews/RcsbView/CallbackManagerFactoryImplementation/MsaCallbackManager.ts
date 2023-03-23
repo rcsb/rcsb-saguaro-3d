@@ -116,12 +116,12 @@ class MsaCallbackManager<U>  extends AbstractCallbackManager<U>{
 
     private async select(selection: Array<RcsbFvTrackDataElementInterface>, mode:"select"|"hover"): Promise<void> {
         const alignment: AlignmentResponse|undefined = await this.rcsbFvContainer.get()?.getAlignmentResponse();
-        if(alignment){
+        if(alignment) {
             const regions = this.getModelRegions(selection, alignment, Array.from(this.stateManager.assemblyModelSate.getMap()?.keys() ?? []), "query");
-            if(regions.length == 0)
-                this.stateManager.selectionState.clearSelection(mode);
-            else
+            this.stateManager.selectionState.clearSelection(mode);
+            if (regions.length > 0) {
                 this.stateManager.selectionState.selectFromMultipleRegions("set", regions, mode);
+            }
             this.stateManager.next({type: mode == "select" ? "selection-change" : "hover-change", view:"1d-view"});
         }
     }

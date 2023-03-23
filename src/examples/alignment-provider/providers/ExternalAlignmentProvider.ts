@@ -1810,8 +1810,8 @@ function transformToGapedDomain(regions: AlignmentRegion[]): (number|undefined)[
     return out;
 }
 
-//const structuralAlignment: StructureAlignmentResponse = alignmentExample as StructureAlignmentResponse;
-const structuralAlignment: StructureAlignmentResponse = duplicatedAlignment as StructureAlignmentResponse;
+const structuralAlignment: StructureAlignmentResponse = alignmentExample as StructureAlignmentResponse;
+//const structuralAlignment: StructureAlignmentResponse = duplicatedAlignment as StructureAlignmentResponse;
 
 const alignmentReference = new AlignmentReference();
 export const dataProvider: RcsbModuleDataProviderInterface = {
