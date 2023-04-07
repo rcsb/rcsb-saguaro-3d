@@ -19,7 +19,7 @@ export class MolstarManagerFactory<P,L> implements ViewerManagerFactoryInterface
         const innerSelectionFlag: DataContainer<boolean> = new DataContainer(false);
         const innerReprChangeFlag: DataContainer<boolean> = new DataContainer(false);
         const viewer = new Viewer(viewerParams.viewerElement, {
-            ...viewerParams,
+            ...viewerParams.viewerProps,
             layoutShowControls:false,
             layoutShowSequence: true,
             canvas3d: {

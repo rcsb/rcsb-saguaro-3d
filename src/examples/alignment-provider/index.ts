@@ -17,6 +17,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
             externalUiComponents: {
                 replace: []
             }
+        },
+        molstarProps: {
+            showStrucmotifSubmitControls: false
         }
     });
     panel3D.render();
