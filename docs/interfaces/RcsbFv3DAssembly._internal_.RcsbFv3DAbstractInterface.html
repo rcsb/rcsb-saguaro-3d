@@ -16,7 +16,7 @@
 <li><a href="../modules/RcsbFv3DAssembly.html">RcsbFv3DAssembly</a></li>
 <li><a href="../modules/RcsbFv3DAssembly._internal_.html">&lt;internal&gt;</a></li>
 <li><a href="RcsbFv3DAssembly._internal_.RcsbFv3DAbstractInterface.html">RcsbFv3DAbstractInterface</a></li></ul>
-<h1>Interface RcsbFv3DAbstractInterface&lt;T, R, S, U&gt;</h1></div> 
+<h1>Interface RcsbFv3DAbstractInterface&lt;T, R, L, S, U&gt;</h1></div> 
 <section class="tsd-panel tsd-type-parameters">
 <h4>Type Parameters</h4>
 <ul class="tsd-type-parameters">
@@ -24,6 +24,8 @@
 <h4>T</h4></li>
 <li>
 <h4>R</h4></li>
+<li>
+<h4>L</h4></li>
 <li>
 <h4>S</h4></li>
 <li>
@@ -33,7 +35,7 @@
 <ul class="tsd-hierarchy">
 <li><span class="target">RcsbFv3DAbstractInterface</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/rcsb/rcsb-saguaro-3d/blob/7668ca0/src/RcsbFv3D/RcsbFv3DAbstract.tsx#L12">RcsbFv3D/RcsbFv3DAbstract.tsx:12</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/rcsb/rcsb-saguaro-3d/blob/3e22a57/src/RcsbFv3D/RcsbFv3DAbstract.tsx#L13">RcsbFv3D/RcsbFv3DAbstract.tsx:13</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -47,6 +49,10 @@
 <a href="RcsbFv3DAssembly._internal_.RcsbFv3DAbstractInterface.html#structureConfig" class="tsd-index-link tsd-kind-property tsd-parent-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>structure<wbr/>Config</span></a>
 <a href="RcsbFv3DAssembly._internal_.RcsbFv3DAbstractInterface.html#structureViewer" class="tsd-index-link tsd-kind-property tsd-parent-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>structure<wbr/>Viewer</span></a>
 <a href="RcsbFv3DAssembly._internal_.RcsbFv3DAbstractInterface.html#structureViewerBehaviourObserver" class="tsd-index-link tsd-kind-property tsd-parent-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>structure<wbr/>Viewer<wbr/>Behaviour<wbr/>Observer</span></a>
+</div></section>
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading">Methods</h3>
+<div class="tsd-index-list"><a href="RcsbFv3DAssembly._internal_.RcsbFv3DAbstractInterface.html#additionalContent" class="tsd-index-link tsd-kind-method tsd-parent-kind-interface"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="#FF4DB8" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12" id="icon-2048-path"></rect><path d="M9.162 16V7.24H10.578L11.514 10.072C11.602 10.328 11.674 10.584 11.73 10.84C11.794 11.088 11.842 11.28 11.874 11.416C11.906 11.28 11.954 11.088 12.018 10.84C12.082 10.584 12.154 10.324 12.234 10.06L13.122 7.24H14.538V16H13.482V12.82C13.482 12.468 13.49 12.068 13.506 11.62C13.53 11.172 13.558 10.716 13.59 10.252C13.622 9.78 13.654 9.332 13.686 8.908C13.726 8.476 13.762 8.1 13.794 7.78L12.366 12.16H11.334L9.894 7.78C9.934 8.092 9.97 8.456 10.002 8.872C10.042 9.28 10.078 9.716 10.11 10.18C10.142 10.636 10.166 11.092 10.182 11.548C10.206 12.004 10.218 12.428 10.218 12.82V16H9.162Z" fill="var(--color-text)" id="icon-2048-text"></path></svg><span>additional<wbr/>Content?</span></a>
 </div></section></div></details></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
@@ -54,32 +60,47 @@
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagOptional">Optional</code> <span>css<wbr/>Config</span><a href="#cssConfig" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" id="icon-anchor-a"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" id="icon-anchor-b"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" id="icon-anchor-c"></path></svg></a></h3>
 <div class="tsd-signature">css<wbr/>Config<span class="tsd-signature-symbol">?:</span> <a href="RcsbFv3DAssembly._internal_.RcsbFv3DCssConfig.html" class="tsd-signature-type" data-tsd-kind="Interface">RcsbFv3DCssConfig</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/rcsb/rcsb-saguaro-3d/blob/7668ca0/src/RcsbFv3D/RcsbFv3DAbstract.tsx#L14">RcsbFv3D/RcsbFv3DAbstract.tsx:14</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/rcsb/rcsb-saguaro-3d/blob/3e22a57/src/RcsbFv3D/RcsbFv3DAbstract.tsx#L15">RcsbFv3D/RcsbFv3DAbstract.tsx:15</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="elementId" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>element<wbr/>Id</span><a href="#elementId" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">element<wbr/>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/rcsb/rcsb-saguaro-3d/blob/7668ca0/src/RcsbFv3D/RcsbFv3DAbstract.tsx#L13">RcsbFv3D/RcsbFv3DAbstract.tsx:13</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/rcsb/rcsb-saguaro-3d/blob/3e22a57/src/RcsbFv3D/RcsbFv3DAbstract.tsx#L14">RcsbFv3D/RcsbFv3DAbstract.tsx:14</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="sequenceConfig" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>sequence<wbr/>Config</span><a href="#sequenceConfig" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">sequence<wbr/>Config<span class="tsd-signature-symbol">:</span> <a href="RcsbFv3DAssembly._internal_.RcsbFvSequenceInterface.html" class="tsd-signature-type" data-tsd-kind="Interface">RcsbFvSequenceInterface</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">T</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">R</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">U</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
+<div class="tsd-signature">sequence<wbr/>Config<span class="tsd-signature-symbol">:</span> <a href="RcsbFv3DAssembly._internal_.RcsbFvSequenceInterface.html" class="tsd-signature-type" data-tsd-kind="Interface">RcsbFvSequenceInterface</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">T</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">U</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/rcsb/rcsb-saguaro-3d/blob/7668ca0/src/RcsbFv3D/RcsbFv3DAbstract.tsx#L15">RcsbFv3D/RcsbFv3DAbstract.tsx:15</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/rcsb/rcsb-saguaro-3d/blob/3e22a57/src/RcsbFv3D/RcsbFv3DAbstract.tsx#L16">RcsbFv3D/RcsbFv3DAbstract.tsx:16</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="structureConfig" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>structure<wbr/>Config</span><a href="#structureConfig" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">structure<wbr/>Config<span class="tsd-signature-symbol">:</span> <a href="RcsbFv3DAssembly._internal_.RcsbFvStructureConfigInterface.html" class="tsd-signature-type" data-tsd-kind="Interface">RcsbFvStructureConfigInterface</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">R</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">S</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/rcsb/rcsb-saguaro-3d/blob/7668ca0/src/RcsbFv3D/RcsbFv3DAbstract.tsx#L16">RcsbFv3D/RcsbFv3DAbstract.tsx:16</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/rcsb/rcsb-saguaro-3d/blob/3e22a57/src/RcsbFv3D/RcsbFv3DAbstract.tsx#L17">RcsbFv3D/RcsbFv3DAbstract.tsx:17</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="structureViewer" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>structure<wbr/>Viewer</span><a href="#structureViewer" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">structure<wbr/>Viewer<span class="tsd-signature-symbol">:</span> <a href="RcsbFv3DAssembly._internal_.StructureViewerInterface.html" class="tsd-signature-type" data-tsd-kind="Interface">StructureViewerInterface</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">R</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">S</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
+<div class="tsd-signature">structure<wbr/>Viewer<span class="tsd-signature-symbol">:</span> <a href="RcsbFv3DAssembly._internal_.StructureViewerInterface.html" class="tsd-signature-type" data-tsd-kind="Interface">StructureViewerInterface</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">R</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">L</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">S</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/rcsb/rcsb-saguaro-3d/blob/7668ca0/src/RcsbFv3D/RcsbFv3DAbstract.tsx#L17">RcsbFv3D/RcsbFv3DAbstract.tsx:17</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/rcsb/rcsb-saguaro-3d/blob/3e22a57/src/RcsbFv3D/RcsbFv3DAbstract.tsx#L18">RcsbFv3D/RcsbFv3DAbstract.tsx:18</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="structureViewerBehaviourObserver" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>structure<wbr/>Viewer<wbr/>Behaviour<wbr/>Observer</span><a href="#structureViewerBehaviourObserver" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
-<div class="tsd-signature">structure<wbr/>Viewer<wbr/>Behaviour<wbr/>Observer<span class="tsd-signature-symbol">:</span> <a href="RcsbFv3DAssembly._internal_.StructureViewerBehaviourObserverInterface.html" class="tsd-signature-type" data-tsd-kind="Interface">StructureViewerBehaviourObserverInterface</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">R</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
+<div class="tsd-signature">structure<wbr/>Viewer<wbr/>Behaviour<wbr/>Observer<span class="tsd-signature-symbol">:</span> <a href="RcsbFv3DAssembly._internal_.StructureViewerBehaviourObserverInterface.html" class="tsd-signature-type" data-tsd-kind="Interface">StructureViewerBehaviourObserverInterface</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type" data-tsd-kind="Type parameter">R</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type" data-tsd-kind="Type parameter">L</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/rcsb/rcsb-saguaro-3d/blob/7668ca0/src/RcsbFv3D/RcsbFv3DAbstract.tsx#L18">RcsbFv3D/RcsbFv3DAbstract.tsx:18</a></li></ul></aside></section></section></div>
+<li>Defined in <a href="https://github.com/rcsb/rcsb-saguaro-3d/blob/3e22a57/src/RcsbFv3D/RcsbFv3DAbstract.tsx#L19">RcsbFv3D/RcsbFv3DAbstract.tsx:19</a></li></ul></aside></section></section>
+<section class="tsd-panel-group tsd-member-group">
+<h2>Methods</h2>
+<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface"><a id="additionalContent" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagOptional">Optional</code> <span>additional<wbr/>Content</span><a href="#additionalContent" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+<li class="tsd-signature tsd-anchor-link" id="additionalContent.additionalContent-1">additional<wbr/>Content<span class="tsd-signature-symbol">(</span>props<span class="tsd-signature-symbol">: </span><a href="RcsbFv3DAssembly._internal_.AbstractViewInterface.html" class="tsd-signature-type" data-tsd-kind="Interface">AbstractViewInterface</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Element</span><a href="#additionalContent.additionalContent-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5>props: <a href="RcsbFv3DAssembly._internal_.AbstractViewInterface.html" class="tsd-signature-type" data-tsd-kind="Interface">AbstractViewInterface</a></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Element</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/rcsb/rcsb-saguaro-3d/blob/3e22a57/src/RcsbFv3D/RcsbFv3DAbstract.tsx#L20">RcsbFv3D/RcsbFv3DAbstract.tsx:20</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
@@ -103,9 +124,15 @@
 <li class="current tsd-kind-module"><a href="../modules/RcsbFv3DAssembly.html">Rcsb<wbr/>Fv3DAssembly</a>
 <ul>
 <li class="current tsd-kind-module tsd-parent-kind-module"><a href="../modules/RcsbFv3DAssembly._internal_.html">&lt;internal&gt;</a></li></ul></li>
-<li class="tsd-kind-module"><a href="../modules/RcsbFv3DCustom.html">Rcsb<wbr/>Fv3DCustom</a></li>
-<li class="tsd-kind-module"><a href="../modules/RcsbFv3DSequenceIdentity.html">Rcsb<wbr/>Fv3DSequence<wbr/>Identity</a></li>
-<li class="tsd-kind-module"><a href="../modules/RcsbFv3DUniprot.html">Rcsb<wbr/>Fv3DUniprot</a></li></ul></li></ul></div></details></nav>
+<li class="tsd-kind-module"><a href="../modules/RcsbFv3DCustom.html">Rcsb<wbr/>Fv3DCustom</a>
+<ul>
+<li class="tsd-kind-module tsd-parent-kind-module"><a href="../modules/RcsbFv3DCustom._internal_.html">&lt;internal&gt;</a></li></ul></li>
+<li class="tsd-kind-module"><a href="../modules/RcsbFv3DSequenceIdentity.html">Rcsb<wbr/>Fv3DSequence<wbr/>Identity</a>
+<ul>
+<li class="tsd-kind-module tsd-parent-kind-module"><a href="../modules/RcsbFv3DSequenceIdentity._internal_.html">&lt;internal&gt;</a></li></ul></li>
+<li class="tsd-kind-module"><a href="../modules/RcsbFv3DUniprot.html">Rcsb<wbr/>Fv3DUniprot</a>
+<ul>
+<li class="tsd-kind-module tsd-parent-kind-module"><a href="../modules/RcsbFv3DUniprot._internal_.html">&lt;internal&gt;</a></li></ul></li></ul></li></ul></div></details></nav>
 <nav class="tsd-navigation secondary menu-sticky">
 <ul>
 <li class="current tsd-kind-interface tsd-parent-kind-module"><a href="RcsbFv3DAssembly._internal_.RcsbFv3DAbstractInterface.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-interface)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-256-path"></rect><path d="M9.51 16V15.016H11.298V8.224H9.51V7.24H14.19V8.224H12.402V15.016H14.19V16H9.51Z" fill="var(--color-text)" id="icon-256-text"></path></svg><span>Rcsb<wbr/>Fv3DAbstract<wbr/>Interface</span></a>
@@ -115,7 +142,8 @@
 <li class="tsd-kind-property tsd-parent-kind-interface"><a href="RcsbFv3DAssembly._internal_.RcsbFv3DAbstractInterface.html#sequenceConfig" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>sequence<wbr/>Config</a></li>
 <li class="tsd-kind-property tsd-parent-kind-interface"><a href="RcsbFv3DAssembly._internal_.RcsbFv3DAbstractInterface.html#structureConfig" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>structure<wbr/>Config</a></li>
 <li class="tsd-kind-property tsd-parent-kind-interface"><a href="RcsbFv3DAssembly._internal_.RcsbFv3DAbstractInterface.html#structureViewer" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>structure<wbr/>Viewer</a></li>
-<li class="tsd-kind-property tsd-parent-kind-interface"><a href="RcsbFv3DAssembly._internal_.RcsbFv3DAbstractInterface.html#structureViewerBehaviourObserver" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>structure<wbr/>Viewer<wbr/>Behaviour<wbr/>Observer</a></li></ul></li></ul></nav></div></div>
+<li class="tsd-kind-property tsd-parent-kind-interface"><a href="RcsbFv3DAssembly._internal_.RcsbFv3DAbstractInterface.html#structureViewerBehaviourObserver" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>structure<wbr/>Viewer<wbr/>Behaviour<wbr/>Observer</a></li>
+<li class="tsd-kind-method tsd-parent-kind-interface"><a href="RcsbFv3DAssembly._internal_.RcsbFv3DAbstractInterface.html#additionalContent" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>additional<wbr/>Content?</a></li></ul></li></ul></nav></div></div>
 <div class="container tsd-generator">
 <p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
 <div class="overlay"></div><script src="../assets/main.js"></script></body></html>
