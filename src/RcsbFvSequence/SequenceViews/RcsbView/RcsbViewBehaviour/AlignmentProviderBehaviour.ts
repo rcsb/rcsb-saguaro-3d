@@ -5,8 +5,9 @@ import {
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {RcsbFvStateInterface} from "../../../../RcsbFvState/RcsbFvStateInterface";
 import {Subscription} from "rxjs";
-import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
+
 
 type AlignmentDataType = {
     pdb:{entryId:string;instanceId:string;},

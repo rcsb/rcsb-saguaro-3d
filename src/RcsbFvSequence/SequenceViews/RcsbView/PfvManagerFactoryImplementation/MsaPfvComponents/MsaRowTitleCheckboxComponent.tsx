@@ -4,7 +4,7 @@
 */
 
 import * as React from "react";
-import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
+import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
 import {Subscription} from "rxjs";
 import {RcsbFvStateInterface} from "../../../../../RcsbFvState/RcsbFvStateInterface";
 

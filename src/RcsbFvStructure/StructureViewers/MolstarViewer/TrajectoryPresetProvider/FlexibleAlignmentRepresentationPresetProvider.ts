@@ -10,45 +10,17 @@ import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {PluginStateObject} from "molstar/lib/mol-plugin-state/objects";
 import {StateObjectRef} from "molstar/lib/mol-state";
 import {
-    Model,
-    QueryContext, ResidueIndex,
-    Structure,
     StructureElement,
-    StructureProperties as SP,
-    StructureSelection,
-    Unit
+    StructureProperties as SP
 } from "molstar/lib/mol-model/structure";
 import {MolScriptBuilder as MS} from "molstar/lib/mol-script/language/builder";
 import uniqid from "uniqid";
 import {PLDDTConfidenceColorThemeProvider} from "molstar/lib/extensions/model-archive/quality-assessment/color/plddt";
 import {ColorTheme} from "molstar/lib/mol-theme/color";
-import {createSelectionExpressions} from "@rcsb/rcsb-molstar/build/src/viewer/helpers/selection";
-import {ParamDefinition as PD} from "molstar/lib/mol-util/param-definition";
-import {Loci} from "molstar/lib/mol-model/loci";
-import {superpose} from "molstar/lib/mol-model/structure/structure/util/superposition";
-import {Mat4} from "molstar/lib/mol-math/linear-algebra";
-import {SymmetryOperator} from "molstar/lib/mol-math/geometry/symmetry-operator";
-import {StateTransforms} from "molstar/lib/mol-plugin-state/transforms";
-import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
-import {AlignedRegion, TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
-import {AlignmentMapper as AM} from "../../../../Utils/AlignmentMapper";
-import {compile} from 'molstar/lib/mol-script/runtime/query/compiler';
 import reprBuilder = StructureRepresentationPresetProvider.reprBuilder;
-import {
-    QualityAssessment,
-} from "molstar/lib/extensions/model-archive/quality-assessment/prop";
-import {MmcifFormat} from "molstar/lib/mol-model-formats/structure/mmcif";
-import {CustomProperty} from "molstar/lib/mol-model-props/common/custom-property";
-import {RcsbFvStateInterface} from "../../../../RcsbFvState/RcsbFvStateInterface";
 import {StructureBuilder} from "molstar/lib/mol-plugin-state/builder/structure";
 import {StructureRepresentationBuilder} from "molstar/lib/mol-plugin-state/builder/structure/representation";
-import {RigidTransformType} from "../../../StructureUtils/StructureLoaderInterface";
-import {StructureQueryHelper} from "molstar/lib/mol-plugin-state/helpers/structure-query";
-import {RootStructureDefinition} from "molstar/lib/mol-plugin-state/helpers/root-structure";
-import {RuntimeContext} from "molstar/lib/mol-task";
-import {
-    createStructureRepresentationParams
-} from "molstar/lib/mol-plugin-state/helpers/structure-representation-params";
+import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
 
 type ComponentType = Awaited<ReturnType<InstanceType<typeof StructureBuilder>["tryCreateComponentFromExpression"]>>;
 type RepresentationType = ReturnType<InstanceType<typeof StructureRepresentationBuilder>["buildRepresentation"]>;
@@ -116,7 +88,6 @@ export const FlexibleAlignmentRepresentationPresetProvider = StructureRepresenta
         };
     }
 });
-
 
 function toRange(start: number, end?: number): number[] {
     if (!end) return [start];

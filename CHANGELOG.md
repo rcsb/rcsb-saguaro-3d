@@ -16,6 +16,10 @@ that is used to map loaded structure ids with user provided ids in `LoadParams`
 - `RcsbFv3DAbstract.render` converted to async method
 - Exposed molstar trajectory preset configuration
 - Removed global state for MSA checkboxes
+### Dependency update
+- rcsb-saguaro-app v5.0.0
+- rcsb-saguaro v2.5.9
+- rcsb-api-tools v4.1.3
 ### Configuration
 - All packages are transpiled and included in the final module
 ### Breaking Changes

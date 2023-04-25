@@ -10,9 +10,10 @@ import {
 } from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {RegionSelectionInterface} from "../../../../RcsbFvState/RcsbFvSelectorManager";
 import {ChainInfo, SaguaroRegionList} from "../../../../RcsbFvStructure/StructureViewerInterface";
-import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {AlignmentMapper as AM} from "../../../../Utils/AlignmentMapper";
 import {DataContainer} from "../../../../Utils/DataContainer";
+import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
+
 
 export class MsaCallbackManagerFactory<U> implements CallbackManagerFactoryInterface<U> {
 
@@ -97,7 +98,7 @@ class MsaCallbackManager<U>  extends AbstractCallbackManager<U>{
         if(alignment) {
             allSel.forEach(sel => {
                 const chain: ChainInfo | undefined = this.stateManager.assemblyModelSate.getModelChainInfo(sel.modelId)?.chains.find(
-                    ch => (ch.entityId == TagDelimiter.parseRcsbId(sel.modelId).entityId || ch.label == TagDelimiter.parseRcsbId(sel.modelId).instanceId) && ch.label == sel.labelAsymId
+                    ch => (ch.entityId == TagDelimiter.parseEntity(sel.modelId).entityId || ch.label == TagDelimiter.parseInstance(sel.modelId).instanceId) && ch.label == sel.labelAsymId
                 );
                 if (chain) {
                     regions = regions.concat(this.getModelRegions(sel.regions.map(r => ({
@@ -130,7 +131,7 @@ class MsaCallbackManager<U>  extends AbstractCallbackManager<U>{
         const regions: SelectedRegion[] = [];
         modelList.forEach(modelId=>{
             const chain: ChainInfo|undefined = this.stateManager.assemblyModelSate.getModelChainInfo(modelId)?.chains.find(
-                ch=>ch.entityId==TagDelimiter.parseRcsbId(modelId).entityId || ch.label==TagDelimiter.parseRcsbId(modelId).instanceId
+                ch=>ch.entityId==TagDelimiter.parseEntity(modelId).entityId || ch.label==TagDelimiter.parseInstance(modelId).instanceId
             );
             if(!chain)
                 return;

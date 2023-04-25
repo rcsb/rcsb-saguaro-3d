@@ -7,7 +7,6 @@ import {
     AlignmentCollectConfig,
     AlignmentCollectorInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/AlignmentCollector/AlignmentCollectorInterface";
-import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 
 import {
     RcsbModuleDataProviderInterface
@@ -38,6 +37,7 @@ import {
 import {
     FlexibleAlignmentTrajectoryPresetProvider
 } from "../../../RcsbFvStructure/StructureViewers/MolstarViewer/TrajectoryPresetProvider/FlexibleAlignmentTrajectoryPresetProvider";
+import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
 
 const alignment = {
     "info": {

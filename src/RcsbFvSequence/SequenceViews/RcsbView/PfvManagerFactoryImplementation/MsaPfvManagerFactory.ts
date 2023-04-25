@@ -8,7 +8,7 @@ import {
     RcsbFvAdditionalConfig,
     RcsbFvModulePublicInterface
 } from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
-import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
+import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
 
 import {
     AlignmentRequestContextType
@@ -24,6 +24,7 @@ import {MsaUiSortComponent} from "./MsaPfvComponents/MsaUiSortComponent";
 import {ActionMethods} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvUI/Helper/ActionMethods";
 import {MsaUiSequenceAlignmentDownload} from "./MsaPfvComponents/MsaUiSequenceAlignmentDownload";
 import {MsaUiStructureDownload} from "./MsaPfvComponents/MsaUiStructureDownload";
+import {parseEntityOrInstance} from "../../../../Utils/RcsbIdParser"
 
 export interface MsaPfvManagerInterface<T extends any[]> {
     id:string;
@@ -81,7 +82,7 @@ class MsaPfvManager<T extends any[]> extends AbstractPfvManager<{id:string},{con
                             externalRowMark: {
                                 component:MsaRowMarkComponent,
                                 props:{
-                                    rowRef:TagDelimiter.parseEntityOrInstance(targetAlignment.target_id!),
+                                    rowRef: parseEntityOrInstance(targetAlignment.target_id!),
                                     stateManager: this.stateManager
                                 }
                             },
@@ -155,7 +156,7 @@ class MsaPfvManager<T extends any[]> extends AbstractPfvManager<{id:string},{con
                 type:"model-change",
                 view:"1d-view",
                 data:{
-                    pdb:TagDelimiter.parseEntityOrInstance(targetAlignment.target_id),
+                    pdb: parseEntityOrInstance(targetAlignment.target_id),
                     targetAlignment,
                     who
                 }

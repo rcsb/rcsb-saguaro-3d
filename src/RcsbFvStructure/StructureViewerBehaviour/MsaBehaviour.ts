@@ -17,12 +17,12 @@ import {
 import {RcsbFvStateInterface} from "../../RcsbFvState/RcsbFvStateInterface";
 import {asyncScheduler, Subscription} from "rxjs";
 import {StructureLoaderInterface} from "../StructureUtils/StructureLoaderInterface";
-import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {createSelectionExpressions} from "@rcsb/rcsb-molstar/build/src/viewer/helpers/selection";
 import {RegionSelectionInterface} from "../../RcsbFvState/RcsbFvSelectorManager";
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {FunctionCall} from "../../Utils/FunctionCall";
 import onetimeCall = FunctionCall.onetimeCall;
+import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
 
 type MsaBehaviourType<R,L> = StructureLoaderInterface<[
     ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>,

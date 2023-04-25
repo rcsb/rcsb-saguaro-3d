@@ -13,12 +13,12 @@ import {
     LoadMolstarInterface,
     LoadMolstarReturnType
 } from "../MolstarActionManager";
-import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
 import {
     AlignmentTrajectoryPresetProvider,
     AlignmentTrajectoryParamsType
 } from "../TrajectoryPresetProvider/AlignmentTrajectoryPresetProvider";
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
 
 
 export class MolstarAlignmentLoader implements StructureLoaderInterface<[

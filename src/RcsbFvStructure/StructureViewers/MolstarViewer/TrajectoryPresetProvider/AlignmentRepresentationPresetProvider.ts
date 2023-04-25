@@ -28,7 +28,7 @@ import {Loci} from "molstar/lib/mol-model/loci";
 import {superpose} from "molstar/lib/mol-model/structure/structure/util/superposition";
 import {Mat4} from "molstar/lib/mol-math/linear-algebra";
 import {SymmetryOperator} from "molstar/lib/mol-math/geometry/symmetry-operator";
-import {TagDelimiter} from "@rcsb/rcsb-saguaro-app";
+import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
 import {AlignedRegion, TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {AlignmentMapper as AM} from "../../../../Utils/AlignmentMapper";
 import {compile} from 'molstar/lib/mol-script/runtime/query/compiler';
