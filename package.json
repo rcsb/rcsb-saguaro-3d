@@ -1,6 +1,6 @@
 {
   "name": "@rcsb/rcsb-saguaro-3d",
-  "version": "3.0.0-data-provider.29",
+  "version": "3.0.0",
   "description": "RCSB Molstar/Saguaro Web App",
   "main": "build/dist/app.js",
   "files": [
@@ -20,7 +20,7 @@
     "buildDoc": "typedoc --excludeExternals --externalPattern \"**/node_modules/**\" src/RcsbFv3D/RcsbFv3DAssembly.tsx src/RcsbFv3D/RcsbFv3DUniprot.tsx src/RcsbFv3D/RcsbFv3DSequenceIdentity.tsx src/RcsbFv3D/RcsbFv3DCustom.tsx && sed -i '' '/---/d' docs/index.html",
     "clean": "del-cli lib",
     "cleanAll": "npm run clean && del-cli build/dist",
-    "publishApp": "npm publish --tag data-provider",
+    "publishApp": "npm publish",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

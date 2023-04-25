@@ -2,7 +2,7 @@
 
 [Semantic Versioning](https://semver.org/)
 
-## [3.0.0] - 2023-02-03
+## [3.0.0] - 2023-04-25
 ### Improvements
 - New entry method `RcsbFv3DDataProviderInterface` that ingests and displays external alignments
 - New interface `ComponentActionInterface` used to define what actions are triggered after a new structure is loaded
@@ -24,6 +24,20 @@ that is used to map loaded structure ids with user provided ids in `LoadParams`
 - All packages are transpiled and included in the final module
 ### Breaking Changes
 - rcsb-saguaro-app configuration `RcsbFvAdditionalConfig.trackConfigModifier.alignment` signature changed
+
+## [2.3.10] - 2023-03-03
+### Dependency update
+- molstar update v3.31.2
+- rcsb-molstar v2.5.11
+
+## [2.3.9] - 2023-03-02
+### Dependency update
+- rcsb-saguaro-app v4.5.12
+
+## [2.3.8] - 2023-01-20
+### Dependency update
+- rcsb-saguaro v2.5.8
+- rcsb-saguaro-app v4.5.9
 
 ## [2.3.7] - 2022-12-12
 ### Bug fix
