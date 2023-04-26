@@ -2,6 +2,9 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [3.0.1] - 2023-04-26
+- Structure panel z-index removed and defined as molstar style
+
 ## [3.0.0] - 2023-04-25
 ### Improvements
 - New entry method `RcsbFv3DDataProviderInterface` that ingests and displays external alignments

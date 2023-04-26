@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     const groupId: string = "494_30";
     const panel3d = new RcsbFv3DSequenceIdentity({
+        elementId: "pfv",
         config:{
             groupId,
             title: "Title >> Sequence Identity " + groupId,

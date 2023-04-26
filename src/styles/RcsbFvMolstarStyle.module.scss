@@ -27,6 +27,10 @@ $logo-background: lighten(#325880, 60%);
     opacity: 0.8 !important;
 }
 
+.msp-layout-expanded {
+    z-index: 3000;
+}
+
 /*.msp-plugin {
     border: 1px solid rgb(255,255,255) !important;
 }

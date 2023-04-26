@@ -119,7 +119,7 @@ export class RcsbFv3DCustomComponent<R,L,S> extends React.Component <RcsbFv3DCus
         const widthFr: number = Math.round((1-this.state.pfvScreenFraction)*100);
         const cssWidth: string = widthFr.toString()+"%";
         const cssHeight: string = "100%";
-        return {...(this.useDefaultCss() ? {width:cssWidth, height:cssHeight, zIndex:100} : {}), ...css };
+        return {...(this.useDefaultCss() ? {width:cssWidth, height:cssHeight} : {}), ...css };
     }
 
     private sequenceCssConfig(css: CSSProperties | undefined): CSSProperties{
