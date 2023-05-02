@@ -2,7 +2,12 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [3.0.2] - 2023-05-02
+### Dependency update
+- rcsb-saguaro-app v5.0.2
+ 
 ## [3.0.1] - 2023-04-26
+### Style config
 - Structure panel z-index removed and defined as molstar style
 
 ## [3.0.0] - 2023-04-25
