@@ -3,6 +3,10 @@
 [Semantic Versioning](https://semver.org/)
 
 ## [3.0.6] - 2023-05-16
+### Dependency update
+- rcsb-saguaro-app v5.0.7
+
+## [3.0.6] - 2023-05-16
 ### Configuration
 - molstar and rcsb-molstar moved to peerDependencies
 
