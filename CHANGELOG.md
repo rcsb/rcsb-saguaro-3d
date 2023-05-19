@@ -2,7 +2,12 @@
 
 [Semantic Versioning](https://semver.org/)
 
-## [3.0.6] - 2023-05-16
+## [3.0.8] - 2023-05-19
+### Bug fix
+- Chain check box display bug fixed in assembly view 
+- PFV onchange selection bug fixed in assembly view
+
+## [3.0.7] - 2023-05-16
 ### Dependency update
 - rcsb-saguaro-app v5.0.7
 

@@ -58,7 +58,7 @@ class AssemblyBehaviour<R,L> implements StructureViewerBehaviourInterface {
     }
 
     private subscribe(): Subscription {
-        return this.stateManager.subscribe<"visibility-change",{display:'visible' | 'hidden'; label:string;}>(async o=>{
+        return this.stateManager.subscribe<"visibility-change"|"component-info",{display:'visible' | 'hidden'; label:string;}>(async o=>{
             if(o.type == "selection-change" && o.view == "1d-view")
                 this.selectionChange();
             if(o.type == "hover-change" && o.view == "1d-view")
@@ -71,6 +71,8 @@ class AssemblyBehaviour<R,L> implements StructureViewerBehaviourInterface {
                 this.resetPluginView();
             if(o.type == "visibility-change" && o.view == "1d-view" && o.data)
                 this.visibilityChange(o.data);
+            if(o.type == "component-info" && o.view == "1d-view" && o.data)
+                this.componentInfo(o.data);
         });
     }
 
@@ -168,6 +170,17 @@ class AssemblyBehaviour<R,L> implements StructureViewerBehaviourInterface {
         }else{
             this.structureViewer.displayComponent(data.label, false);
         }
+    }
+
+    private componentInfo(data:{label:string;}): void {
+        this.stateManager.next<"component-info",{label:string;display:'visible' | 'hidden';}>({
+            type: "component-info",
+            view: "3d-view",
+            data: {
+                label: data.label,
+                display: this.structureViewer.displayComponent(data.label) ? "visible" : "hidden"
+            }
+        });
     }
 
 }
