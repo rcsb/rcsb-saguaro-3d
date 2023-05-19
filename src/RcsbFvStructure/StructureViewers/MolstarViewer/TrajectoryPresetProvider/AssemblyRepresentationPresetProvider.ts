@@ -55,7 +55,7 @@ export const AssemblyRepresentationPresetProvider = StructureRepresentationPrese
                     }),
                     uniqid(`${asymId}`),
                     {
-                        label: asymId == authId ? asymId : `${asymId} [${authId}]`
+                        label: asymId == authId ? asymId : `${asymId} [auth ${authId}]`
                     }
                 );
                 componentMap[asymId] = comp;

@@ -2,9 +2,13 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [3.0.9] - 2023-05-19
+### Bug fix
+- Chain checkbox label bug fixed in assembly view
+
 ## [3.0.8] - 2023-05-19
 ### Bug fix
-- Chain check box display bug fixed in assembly view 
+- Chain checkbox display bug fixed in assembly view 
 - PFV onchange selection bug fixed in assembly view
 
 ## [3.0.7] - 2023-05-16
