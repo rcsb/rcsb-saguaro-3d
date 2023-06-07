@@ -5,6 +5,12 @@ and [RCSB Molstar](https://github.com/rcsb/rcsb-Molstar) designed to display pro
 The package collects protein annotations from the [1D Coordinate Server](https://1d-coordinates.rcsb.org) 
 and the main [RCSB Data API](https://data.rcsb.org) and generates Protein Feature Summaries. 
 The package allows access to RCSB Saguaro and Molstar methods to add or change the displayed data. 
+
+When using rcsb-saguaro, please cite:
+
+Joan Segura, Yana Rose, Sebastian Bittrich, Stephen K Burley, Jose M Duarte.
+RCSB Protein Data Bank 1D3D module: displaying positional features on macromolecular assemblies, Bioinformatics, 2022; https://doi.org/10.1093/bioinformatics/btac317
+
 <!---
 <div id="pfv"></div>
 <script crossorigin src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
