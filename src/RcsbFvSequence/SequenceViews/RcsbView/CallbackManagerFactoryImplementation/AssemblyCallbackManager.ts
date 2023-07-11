@@ -1,17 +1,14 @@
 import {
-    SaguaroChain,
     SaguaroRange,
     SaguaroRegionList
 } from "../../../../RcsbFvStructure/StructureViewerInterface";
 import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
-import {asyncScheduler} from "rxjs";
 import {
     AbstractCallbackManager, CallbackConfigInterface,
     CallbackManagerFactoryInterface,
     CallbackManagerInterface
 } from "../CallbackManagerFactoryInterface";
 import {RegionSelectionInterface} from "../../../../RcsbFvState/RcsbFvSelectorManager";
-import {DataContainer} from "../../../../Utils/DataContainer";
 
 export class AssemblyCallbackManagerFactory implements CallbackManagerFactoryInterface<undefined> {
     getCallbackManager(config: CallbackConfigInterface): CallbackManagerInterface<undefined> {
@@ -75,8 +72,8 @@ class AssemblyCallbackManager extends AbstractCallbackManager<undefined> {
         if(allSel == null || allSel.length ===0) {
             this.rcsbFvContainer.get()?.getFv().clearSelection(mode);
         }else if( mode === 'select' && ((lastSel?.labelAsymId && lastSel?.labelAsymId != labelAsymId) || (lastSel?.operatorName && lastSel?.operatorName != operatorName)) ){
-            const authId: string | undefined = this.stateManager.assemblyModelSate.getChainInfo(lastSel?.labelAsymId!)?.auth;
-            await this.modelChangeCallback(authId, lastSel?.operatorName);
+            const labelAsymId: string | undefined = this.stateManager.assemblyModelSate.getChainInfo(lastSel?.labelAsymId!)?.label;
+            await this.modelChangeCallback(labelAsymId, lastSel?.operatorName);
         }else if(modelId && labelAsymId){
             const sel: SaguaroRegionList | undefined = this.stateManager.selectionState.getSelectionWithCondition(
                 modelId,

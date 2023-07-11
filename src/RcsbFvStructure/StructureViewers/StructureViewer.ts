@@ -13,7 +13,7 @@ import {ColorTheme} from "molstar/lib/mol-theme/color";
 import {Subscription} from "rxjs";
 import {RcsbFvStateInterface} from "../../RcsbFvState/RcsbFvStateInterface";
 
-export class StructureViewer<R,L,S> implements StructureViewerInterface<R,L,S> {
+export class StructureViewer<R,L,S extends {}> implements StructureViewerInterface<R,L,S> {
     private readonly structureViewerManagerFactory:  ViewerManagerFactoryInterface<R,L,S>;
     private callbackManager: ViewerCallbackManagerInterface;
     private actionManager: ViewerActionManagerInterface<R,L>;

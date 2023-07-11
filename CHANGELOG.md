@@ -2,6 +2,16 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [3.0.10] - 2023-07-11
+### Bug fix
+- Change sequence chain in Assembly view bug fixed
+ 
+- ### Dependency update
+- rcsb-api-tools v4.1.13,
+- rcsb-saguaro v2.5.13,
+- rcsb-saguaro-app v5.0.8
+- Updated multiple dependencies 
+
 ## [3.0.9] - 2023-05-19
 ### Bug fix
 - Chain checkbox label bug fixed in assembly view
