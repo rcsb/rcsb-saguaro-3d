@@ -2,6 +2,10 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [3.0.12] - 2023-08-10
+### Dependency update
+- @rcsb/rcsb-molstar v3.7.2
+
 ## [3.0.11] - 2023-08-10
 ### Improvements
 - New focus color theme to match the ribbon color in alignment views
