@@ -1,6 +1,6 @@
 {
   "name": "@rcsb/rcsb-saguaro-3d",
-  "version": "3.0.10",
+  "version": "3.0.11",
   "description": "RCSB Molstar/Saguaro Web App",
   "main": "build/dist/app.js",
   "files": [
@@ -93,7 +93,7 @@
   },
   "peerDependencies": {
     "@rcsb/rcsb-molstar": "^2.7.1",
-    "molstar": "^3.37.1"
+    "molstar": "^3.38.3"
   },
   "bugs": {
     "url": "https://github.com/rcsb/rcsb-saguaro-3d/issues"

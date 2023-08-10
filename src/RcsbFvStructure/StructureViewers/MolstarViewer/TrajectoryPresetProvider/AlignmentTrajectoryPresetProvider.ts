@@ -7,14 +7,14 @@ import {TrajectoryHierarchyPresetProvider} from "molstar/lib/mol-plugin-state/bu
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {PluginStateObject} from "molstar/lib/mol-plugin-state/objects";
 import {ParamDefinition, ParamDefinition as PD} from "molstar/lib/mol-util/param-definition";
-import {StateObjectRef, StateObjectSelector} from "molstar/lib/mol-state";
+import {StateObjectRef} from "molstar/lib/mol-state";
 import {RootStructureDefinition} from "molstar/lib/mol-plugin-state/helpers/root-structure";
-import {StateTransformer} from "molstar/lib/mol-state/transformer";
 import {StateObject} from "molstar/lib/mol-state/object";
 import {AlignmentRepresentationPresetProvider} from "./AlignmentRepresentationPresetProvider";
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {Structure, StructureElement, StructureProperties as SP} from "molstar/lib/mol-model/structure";
 import {RigidTransformType} from "../../../StructureUtils/StructureLoaderInterface";
+import {FocusResidueColorThemeProvider} from "./FocusTheme/FocusColoring";
 
 
 export type AlignmentTrajectoryParamsType = {
@@ -23,8 +23,6 @@ export type AlignmentTrajectoryParamsType = {
     targetAlignment?: TargetAlignment;
     modelIndex?: number;
 }
-
-type StructureObject = StateObjectSelector<PluginStateObject.Molecule.Structure, StateTransformer<StateObject<any, StateObject.Type<any>>, StateObject<any, StateObject.Type<any>>, any>>
 
 export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvider({
     id: 'alignment-to-reference',
@@ -77,6 +75,10 @@ export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvid
         }while(!entityCheck);
 
         const structureProperties = await builder.insertStructureProperties(structure);
+
+        if (!plugin.representation.structure.themes.colorThemeRegistry.has(FocusResidueColorThemeProvider))
+            plugin.representation.structure.themes.colorThemeRegistry.add(FocusResidueColorThemeProvider);
+
         const representation = await plugin.builders.structure.representation.applyPreset(
             structureProperties,
             AlignmentRepresentationPresetProvider,

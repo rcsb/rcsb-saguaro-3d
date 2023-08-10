@@ -43,6 +43,8 @@ import {StructureRepresentationBuilder} from "molstar/lib/mol-plugin-state/build
 import {RigidTransformType, TransformMatrixType} from "../../../StructureUtils/StructureLoaderInterface";
 import {StateTransform} from "molstar/lib/mol-state/transform";
 import {TransformStructureConformation} from "molstar/lib/mol-plugin-state/transforms/model";
+import updateFocusRepr = StructureRepresentationPresetProvider.updateFocusRepr;
+import {FOCUS_RESIDUE_COLOR} from "./FocusTheme/FocusColoring";
 
 type RepresentationParamsType = {
     pdb?:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};
@@ -144,6 +146,7 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
                     type: "cartoon"
                 });
 
+
                 await update.commit({ revertOnError: false });
                 break;
             }
@@ -232,6 +235,15 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
             await update.commit({ revertOnError: false });
             if(comp && expression.tag != "water") anyLigComp = comp;
         }
+
+        structure.inheritedPropertyData.reprList = Object.values(representationMap).filter(repr=>typeof repr != "undefined");
+        await updateFocusRepr(
+            plugin,
+            structure,
+            FOCUS_RESIDUE_COLOR,
+            {}
+        );
+
 
         return {
             components: componentMap,
