@@ -202,7 +202,6 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
 
         await update.commit({ revertOnError: false });
 
-        let anyLigComp;
         for(const expression of createSelectionExpressions(entryId)){
             if(expression.tag == "polymer")
                 continue;
@@ -227,13 +226,20 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
                     isHidden:true
                 }
             });
+            if(expression.type !== "ball-and-stick")
+                representationMap[expression.tag + "#ball-and-stick"] = builder.buildRepresentation(update, comp, {
+                    type: "ball-and-stick"
+                },{
+                    initialState:{
+                        isHidden:true
+                    }
+                });
 
             if (comp?.cell?.state ) {
                 StateTransform.assignState(comp?.cell?.state, { isHidden: true });
             }
 
             await update.commit({ revertOnError: false });
-            if(comp && expression.tag != "water") anyLigComp = comp;
         }
 
         structure.inheritedPropertyData.reprList = Object.values(representationMap).filter(repr=>typeof repr != "undefined");

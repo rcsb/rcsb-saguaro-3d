@@ -98,6 +98,14 @@ export const AssemblyRepresentationPresetProvider = StructureRepresentationPrese
                     isHidden: expression.tag == "water"
                 }
             });
+            if(expression.type !== "ball-and-stick")
+                representationMap[expression.tag + "#ball-and-stick"] = builder.buildRepresentation(update, comp, {
+                        type: "ball-and-stick"
+                    },{
+                        initialState:{
+                        isHidden: expression.tag == "water"
+                    }
+                });
             if (comp?.cell?.state && expression.tag == "water") {
                 StateTransform.assignState(comp?.cell?.state, { isHidden: true });
             }

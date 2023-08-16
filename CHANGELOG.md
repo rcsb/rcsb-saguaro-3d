@@ -2,6 +2,13 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [3.0.13] - 2023-08-16
+### Improvements
+- Non `ball-and-stick` representations for ligands will always include an additional `ball-and-stick` representation
+ 
+### Dependency update
+- @rcsb/rcsb-molstar v3.7.3
+
 ## [3.0.12] - 2023-08-10
 ### Dependency update
 - @rcsb/rcsb-molstar v3.7.2
