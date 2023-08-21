@@ -33,11 +33,7 @@ import {AlignedRegion, TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGra
 import {AlignmentMapper as AM} from "../../../../Utils/AlignmentMapper";
 import {compile} from 'molstar/lib/mol-script/runtime/query/compiler';
 import reprBuilder = StructureRepresentationPresetProvider.reprBuilder;
-import {
-    QualityAssessment,
-} from "molstar/lib/extensions/model-archive/quality-assessment/prop";
 import {MmcifFormat} from "molstar/lib/mol-model-formats/structure/mmcif";
-import {CustomProperty} from "molstar/lib/mol-model-props/common/custom-property";
 import {StructureBuilder} from "molstar/lib/mol-plugin-state/builder/structure";
 import {StructureRepresentationBuilder} from "molstar/lib/mol-plugin-state/builder/structure/representation";
 import {RigidTransformType, TransformMatrixType} from "../../../StructureUtils/StructureLoaderInterface";
@@ -284,8 +280,8 @@ async function structuralAlignment(plugin: PluginContext, ref:StructureAlignment
         const pdbResIndexes: number[] = [];
         const refResIndexes: number[] = [];
         const pdbData: Structure = structure;
-        const pdbUnit:{unit: Unit; q:CustomProperty.Data<QualityAssessment>}|undefined = await findFirstInstanceUnit(pdbData,pdb.labelAsymId);
-        const refUnit:{unit: Unit; q:CustomProperty.Data<QualityAssessment>}|undefined =  refData ? await findFirstInstanceUnit(refData, ref.labelAsymId) : undefined;
+        const pdbUnit:{unit: Unit; localScore:Map<number,number>}|undefined = await findFirstInstanceUnit(pdbData,pdb.labelAsymId);
+        const refUnit:{unit: Unit; localScore:Map<number,number>}|undefined =  refData ? await findFirstInstanceUnit(refData, ref.labelAsymId) : undefined;
         if( pdbUnit && refUnit && ref.targetAlignment?.aligned_regions && pdb.targetAlignment?.aligned_regions){
             const alignmentList = AM.getAllTargetIntersections( ref.targetAlignment.aligned_regions as AlignedRegion[], pdb.targetAlignment.aligned_regions as AlignedRegion[])
             alignmentList.forEach(alignment=>{
@@ -295,7 +291,7 @@ async function structuralAlignment(plugin: PluginContext, ref:StructureAlignment
                     const pdbIndex = pdbRange[n];
                     const pdbLoci =  residueToLoci(pdb, pdbIndex, pdbData);
                     const refLoci =  residueToLoci(refParams!, refIndex, refData!);
-                    if(!Loci.isEmpty(pdbLoci) && !Loci.isEmpty(refLoci) && checkLocalScore(pdbUnit.q.value.pLDDT, pdbIndex) && checkLocalScore(refUnit.q.value.pLDDT, refIndex)){
+                    if(!Loci.isEmpty(pdbLoci) && !Loci.isEmpty(refLoci) && checkLocalScore(pdbUnit.localScore, pdbIndex) && checkLocalScore(refUnit.localScore, refIndex)){
                         pdbResIndexes.push(pdbIndex)
                         refResIndexes.push(refIndex)
                     }
@@ -316,37 +312,32 @@ async function structuralAlignment(plugin: PluginContext, ref:StructureAlignment
     }
 }
 
-async function findFirstInstanceUnit(structure: Structure, labelAsymId: string): Promise<{unit: Unit; q:CustomProperty.Data<QualityAssessment>}|undefined> {
+async function findFirstInstanceUnit(structure: Structure, labelAsymId: string): Promise<{unit: Unit; localScore:Map<number,number>}|undefined> {
     const l = StructureElement.Location.create(structure);
     for(const unit of structure.units) {
         StructureElement.Location.set(l, structure, unit, unit.elements[0]);
         if (SP.chain.label_asym_id(l) == labelAsymId) {
-            const q:CustomProperty.Data<QualityAssessment> = await obtain(unit.model);
-            return {unit,q};
+            const q:Map<number,number> = await obtainQualityAssessment(unit.model);
+            return {unit,localScore: q};
         }
     }
 }
 
-function checkLocalScore(scoreMap: Map<ResidueIndex, number>|undefined, index: number): boolean{
-    if(typeof  scoreMap == "undefined")
+function checkLocalScore(scoreMap: Map<number, number>, index: number): boolean{
+    if(scoreMap.size == 0)
         return true;
-    return !!(scoreMap.get(index as ResidueIndex) && scoreMap.get(index as ResidueIndex)! >= 70);
+    return !!(scoreMap.get(index) && scoreMap.get(index as ResidueIndex)! >= 70);
 
 }
 
-const Empty = {
-    value: {
-        localMetrics: new Map()
-    }
-};
-async function obtain(model: Model): Promise<CustomProperty.Data<QualityAssessment>> {
-    if (!model || !MmcifFormat.is(model.sourceData)) return Empty;
+async function obtainQualityAssessment(model: Model): Promise<Map<number,number>> {
+    if (!model || !MmcifFormat.is(model.sourceData)) return new Map();
     const { ma_qa_metric, ma_qa_metric_local } = model.sourceData.data.db;
     const { model_id, label_asym_id, label_seq_id, metric_id, metric_value } = ma_qa_metric_local;
     const { index } = model.atomicHierarchy;
 
     // for simplicity we assume names in ma_qa_metric for mode 'local' are unique
-    const localMetrics = new Map<string, Map<ResidueIndex, number>>();
+    const localMetrics = new Map<string, Map<number, number>>();
     const localNames = new Map<number, string>();
 
     for (let i = 0, il = ma_qa_metric._rowCount; i < il; i++) {
@@ -367,19 +358,11 @@ async function obtain(model: Model): Promise<CustomProperty.Data<QualityAssessme
             continue;
 
         const labelAsymId = label_asym_id.value(i);
-        const entityIndex = index.findEntity(labelAsymId);
-        const rI = index.findResidue(model.entities.data.id.value(entityIndex), labelAsymId, label_seq_id.value(i));
+        const rI = label_seq_id.value(i);
         const name = localNames.get(metric_id.value(i))!;
         localMetrics.get(name)!.set(rI, metric_value.value(i));
     }
-
-    return {
-        value: {
-            localMetrics,
-            pLDDT: localMetrics.get('pLDDT'),
-            qmean: localMetrics.get('qmean'),
-        }
-    };
+    return localMetrics.get('pLDDT') ?? new Map();
 }
 
 const SuperpositionTag = 'SuperpositionTransform';

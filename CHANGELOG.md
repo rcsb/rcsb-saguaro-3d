@@ -2,6 +2,10 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [3.0.14] - 2023-08-21
+### Bug fix
+- Models were not superposed correctly in Alignment views
+
 ## [3.0.13] - 2023-08-16
 ### Improvements
 - Non `ball-and-stick` representations for ligands will always include an additional `ball-and-stick` representation
