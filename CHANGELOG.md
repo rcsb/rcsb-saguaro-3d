@@ -2,6 +2,12 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [3.0.15] - 2023-09-08
+### Dependency update
+- rcsb-saguaro-app v5.1.1
+- @rcsb/rcsb-molstar v3.7.4
+- Updated multiple dependencies
+
 ## [3.0.14] - 2023-08-21
 ### Bug fix
 - Models were not superposed correctly in Alignment views
