@@ -133,7 +133,7 @@ class MsaBehaviour<R,L> implements StructureViewerBehaviourInterface {
                 }));
                 if(
                     data?.map( d => (d.region.end-d.region.begin+1) < this.CREATE_COMPONENT_THR ? 1 : 0)
-                    .reduce((prev,curr)=>prev+curr,0) == data?.length
+                    .reduce((prev: number, curr:number)=>prev+curr,0) == data?.length
                 )
                     asyncScheduler.schedule(async ()=>{
                         const x = residues[0];
@@ -158,6 +158,7 @@ class MsaBehaviour<R,L> implements StructureViewerBehaviourInterface {
     }
 
     unsubscribe(): void {
+        this.subscription.unsubscribe();
     }
 
     reprChange(data?:{pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;}} & {tag:"aligned"|"polymer"|"non-polymer";isHidden:boolean;}): void {

@@ -1,10 +1,9 @@
-import * as React from "react";
 import {RcsbFv3DAbstract} from "./RcsbFv3DAbstract";
 import {
     AssemblyTrajectoryParamsType
 } from "../RcsbFvStructure/StructureViewers/MolstarViewer/TrajectoryPresetProvider/AssemblyTrajectoryPresetProvider";
-import {RcsbFvAdditionalConfig} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
-import {InstanceSequenceConfig} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
+import {RcsbFvAdditionalConfig} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
+import {InstanceSequenceConfig} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
 import {OperatorInfo} from "../RcsbFvStructure/StructureViewerInterface";
 import {
     LoadMolstarInterface,

@@ -4,11 +4,11 @@ import {
     AlignmentResponse,
 } from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {Alignment} from "./alignment-response";
-import {RcsbRequestContextManager} from "@rcsb/rcsb-saguaro-app";
 import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
 import {
     InstanceSequenceInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/DataCollectors/MultipleInstanceSequencesCollector";
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbCollectTools/DataCollectors/MultipleInstanceSequencesCollector";
+import {RcsbRequestContextManager} from "@rcsb/rcsb-saguaro-app/lib/app";
 
 type AlignmentRefType = (number|undefined)[];
 type AlignmentMemberType = {

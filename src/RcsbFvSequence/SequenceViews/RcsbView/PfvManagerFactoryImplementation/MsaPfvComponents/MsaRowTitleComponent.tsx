@@ -4,11 +4,10 @@
 */
 
 import * as React from "react";
-import {RcsbFvRowTitleInterface} from "@rcsb/rcsb-saguaro/build/RcsbFv/RcsbFvRow/RcsbFvRowTitle";
-import {RcsbFvRowConfigInterface} from "@rcsb/rcsb-saguaro";
+import {RcsbFvRowTitleInterface} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvRow/RcsbFvRowTitle";
 import {
     AlignmentRequestContextType
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvFactories/RcsbFvTrackFactory/TrackFactoryImpl/AlignmentTrackFactory";
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvFactories/RcsbFvTrackFactory/TrackFactoryImpl/AlignmentTrackFactory";
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {Subscription} from "rxjs";
 import {MsaRowTitleCheckboxComponent} from "./MsaRowTitleCheckboxComponent";
@@ -16,6 +15,7 @@ import {MouseEvent} from "react";
 import {Property} from "csstype";
 import {RcsbFvStateInterface} from "../../../../../RcsbFvState/RcsbFvStateInterface";
 import {parseEntityOrInstance} from "../../../../../Utils/RcsbIdParser";
+import {RcsbFvRowConfigInterface} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvConfig/RcsbFvConfigInterface";
 
 interface MsaRowTitleInterface extends RcsbFvRowTitleInterface {
     alignmentContext: AlignmentRequestContextType;

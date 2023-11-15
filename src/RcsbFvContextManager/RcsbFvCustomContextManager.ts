@@ -1,6 +1,5 @@
 import {Subject, Subscription} from 'rxjs';
 import {RcsbFvStructureConfigInterface} from "../RcsbFvStructure/RcsbFvStructure";
-import {RcsbFvSequenceInterface} from "../RcsbFvSequence/RcsbFvSequence";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {RcsbFvCustomSequenceInterface} from "../RcsbFvSequence/RcsbFvCustomSequence";
 

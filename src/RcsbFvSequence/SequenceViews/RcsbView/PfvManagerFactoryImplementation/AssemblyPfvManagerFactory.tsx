@@ -1,25 +1,23 @@
 import {
     RcsbFvModulePublicInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {
     ChainInfo, OperatorInfo,
 } from "../../../../RcsbFvStructure/StructureViewerInterface";
 import {
     InstanceSequenceConfig
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvBuilder/RcsbFvInstanceBuilder";
 import {asyncScheduler} from "rxjs";
-import {buildInstanceSequenceFv, FeatureType, RcsbFvUI, RcsbRequestContextManager} from "@rcsb/rcsb-saguaro-app";
 import {RcsbFvDOMConstants} from "../../../../RcsbFvConstants/RcsbFvConstants";
-import {SelectOptionProps} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvComponents/SelectButton";
+import {SelectOptionProps} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvComponents/SelectButton";
 import {ChainDisplayComponent} from "./AssemblyPfvComponents/ChainDisplayComponent";
-import * as React from "react";
 import {AnnotationFeatures, Source, Type} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {
     PolymerEntityInstanceInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
 import {
     InterfaceInstanceTranslate
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbUtils/Translators/InterfaceInstanceTranslate";
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbUtils/Translators/InterfaceInstanceTranslate";
 import {DataContainer} from "../../../../Utils/DataContainer";
 import {
     BuildPfvInterface,
@@ -28,6 +26,9 @@ import {
     PfvManagerInterface,
     PfvManagerFactoryInterface
 } from "../PfvManagerFactoryInterface";
+import {buildInstanceSequenceFv} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvBuilder";
+import {RcsbFvUI} from "@rcsb/rcsb-saguaro-app/lib/RcsbExport/RcsbFvUI";
+import {FeatureType, RcsbRequestContextManager} from "@rcsb/rcsb-saguaro-app/lib/app";
 
 interface AssemblyPfvManagerInterface extends PfvManagerFactoryConfigInterface<undefined>{
     useOperatorsFlag?: boolean;

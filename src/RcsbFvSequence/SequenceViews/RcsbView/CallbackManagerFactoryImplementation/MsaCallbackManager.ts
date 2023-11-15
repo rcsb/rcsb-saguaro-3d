@@ -3,7 +3,6 @@ import {
     CallbackConfigInterface,
     CallbackManagerFactoryInterface, CallbackManagerInterface
 } from "../CallbackManagerFactoryInterface";
-import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {
     AlignedRegion,
     AlignmentResponse
@@ -13,6 +12,7 @@ import {ChainInfo, SaguaroRegionList} from "../../../../RcsbFvStructure/Structur
 import {AlignmentMapper as AM} from "../../../../Utils/AlignmentMapper";
 import {DataContainer} from "../../../../Utils/DataContainer";
 import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
+import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro/lib/RcsbDataManager/RcsbDataManager";
 
 
 export class MsaCallbackManagerFactory<U> implements CallbackManagerFactoryInterface<U> {
@@ -41,13 +41,11 @@ export class MsaCallbackManagerFactory<U> implements CallbackManagerFactoryInter
 type SelectedRegion = {modelId: string, labelAsymId: string, region: RegionSelectionInterface, operatorName?: string};
 class MsaCallbackManager<U>  extends AbstractCallbackManager<U>{
 
-    private readonly loadParamRequest:(id: string)=>void;
-    private readonly targetIds: {[key:string]:boolean} = {};
+    private readonly targetIds: { [key: string]: boolean } = {};
     private readonly alignmentResponseContainer: DataContainer<AlignmentResponse>;
 
-    constructor(config: CallbackConfigInterface & {loadParamRequest:(id: string)=>void;alignmentResponseContainer: DataContainer<AlignmentResponse>;}) {
+    constructor(config: CallbackConfigInterface & { loadParamRequest: (id: string) => void; alignmentResponseContainer: DataContainer<AlignmentResponse>; }) {
         super(config);
-        this.loadParamRequest = config.loadParamRequest;
         this.alignmentResponseContainer = config.alignmentResponseContainer;
     }
 

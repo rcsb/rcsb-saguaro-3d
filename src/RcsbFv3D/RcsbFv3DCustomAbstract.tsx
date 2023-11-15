@@ -1,9 +1,7 @@
-import * as React from "react";
 import {createRoot, Root} from "react-dom/client";
-import {RcsbFv3DComponent, RcsbFv3DCssConfig} from './RcsbFv3DComponent';
+import {RcsbFv3DCssConfig} from './RcsbFv3DComponent';
 import {RcsbFvStructureConfigInterface} from "../RcsbFvStructure/RcsbFvStructure";
-import {RcsbFvSequenceInterface} from "../RcsbFvSequence/RcsbFvSequence";
-import {EventType, RcsbFvContextManager} from "../RcsbFvContextManager/RcsbFvContextManager";
+import {EventType} from "../RcsbFvContextManager/RcsbFvContextManager";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {CSSProperties} from "react";
 import {StructureViewerInterface} from "../RcsbFvStructure/StructureViewerInterface";

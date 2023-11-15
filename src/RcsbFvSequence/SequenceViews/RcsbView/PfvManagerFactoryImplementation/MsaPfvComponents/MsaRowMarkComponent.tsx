@@ -4,9 +4,9 @@
 */
 
 import React from "react";
-import classes from '../../../../../styles/MsaPfvStyle.module.scss';
+import classes from '../../../../../scss/MsaPfvStyle.module.scss';
 import {Property} from "csstype";
-import {asyncScheduler, Subscription} from "rxjs";
+import {asyncScheduler} from "rxjs";
 import {RcsbFvStateInterface} from "../../../../../RcsbFvState/RcsbFvStateInterface";
 
 interface MsaRowMarkInterface  {

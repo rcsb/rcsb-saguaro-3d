@@ -4,15 +4,8 @@ import {
     CustomViewInterface,
     FeatureBlockInterface, FeatureViewInterface
 } from "../../RcsbFvSequence/SequenceViews/CustomView/CustomView";
-import * as React from "react";
+;
 import {
-    RcsbFv,
-    RcsbFvDisplayTypes,
-    RcsbFvRowConfigInterface,
-    RcsbFvTrackDataElementInterface
-} from "@rcsb/rcsb-saguaro";
-import {
-    RcsbFvSelectorManager,
     RegionSelectionInterface
 } from "../../RcsbFvState/RcsbFvSelectorManager";
 import {
@@ -24,6 +17,10 @@ import {
 } from "../../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarActionManager";
 import {ViewerProps} from "@rcsb/rcsb-molstar/build/src/viewer";
 import {RcsbFvStateManager} from "../../RcsbFvState/RcsbFvStateManager";
+import {RcsbFvRowConfigInterface} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvConfig/RcsbFvConfigInterface";
+import {RcsbFvDisplayTypes} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvConfig/RcsbFvDefaultConfigValues";
+import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro/lib/RcsbDataManager/RcsbDataManager";
+import {RcsbFv} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFv";
 
 const rowConfig: Array<RcsbFvRowConfigInterface> = [
     {
@@ -36,7 +33,7 @@ const rowConfig: Array<RcsbFvRowConfigInterface> = [
         trackData: [
             {
                 begin: 1,
-                value: "ANKTRELCMKSLEHAKVDTSNEARQDGIDLYKHMFENYPPLRKYFKSREEYTAEDVQNDPFFAKQGQKILLACHVLCATYDDRETFNAYTRELLDRHARDHVHMPPEVWTDFWKLFEEYLGKKTTLDEPTKQAWHEIGREFAKEINKHGR"
+                label: "ANKTRELCMKSLEHAKVDTSNEARQDGIDLYKHMFENYPPLRKYFKSREEYTAEDVQNDPFFAKQGQKILLACHVLCATYDDRETFNAYTRELLDRHARDHVHMPPEVWTDFWKLFEEYLGKKTTLDEPTKQAWHEIGREFAKEINKHGR"
             }
         ]
     },{
@@ -83,8 +80,8 @@ const fvConfig: FeatureViewInterface<LoadMolstarInterface<unknown,unknown>,LoadM
             plugin.resetCamera();
         }
     },
-    sequenceElementClickCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, d: RcsbFvTrackDataElementInterface) => {
-        if(d!=null)
+    sequenceElementClickCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, d?: RcsbFvTrackDataElementInterface) => {
+        if(d)
             plugin.cameraFocus("1ash_model", "A", d.begin, d.end ?? d.begin);
     },
     sequenceHoverCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, elements: Array<RcsbFvTrackDataElementInterface>) => {

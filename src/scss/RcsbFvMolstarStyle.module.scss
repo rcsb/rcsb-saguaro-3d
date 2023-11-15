@@ -1,0 +1,11 @@
+@use '@rcsb/rcsb-molstar/build/dist/viewer/rcsb-molstar';
+
+.msp-semi-transparent-background {
+    opacity: 0.8 !important;
+}
+
+.msp-layout-expanded {
+    z-index: 3000;
+}
+
+

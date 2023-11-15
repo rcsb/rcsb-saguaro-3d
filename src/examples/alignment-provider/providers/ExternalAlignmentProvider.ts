@@ -6,11 +6,11 @@ import {
 import {
     AlignmentCollectConfig,
     AlignmentCollectorInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/AlignmentCollector/AlignmentCollectorInterface";
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbCollectTools/AlignmentCollector/AlignmentCollectorInterface";
 
 import {
     RcsbModuleDataProviderInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {AlignmentReference} from "./AlignmentReference";
 import {
     LoadParamsProviderInterface,
@@ -1649,6 +1649,7 @@ const alignmentExample = {
 };
 const duplicatedAlignment = {"info":{"uuid":"dcc58c64-e606-441f-8c04-372381fb7c0e","status":"COMPLETE"},"meta":{"alignment_mode":"pairwise","alignment_method":"fatcat-rigid"},"results":[{"structures":[{"entry_id":"101M","selection":{"asym_id":"A"}},{"entry_id":"101M","selection":{"asym_id":"A"}}],"structure_alignment":[{"regions":[[{"asym_id":"A","beg_seq_id":1,"beg_index":0,"length":154}],[{"asym_id":"A","beg_seq_id":1,"beg_index":0,"length":154}]],"transformations":[[1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0],[1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0]],"summary":{"scores":[{"value":456.0,"type":"similarity-score"},{"value":0.0,"type":"RMSD"}],"n_aln_residue_pairs":154}}],"sequence_alignment":[{"regions":[{"asym_id":"A","beg_seq_id":1,"beg_index":0,"length":154}]},{"regions":[{"asym_id":"A","beg_seq_id":1,"beg_index":0,"length":154}]}],"summary":{"scores":[{"value":1.0,"type":"sequence-identity"},{"value":1.0,"type":"TM-score"},{"value":1.0,"type":"sequence-similarity"},{"value":456.0,"type":"similarity-score"},{"value":0.0,"type":"RMSD"}],"n_aln_residue_pairs":154,"n_modeled_residues":[154,154],"seq_aln_len":154,"aln_coverage":[100,100]}}]};
 
+console.log("Alignment objects", alignment, flexAlignment, alignmentExample, duplicatedAlignment);
 class RcsbStructuralAlignmentProvider implements AlignmentCollectorInterface {
 
     private alignmentResponse: AlignmentResponse | undefined = undefined;

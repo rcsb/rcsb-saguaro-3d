@@ -2,13 +2,13 @@ import {
     SaguaroRange,
     SaguaroRegionList
 } from "../../../../RcsbFvStructure/StructureViewerInterface";
-import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {
     AbstractCallbackManager, CallbackConfigInterface,
     CallbackManagerFactoryInterface,
     CallbackManagerInterface
 } from "../CallbackManagerFactoryInterface";
 import {RegionSelectionInterface} from "../../../../RcsbFvState/RcsbFvSelectorManager";
+import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro/lib/RcsbDataManager/RcsbDataManager";
 
 export class AssemblyCallbackManagerFactory implements CallbackManagerFactoryInterface<undefined> {
     getCallbackManager(config: CallbackConfigInterface): CallbackManagerInterface<undefined> {

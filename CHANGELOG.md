@@ -2,6 +2,22 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [4.0.0] - 2023-11-15
+### Breaking changes
+- Types are not anymore exposed from `build/src`
+- All module classes and types are accessible from `lib/`
+  - Modules format is `ESNext`
+  - `lib/commonjs` exposes all modules in `CommonJS` format
+
+### Code refactoring
+- Sass @import changed to @use
+- Styles sheets `scss` refactoring
+
+### Dependency update
+- Multiple dependencies have been updated
+- rcsb-saguaro-app v6.0.0
+- rcsb-saguaro v3.0.0
+
 ## [3.0.18] - 2023-10-03
 ### Dependency update
 - rcsb-saguaro-app v5.1.5

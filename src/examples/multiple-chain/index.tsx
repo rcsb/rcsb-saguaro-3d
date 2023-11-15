@@ -5,13 +5,7 @@ import {
     CustomViewInterface,
     FeatureBlockInterface, FeatureViewInterface
 } from "../../RcsbFvSequence/SequenceViews/CustomView/CustomView";
-import * as React from "react";
-import {
-    RcsbFv,
-    RcsbFvDisplayTypes,
-    RcsbFvRowConfigInterface,
-    RcsbFvTrackDataElementInterface
-} from "@rcsb/rcsb-saguaro";
+
 import {
     RegionSelectionInterface
 } from "../../RcsbFvState/RcsbFvSelectorManager";
@@ -24,6 +18,10 @@ import {
 } from "../../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarActionManager";
 import {ViewerProps} from "@rcsb/rcsb-molstar/build/src/viewer";
 import {RcsbFvStateManager} from "../../RcsbFvState/RcsbFvStateManager";
+import { RcsbFvRowConfigInterface } from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvConfig/RcsbFvConfigInterface";
+import {RcsbFvDisplayTypes} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvConfig/RcsbFvDefaultConfigValues";
+import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro/lib/RcsbDataManager/RcsbDataManager";
+import {RcsbFv} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFv";
 
 const rowConfigChainA: Array<RcsbFvRowConfigInterface> = [
     {
@@ -36,7 +34,7 @@ const rowConfigChainA: Array<RcsbFvRowConfigInterface> = [
         trackData: [
             {
                 begin: 1,
-                value: "CGVPAIQPVLSGLSRIVNGEEAVPGSWPWQVSLQDKTGFHFCGGSLINENWVVTAAHCGVTTSDVVVAGEFDQGSSSEKIQKLKIAKVFKNSKYNSLTINNDITLLKLSTAASFSQTVSAVCLPSASDDFAAGTTCVTTGWGLTRYTNANTPDRLQQASLPLLSNTNCKKYWGTKIKDAMICAGASGVSSCMGDSGGPLVCKKNGAWTLVGIVSWGSSTCSTSTPGVYARVTALVNWVQQTLAAN"
+                label: "CGVPAIQPVLSGLSRIVNGEEAVPGSWPWQVSLQDKTGFHFCGGSLINENWVVTAAHCGVTTSDVVVAGEFDQGSSSEKIQKLKIAKVFKNSKYNSLTINNDITLLKLSTAASFSQTVSAVCLPSASDDFAAGTTCVTTGWGLTRYTNANTPDRLQQASLPLLSNTNCKKYWGTKIKDAMICAGASGVSSCMGDSGGPLVCKKNGAWTLVGIVSWGSSTCSTSTPGVYARVTALVNWVQQTLAAN"
             }
         ]
     },{
@@ -67,7 +65,7 @@ const rowConfigChainB: Array<RcsbFvRowConfigInterface> = [
         trackData: [
             {
                 begin: 1,
-                value: "TEFGSELKSFPEVVGKTVDQAREYFTLHYPQYDVYFLPEGSPVTLDLRYNRVRVFYNPGTNVVNHVPHVG"
+                label: "TEFGSELKSFPEVVGKTVDQAREYFTLHYPQYDVYFLPEGSPVTLDLRYNRVRVFYNPGTNVVNHVPHVG"
             }
         ]
     },{
@@ -114,8 +112,8 @@ const fvConfigChainA: FeatureViewInterface<LoadMolstarInterface<unknown,unknown>
             plugin.resetCamera();
         }
     },
-    sequenceElementClickCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, d: RcsbFvTrackDataElementInterface) => {
-        if(d!=null)
+    sequenceElementClickCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, d?: RcsbFvTrackDataElementInterface) => {
+        if(d)
             plugin.cameraFocus("1acb_board", "A", d.begin, d.end ?? d.begin);
     },
     sequenceHoverCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, elements: Array<RcsbFvTrackDataElementInterface>) => {
@@ -177,8 +175,8 @@ const fvConfigChainB: FeatureViewInterface<LoadMolstarInterface<unknown,unknown>
             plugin.resetCamera();
         }
     },
-    sequenceElementClickCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, d: RcsbFvTrackDataElementInterface) => {
-        if(d!=null)
+    sequenceElementClickCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, d?: RcsbFvTrackDataElementInterface) => {
+        if(d)
             plugin.cameraFocus("1acb_board", "B", d.begin, d.end ?? d.begin);
     },
     sequenceHoverCallback: (plugin: StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,LoadMolstarReturnType>, stateManager: RcsbFvStateManager, elements: Array<RcsbFvTrackDataElementInterface>) => {

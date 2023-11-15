@@ -1,9 +1,9 @@
 import * as React from "react";
-import classes from '../styles/RcsbFvStyle.module.scss';
+import classes from '../scss/RcsbFvStyle.module.scss';
 
 import {StructureViewerInterface} from '../RcsbFvStructure/StructureViewerInterface';
 
-import '../styles/RcsbFvMolstarStyle.module.scss';
+import '../scss/RcsbFvMolstarStyle.module.scss';
 import {RcsbFvSequence, RcsbFvSequenceInterface} from "../RcsbFvSequence/RcsbFvSequence";
 import {RcsbFvStructure, RcsbFvStructureConfigInterface} from "../RcsbFvStructure/RcsbFvStructure";
 import {

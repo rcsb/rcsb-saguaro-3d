@@ -2,32 +2,47 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const fs = require('fs')
 
 const commonConfig = {
-    mode: "development",
     module: {
-        rules: [{
-            test: /\.tsx?$/,
-            loader: 'ts-loader',
-            exclude: /node_modules/
-        },{
-            test: /\.jsx?$/,
-            loader: 'babel-loader',
-            exclude: [/node_modules/]
-        },{
-                test: /\.s?css$/,
-                use: ['style-loader', {
-                    loader: 'css-loader',
-                    options: {
-                        modules: {
-                            localIdentName:'[local]'
-                        }
+      rules: [
+          {
+              test: /\.(html|ico)$/,
+              use: [{
+                  loader: 'file-loader',
+                  options: { name: '[name].[ext]' }
+              }]
+          },{
+              test: /\.(graphql|gql)$/,
+              loader: 'raw-loader'
+          },{
+              test: /\.tsx?$/,
+              loader: 'ts-loader',
+              exclude: /node_modules/
+          },{
+              test: /\.jsx?$/,
+              loader: 'babel-loader',
+              exclude: /node_modules/
+          }, {
+            test: /\.s?css$/,
+            use: ['style-loader', {
+                loader: 'css-loader',
+                options: {
+                    modules: {
+                        localIdentName:'[local]'
                     }
-                }, 'sass-loader'],
-                exclude: /node_modules/
-            }
-        ]
+                }
+            }, {
+                loader: 'resolve-url-loader'
+            }, {
+                loader: 'sass-loader',
+                options: {
+                    sourceMap: true
+                }
+            }]
+          }
+      ]
     },
     resolve: {
-        extensions: [ '.tsx', '.ts', '.js', 'jsx' ],
+        extensions: [ '.tsx', '.ts', '.js', '.jsx' ],
         fallback: {
             fs: false,
             buffer: require.resolve('buffer'),
@@ -35,8 +50,7 @@ const commonConfig = {
             path: require.resolve('path-browserify'),
             stream: require.resolve('stream-browserify')
         }
-    },
-    devtool: 'source-map'
+    }
 };
 
 const examples = ['assembly','uniprot','structural-alignment','sequence-identity','single-chain','multiple-chain','alignment-provider'];
@@ -57,7 +71,9 @@ const server = {
         template:'./src/examples/html-template/index.html',
         inject: true,
         chunks:[key]
-    }))
+    })),
+    mode: "development",
+    devtool: 'source-map'
 }
 
 module.exports = [server];

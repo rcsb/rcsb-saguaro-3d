@@ -1,9 +1,8 @@
-import * as React from "react";
 import {RcsbFv3DAbstract} from "./RcsbFv3DAbstract";
 import {
     RcsbFvAdditionalConfig,
     RcsbFvModulePublicInterface, RcsbModuleDataProviderInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import uniqid from "uniqid";
 
 import {
@@ -24,14 +23,13 @@ import {MolstarAlignmentLoader} from "../RcsbFvStructure/StructureViewers/Molsta
 import {MsaBehaviourObserver} from "../RcsbFvStructure/StructureViewerBehaviour/MsaBehaviour";
 import {
     PolymerEntityInstanceInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
 import {HelpLinkComponent} from "../RcsbFvSequence/SequenceViews/RcsbView/Components/HelpLinkComponent";
 import {AlignmentResponse} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {DataContainer} from "../Utils/DataContainer";
 import {
     MsaPfvManagerFactory, MsaPfvManagerInterface
 } from "../RcsbFvSequence/SequenceViews/RcsbView/PfvManagerFactoryImplementation/MsaPfvManagerFactory";
-import {buildDataProviderFv} from "@rcsb/rcsb-saguaro-app";
 import {
     LoadParamsProviderInterface
 } from "../RcsbFvStructure/StructureUtils/StructureLoaderInterface";
@@ -46,6 +44,7 @@ import {
     AlignmentProviderBehaviour
 } from "../RcsbFvSequence/SequenceViews/RcsbView/RcsbViewBehaviour/AlignmentProviderBehaviour";
 import {TrajectoryHierarchyPresetProvider} from "molstar/lib/mol-plugin-state/builder/structure/hierarchy-preset";
+import {buildDataProviderFv} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvBuilder";
 
 export interface RcsbFv3DDataProviderInterface  {
     elementId?: string;

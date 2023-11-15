@@ -1,11 +1,8 @@
 import * as React from "react";
-import classes from '../../styles/RcsbFvStyle.module.scss';
+import classes from '../../scss/RcsbFvStyle.module.scss';
 import {asyncScheduler, Subscription} from "rxjs";
 
 import {RcsbFvDOMConstants} from "../../RcsbFvConstants/RcsbFvConstants";
-import {
-    ViewerCallbackManagerInterface, ViewerActionManagerInterface
-} from "../../RcsbFvStructure/StructureViewerInterface";
 import {SequenceViewInterface} from "./SequenceViewInterface";
 import {RcsbFvStateInterface} from "../../RcsbFvState/RcsbFvStateInterface";
 

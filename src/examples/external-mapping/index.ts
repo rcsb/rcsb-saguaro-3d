@@ -13,12 +13,12 @@ import {
 } from "../../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarActionManager";
 import {ViewerProps} from "@rcsb/rcsb-molstar/build/src/viewer";
 
-const block: FeatureBlockInterface<LoadMolstarInterface> = {
+const block: FeatureBlockInterface<LoadMolstarInterface<any,any>, any> = {
     blockId:"MyBlock_1",
     featureViewConfig: [fvConfig1, fvConfig2]
 };
 
-const customConfig: CustomViewInterface<LoadMolstarInterface> = {
+const customConfig: CustomViewInterface<LoadMolstarInterface<any,any>,any> = {
     blockConfig:[block]
 }
 
@@ -28,7 +28,7 @@ const sequenceConfig = {
     config: customConfig
 };
 
-const molstarConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface,{viewerProps:Partial<ViewerProps>}> = {
+const molstarConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface<any,any>,{viewerProps:Partial<ViewerProps>}> = {
     loadConfig: [{
         loadMethod: LoadMethod.loadPdbId,
         loadParams: {

@@ -1,5 +1,6 @@
 
 import {RcsbFv3DAssembly} from "../../RcsbFv3D/RcsbFv3DAssembly";
+import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro/lib/RcsbDataManager/RcsbDataManager";
 
 document.addEventListener("DOMContentLoaded", function(event) {
 
@@ -31,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         },
         additionalConfig: {
             boardConfig: {
-                elementClickCallBack: (e) => {
+                elementClickCallBack: (e?: RcsbFvTrackDataElementInterface & {type?: string;}) => {
                     console.log(`Element clicked ${e?.type}`)
                 }
             }

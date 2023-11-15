@@ -2,7 +2,7 @@ import * as React from "react";
 import {DataContainer} from "../../../../../Utils/DataContainer";
 import {
     RcsbFvModulePublicInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {RcsbFvStateInterface} from "../../../../../RcsbFvState/RcsbFvStateInterface";
 import {download, getFullDate, textToFile} from "../../../../../Utils/Download";
 

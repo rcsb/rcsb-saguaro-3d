@@ -8,4 +8,4 @@ export {custom, assembly, uniprot, sequenceIdentity, alignmentProvider};
 
 export {
     RcsbRequestContextManager
-} from "@rcsb/rcsb-saguaro-app";
+} from "@rcsb/rcsb-saguaro-app/lib/app";

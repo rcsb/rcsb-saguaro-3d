@@ -9,7 +9,7 @@
     "noUnusedLocals": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
-    "module": "esnext",
+    "module": "CommonJS",
     "esModuleInterop": true,
     "moduleResolution": "node",
     "importHelpers": true,
@@ -18,7 +18,7 @@
     "jsx": "react-jsx",
     "lib": [ "dom", "es2020"  ],
     "rootDir": "src",
-    "outDir": "lib"
+    "outDir": "lib/commonjs"
   },
   "include": [ "src" ]
 }

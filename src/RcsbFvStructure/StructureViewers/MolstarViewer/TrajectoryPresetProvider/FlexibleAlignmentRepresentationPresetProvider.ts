@@ -88,10 +88,3 @@ export const FlexibleAlignmentRepresentationPresetProvider = StructureRepresenta
         };
     }
 });
-
-function toRange(start: number, end?: number): number[] {
-    if (!end) return [start];
-    const b = start < end ? start : end;
-    const e = start < end ? end : start;
-    return [...Array(e - b + 1)].map((_, i) => b + i);
-};

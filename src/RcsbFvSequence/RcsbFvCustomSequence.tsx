@@ -4,8 +4,9 @@ import {
     ViewerActionManagerInterface
 } from "../RcsbFvStructure/StructureViewerInterface";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
-import {RcsbFv, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {RcsbFvStateInterface} from "../RcsbFvState/RcsbFvStateInterface";
+import {RcsbFv} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFv";
+import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro/lib/RcsbDataManager/RcsbDataManager";
 
 export interface RcsbFvCustomSequenceInterface<R,L>{
     config: CustomViewInterface<R,L>;

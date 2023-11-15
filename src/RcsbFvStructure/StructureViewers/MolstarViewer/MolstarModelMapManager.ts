@@ -81,7 +81,7 @@ function getChainValues(structure: Structure, modelEntityId: string): [{modelId:
     const chains: Map<number, ChainInfo> = new Map<number, ChainInfo>();
     const l = StructureElement.Location.create(structure);
     let assemblyId:string = "-";
-    const [modelIdx, entityId] = splitModelEntityId(modelEntityId);
+    const modelIdx = splitModelEntityId(modelEntityId);
     for (const unit of structure.units) {
         StructureElement.Location.set(l, structure, unit, unit.elements[0]);
         assemblyId = SP.unit.pdbx_struct_assembly_id(l);
@@ -129,9 +129,8 @@ function getModelEntityOptions(structure: Structure):[string, string][] {
     return options;
 }
 
-function splitModelEntityId(modelEntityId: string) {
-    const [ modelIdx, entityId ] = modelEntityId.split('|');
-    return [ parseInt(modelIdx), entityId ];
+function splitModelEntityId(modelEntityId: string): number {
+    return parseInt(modelEntityId.split('|')[0]);
 }
 
 function opKey(l: StructureElement.Location): OperatorInfo {

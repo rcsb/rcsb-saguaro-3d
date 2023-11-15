@@ -5,8 +5,10 @@ import {
     AnnotationFeatures,
     Type
 } from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
-import {RcsbFvDisplayTypes, RcsbFvRowConfigInterface} from "@rcsb/rcsb-saguaro";
-import {PolymerEntityInstanceInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
+import {PolymerEntityInstanceInterface} from "@rcsb/rcsb-saguaro-app/lib/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
+import {RcsbFvRowConfigInterface} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvConfig/RcsbFvConfigInterface";
+import {RcsbFvDisplayTypes} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvConfig/RcsbFvDefaultConfigValues";
+import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro/lib/RcsbDataManager/RcsbDataManager";
 
 document.addEventListener("DOMContentLoaded", function(event) {
 
@@ -43,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         },
         additionalConfig: {
             boardConfig: {
-                elementClickCallBack: (e) => {
+                elementClickCallBack: (e?: RcsbFvTrackDataElementInterface & {type?: string;}) => {
                     console.log(`Element clicked ${e?.type}`)
                 }
             },

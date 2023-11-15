@@ -1,7 +1,6 @@
 
 import {RcsbFvStructure, RcsbFvStructureConfigInterface} from "../RcsbFvStructure/RcsbFvStructure";
 import {CustomViewInterface} from "../RcsbFvSequence/SequenceViews/CustomView/CustomView";
-import {RcsbFv3DAbstract} from "./RcsbFv3DAbstract";
 import uniqid from "uniqid";
 import {
     LoadMolstarInterface,

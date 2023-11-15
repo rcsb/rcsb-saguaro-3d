@@ -1,4 +1,3 @@
-import * as React from "react";
 import {createRoot, Root} from "react-dom/client";
 import {RcsbFv3DComponent, RcsbFv3DCssConfig} from './RcsbFv3DComponent';
 import {RcsbFvStructureConfigInterface} from "../RcsbFvStructure/RcsbFvStructure";

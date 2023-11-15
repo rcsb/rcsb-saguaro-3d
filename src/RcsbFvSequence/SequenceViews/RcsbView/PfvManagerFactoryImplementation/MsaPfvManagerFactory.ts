@@ -7,21 +7,20 @@ import {
 import {
     RcsbFvAdditionalConfig,
     RcsbFvModulePublicInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
-import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 
 import {
     AlignmentRequestContextType
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvFactories/RcsbFvTrackFactory/TrackFactoryImpl/AlignmentTrackFactory";
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvFactories/RcsbFvTrackFactory/TrackFactoryImpl/AlignmentTrackFactory";
 import {AlignmentResponse, TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {MsaRowTitleComponent} from "./MsaPfvComponents/MsaRowTitleComponent";
 import {MsaRowMarkComponent} from "./MsaPfvComponents/MsaRowMarkComponent";
 import {
     PolymerEntityInstanceInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
 import {DataContainer} from "../../../../Utils/DataContainer";
 import {MsaUiSortComponent} from "./MsaPfvComponents/MsaUiSortComponent";
-import {ActionMethods} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvUI/Helper/ActionMethods";
+import {ActionMethods} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvUI/Helper/ActionMethods";
 import {MsaUiSequenceAlignmentDownload} from "./MsaPfvComponents/MsaUiSequenceAlignmentDownload";
 import {MsaUiStructureDownload} from "./MsaPfvComponents/MsaUiStructureDownload";
 import {parseEntityOrInstance} from "../../../../Utils/RcsbIdParser"

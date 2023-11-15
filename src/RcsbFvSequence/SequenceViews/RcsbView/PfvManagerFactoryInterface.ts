@@ -2,13 +2,12 @@ import {DataContainer} from "../../../Utils/DataContainer";
 import {
     RcsbFvAdditionalConfig,
     RcsbFvModulePublicInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {
     OperatorInfo,
-    ViewerCallbackManagerInterface, ViewerActionManagerInterface
 } from "../../../RcsbFvStructure/StructureViewerInterface";
-import {RcsbFvBoardConfigInterface} from "@rcsb/rcsb-saguaro";
 import {RcsbFvStateInterface} from "../../../RcsbFvState/RcsbFvStateInterface";
+import {RcsbFvBoardConfigInterface} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvConfig/RcsbFvConfigInterface";
 
 export interface PfvManagerFactoryConfigInterface<U> {
     rcsbFvDivId: string;

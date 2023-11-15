@@ -1,17 +1,15 @@
-import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
-import {
-    ViewerCallbackManagerInterface, ViewerActionManagerInterface
-} from "../../../RcsbFvStructure/StructureViewerInterface";
+
 import {DataContainer} from "../../../Utils/DataContainer";
 import {
     RcsbFvModulePublicInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {PfvManagerInterface} from "./PfvManagerFactoryInterface";
 import {RcsbFvStateInterface} from "../../../RcsbFvState/RcsbFvStateInterface";
+import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro/lib/RcsbDataManager/RcsbDataManager";
 
 export interface CallbackManagerInterface<U> {
     structureViewerSelectionCallback(mode:'select'|'hover'): Promise<void>;
-    featureClickCallback(e:RcsbFvTrackDataElementInterface): void;
+    featureClickCallback(e?:RcsbFvTrackDataElementInterface): void;
     highlightHoverCallback(selection: RcsbFvTrackDataElementInterface[]): void;
     pfvSelectionChangeCallback(selection: Array<RcsbFvTrackDataElementInterface>): void;
     modelChangeCallback(defaultAuthId?: string, defaultOperatorName?:string): Promise<void>;

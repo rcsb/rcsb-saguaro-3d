@@ -4,9 +4,9 @@ import {
     StructureProperties, Unit
 } from 'molstar/lib/mol-model/structure';
 import { Color } from 'molstar/lib/mol-util/color';
-import { ThemeDataContext } from 'molstar/lib/mol-theme/theme';
+import {ThemeDataContext, ThemeProvider} from 'molstar/lib/mol-theme/theme';
 import { ParamDefinition } from 'molstar/lib/mol-util/param-definition';
-import { ColorTheme } from 'molstar/lib/mol-theme/color';
+import {ColorTheme, LocationColor} from 'molstar/lib/mol-theme/color';
 import { Location } from 'molstar/lib/mol-model/location';
 import {Overpaint} from "molstar/lib/commonjs/mol-theme/overpaint";
 import Layer = Overpaint.Layer;
@@ -18,7 +18,7 @@ import {
 } from "molstar/lib/mol-theme/color/element-symbol";
 
 export const FOCUS_RESIDUE_COLOR = 'focus-residue-color' as ColorTheme.BuiltIn;
-export function FocusResidueColorTheme(ctx: ThemeDataContext, props: ParamDefinition.Values<ElementSymbolColorThemeParams>): ColorTheme<{}> {
+export function FocusResidueColorTheme(ctx: ThemeDataContext, props: ParamDefinition.Values<ElementSymbolColorThemeParams>): ColorTheme<ElementSymbolColorThemeParams> {
 
     const L = StructureElement.Location.create();
 
@@ -42,7 +42,7 @@ export function FocusResidueColorTheme(ctx: ThemeDataContext, props: ParamDefini
         return nonCarbonAtomsColor(location);
     };
 
-    const color = (location: Location) => {
+    const color: LocationColor = (location: Location) => {
         if (StructureElement.Location.is(location) && Unit.isAtomic(location.unit)) {
             return atomColor(location);
         } else if (Bond.isLocation(location)) {
@@ -62,7 +62,7 @@ export function FocusResidueColorTheme(ctx: ThemeDataContext, props: ParamDefini
     };
 
 }
-export const FocusResidueColorThemeProvider = {
+export const FocusResidueColorThemeProvider: ThemeProvider<any, any> = {
     name: FOCUS_RESIDUE_COLOR,
     label: 'Focus Residue',
     category: ColorTheme.Category.Misc,

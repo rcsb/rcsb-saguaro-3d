@@ -333,8 +333,7 @@ function checkLocalScore(scoreMap: Map<number, number>, index: number): boolean{
 async function obtainQualityAssessment(model: Model): Promise<Map<number,number>> {
     if (!model || !MmcifFormat.is(model.sourceData)) return new Map();
     const { ma_qa_metric, ma_qa_metric_local } = model.sourceData.data.db;
-    const { model_id, label_asym_id, label_seq_id, metric_id, metric_value } = ma_qa_metric_local;
-    const { index } = model.atomicHierarchy;
+    const { model_id, label_seq_id, metric_id, metric_value } = ma_qa_metric_local;
 
     // for simplicity we assume names in ma_qa_metric for mode 'local' are unique
     const localMetrics = new Map<string, Map<number, number>>();
@@ -357,7 +356,6 @@ async function obtainQualityAssessment(model: Model): Promise<Map<number,number>
         if (model_id.value(i) !== model.modelNum)
             continue;
 
-        const labelAsymId = label_asym_id.value(i);
         const rI = label_seq_id.value(i);
         const name = localNames.get(metric_id.value(i))!;
         localMetrics.get(name)!.set(rI, metric_value.value(i));

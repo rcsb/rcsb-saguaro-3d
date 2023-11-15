@@ -3,12 +3,12 @@ import * as React from "react";
 import {DataContainer} from "../../../../../Utils/DataContainer";
 import {
     RcsbFvModulePublicInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
-import {RcsbFvRowConfigInterface} from "@rcsb/rcsb-saguaro";
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {RcsbFvStateInterface} from "../../../../../RcsbFvState/RcsbFvStateInterface";
+import { RcsbFvRowConfigInterface } from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvConfig/RcsbFvConfigInterface";
 
 export interface MsaUiSortInterface {
-    rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>;
+    rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface<{},{},{},{targetId:string}>>;
     stateManager: RcsbFvStateInterface;
 }
 export class MsaUiSortComponent extends React.Component<MsaUiSortInterface>{

@@ -9,29 +9,39 @@ const commonConfig = {
                   loader: 'file-loader',
                   options: { name: '[name].[ext]' }
               }]
-          },
-        {
-          test: /\.scss$/,
-          use: [
-              'style-loader',
-              {
-                  loader: 'css-loader',
-                  options: {
-                      modules: {
-                          localIdentName:'[local]'
-                      }
-                  }
-              },
-              'sass-loader'
-          ]
-        }
+          },{
+              test: /\.(graphql|gql)$/,
+              loader: 'raw-loader'
+          },{
+              test: /\.tsx?$/,
+              loader: 'ts-loader',
+              exclude: /node_modules/
+          },{
+              test: /\.jsx?$/,
+              loader: 'babel-loader',
+              exclude: /node_modules/
+          }, {
+            test: /\.s?css$/,
+            use: ['style-loader', {
+                loader: 'css-loader',
+                options: {
+                    modules: {
+                        localIdentName:'[local]'
+                    }
+                }
+            }, {
+                loader: 'resolve-url-loader'
+            }, {
+                loader: 'sass-loader',
+                options: {
+                    sourceMap: true
+                }
+            }]
+          }
       ]
     },
     resolve: {
-        modules: [
-            'node_modules',
-            path.resolve(__dirname, 'lib/')
-        ],
+        extensions: [ '.tsx', '.ts', '.js', '.jsx' ],
         fallback: {
             fs: false,
             buffer: require.resolve('buffer'),
@@ -53,9 +63,9 @@ const appConfig = {
         library: 'RcsbFv3D',
         libraryTarget: 'umd',
         umdNamedDefine: true,
-        path: path.resolve(__dirname, 'build/dist')
-    }
-    //, devtool: 'source-map'
+        path: path.resolve(__dirname, 'build')
+    },
+    devtool: 'source-map'
 }
 
 module.exports = [appConfig];

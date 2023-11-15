@@ -1,10 +1,14 @@
-import * as React from "react";
 
-import {unmount} from "@rcsb/rcsb-saguaro-app";
+import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro/lib/RcsbDataManager/RcsbDataManager";
+import {RcsbFvBoardConfigInterface} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvConfig/RcsbFvConfigInterface";
+import {
+    RcsbFvAdditionalConfig,
+    RcsbFvModulePublicInterface
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface"
+import {unmount} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvBuilder";
+
 import {AbstractView, AbstractViewInterface} from "../AbstractView";
-import {RcsbFvBoardConfigInterface, RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro";
 import {OperatorInfo} from "../../../RcsbFvStructure/StructureViewerInterface";
-import {RcsbFvAdditionalConfig, RcsbFvModulePublicInterface} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {DataContainer} from "../../../Utils/DataContainer";
 import {
     PfvManagerInterface,
@@ -67,7 +71,7 @@ export class RcsbView<T,U> extends AbstractView<RcsbViewInterface<T,U>, {}>{
             highlightHoverPosition:true,
             highlightHoverElement:true,
             ...this.props.additionalConfig?.boardConfig,
-            elementClickCallBack:(e:RcsbFvTrackDataElementInterface)=>{
+            elementClickCallBack:(e?:RcsbFvTrackDataElementInterface)=>{
                 this.elementClickCallback(e);
                 if(typeof this.props.additionalConfig?.boardConfig?.elementClickCallBack === "function")
                     this.props.additionalConfig?.boardConfig.elementClickCallBack(e);
@@ -140,7 +144,7 @@ export class RcsbView<T,U> extends AbstractView<RcsbViewInterface<T,U>, {}>{
         this.callbackManager.pfvSelectionChangeCallback(selection);
     }
 
-    private elementClickCallback(e:RcsbFvTrackDataElementInterface): void {
+    private elementClickCallback(e?:RcsbFvTrackDataElementInterface): void {
         this.callbackManager.featureClickCallback(e);
     }
 

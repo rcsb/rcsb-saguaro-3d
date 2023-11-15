@@ -31,7 +31,6 @@ export const FlexibleAlignmentBuiltIn = PluginStateTransform.BuiltIn({
             const entityId = params.pdb && "entityId" in params.pdb ? params.pdb?.entityId : undefined;
             const instanceId = params.pdb && "instanceId" in params.pdb ?  params.pdb?.instanceId : undefined;
             const l = StructureElement.Location.create(structure);
-            let alignedEntityId;
             let alignedAsymId;
             let alignedOperatorName;
             let alignedType;
@@ -39,7 +38,6 @@ export const FlexibleAlignmentBuiltIn = PluginStateTransform.BuiltIn({
             for(const unit of structure.units) {
                 StructureElement.Location.set(l, structure, unit, unit.elements[0]);
                 if(SP.chain.label_entity_id(l) == entityId || SP.chain.label_asym_id(l) == instanceId){
-                    alignedEntityId = SP.chain.label_entity_id(l);
                     alignedAsymId = SP.chain.label_asym_id(l);
                     alignedOperatorName = SP.unit.operator_name(l);
                     alignedType = SP.entity.type(l);

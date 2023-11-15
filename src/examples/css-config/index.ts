@@ -5,12 +5,7 @@ import {
     FeatureBlockInterface,
     FeatureViewInterface
 } from "../../RcsbFvSequence/SequenceViews/CustomView/CustomView";
-import {
-    RcsbFv,
-    RcsbFvDisplayTypes,
-    RcsbFvRowConfigInterface,
-    RcsbFvTrackDataElementInterface
-} from "@rcsb/rcsb-saguaro";
+
 import {RegionSelectionInterface} from "../../RcsbFvState/RcsbFvSelectorManager";
 import {SaguaroRegionList, StructureViewerPublicInterface} from "../../RcsbFvStructure/StructureViewerInterface";
 import {AlignmentManager} from "./AlignmentManager";
@@ -21,6 +16,10 @@ import {
 } from "../../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarActionManager";
 import {ViewerProps} from "@rcsb/rcsb-molstar/build/src/viewer";
 import {RcsbFvStateManager} from "../../RcsbFvState/RcsbFvStateManager";
+import {RcsbFvRowConfigInterface} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvConfig/RcsbFvConfigInterface";
+import {RcsbFvDisplayTypes} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvConfig/RcsbFvDefaultConfigValues";
+import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro/lib/RcsbDataManager/RcsbDataManager";
+import {RcsbFv} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFv";
 
 const sequence_101m: string = "MVLSEGEWQLVLHVWAKVEADVAGHGQDILIRLFKSHPETLEKFDRVKHLKTEAEMKASEDLKKHGVTVLTALGAILKKKGHHEAELKPLAQSHATKHKIPIKYLEFISEAIIHVLHSRHPGNFGADAQGAMNKALELFRKDIAAKYKELGYQG";
 const alignment = [{
@@ -67,7 +66,7 @@ const rowConfig: Array<RcsbFvRowConfigInterface> = [
         rowTitle: "1ASH SEQUENCE",
         trackData: [{
             begin: 1,
-            value: "ANKTRELCMKSLEHAKVDTSNEARQDGIDLYKHMFENYPPLRKYFKSREEYTAEDVQNDPFFAKQGQKILLACHVLCATYDDRETFNAYTRELLDRHARDHVHMPPEVWTDFWKLFEEYLGKKTTLDEPTKQAWHEIGREFAKEINKHGR"
+            label: "ANKTRELCMKSLEHAKVDTSNEARQDGIDLYKHMFENYPPLRKYFKSREEYTAEDVQNDPFFAKQGQKILLACHVLCATYDDRETFNAYTRELLDRHARDHVHMPPEVWTDFWKLFEEYLGKKTTLDEPTKQAWHEIGREFAKEINKHGR"
         }]
     },{
         trackId: "blockTrack",
@@ -91,7 +90,7 @@ const rowConfig: Array<RcsbFvRowConfigInterface> = [
             displayId: "alignmentSequence",
             displayData: alignment.map(a=>({
                 begin:a.query_begin,
-                value: sequence_101m.substring(a.target_begin-1,a.target_end)
+                label: sequence_101m.substring(a.target_begin-1,a.target_end)
             }))
         }]
     }
@@ -137,9 +136,10 @@ const fvConfig: FeatureViewInterface<LoadMolstarInterface<unknown,unknown>,unkno
             plugin.resetCamera();
         }
     },
-    sequenceElementClickCallback: async (plugin:  StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,unknown>, stateManager: RcsbFvStateManager, d: RcsbFvTrackDataElementInterface) => {
+    sequenceElementClickCallback: async (plugin:  StructureViewerPublicInterface<LoadMolstarInterface<unknown,unknown>,unknown>, stateManager: RcsbFvStateManager, d?: RcsbFvTrackDataElementInterface) => {
         plugin.removeComponent("1ash_component");
         plugin.removeComponent("101m_component");
+        if(!d) return;
         if(d.begin === d.end || !d.end){
             await plugin.createComponent("1ash_component", "1ash_model", "A", d.begin, d.begin, "ball-and-stick");
             await plugin.createComponent("101m_component", "101m_model", "A", alignmentManager.getTargetPosition(d.begin)!, alignmentManager.getTargetPosition(d.begin)!, "ball-and-stick");

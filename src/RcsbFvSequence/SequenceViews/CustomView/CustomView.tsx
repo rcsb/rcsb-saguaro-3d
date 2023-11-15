@@ -1,18 +1,15 @@
 import {asyncScheduler} from "rxjs";
 
 import {AbstractView, AbstractViewInterface} from "../AbstractView";
+
 import {
-    RcsbFvBoardConfigInterface,
-    RcsbFvRowConfigInterface,
-    RcsbFv,
-    RcsbFvTrackDataElementInterface
-} from "@rcsb/rcsb-saguaro";
-import * as React from "react";
-import {
-    StructureViewerPublicInterface, ViewerActionManagerInterface, ViewerCallbackManagerInterface
+    StructureViewerPublicInterface, ViewerActionManagerInterface
 } from "../../../RcsbFvStructure/StructureViewerInterface";
 import uniqid from "uniqid";
 import {RcsbFvStateInterface} from "../../../RcsbFvState/RcsbFvStateInterface";
+import { RcsbFv } from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFv";
+import {RcsbFvBoardConfigInterface, RcsbFvRowConfigInterface} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvConfig/RcsbFvConfigInterface";
+import { RcsbFvTrackDataElementInterface } from "@rcsb/rcsb-saguaro/lib/RcsbDataManager/RcsbDataManager";
 
 export type CustomViewStateInterface<R,L> = Omit<Omit<CustomViewInterface<R,L>, "modelChangeCallback">, "structureViewer">;
 
@@ -36,7 +33,7 @@ export interface FeatureViewInterface<R,L> {
     boardConfig: RcsbFvBoardConfigInterface;
     rowConfig: Array<RcsbFvRowConfigInterface>;
     sequenceSelectionChangeCallback: (plugin: StructureViewerPublicInterface<R,L>, stateManager: RcsbFvStateInterface, sequenceRegion: Array<RcsbFvTrackDataElementInterface>) => void;
-    sequenceElementClickCallback: (plugin: StructureViewerPublicInterface<R,L>, stateManager: RcsbFvStateInterface, d: RcsbFvTrackDataElementInterface) => void;
+    sequenceElementClickCallback: (plugin: StructureViewerPublicInterface<R,L>, stateManager: RcsbFvStateInterface, d?: RcsbFvTrackDataElementInterface) => void;
     sequenceHoverCallback: (plugin: StructureViewerPublicInterface<R,L>, stateManager: RcsbFvStateInterface, hoverRegion: Array<RcsbFvTrackDataElementInterface>) => void;
     structureSelectionCallback: (plugin: StructureViewerPublicInterface<R,L>, pfv: RcsbFv, stateManager: RcsbFvStateInterface) => void;
     structureHoverCallback: (plugin: StructureViewerPublicInterface<R,L>, pfv: RcsbFv, stateManager: RcsbFvStateInterface) => void;
@@ -169,7 +166,7 @@ export class CustomView<R,L> extends AbstractView<CustomViewInterface<R,L> & {st
                     highlightHoverCallback:(elements:Array<RcsbFvTrackDataElementInterface>)=>{
                         this.boardMap.get(boardId)!.sequenceHoverCallback(this.props.structureViewer, this.props.stateManager, elements);
                     },
-                    elementClickCallBack: (element: RcsbFvTrackDataElementInterface)=>{
+                    elementClickCallBack: (element?: RcsbFvTrackDataElementInterface)=>{
                         this.boardMap.get(boardId)!.sequenceElementClickCallback(this.props.structureViewer, this.props.stateManager, element);
                     }
                 },

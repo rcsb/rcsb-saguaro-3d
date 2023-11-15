@@ -7,8 +7,6 @@ import {StateObjectSelector} from "molstar/lib/mol-state";
 import {PluginStateObject} from "molstar/lib/mol-plugin-state/objects";
 import {StateObject} from "molstar/lib/mol-state/object";
 import {StateTransformer} from "molstar/lib/mol-state/transformer";
-import {ParamDefinition} from "molstar/lib/mol-util/param-definition";
-import {PluginContext} from "molstar/lib/mol-plugin/context";
 
 type StructureObject = StateObjectSelector<PluginStateObject.Molecule.Structure, StateTransformer<StateObject<any, StateObject.Type<any>>, StateObject<any, StateObject.Type<any>>, any>>
 

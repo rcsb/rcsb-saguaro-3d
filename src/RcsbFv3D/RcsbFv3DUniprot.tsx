@@ -1,9 +1,8 @@
-import * as React from "react";
 import {RcsbFv3DAbstract} from "./RcsbFv3DAbstract";
 import {
     RcsbFvAdditionalConfig,
     RcsbFvModulePublicInterface
-} from "@rcsb/rcsb-saguaro-app/build/dist/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
+} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import uniqid from "uniqid";
 
 import {
@@ -30,12 +29,12 @@ import {
     MsaPfvManagerFactory,
     MsaPfvManagerInterface
 } from "../RcsbFvSequence/SequenceViews/RcsbView/PfvManagerFactoryImplementation/MsaPfvManagerFactory";
-import {buildUniprotAlignmentFv} from "@rcsb/rcsb-saguaro-app";
 import {
     AlignmentTrajectoryParamsType
 } from "../RcsbFvStructure/StructureViewers/MolstarViewer/TrajectoryPresetProvider/AlignmentTrajectoryPresetProvider";
 import {MolstarTools} from "../RcsbFvStructure/StructureViewers/MolstarViewer/MolstarUtils/MolstarTools";
 import getModelIdFromTrajectory = MolstarTools.getModelIdFromTrajectory;
+import {buildUniprotAlignmentFv} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvBuilder";
 
 export interface RcsbFv3DUniprotInterface  {
     elementId?: string;
