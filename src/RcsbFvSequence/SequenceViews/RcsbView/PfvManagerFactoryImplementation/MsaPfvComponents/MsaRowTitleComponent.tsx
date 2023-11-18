@@ -20,7 +20,7 @@ import {RcsbFvRowConfigInterface} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvConf
 interface MsaRowTitleInterface extends RcsbFvRowTitleInterface {
     alignmentContext: AlignmentRequestContextType;
     targetAlignment: TargetAlignment;
-    stateManager:RcsbFvStateInterface;
+    stateManager: RcsbFvStateInterface;
     titleClick: ()=>void;
 }
 
@@ -51,29 +51,27 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
     }
 
     public render(): JSX.Element{
-       return (
-           <div style={{textAlign:"right", display:"flex"}}
+        return (
+           <div style={{textAlign:"right", display:"flex", alignItems:"center"}}
                 onMouseOver={()=>this.hover(true)}
                 onMouseOut={()=>this.hover(false)}
            >
-               <div>
-                   <div style={{
-                           MozUserSelect:"none",
-                           WebkitUserSelect:"none",
-                           msUserSelect:"none",
-                           color: this.state.titleColor,
-                           cursor: this.state.blocked ? "wait" : "pointer",
-                           maxWidth: (this.configData.rowTitleWidth ?? 190) - 60,
-                           overflow: "hidden",
-                           textOverflow: "ellipsis",
-                           whiteSpace: "nowrap",
-                           textAlign: "right"
-                       }}
-                       onClick={(e: MouseEvent)=>this.click(e)}
-                       title={this.props.targetAlignment.target_id ?? undefined}
-                   >
-                       {this.props.targetAlignment.target_id}
-                   </div>
+               <div style={{
+                       MozUserSelect:"none",
+                       WebkitUserSelect:"none",
+                       msUserSelect:"none",
+                       color: this.state.titleColor,
+                       cursor: this.state.blocked ? "wait" : "pointer",
+                       maxWidth: (this.configData.rowTitleWidth ?? 190) - 60,
+                       overflow: "hidden",
+                       textOverflow: "ellipsis",
+                       whiteSpace: "nowrap",
+                       textAlign: "right"
+                   }}
+                   onClick={(e: MouseEvent)=>this.click(e)}
+                   title={this.props.targetAlignment.target_id ?? undefined}
+               >
+                   {this.props.targetAlignment.target_id}
                </div>
                <div  style={{cursor: this.cursor(), width:39}} onClick={(e: MouseEvent)=>this.altClick(e)} >
                    <MsaRowTitleCheckboxComponent disabled={this.state.disabled} {...parseEntityOrInstance(this.props.targetAlignment.target_id!)} tag={"aligned"} stateManager={this.props.stateManager}/>

@@ -9,6 +9,10 @@
   - Modules format is `ESNext`
   - `lib/commonjs` exposes all modules in `CommonJS` format
 
+### Improvement
+- MSA groups inform of Polymer/Ligand before loading the structure
+  - Checkboxes are displayed in grey color
+
 ### Code refactoring
 - Sass @import changed to @use
 - Styles sheets `scss` refactoring

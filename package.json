@@ -87,8 +87,8 @@
   "peerDependencies": {
     "@rcsb/rcsb-api-tools": "^4.1.13",
     "@rcsb/rcsb-molstar": "^2.8.0",
-    "@rcsb/rcsb-saguaro": "^3.0.0-development.5",
-    "@rcsb/rcsb-saguaro-app": "^6.0.0-development.7",
+    "@rcsb/rcsb-saguaro": "^3.0.0-development.14",
+    "@rcsb/rcsb-saguaro-app": "^6.0.0-development.18",
     "molstar": "^3.40.1",
     "react": "^18.1.0",
     "react-dom": "^18.1.0"

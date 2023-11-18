@@ -7,11 +7,12 @@ import * as React from "react";
 import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
 import {Subscription} from "rxjs";
 import {RcsbFvStateInterface} from "../../../../../RcsbFvState/RcsbFvStateInterface";
+import {rcsbRequestCtxManager} from "@rcsb/rcsb-saguaro-app/lib/RcsbRequest/RcsbRequestContextManager";
 
 interface MsaRowTitleCheckboxInterface {
     disabled:boolean;
     entryId: string;
-    tag:"aligned"|"polymer"|"non-polymer";
+    tag: "aligned"|"polymer"|"non-polymer";
     stateManager:RcsbFvStateInterface
 }
 
@@ -19,14 +20,14 @@ type MsaRowTitleCheckboxType = MsaRowTitleCheckboxInterface & {entityId:string} 
 
 interface MsaRowTitleCheckboxState {
     checked:boolean;
-    disabled:boolean;
+    opacity: 0|1;
 }
 
 export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCheckboxType,MsaRowTitleCheckboxState> {
 
     readonly state: MsaRowTitleCheckboxState = {
         checked: this.props.tag == "aligned",
-        disabled: false
+        opacity: (this.props.disabled) && this.props.tag != "aligned" ? 0 : 1
     };
 
     private subscription: Subscription;
@@ -44,16 +45,17 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
             />);
     }
 
-    public componentDidMount() {
+    public async componentDidMount() {
         this.subscribe();
         this.requestInfo();
+        this.setState({opacity: await this.opacity()})
     }
 
     public componentWillUnmount() {
         this.subscription.unsubscribe();
     }
 
-    public componentDidUpdate(prevProps: Readonly<MsaRowTitleCheckboxType>, prevState: Readonly<MsaRowTitleCheckboxState>, snapshot?: any) {
+    public async componentDidUpdate(prevProps: Readonly<MsaRowTitleCheckboxType>, prevState: Readonly<MsaRowTitleCheckboxState>, snapshot?: any) {
         if(!this.props.disabled && prevProps.disabled)
             this.requestInfo();
     }
@@ -88,7 +90,7 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
     }
 
     private click(): void {
-        if(this.props.disabled || this.state.disabled)
+        if(this.props.disabled)
             return;
         this.setState({checked:!this.state.checked},()=>{
             this.props.stateManager.next<"representation-change",{tag:MsaRowTitleCheckboxInterface["tag"];isHidden:boolean;pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};}>({
@@ -109,7 +111,7 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
         });
     }
 
-    private style():React.CSSProperties {
+    private style(): React.CSSProperties {
         const color = {
             "checked":"rgb(51, 122, 183)",
             "unchecked":"rgba(51,122,183,0.44)",
@@ -118,26 +120,19 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
         return {
             width:7,
             height:7,
-            opacity: (this.props.disabled || this.state.disabled) && this.props.tag != "aligned" ? 0 : 1,
-            backgroundColor: this.props.disabled || this.state.disabled ? color.disabled : color[ this.state.checked ? "checked" : "unchecked"],
+            opacity: this.state.opacity,
+            backgroundColor: this.props.disabled ? color.disabled : color[ this.state.checked ? "checked" : "unchecked"],
             border: 1,
             borderStyle: "solid",
-            borderColor: this.props.disabled || this.state.disabled ? color.disabled :  color.checked,
+            borderColor: this.props.disabled ? color.disabled :  color.checked,
             display:"inline-block",
             marginLeft:4,
-            cursor: this.props.disabled || this.state.disabled ? undefined : "pointer"
+            cursor: this.props.disabled ? undefined : "pointer"
         };
     }
 
-    private compId(): string {
-        if("entityId" in this.props)
-            return `${this.props.entryId}${TagDelimiter.entity}${this.props.entityId}`;
-        else
-            return `${this.props.entryId}${TagDelimiter.instance}${this.props.instanceId}`;
-    };
-
     private title(): string | undefined{
-        if(this.props.disabled || this.state.disabled )
+        if(this.props.disabled)
             return undefined;
         switch (this.props.tag){
             case "aligned":
@@ -149,21 +144,31 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
         }
     }
 
-    private getRcsbId(pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;}): string {
-        if("instanceId" in pdb)
-            return `${pdb.entryId}${TagDelimiter.instance}${pdb.instanceId}`;
+    private compId(): string {
+        if("entityId" in this.props)
+            return `${this.props.entryId}${TagDelimiter.entity}${this.props.entityId}`;
         else
-            return `${pdb.entryId}${TagDelimiter.entity}${pdb.entityId}`;
+            return `${this.props.entryId}${TagDelimiter.instance}${this.props.instanceId}`;
     }
 
-    private componentInfo(data: {tag:MsaRowTitleCheckboxInterface["tag"];isComponent:boolean;isVisible:boolean;pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};}): void {
+    private getRcsbId(pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;}): string {
+        if("entityId" in pdb)
+            return `${pdb.entryId}${TagDelimiter.entity}${pdb.entityId}`;
+        else
+            return `${pdb.entryId}${TagDelimiter.instance}${pdb.instanceId}`;
+    }
+
+    private async componentInfo(data: {
+        tag:MsaRowTitleCheckboxInterface["tag"];
+        isComponent:boolean;
+        isVisible:boolean;
+        pdb: {entryId:string;entityId:string;} | {entryId:string;instanceId:string;};
+    }): Promise<void> {
         if(this.compId() == this.getRcsbId(data.pdb) && this.props.tag == data.tag){
-            if( !data.isComponent )
-                this.setState({disabled: true})
-            else if( data.isVisible)
-                this.setState({checked: true})
+            if( data.isVisible)
+                this.setState({checked: true, opacity: await this.opacity()})
             else
-                this.setState({checked: false})
+                this.setState({checked: false, opacity: await this.opacity()})
         }
     }
 
@@ -182,6 +187,35 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
                 tag: this.props.tag
             }
         })
+    }
+
+    private async opacity(): Promise<0 | 1> {
+        switch (this.props.tag){
+            case "aligned":
+                return 1;
+            case "polymer":
+                return await this.polymerTest() ? 1 : 0;
+            case "non-polymer":
+                return await this.nonPolymerTest() ? 1 : 0;
+        }
+
+    }
+    private async polymerTest(): Promise<boolean> {
+        const entryId = this.props.entryId;
+        const entryInfo = (await rcsbRequestCtxManager.getEntryProperties(entryId))[0];
+        if(entryInfo && entryInfo.entityToInstance.size > 1)
+            return true;
+        if(entryInfo && entryInfo.entityToInstance && Array.from(entryInfo.entityToInstance.get(this.compId()) ?? []).length > 1)
+            return true;
+        if(entryInfo && (entryInfo.instanceToOperator?.get(`${this.props.entryId}-1`)?.get( (entryInfo.entityToInstance.get(this.compId()) ?? [""])[0] )?.length ?? 0) > 1)
+            return true;
+        return false;
+    }
+
+    private async nonPolymerTest(): Promise<boolean> {
+        const entryId = this.props.entryId;
+        const entryInfo = (await rcsbRequestCtxManager.getEntryProperties(entryId))[0];
+        return entryInfo && entryInfo.nonPolymerEntityToInstance && entryInfo.nonPolymerEntityToInstance.size > 0;
     }
 
 }
