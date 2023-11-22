@@ -288,7 +288,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 --->
 ### CDN JavaScript
-`<script src="https://cdn.jsdelivr.net/npm/@rcsb/rcsb-saguaro-3d/build/dist/app.js" type="text/javascript"></script>`
+`<script src="https://cdn.jsdelivr.net/npm/@rcsb/rcsb-saguaro-3d@4.0.0/build/app.min.js" type="text/javascript"></script>`
 
 ### Node Module Instalation
 `npm install @rcsb/rcsb-saguaro-3d`
@@ -312,15 +312,14 @@ Go to:
 ...
 
 ### Library Documentation
-- Documentation [page](https://rcsb.github.io/rcsb-saguaro-3d/index.html)
-- TypeScript classes documentation can be found [here](https://rcsb.github.io/rcsb-saguaro-3d/modules.html)
+- TypeScript classes and documentation can be found [here](https://rcsb.github.io/rcsb-saguaro-3d/index.html)
 
 ### Main Classes and Interfaces
 
 #### Assembly view
 Class **`RcsbFv3DAssembly`** (`src/RcsbFv3D/RcsbFv3DAssembly.tsx`) builds a predefined 1D/3D view for PDB assemblies. This method is used in the RCSB PDB web portal 
 to display 1D positional features of PDB models (ex: [4hhb](https://www.rcsb.org/3d-sequence/4HHB)). Its configuration requires a single PDB Id. 
-In addition, `additionalConfig` allows to configure the feature viewer as describe in rcsb-saguaro-app [API](https://rcsb.github.io/rcsb-saguaro-app/interfaces/_internal_.RcsbFvAdditionalConfig.html).
+In addition, `additionalConfig` allows to configure the feature viewer as describe in rcsb-saguaro-app [API](https://rcsb.github.io/rcsb-saguaro-app/).
 This parameter exposes the board configuration through the attribute `boardConfig` ([ref](https://rcsb.github.io/rcsb-saguaro/interfaces/RcsbFvBoardConfigInterface.html)).
 The component will be mounted in the html element with id `elementId`. If there is no html element in the current document,
 a new div element will be added, and the component will be displayed in full screen mode. 
@@ -369,7 +368,7 @@ interface RcsbFv3DCustomInterface  {
 ##### Structural Panel
 
 The structural panel configuration `structurePanelConfig: RcsbFvStructureConfigInterface<LoadMolstarInterface,{viewerProps:Partial<ViewerProps>}>` includes the loading configuration for the 3D structural data
-and the Molstar plugin. A full description of the structural panel configuration can be found [here](https://rcsb.github.io/rcsb-saguaro-3d/interfaces/RcsbFv3DAssembly._internal_.RcsbFvStructureConfigInterface.html)
+and the Molstar plugin. A full description of the structural panel configuration can be found [here](https://rcsb.github.io/rcsb-saguaro-3d/interfaces/RcsbFvStructure_RcsbFvStructure.RcsbFvStructureConfigInterface.html)
 
 ```typescript
 interface RcsbFvStructureConfigInterface<R,S> {
