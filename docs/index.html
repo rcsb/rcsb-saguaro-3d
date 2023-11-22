@@ -280,7 +280,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     panel3d.render();
 });
 </script>
-<a id="md:cdn-javascript" class="tsd-anchor"></a><h3><a href="#md:cdn-javascript">CDN JavaScript</a></h3><p><code>&lt;script src=&quot;https://cdn.jsdelivr.net/npm/@rcsb/rcsb-saguaro-3d/build/dist/app.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;</code></p>
+<a id="md:cdn-javascript" class="tsd-anchor"></a><h3><a href="#md:cdn-javascript">CDN JavaScript</a></h3><p><code>&lt;script src=&quot;https://cdn.jsdelivr.net/npm/@rcsb/rcsb-saguaro-3d@4.0.0/build/app.min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;</code></p>
 <a id="md:node-module-instalation" class="tsd-anchor"></a><h3><a href="#md:node-module-instalation">Node Module Instalation</a></h3><p><code>npm install @rcsb/rcsb-saguaro-3d</code></p>
 <a id="md:building-amp-running" class="tsd-anchor"></a><h2><a href="#md:building-amp-running">Building &amp; Running</a></h2><a id="md:build-app" class="tsd-anchor"></a><h3><a href="#md:build-app">Build app</a></h3><pre><code><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-0">install</span><br/><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-0">run</span><span class="hl-1"> </span><span class="hl-0">buildApp</span>
 </code><button>Copy</button></pre>
@@ -297,12 +297,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
 ...</li>
 </ul>
 <a id="md:library-documentation" class="tsd-anchor"></a><h3><a href="#md:library-documentation">Library Documentation</a></h3><ul>
-<li>Documentation <a href="https://rcsb.github.io/rcsb-saguaro-3d/index.html">page</a></li>
-<li>TypeScript classes documentation can be found <a href="https://rcsb.github.io/rcsb-saguaro-3d/modules.html">here</a></li>
+<li>TypeScript classes and documentation can be found <a href="https://rcsb.github.io/rcsb-saguaro-3d/index.html">here</a></li>
 </ul>
 <a id="md:main-classes-and-interfaces" class="tsd-anchor"></a><h3><a href="#md:main-classes-and-interfaces">Main Classes and Interfaces</a></h3><a id="md:assembly-view" class="tsd-anchor"></a><h4><a href="#md:assembly-view">Assembly view</a></h4><p>Class <strong><code>RcsbFv3DAssembly</code></strong> (<code>src/RcsbFv3D/RcsbFv3DAssembly.tsx</code>) builds a predefined 1D/3D view for PDB assemblies. This method is used in the RCSB PDB web portal 
 to display 1D positional features of PDB models (ex: <a href="https://www.rcsb.org/3d-sequence/4HHB">4hhb</a>). Its configuration requires a single PDB Id. 
-In addition, <code>additionalConfig</code> allows to configure the feature viewer as describe in rcsb-saguaro-app <a href="https://rcsb.github.io/rcsb-saguaro-app/interfaces/_internal_.RcsbFvAdditionalConfig.html">API</a>.
+In addition, <code>additionalConfig</code> allows to configure the feature viewer as describe in rcsb-saguaro-app <a href="https://rcsb.github.io/rcsb-saguaro-app/">API</a>.
 This parameter exposes the board configuration through the attribute <code>boardConfig</code> (<a href="https://rcsb.github.io/rcsb-saguaro/interfaces/RcsbFvBoardConfigInterface.html">ref</a>).
 The component will be mounted in the html element with id <code>elementId</code>. If there is no html element in the current document,
 a new div element will be added, and the component will be displayed in full screen mode. </p>
@@ -316,7 +315,7 @@ their dynamic interaction.</p>
 </code><button>Copy</button></pre>
 <p><img src="https://raw.githubusercontent.com/rcsb/rcsb-saguaro-3d/master/.github/img/config_img.png" alt="Alt text" title="Custom config schema"></p>
 <a id="md:structural-panel" class="tsd-anchor"></a><h5><a href="#md:structural-panel">Structural Panel</a></h5><p>The structural panel configuration <code>structurePanelConfig: RcsbFvStructureConfigInterface&lt;LoadMolstarInterface,{viewerProps:Partial&lt;ViewerProps&gt;}&gt;</code> includes the loading configuration for the 3D structural data
-and the Molstar plugin. A full description of the structural panel configuration can be found <a href="https://rcsb.github.io/rcsb-saguaro-3d/interfaces/RcsbFv3DAssembly._internal_.RcsbFvStructureConfigInterface.html">here</a></p>
+and the Molstar plugin. A full description of the structural panel configuration can be found <a href="https://rcsb.github.io/rcsb-saguaro-3d/interfaces/RcsbFvStructure_RcsbFvStructure.RcsbFvStructureConfigInterface.html">here</a></p>
 <pre><code class="language-typescript"><span class="hl-3">interface</span><span class="hl-1"> </span><span class="hl-4">RcsbFvStructureConfigInterface</span><span class="hl-1">&lt;</span><span class="hl-4">R</span><span class="hl-1">,</span><span class="hl-4">S</span><span class="hl-1">&gt; {</span><br/><span class="hl-1">    </span><span class="hl-0">loadConfig</span><span class="hl-1">: </span><span class="hl-4">R</span><span class="hl-1"> | </span><span class="hl-4">Array</span><span class="hl-1">&lt;</span><span class="hl-4">R</span><span class="hl-1">&gt;;</span><br/><span class="hl-1">    </span><span class="hl-0">structureViewerConfig</span><span class="hl-1">: </span><span class="hl-4">S</span><span class="hl-1">;</span><br/><span class="hl-1">}</span>
 </code><button>Copy</button></pre>
 <p>The attribute <code>loadConfig: LoadMolstarInterface</code> encodes the configuration for loading the 3D structural data. </p>
