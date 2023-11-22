@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         },
         additionalConfig: {
             boardConfig: {
-                elementClickCallBack: (e?: RcsbFvTrackDataElementInterface & {type?: string;}) => {
+                elementClickCallback: (e?: RcsbFvTrackDataElementInterface & {type?: string;}) => {
                     console.log(`Element clicked ${e?.type}`)
                 }
             }

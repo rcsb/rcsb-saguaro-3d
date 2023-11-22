@@ -1,9 +1,19 @@
 const path = require('path');
 
+
 const commonConfig = {
     module: {
-      rules: [
-          {
+      rules: [{
+              test: /\.svg$/,
+              issuer: /\.[jt]sx?$/,
+              use: [{
+                  loader:'@svgr/webpack',
+                  options: {
+                      expandProps: "end",
+                      svgoConfig: {}
+                  }
+              }]
+          },{
               test: /\.(html|ico)$/,
               use: [{
                   loader: 'file-loader',
@@ -29,9 +39,7 @@ const commonConfig = {
                         localIdentName:'[local]'
                     }
                 }
-            }, {
-                loader: 'resolve-url-loader'
-            }, {
+            },{
                 loader: 'sass-loader',
                 options: {
                     sourceMap: true

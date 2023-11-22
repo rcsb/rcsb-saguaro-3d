@@ -3,8 +3,17 @@ const fs = require('fs')
 
 const commonConfig = {
     module: {
-      rules: [
-          {
+      rules: [{
+              test: /\.svg$/,
+              issuer: /\.[jt]sx?$/,
+              use: [{
+                  loader:'@svgr/webpack',
+                  options: {
+                      expandProps: "end",
+                      svgoConfig: {}
+                  }
+              }]
+          },{
               test: /\.(html|ico)$/,
               use: [{
                   loader: 'file-loader',

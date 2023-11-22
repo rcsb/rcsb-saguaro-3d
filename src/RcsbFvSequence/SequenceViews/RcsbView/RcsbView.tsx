@@ -71,15 +71,15 @@ export class RcsbView<T,U> extends AbstractView<RcsbViewInterface<T,U>, {}>{
             highlightHoverPosition:true,
             highlightHoverElement:true,
             ...this.props.additionalConfig?.boardConfig,
-            elementClickCallBack:(e?:RcsbFvTrackDataElementInterface)=>{
+            elementClickCallback:(e?:RcsbFvTrackDataElementInterface)=>{
                 this.elementClickCallback(e);
-                if(typeof this.props.additionalConfig?.boardConfig?.elementClickCallBack === "function")
-                    this.props.additionalConfig?.boardConfig.elementClickCallBack(e);
+                if(typeof this.props.additionalConfig?.boardConfig?.elementClickCallback === "function")
+                    this.props.additionalConfig?.boardConfig.elementClickCallback(e);
             },
-            selectionChangeCallBack:(selection: Array<RcsbFvTrackDataElementInterface>)=>{
+            selectionChangeCallback:(selection: Array<RcsbFvTrackDataElementInterface>)=>{
                 this.selectionChangeCallback(selection);
-                if(typeof this.props.additionalConfig?.boardConfig?.selectionChangeCallBack === "function")
-                    this.props.additionalConfig?.boardConfig.selectionChangeCallBack(selection);
+                if(typeof this.props.additionalConfig?.boardConfig?.selectionChangeCallback === "function")
+                    this.props.additionalConfig?.boardConfig.selectionChangeCallback(selection);
             },
             highlightHoverCallback:(selection: RcsbFvTrackDataElementInterface[])=>{
                 this.highlightHoverCallback(selection);

@@ -158,7 +158,7 @@ export class CustomView<R,L> extends AbstractView<CustomViewInterface<R,L> & {st
                     highlightHoverElement:true,
                     ...this.boardMap.get(boardId)!.boardConfig,
                     trackWidth:this.boardMap.get(boardId)!.boardConfig?.trackWidth ? this.boardMap.get(boardId)!.boardConfig?.trackWidth!-4 : trackWidth,
-                    selectionChangeCallBack:(selection: RcsbFvTrackDataElementInterface[])=>{
+                    selectionChangeCallback:(selection: RcsbFvTrackDataElementInterface[])=>{
                         if(this.innerSelectionFlag)
                             return;
                         this.boardMap.get(boardId)!.sequenceSelectionChangeCallback(this.props.structureViewer, this.props.stateManager, selection);
@@ -166,7 +166,7 @@ export class CustomView<R,L> extends AbstractView<CustomViewInterface<R,L> & {st
                     highlightHoverCallback:(elements:Array<RcsbFvTrackDataElementInterface>)=>{
                         this.boardMap.get(boardId)!.sequenceHoverCallback(this.props.structureViewer, this.props.stateManager, elements);
                     },
-                    elementClickCallBack: (element?: RcsbFvTrackDataElementInterface)=>{
+                    elementClickCallback: (element?: RcsbFvTrackDataElementInterface)=>{
                         this.boardMap.get(boardId)!.sequenceElementClickCallback(this.props.structureViewer, this.props.stateManager, element);
                     }
                 },

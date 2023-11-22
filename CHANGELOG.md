@@ -2,7 +2,7 @@
 
 [Semantic Versioning](https://semver.org/)
 
-## [4.0.0] - 2023-11-15
+## [4.0.0] - 2023-11-22
 ### Breaking changes
 - Types are not anymore exposed from `build/src`
 - All module classes and types are accessible from `lib/`
@@ -10,7 +10,7 @@
   - `lib/commonjs` exposes all modules in `CommonJS` format
 
 ### Improvement
-- MSA groups inform of Polymer/Ligand before loading the structure
+- MSA group displays Polymer/Ligand before loading the structure
   - Checkboxes are displayed in grey color
 
 ### Code refactoring
