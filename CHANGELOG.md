@@ -2,6 +2,10 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [4.0.1] - 2023-11-27
+### Bug fix
+- MSA polymer checkbox indicator bug fixed
+
 ## [4.0.0] - 2023-11-22
 ### Breaking changes
 - Types are not anymore exposed from `build/src`

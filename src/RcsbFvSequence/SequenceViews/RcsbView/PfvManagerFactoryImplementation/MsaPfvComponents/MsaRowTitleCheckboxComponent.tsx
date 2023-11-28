@@ -203,9 +203,9 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
     private async polymerTest(): Promise<boolean> {
         const entryId = this.props.entryId;
         const entryInfo = (await rcsbRequestCtxManager.getEntryProperties(entryId))[0];
-        if(entryInfo && entryInfo.entityToInstance.size > 1)
-            return true;
-        if(entryInfo && entryInfo.entityToInstance && Array.from(entryInfo.entityToInstance.get(this.compId()) ?? []).length > 1)
+        const polymerChains = Array.from(entryInfo.entityToInstance.values()).flat();
+        const assemblyChains = Array.from(entryInfo.instanceToOperator?.get(`${this.props.entryId}-1`)?.keys() ?? []).filter( chId => polymerChains.includes(chId));
+        if(assemblyChains && assemblyChains.length > 1)
             return true;
         if(entryInfo && (entryInfo.instanceToOperator?.get(`${this.props.entryId}-1`)?.get( (entryInfo.entityToInstance.get(this.compId()) ?? [""])[0] )?.length ?? 0) > 1)
             return true;
@@ -215,7 +215,11 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
     private async nonPolymerTest(): Promise<boolean> {
         const entryId = this.props.entryId;
         const entryInfo = (await rcsbRequestCtxManager.getEntryProperties(entryId))[0];
-        return entryInfo && entryInfo.nonPolymerEntityToInstance && entryInfo.nonPolymerEntityToInstance.size > 0;
+        if(entryInfo && Array.from(entryInfo.entityToPrd.values()).filter(v=>v!="").length > 0)
+            return true;
+        if(entryInfo && entryInfo.nonPolymerEntityToInstance && entryInfo.nonPolymerEntityToInstance.size > 0)
+            return true;
+        return false;
     }
 
 }
