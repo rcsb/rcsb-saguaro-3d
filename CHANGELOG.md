@@ -2,6 +2,10 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [4.0.2] - 2023-11-27
+### Dependency update
+- rcsb-saguaro-app v6.0.3
+
 ## [4.0.1] - 2023-11-27
 ### Bug fix
 - MSA polymer checkbox indicator bug fixed
