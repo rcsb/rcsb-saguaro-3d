@@ -4,6 +4,11 @@
 
 ## [4.0.2] - 2023-11-27
 ### Dependency update
+- rcsb-saguaro v3.0.4
+- rcsb-saguaro-app v6.0.4
+
+## [4.0.2] - 2023-11-27
+### Dependency update
 - rcsb-saguaro-app v6.0.3
 
 ## [4.0.1] - 2023-11-27
