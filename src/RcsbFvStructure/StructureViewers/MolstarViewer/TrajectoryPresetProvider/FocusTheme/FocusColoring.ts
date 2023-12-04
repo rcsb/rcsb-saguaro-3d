@@ -18,7 +18,7 @@ import {
 } from "molstar/lib/mol-theme/color/element-symbol";
 
 export const FOCUS_RESIDUE_COLOR = 'focus-residue-color' as ColorTheme.BuiltIn;
-export function FocusResidueColorTheme(ctx: ThemeDataContext, props: ParamDefinition.Values<ElementSymbolColorThemeParams>): ColorTheme<ElementSymbolColorThemeParams> {
+function FocusResidueColorTheme(ctx: ThemeDataContext, props: ParamDefinition.Values<ElementSymbolColorThemeParams>): ColorTheme<ElementSymbolColorThemeParams> {
 
     const L = StructureElement.Location.create();
 

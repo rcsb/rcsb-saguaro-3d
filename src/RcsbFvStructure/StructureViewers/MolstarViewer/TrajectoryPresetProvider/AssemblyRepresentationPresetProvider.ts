@@ -14,6 +14,8 @@ import {StructureBuilder} from "molstar/lib/mol-plugin-state/builder/structure";
 import {StructureRepresentationBuilder} from "molstar/lib/mol-plugin-state/builder/structure/representation";
 import {createSelectionExpressions} from "@rcsb/rcsb-molstar/build/src/viewer/helpers/selection";
 import {StateTransform} from "molstar/lib/mol-state/transform";
+import {FOCUS_RESIDUE_COLOR} from "./FocusTheme/FocusColoring";
+import updateFocusRepr = StructureRepresentationPresetProvider.updateFocusRepr;
 
 type ComponentType = Awaited<ReturnType<InstanceType<typeof StructureBuilder>["tryCreateComponentFromExpression"]>>;
 type RepresentationType = ReturnType<InstanceType<typeof StructureRepresentationBuilder>["buildRepresentation"]>;
@@ -112,6 +114,14 @@ export const AssemblyRepresentationPresetProvider = StructureRepresentationPrese
 
             await update.commit({ revertOnError: false });
         }
+
+        structure.inheritedPropertyData.reprList = Object.values(representationMap).filter(repr=>typeof repr != "undefined");
+        await updateFocusRepr(
+            plugin,
+            structure,
+            FOCUS_RESIDUE_COLOR,
+            {}
+        );
 
         return {
             components: componentMap,

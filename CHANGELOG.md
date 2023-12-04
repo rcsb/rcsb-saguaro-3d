@@ -2,6 +2,10 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [4.0.5] - 2023-12-04
+### Improvement
+- `FocusResidueColorTheme` used in assembly view
+
 ## [4.0.4] - 2023-11-30
 ### Dependency update
 - rcsb-saguaro v3.0.4

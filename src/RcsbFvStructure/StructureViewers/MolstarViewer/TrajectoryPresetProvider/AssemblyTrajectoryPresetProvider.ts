@@ -10,6 +10,7 @@ import {StateTransformer} from "molstar/lib/mol-state/transformer";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {AssemblyRepresentationPresetProvider} from "./AssemblyRepresentationPresetProvider";
 import {Structure, StructureElement, StructureProperties as SP} from "molstar/lib/mol-model/structure";
+import {FocusResidueColorThemeProvider} from "./FocusTheme/FocusColoring";
 
 type StructureObject = StateObjectSelector<PluginStateObject.Molecule.Structure, StateTransformer<StateObject<any, StateObject.Type<any>>, StateObject<any, StateObject.Type<any>>, any>>
 
@@ -64,6 +65,8 @@ export const AssemblyTrajectoryPresetProvider = TrajectoryHierarchyPresetProvide
         }
 
         const structureProperties: StructureObject = await builder.insertStructureProperties(structure);
+        if (!plugin.representation.structure.themes.colorThemeRegistry.has(FocusResidueColorThemeProvider))
+            plugin.representation.structure.themes.colorThemeRegistry.add(FocusResidueColorThemeProvider);
         const unitcell: StateObjectSelector | undefined = await builder.tryCreateUnitcell(modelProperties, undefined, { isHidden: true });
         const representation: StructureRepresentationPresetProvider.Result | undefined = await plugin.builders.structure.representation.applyPreset(structureProperties, AssemblyRepresentationPresetProvider);
 
