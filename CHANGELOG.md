@@ -2,6 +2,17 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [4.0.9] - 2024-01-10
+### Configuration
+- Updated group views help link
+
+## [4.0.8] - 2024-01-10
+### Configuration
+- Updated assembly view help link
+### Dependency update
+- rcsb-saguaro-app v6.0.9
+- dependencies audit fix
+
 ## [4.0.7] - 2023-12-07
 ### Dependency update
 - rcsb-saguaro v3.0.7

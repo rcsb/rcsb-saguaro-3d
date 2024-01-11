@@ -72,7 +72,9 @@ export class RcsbFv3DAssembly extends RcsbFv3DAbstract<
                     },
                     pfvManagerFactory: new AssemblyPfvManagerFactory(),
                     callbackManagerFactory: new AssemblyCallbackManagerFactory(),
-                    additionalContent:(props)=>(<HelpLinkComponent {...props} helpHref={"/docs/sequence-viewers/3d-protein-feature-view"}/>)
+                    additionalContent:(props)=>(
+                        <HelpLinkComponent {...props} helpHref={"/docs/sequence-viewers/sequence-annotations-in-3d"}/>
+                    )
                 }
             },
             structureConfig: {

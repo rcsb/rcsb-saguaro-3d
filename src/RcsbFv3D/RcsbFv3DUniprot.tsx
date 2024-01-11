@@ -81,7 +81,9 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<
                         pluginLoadParamsDefinition,
                         alignmentResponseContainer
                     }),
-                    additionalContent:(props)=>(<HelpLinkComponent {...props} helpHref={"/docs/grouping-structures/groups-1d-3d-alignment"}/>)
+                    additionalContent:(props)=>(
+                        <HelpLinkComponent {...props} helpHref={"/docs/grouping-structures/explore-sequence-alignments-in-3d"}/>
+                    )
                 }
             },
             structureConfig: {

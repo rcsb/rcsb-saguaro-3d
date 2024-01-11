@@ -93,7 +93,9 @@ export class RcsbFv3DAlignmentProvider extends RcsbFv3DAbstract<
                         pluginLoadParamsDefinition,
                         alignmentResponseContainer
                     }),
-                    additionalContent: params.config.additionalContent ?? ((props)=>(<HelpLinkComponent {...props} helpHref={"/docs/grouping-structures/groups-1d-3d-alignment"}/>))
+                    additionalContent: params.config.additionalContent ?? ((props)=>(
+                        <HelpLinkComponent {...props} helpHref={"/docs/grouping-structures/explore-sequence-alignments-in-3d"}/>)
+                    )
                 },
                 rcsbViewBehaviour: new AlignmentProviderBehaviour()
             },
