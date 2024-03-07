@@ -2,6 +2,15 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [4.0.10] - 2024-03-06
+### Improvement
+- div delimiter increased width && transparent
+
+### Dependency update
+- rcsb-saguaro-app v6.0.13
+- rcsb-saguaro v3.0.7
+- Multiple dependencies have been updated
+
 ## [4.0.9] - 2024-01-10
 ### Configuration
 - Updated group views help link
@@ -9,6 +18,7 @@
 ## [4.0.8] - 2024-01-10
 ### Configuration
 - Updated assembly view help link
+
 ### Dependency update
 - rcsb-saguaro-app v6.0.9
 - dependencies audit fix

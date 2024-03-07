@@ -36,9 +36,10 @@
 
 .rcsbFvSplitPanel{
   height:100%;
-  border-left: 1px solid #b5cbe2;
+  border-left: 3px solid #b5cbe2;
   position: absolute;
   cursor: ew-resize;
+  opacity: 0;
 }
 
 .rcsbFvSubtitle {
