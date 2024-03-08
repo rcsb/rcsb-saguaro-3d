@@ -164,12 +164,8 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
         isVisible:boolean;
         pdb: {entryId:string;entityId:string;} | {entryId:string;instanceId:string;};
     }): Promise<void> {
-        if(this.compId() == this.getRcsbId(data.pdb) && this.props.tag == data.tag){
-            if( data.isVisible)
-                this.setState({checked: true, opacity: await this.opacity()})
-            else
-                this.setState({checked: false, opacity: await this.opacity()})
-        }
+        if(this.compId() == this.getRcsbId(data.pdb) && this.props.tag == data.tag)
+            this.setState({checked: data.isVisible, opacity: data.isComponent ? 1 : await this.opacity()})
     }
 
     private requestInfo(): void {
@@ -190,16 +186,23 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
     }
 
     private async opacity(): Promise<0 | 1> {
-        switch (this.props.tag){
-            case "aligned":
+        if(this.props.tag == "aligned")
                 return 1;
+        return await this.componentOpacity(this.props.tag);
+
+    }
+
+    private async componentOpacity(componentType: "polymer" | "non-polymer"): Promise<0|1> {
+        if(!TagDelimiter.isRcsbId(this.props.entryId))
+            return 0;
+        switch (componentType) {
             case "polymer":
                 return await this.polymerTest() ? 1 : 0;
             case "non-polymer":
                 return await this.nonPolymerTest() ? 1 : 0;
         }
-
     }
+
     private async polymerTest(): Promise<boolean> {
         const entryId = this.props.entryId;
         const entryInfo = (await rcsbRequestCtxManager.getEntryProperties(entryId))[0];

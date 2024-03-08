@@ -1,6 +1,6 @@
 {
   "name": "@rcsb/rcsb-saguaro-3d",
-  "version": "4.0.10",
+  "version": "4.0.11",
   "description": "RCSB Molstar/Saguaro Web App",
   "main": "build/dist/app.js",
   "files": [
@@ -20,6 +20,7 @@
     "buildDoc": "typedoc --excludeExternals --externalPattern \"**/node_modules/**\" --plugin typedoc-plugin-missing-exports  --plugin typedoc-theme-hierarchy --theme hierarchy --entryPointStrategy expand ./src && sed -i '' '/---/d' docs/index.html",
     "clean": "del-cli lib && del-cli build",
     "publishApp": "npm publish",
+    "packApp": "npm run buildApp && npm pack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

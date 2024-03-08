@@ -2,6 +2,11 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [4.0.11] - 2024-03-08
+### Improvement
+- 1D3D checkboxes can use molstar info to display component availability. 
+This is useful for non PDB entries
+
 ## [4.0.10] - 2024-03-06
 ### Improvement
 - div delimiter increased width && transparent
