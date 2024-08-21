@@ -2,6 +2,10 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [4.0.12] - 2024-08-20
+### Dependency update
+- rcsb-saguaro-app v6.2.1
+
 ## [4.0.11] - 2024-03-08
 ### Improvement
 - 1D3D checkboxes can use molstar info to display component availability. 
