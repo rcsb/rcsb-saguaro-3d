@@ -4,7 +4,7 @@
 */
 
 import React from "react";
-import classes from '../../../../../scss/MsaPfvStyle.module.scss';
+import * as classes from '../../../../../scss/MsaPfvStyle.module.scss';
 import {Property} from "csstype";
 import {asyncScheduler} from "rxjs";
 import {RcsbFvStateInterface} from "../../../../../RcsbFvState/RcsbFvStateInterface";

@@ -1,5 +1,5 @@
 import * as React from "react";
-import classes from '../../scss/RcsbFvStyle.module.scss';
+import * as classes from '../../scss/RcsbFvStyle.module.scss';
 import {asyncScheduler, Subscription} from "rxjs";
 
 import {RcsbFvDOMConstants} from "../../RcsbFvConstants/RcsbFvConstants";
