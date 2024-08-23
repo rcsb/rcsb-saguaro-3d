@@ -8,6 +8,7 @@ import {StructureElement, StructureProperties as SP} from "molstar/lib/mol-model
 import {MolScriptBuilder as MS} from "molstar/lib/mol-script/language/builder";
 import uniqid from "uniqid";
 import {PLDDTConfidenceColorThemeProvider} from "molstar/lib/extensions/model-archive/quality-assessment/color/plddt";
+import { QualityAssessment } from 'molstar/lib/extensions/model-archive/quality-assessment/prop';
 import {ColorTheme} from "molstar/lib/mol-theme/color";
 import reprBuilder = StructureRepresentationPresetProvider.reprBuilder;
 import {StructureBuilder} from "molstar/lib/mol-plugin-state/builder/structure";
@@ -68,7 +69,7 @@ export const AssemblyRepresentationPresetProvider = StructureRepresentationPrese
                     quality: "auto"
                 });
                 representationMap[asymId] = builder.buildRepresentation(update, comp, {
-                    color: PLDDTConfidenceColorThemeProvider.isApplicable({ structure }) ? PLDDTConfidenceColorThemeProvider.name as ColorTheme.BuiltIn : "chain-id",
+                    color: structure.models.some(m => QualityAssessment.isApplicable(m, 'pLDDT')) ? PLDDTConfidenceColorThemeProvider.name as ColorTheme.BuiltIn : "chain-id",
                     type: "cartoon"
                 });
 

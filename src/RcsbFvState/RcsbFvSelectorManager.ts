@@ -7,11 +7,12 @@ export interface RegionSelectionInterface{
     source:'structure'|'sequence';
 }
 
+type typedSelection = SaguaroRegionList & {source:RegionSelectionInterface["source"]};
 //TODO this class should be interfaced
 //TODO Check how lastSelection is used. It is not linked to selection. Only label asymId is used when the value is got
 export class RcsbFvSelectorManager {
 
-    private lastSelection: SaguaroRegionList & {source:RegionSelectionInterface["source"]}| null = null;
+    private lastSelection: typedSelection | null = null;
     private selection: Array<SaguaroRegionList> = new Array<SaguaroRegionList>();
     private hover: Array<SaguaroRegionList> = new Array<SaguaroRegionList>();
 
@@ -58,11 +59,11 @@ export class RcsbFvSelectorManager {
             return this.hover;
     }
 
-    public getLastSelection(): SaguaroRegionList & {source:RegionSelectionInterface["source"]} | null{
+    public getLastSelection(): typedSelection | null{
        return this.lastSelection;
     }
 
-    public setLastSelection(selection: SaguaroRegionList & {source:RegionSelectionInterface["source"]} | null): void {
+    public setLastSelection(selection: typedSelection | null): void {
         this.lastSelection = selection;
     }
 
