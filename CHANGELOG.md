@@ -2,7 +2,7 @@
 
 [Semantic Versioning](https://semver.org/)
 
-## [4.0.12] - 2024-08-20
+## [4.1.0] - 2024-08-23
 ### Improvements
 - Ligand selection will always switch to the chain with most selected residues
 - Ligand selection will not select other ligands
