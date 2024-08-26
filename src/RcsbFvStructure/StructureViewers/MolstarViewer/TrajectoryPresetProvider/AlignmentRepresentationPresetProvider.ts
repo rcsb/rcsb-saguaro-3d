@@ -41,6 +41,7 @@ import {StateTransform} from "molstar/lib/mol-state/transform";
 import {TransformStructureConformation} from "molstar/lib/mol-plugin-state/transforms/model";
 import updateFocusRepr = StructureRepresentationPresetProvider.updateFocusRepr;
 import {FOCUS_RESIDUE_COLOR} from "./FocusTheme/FocusColoring";
+import {QualityAssessment} from "molstar/lib/extensions/model-archive/quality-assessment/prop";
 
 type RepresentationParamsType = {
     pdb?:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};
@@ -138,7 +139,7 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
                     quality: "auto"
                 });
                 representationMap["aligned"] = builder.buildRepresentation(update, comp, {
-                    color: PLDDTConfidenceColorThemeProvider.isApplicable({ structure }) ? PLDDTConfidenceColorThemeProvider.name as ColorTheme.BuiltIn : "chain-id",
+                    color: structure.models.some(m => QualityAssessment.isApplicable(m, 'pLDDT')) ? PLDDTConfidenceColorThemeProvider.name as ColorTheme.BuiltIn : "chain-id",
                     type: "cartoon"
                 });
 
@@ -185,7 +186,7 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
             quality: "auto"
         });
         representationMap["polymer"] = builder.buildRepresentation(update, comp, {
-            color: PLDDTConfidenceColorThemeProvider.isApplicable({ structure }) ? PLDDTConfidenceColorThemeProvider.name as ColorTheme.BuiltIn : "chain-id",
+            color: structure.models.some(m => QualityAssessment.isApplicable(m, 'pLDDT')) ? PLDDTConfidenceColorThemeProvider.name as ColorTheme.BuiltIn : "chain-id",
             type: "cartoon"
         }, {
             initialState:{

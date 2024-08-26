@@ -9,12 +9,12 @@ import {PluginStateObject} from "molstar/lib/mol-plugin-state/objects";
 import {ParamDefinition, ParamDefinition as PD} from "molstar/lib/mol-util/param-definition";
 import {StateObjectRef} from "molstar/lib/mol-state";
 import {RootStructureDefinition} from "molstar/lib/mol-plugin-state/helpers/root-structure";
-import {StateObject} from "molstar/lib/mol-state/object";
 import {AlignmentRepresentationPresetProvider} from "./AlignmentRepresentationPresetProvider";
 import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
-import {Structure, StructureElement, StructureProperties as SP} from "molstar/lib/mol-model/structure";
+import {Model} from "molstar/lib/mol-model/structure";
 import {RigidTransformType} from "../../../StructureUtils/StructureLoaderInterface";
 import {FocusResidueColorThemeProvider} from "./FocusTheme/FocusColoring";
+import {ModelSymmetry} from "molstar/lib/mol-model-formats/structure/property/symmetry";
 
 
 export type AlignmentTrajectoryParamsType = {
@@ -45,34 +45,13 @@ export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvid
         const model = await builder.createModel(trajectory, modelParams);
         const modelProperties = await builder.insertModelProperties(model);
         let structure;
-        let assemblyId: number =  1;
-        let entityCheck: boolean = false;
-
-        do{
-            const structureParams: RootStructureDefinition.Params = {
-                name: 'assembly',
-                params: { id:  (assemblyId++).toString()}
-            };
-            structure = await builder.createStructure(modelProperties || model, structureParams);
-            const cell = structure.cell;
-            if(cell) {
-                const units = structure.cell?.obj?.data.units;
-                const strData: Structure = (cell.obj as StateObject<Structure>).data;
-                if (units){
-                    const l = StructureElement.Location.create(strData);
-                    for(const unit of units){
-                        StructureElement.Location.set(l, strData, unit, unit.elements[0]);
-                        entityCheck = (SP.chain.label_entity_id(l) == ("entityId" in params.pdb ? params.pdb.entityId : undefined) || SP.chain.label_asym_id(l) == ("instanceId" in params.pdb ? params.pdb.instanceId : undefined));
-                        if(entityCheck)
-                            break;
-                    }
-                }
-            }
-            if(!entityCheck)
-                plugin.managers.structure.hierarchy.remove([
-                    plugin.managers.structure.hierarchy.current.structures[plugin.managers.structure.hierarchy.current.structures.length-1]
-                ]);
-        }while(!entityCheck);
+        if (!model.data)
+            return {};
+        const structureParams: RootStructureDefinition.Params = {
+            name: 'assembly',
+            params: { id: findAssembly(model.data, params.pdb) }
+        };
+        structure = await builder.createStructure(modelProperties || model, structureParams);
 
         const structureProperties = await builder.insertStructureProperties(structure);
 
@@ -98,3 +77,30 @@ export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvid
         };
     }
 });
+
+function findAssembly(model: Model, pdb: AlignmentTrajectoryParamsType["pdb"]): string {
+    if(pdb)
+        return 'instanceId' in pdb ? findAssemblyByInstance(model, pdb.instanceId) : findAssemblyByEntityId(model, pdb.entityId);
+    return '1';
+}
+
+function findAssemblyByInstance(model: Model, instanceId: string): string {
+    for (const assembly of ModelSymmetry.Provider.get(model)?.assemblies ?? []) {
+        for (const operatorGroup of assembly.operatorGroups) {
+            for (const asymId of operatorGroup.asymIds ?? []) {
+                if (asymId === instanceId)
+                    return assembly.id;
+            }
+        }
+    }
+    return '1';
+}
+
+function findAssemblyByEntityId(model: Model, entityId: string): string {
+    const instanceId = Array.from(model.properties.structAsymMap.values()).find(
+        instance=> instance.entity_id === entityId
+    )?.id;
+    if(instanceId)
+        return findAssemblyByInstance(model, instanceId);
+    return '1';
+}
