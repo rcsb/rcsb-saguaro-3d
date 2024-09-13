@@ -8,7 +8,7 @@ import {RcsbFvRowTitleInterface} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvRow/R
 import {
     AlignmentRequestContextType
 } from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvFactories/RcsbFvTrackFactory/TrackFactoryImpl/AlignmentTrackFactory";
-import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {TargetAlignments} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {Subscription} from "rxjs";
 import {MsaRowTitleCheckboxComponent} from "./MsaRowTitleCheckboxComponent";
 import {MouseEvent} from "react";
@@ -19,7 +19,7 @@ import {RcsbFvRowConfigInterface} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvConf
 
 interface MsaRowTitleInterface extends RcsbFvRowTitleInterface {
     alignmentContext: AlignmentRequestContextType;
-    targetAlignment: TargetAlignment;
+    targetAlignment: TargetAlignments;
     stateManager: RcsbFvStateInterface;
     titleClick: ()=>void;
 }

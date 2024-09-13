@@ -1,5 +1,5 @@
 import {
-    AlignmentResponse,
+    SequenceAlignments,
     GroupReference,
     SequenceReference,
 } from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
@@ -1652,7 +1652,7 @@ const duplicatedAlignment = {"info":{"uuid":"dcc58c64-e606-441f-8c04-372381fb7c0
 console.log("Alignment objects", alignment, flexAlignment, alignmentExample, duplicatedAlignment);
 class RcsbStructuralAlignmentProvider implements AlignmentCollectorInterface {
 
-    private alignmentResponse: AlignmentResponse | undefined = undefined;
+    private alignmentResponse: SequenceAlignments | undefined = undefined;
     private readonly alignment: StructureAlignmentResponse;
     private readonly alignmentReference: AlignmentReference;
     constructor(alignment: StructureAlignmentResponse, alignmentReference: AlignmentReference) {
@@ -1660,28 +1660,28 @@ class RcsbStructuralAlignmentProvider implements AlignmentCollectorInterface {
         this.alignmentReference = alignmentReference;
     }
 
-    async collect(requestConfig: AlignmentCollectConfig, filter?: Array<string>): Promise<AlignmentResponse> {
+    async collect(requestConfig: AlignmentCollectConfig, filter?: Array<string>): Promise<SequenceAlignments> {
         return new Promise(async (resolve)=>{
             resolve(await this.data());
         });
     }
     async getTargets(): Promise<string[]> {
         return new Promise(async (resolve)=>{
-            resolve((await this.data()).target_alignment?.map(ta=>ta?.target_id ?? "NA") ?? [])
+            resolve((await this.data()).target_alignments?.map(ta=>ta?.target_id ?? "NA") ?? [])
         })
     }
     async getAlignmentLength(): Promise<number> {
         return new Promise(async (resolve)=>{
-            const ends = (await this.data() ).target_alignment?.map(ta=>ta?.aligned_regions?.[ta?.aligned_regions?.length-1]?.query_end);
+            const ends = (await this.data() ).target_alignments?.map(ta=>ta?.aligned_regions?.[ta?.aligned_regions?.length-1]?.query_end);
             resolve(Math.max(...(ends as number[])))
         })
     }
-    async getAlignment(): Promise<AlignmentResponse> {
+    async getAlignment(): Promise<SequenceAlignments> {
         return new Promise(async (resolve)=>{
             resolve(this.data());
         });
     }
-    private async data(): Promise<AlignmentResponse> {
+    private async data(): Promise<SequenceAlignments> {
         if(this.alignmentResponse)
             return this.alignmentResponse;
         return new Promise((resolve)=>{
@@ -1763,13 +1763,13 @@ class RcsbLoadParamsProvider implements LoadParamsProviderInterface<{entryId: st
     }
 }
 
-async function alignmentTransform(alignment: StructureAlignmentResponse, alignmentRef: AlignmentReference): Promise<AlignmentResponse> {
+async function alignmentTransform(alignment: StructureAlignmentResponse, alignmentRef: AlignmentReference): Promise<SequenceAlignments> {
     if(!alignment.results)
         return {};
     await mergeAlignments(alignment.results, alignmentRef);
-    const out: AlignmentResponse = alignmentRef.buildAlignments();
+    const out: SequenceAlignments = alignmentRef.buildAlignments();
     const seqs = await alignmentRef.getSequences();
-    out.target_alignment?.forEach(ta=>{
+    out.target_alignments?.forEach(ta=>{
         const seq = seqs.find(s=>s.rcsbId===ta?.target_id)?.sequence
         if(seq && ta)
             ta.target_sequence = seq;

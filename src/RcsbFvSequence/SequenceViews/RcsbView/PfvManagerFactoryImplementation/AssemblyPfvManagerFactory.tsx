@@ -11,7 +11,7 @@ import {asyncScheduler} from "rxjs";
 import {RcsbFvDOMConstants} from "../../../../RcsbFvConstants/RcsbFvConstants";
 import {SelectOptionProps} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvComponents/SelectButton";
 import {ChainDisplayComponent} from "./AssemblyPfvComponents/ChainDisplayComponent";
-import {AnnotationFeatures, Source, Type} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {SequenceAnnotations, AnnotationReference, FeaturesType} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {
     PolymerEntityInstanceInterface
 } from "@rcsb/rcsb-saguaro-app/lib/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
@@ -29,6 +29,7 @@ import {
 import {buildInstanceSequenceFv} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvBuilder";
 import {RcsbFvUI} from "@rcsb/rcsb-saguaro-app/lib/RcsbExport/RcsbFvUI";
 import {FeatureType, RcsbRequestContextManager} from "@rcsb/rcsb-saguaro-app/lib/app";
+import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
 
 interface AssemblyPfvManagerInterface extends PfvManagerFactoryConfigInterface<undefined>{
     useOperatorsFlag?: boolean;
@@ -149,24 +150,25 @@ class AssemblyPfvManager extends AbstractPfvManager<{instanceSequenceConfig?: In
         }
     }
 
-    private filterFeatures(data: {annotations: Array<AnnotationFeatures>; rcsbContext:Partial<PolymerEntityInstanceInterface>}): Promise<Array<AnnotationFeatures>> {
-        return new Promise<Array<AnnotationFeatures>>(async resolve => {
-            let annotations: Array<AnnotationFeatures> = [];
+    private filterFeatures(data: {annotations: Array<SequenceAnnotations>; rcsbContext:Partial<PolymerEntityInstanceInterface>}): Promise<Array<SequenceAnnotations>> {
+        return new Promise<Array<SequenceAnnotations>>(async resolve => {
+            let annotations: Array<SequenceAnnotations> = [];
             (await Promise.all(data.annotations.map(async ann=>{
-                if(ann.source == Source.PdbInterface && ann.target_id && data.rcsbContext?.asymId) {
-                    const interfaceToInstance: InterfaceInstanceTranslate = await RcsbRequestContextManager.getInterfaceToInstance(ann.target_id);
-                    if(typeof ann.target_identifiers?.interface_partner_index === "number" && ann.target_identifiers.assembly_id === this.stateManager.assemblyModelSate.getString("assemblyId") && Array.isArray(interfaceToInstance.getOperatorIds(ann.target_id))) {
-                        const operatorIds:string[][]|undefined = interfaceToInstance.getOperatorIds(ann.target_id)?.[ann.target_identifiers.interface_partner_index];
+                if(ann.source == AnnotationReference.PdbInterface && ann.target_identifiers && data.rcsbContext?.asymId) {
+                    const interfaceId = TagDelimiter.getInterfaceId(ann.target_identifiers);
+                    const interfaceToInstance: InterfaceInstanceTranslate = await RcsbRequestContextManager.getInterfaceToInstance(interfaceId);
+                    if(typeof ann.target_identifiers?.interface_partner_index === "number" && ann.target_identifiers.assembly_id === this.stateManager.assemblyModelSate.getString("assemblyId") && Array.isArray(interfaceToInstance.getOperatorIds(interfaceId))) {
+                        const operatorIds:string[][]|undefined = interfaceToInstance.getOperatorIds(interfaceId)?.[ann.target_identifiers.interface_partner_index];
                         if(ann.features && this.stateManager.assemblyModelSate.getOperator() && operatorIds?.map(o=>o.join("|")).includes( this.stateManager.assemblyModelSate.getOperator()!.ids.join("|") )){
                             ann.features = ann.features.filter(f=>(f && f.type == FeatureType.BurialFraction));
                             if(ann.features.length > 0)
                                 return ann;
                         }
                     }
-                }else if(ann.source == Source.PdbInstance && ann.features){
-                    ann.features = ann.features?.filter(f=>(f?.type!==Type.Asa));
+                }else if(ann.source == AnnotationReference.PdbInstance && ann.features){
+                    ann.features = ann.features?.filter(f=>(f?.type!==FeaturesType.Asa));
                     return ann;
-                }else if(ann.source != Source.PdbInterface){
+                }else if(ann.source != AnnotationReference.PdbInterface){
                     return ann;
                 }
             }))).forEach((value,index,array)=>{

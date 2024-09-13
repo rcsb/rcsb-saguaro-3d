@@ -17,14 +17,14 @@ import {
     AlignmentTrajectoryPresetProvider,
     AlignmentTrajectoryParamsType
 } from "../TrajectoryPresetProvider/AlignmentTrajectoryPresetProvider";
-import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {TargetAlignments} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
 
 
 export class MolstarAlignmentLoader implements StructureLoaderInterface<[
         ViewerActionManagerInterface<LoadMolstarInterface<AlignmentTrajectoryParamsType,LoadMolstarReturnType>,LoadMolstarReturnType>,
         {entryId:string;entityId:string;}|{entryId:string;instanceId:string;},
-        TargetAlignment
+        TargetAlignments
     ], LoadMolstarReturnType> {
 
     private readonly loadParamsProvider?: LoadParamsProviderInterface<{entryId: string; instanceId: string;}, LoadMolstarInterface<AlignmentTrajectoryParamsType,LoadMolstarReturnType>>;
@@ -36,7 +36,7 @@ export class MolstarAlignmentLoader implements StructureLoaderInterface<[
     async load(
         structureViewer: ViewerActionManagerInterface<LoadMolstarInterface<AlignmentTrajectoryParamsType,LoadMolstarReturnType>,LoadMolstarReturnType>,
         pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;},
-        targetAlignment: TargetAlignment
+        targetAlignment: TargetAlignments
     ): Promise<undefined|LoadMolstarReturnType> {
         const structureId: string = `${pdb.entryId}${"entityId" in pdb ? TagDelimiter.entity : TagDelimiter.instance}${"entityId" in pdb ? pdb.entityId : pdb.instanceId}`;
         if(!this.structureMap.has(structureId)){

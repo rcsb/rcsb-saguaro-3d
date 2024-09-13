@@ -19,14 +19,14 @@ export class MsaUiSequenceAlignmentDownload extends React.Component<MsaUiSequenc
 
     private async click(): Promise<void> {
         const targetAlignments =  await this.props.rcsbFvContainer.get()?.getAlignmentResponse();
-        const targets = targetAlignments?.target_alignment?.map(ta=>ta?.target_id)
+        const targets = targetAlignments?.target_alignments?.map(ta=>ta?.target_id)
         if(!targets)
             return;
         const length = this.props.rcsbFvContainer.get()?.getFv().getBoardConfig().length;
         if(!length)
             return;
         const msa: string[] = [];
-        targetAlignments?.target_alignment?.forEach(ta=>{
+        targetAlignments?.target_alignments?.forEach(ta=>{
             if(ta && this.props.stateManager.assemblyModelSate.getMap().has(ta.target_id ?? "none")){
                 const sequence = ta.target_sequence;
                 if(!sequence)

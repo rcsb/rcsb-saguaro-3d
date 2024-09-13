@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
         additionalConfig: {
             page: {
                 first: 50,
-                after: "0"
+                after: 0
             }
         }
     });

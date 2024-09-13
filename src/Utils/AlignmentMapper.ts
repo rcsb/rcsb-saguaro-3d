@@ -3,15 +3,15 @@
 * @author Joan Segura Mora <joan.segura@rcsb.org>
 */
 
-import {AlignedRegion} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {AlignedRegions} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 
 export namespace AlignmentMapper {
 
-    export function mapRangeToRegionList(range:{begin:number,end:number}, regionList:AlignedRegion[], pointer:"query"|"target"): {begin:number,end:number}[]|undefined {
+    export function mapRangeToRegionList(range:{begin:number,end:number}, regionList:AlignedRegions[], pointer:"query"|"target"): {begin:number,end:number}[]|undefined {
         return regionList.map(region=>mapRangeToRegion(range,region,pointer)).filter((o): o is typeof range => o!=null);
     }
 
-    export function mapRangeToRegion(range:{begin:number,end:number}, region:AlignedRegion, pointer:"query"|"target"): {begin:number,end:number}|undefined {
+    export function mapRangeToRegion(range:{begin:number,end:number}, region:AlignedRegions, pointer:"query"|"target"): {begin:number,end:number}|undefined {
         if(!areIntersectingRegions({query_begin:range.begin, query_end: range.end, target_begin:range.begin, target_end:range.end}, region, pointer))
             return;
         const cPointer: "query"|"target" = pointer == "query" ? "target" : "query";
@@ -21,7 +21,7 @@ export namespace AlignmentMapper {
         }
     }
 
-    export function mapPointToRegion(p:number, region:AlignedRegion, pointer:"query"|"target"): number|undefined {
+    export function mapPointToRegion(p:number, region:AlignedRegions, pointer:"query"|"target"): number|undefined {
         if(region[ALIGNMENT_POINTER[pointer].begin]<=p && p<=region[ALIGNMENT_POINTER[pointer].end]) {
             const cPointer: "query"|"target" = pointer == "query" ? "target" : "query";
             return region[ALIGNMENT_POINTER[cPointer].begin] + (p-region[ALIGNMENT_POINTER[pointer].begin]);
@@ -29,11 +29,11 @@ export namespace AlignmentMapper {
         return;
     }
 
-    export function areIntersectingRegions(regionA:AlignedRegion,regionB:AlignedRegion, pointer:"query"|"target"): boolean {
+    export function areIntersectingRegions(regionA:AlignedRegions,regionB:AlignedRegions, pointer:"query"|"target"): boolean {
         return !(regionA[ALIGNMENT_POINTER[pointer].begin] > regionB[ALIGNMENT_POINTER[pointer].end] || regionA[ALIGNMENT_POINTER[pointer].end] < regionB[ALIGNMENT_POINTER[pointer].begin]);
     }
 
-    export function getAllQueryIntersections(regionListA:AlignedRegion[],regionListB:AlignedRegion[]): [{query_begin:number;query_end:number;},{query_begin:number;query_end:number;}][]  {
+    export function getAllQueryIntersections(regionListA:AlignedRegions[],regionListB:AlignedRegions[]): [{query_begin:number;query_end:number;},{query_begin:number;query_end:number;}][]  {
         return regionListA.map(
             regionA=>regionListB.filter(
                 regionB=>areIntersectingRegions(regionA,regionB,"target")
@@ -43,7 +43,7 @@ export namespace AlignmentMapper {
         ).flat();
     }
 
-    export function getAllTargetIntersections(regionListA:AlignedRegion[],regionListB:AlignedRegion[]): [{target_begin:number;target_end:number;},{target_begin:number;target_end:number;}][]  {
+    export function getAllTargetIntersections(regionListA:AlignedRegions[],regionListB:AlignedRegions[]): [{target_begin:number;target_end:number;},{target_begin:number;target_end:number;}][]  {
         return regionListA.map(
             regionA=>regionListB.filter(
                 regionB=>areIntersectingRegions(regionA,regionB,"query")
@@ -53,7 +53,7 @@ export namespace AlignmentMapper {
         ).flat();
     }
 
-    export function getQueryIntersection(regionA:AlignedRegion,regionB:AlignedRegion): [{query_begin:number;query_end:number;},{query_begin:number;query_end:number;}] {
+    export function getQueryIntersection(regionA:AlignedRegions,regionB:AlignedRegions): [{query_begin:number;query_end:number;},{query_begin:number;query_end:number;}] {
         const [targetRegionA, targetRegionB] = getTargetIntersection(swapQueryAndTarget(regionA), swapQueryAndTarget(regionB));
         return [{
             query_begin:targetRegionA.target_begin,
@@ -64,7 +64,7 @@ export namespace AlignmentMapper {
         }];
     }
 
-    export function getTargetIntersection(regionA:AlignedRegion,regionB:AlignedRegion): [{target_begin:number;target_end:number;},{target_begin:number;target_end:number;}]  {
+    export function getTargetIntersection(regionA:AlignedRegions,regionB:AlignedRegions): [{target_begin:number;target_end:number;},{target_begin:number;target_end:number;}]  {
         const out = {
             target_begin_A: 0,
             target_end_A: 0,
@@ -108,7 +108,7 @@ export namespace AlignmentMapper {
         return Array.from({length}, (_, i) => (i * step) + start);
     }
 
-    export function swapQueryAndTarget(region:AlignedRegion): AlignedRegion{
+    export function swapQueryAndTarget(region:AlignedRegions): AlignedRegions{
         return {
             query_begin: region.target_begin,
             query_end: region.target_end,

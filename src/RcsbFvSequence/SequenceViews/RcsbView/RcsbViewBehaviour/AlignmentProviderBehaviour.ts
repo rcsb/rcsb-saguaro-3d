@@ -5,13 +5,13 @@ import {
 } from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvModule/RcsbFvModuleInterface";
 import {RcsbFvStateInterface} from "../../../../RcsbFvState/RcsbFvStateInterface";
 import {Subscription} from "rxjs";
-import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {TargetAlignments} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
 
 
 type AlignmentDataType = {
     pdb:{entryId:string;instanceId:string;},
-    targetAlignment: TargetAlignment;
+    targetAlignment: TargetAlignments;
     who: "user"|"auto";
 };
 
@@ -33,16 +33,16 @@ export class AlignmentProviderBehaviour implements RcsbViewBehaviourInterface {
 
 async function loadNextModel(data:AlignmentDataType, rcsbFvContainer: DataContainer<RcsbFvModulePublicInterface>, stateManager: RcsbFvStateInterface): Promise<void> {
     const alignments = await rcsbFvContainer.get()?.getAlignmentResponse();
-    if(!alignments || !alignments.target_alignment)
+    if(!alignments || !alignments.target_alignments)
         return;
     if(data.who == "user")
         return;
     const pdb = data.pdb;
     const targetAlignment = data.targetAlignment;
-    const index = alignments.target_alignment.findIndex( ta=>ta?.target_id == `${pdb.entryId}${TagDelimiter.instance}${pdb.instanceId}`);
-    if(typeof index ==="undefined" || index < 0 || index == (alignments.target_alignment.length-1))
+    const index = alignments.target_alignments.findIndex( ta=>ta?.target_id == `${pdb.entryId}${TagDelimiter.instance}${pdb.instanceId}`);
+    if(typeof index ==="undefined" || index < 0 || index == (alignments.target_alignments.length-1))
         return;
-    const targetId = alignments.target_alignment[index+1]?.target_id;
+    const targetId = alignments.target_alignments[index+1]?.target_id;
     if(!targetId)
         return ;
     stateManager.next<"model-change",AlignmentDataType>({

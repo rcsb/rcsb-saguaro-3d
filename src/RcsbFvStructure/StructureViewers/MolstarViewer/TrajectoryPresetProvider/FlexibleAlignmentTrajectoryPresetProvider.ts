@@ -15,7 +15,7 @@ import {RigidTransformType} from "../../../StructureUtils/StructureLoaderInterfa
 import {FlexibleAlignmentRepresentationPresetProvider} from "./FlexibleAlignmentRepresentationPresetProvider";
 import {FlexibleAlignmentBuiltIn} from "./FlexibleAlignmentBuiltIn";
 import {AlignmentTrajectoryParamsType} from "./AlignmentTrajectoryPresetProvider";
-import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {TargetAlignments} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 
 export const FlexibleAlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvider({
     id: 'alignment-to-reference',
@@ -27,7 +27,7 @@ export const FlexibleAlignmentTrajectoryPresetProvider = TrajectoryHierarchyPres
         pdb:PD.Value<{entryId:string;entityId:string;}|{entryId:string;instanceId:string;}|undefined>(undefined),
         modelIndex:PD.Value<number|undefined>(undefined),
         transform:PD.Value<RigidTransformType[]|undefined>(undefined),
-        targetAlignment: PD.Value<TargetAlignment|undefined>(undefined),
+        targetAlignment: PD.Value<TargetAlignments|undefined>(undefined),
     }),
     apply: async (trajectory: StateObjectRef<PluginStateObject.Molecule.Trajectory>, params: AlignmentTrajectoryParamsType, plugin: PluginContext) => {
         if(!params.pdb)

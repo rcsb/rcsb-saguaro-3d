@@ -12,7 +12,7 @@ import {
 import {
     AlignmentRequestContextType
 } from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvFactories/RcsbFvTrackFactory/TrackFactoryImpl/AlignmentTrackFactory";
-import {AlignmentResponse, TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {SequenceAlignments, TargetAlignments} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {MsaRowTitleComponent} from "./MsaPfvComponents/MsaRowTitleComponent";
 import {MsaRowMarkComponent} from "./MsaPfvComponents/MsaRowMarkComponent";
 import {
@@ -27,7 +27,7 @@ import {parseEntityOrInstance} from "../../../../Utils/RcsbIdParser"
 
 export interface MsaPfvManagerInterface<T extends any[]> {
     id:string;
-    alignmentResponseContainer: DataContainer<AlignmentResponse>;
+    alignmentResponseContainer: DataContainer<SequenceAlignments>;
     pfvArgs: T;
     buildMsaAlignmentFv(...args:[string, ...T, RcsbFvAdditionalConfig & ActionMethods.FvChangeConfigInterface]): Promise<RcsbFvModulePublicInterface>;
 }
@@ -44,7 +44,7 @@ export class MsaPfvManagerFactory<T extends any[]> implements PfvManagerFactoryI
 
 type AlignmentDataType = {
     pdb:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;},
-    targetAlignment: TargetAlignment;
+    targetAlignment: TargetAlignments;
     who: "user"|"auto";
 };
 
@@ -63,19 +63,19 @@ class MsaPfvManager<T extends any[]> extends AbstractPfvManager<{id:string},{con
             ... this.additionalConfig,
             boardConfig: this.boardConfigContainer.get(),
             externalTrackBuilder:{
-                filterAlignments: (data: { alignments: AlignmentResponse; rcsbContext?: Partial<PolymerEntityInstanceInterface> }) => {
-                    const visAlignment = this.config.alignmentResponseContainer?.get()?.target_alignment
+                filterAlignments: (data: { alignments: SequenceAlignments; rcsbContext?: Partial<PolymerEntityInstanceInterface> }) => {
+                    const visAlignment = this.config.alignmentResponseContainer?.get()?.target_alignments
                         ?.filter(ta=>ta?.target_id && this.config.stateManager.assemblyModelSate.getMap()?.has(ta.target_id));
-                    const otherAlignment = data.alignments.target_alignment
+                    const otherAlignment = data.alignments.target_alignments
                         ?.filter(ta=>ta?.target_id && !this.config.stateManager.assemblyModelSate.getMap()?.has(ta.target_id));
                     return new Promise(resolve => resolve({
                         ...data.alignments,
-                        target_alignment: (visAlignment ?? []).concat(otherAlignment ?? [])
+                        target_alignments: (visAlignment ?? []).concat(otherAlignment ?? [])
                     }));
                 }
             },
             trackConfigModifier: {
-                alignment: (alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment, alignmentResponse: AlignmentResponse, alignmentIndex: number) => new Promise((resolve)=>{
+                alignment: (alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignments, alignmentResponse: SequenceAlignments, alignmentIndex: number) => new Promise((resolve)=>{
                     const alignmentMod = {
                         rowMark:{
                             externalRowMark: {
@@ -143,13 +143,13 @@ class MsaPfvManager<T extends any[]> extends AbstractPfvManager<{id:string},{con
     }
 
     private async readyStateLoad(): Promise<void> {
-        const alignments: AlignmentResponse = await this.rcsbFvContainer.get()!.getAlignmentResponse();
-        if(alignments.target_alignment && alignments.target_alignment.length > 0 && typeof alignments.target_alignment[0]?.target_id === "string"){
-            this.loadAlignment({queryId:this.config.id}, alignments.target_alignment[0], "auto");
+        const alignments: SequenceAlignments = await this.rcsbFvContainer.get()!.getAlignmentResponse();
+        if(alignments.target_alignments && alignments.target_alignments.length > 0 && typeof alignments.target_alignments[0]?.target_id === "string"){
+            this.loadAlignment({queryId:this.config.id}, alignments.target_alignments[0], "auto");
         }
     }
 
-    private loadAlignment(alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignment, who: "user"|"auto" = "user"):void {
+    private loadAlignment(alignmentContext: AlignmentRequestContextType, targetAlignment: TargetAlignments, who: "user"|"auto" = "user"):void {
         if(typeof targetAlignment.target_id === "string") {
             this.stateManager.next<"model-change",AlignmentDataType>({
                 type:"model-change",

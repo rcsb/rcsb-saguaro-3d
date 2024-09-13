@@ -10,7 +10,7 @@ import {ParamDefinition, ParamDefinition as PD} from "molstar/lib/mol-util/param
 import {StateObjectRef} from "molstar/lib/mol-state";
 import {RootStructureDefinition} from "molstar/lib/mol-plugin-state/helpers/root-structure";
 import {AlignmentRepresentationPresetProvider} from "./AlignmentRepresentationPresetProvider";
-import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {TargetAlignments} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {Model} from "molstar/lib/mol-model/structure";
 import {RigidTransformType} from "../../../StructureUtils/StructureLoaderInterface";
 import {FocusResidueColorThemeProvider} from "./FocusTheme/FocusColoring";
@@ -20,7 +20,7 @@ import {ModelSymmetry} from "molstar/lib/mol-model-formats/structure/property/sy
 export type AlignmentTrajectoryParamsType = {
     pdb?:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};
     transform?: RigidTransformType[];
-    targetAlignment?: TargetAlignment;
+    targetAlignment?: TargetAlignments;
     modelIndex?: number;
 }
 
@@ -32,7 +32,7 @@ export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvid
     isApplicable: (trajectory: PluginStateObject.Molecule.Trajectory, plugin: PluginContext): boolean => true,
     params: (trajectory: PluginStateObject.Molecule.Trajectory | undefined, plugin: PluginContext): ParamDefinition.For<AlignmentTrajectoryParamsType> => ({
         pdb:PD.Value<{entryId:string;entityId:string;}|{entryId:string;instanceId:string;}|undefined>(undefined),
-        targetAlignment: PD.Value<TargetAlignment|undefined>(undefined),
+        targetAlignment: PD.Value<TargetAlignments|undefined>(undefined),
         modelIndex:PD.Value<number|undefined>(undefined),
         transform: PD.Value<RigidTransformType[]|undefined>(undefined)
     }),

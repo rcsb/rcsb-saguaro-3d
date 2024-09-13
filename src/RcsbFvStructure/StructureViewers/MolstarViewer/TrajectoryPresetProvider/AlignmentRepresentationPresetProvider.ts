@@ -29,7 +29,7 @@ import {superpose} from "molstar/lib/mol-model/structure/structure/util/superpos
 import {Mat4} from "molstar/lib/mol-math/linear-algebra";
 import {SymmetryOperator} from "molstar/lib/mol-math/geometry/symmetry-operator";
 import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
-import {AlignedRegion, TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {AlignedRegions, TargetAlignments} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {AlignmentMapper as AM} from "../../../../Utils/AlignmentMapper";
 import {compile} from 'molstar/lib/mol-script/runtime/query/compiler';
 import reprBuilder = StructureRepresentationPresetProvider.reprBuilder;
@@ -47,7 +47,7 @@ type RepresentationParamsType = {
     pdb?:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};
 
     transform?: RigidTransformType[];
-    targetAlignment?:TargetAlignment;
+    targetAlignment?:TargetAlignments;
 }
 
 let refData: Structure|undefined = undefined;
@@ -66,7 +66,7 @@ export const AlignmentRepresentationPresetProvider = StructureRepresentationPres
     isApplicable: (structureRef: PluginStateObject.Molecule.Structure, plugin: PluginContext): boolean => true,
     params: (structureRef: PluginStateObject.Molecule.Structure | undefined, plugin: PluginContext) => ({
         pdb: PD.Value<{entryId:string;entityId:string;}|{entryId:string;instanceId:string;}|undefined>(undefined),
-        targetAlignment: PD.Value<TargetAlignment|undefined>(undefined),
+        targetAlignment: PD.Value<TargetAlignments|undefined>(undefined),
         transform:PD.Value<RigidTransformType[]|undefined>(undefined)
     }),
     apply: async (structureRef: StateObjectRef<PluginStateObject.Molecule.Structure>, params: RepresentationParamsType, plugin: PluginContext) => {
@@ -259,7 +259,7 @@ type StructureAlignmentParamsType = {
     entryId:string;
     labelAsymId:string;
     operatorName:string;
-    targetAlignment:TargetAlignment;
+    targetAlignment:TargetAlignments;
 };
 
 async function matrixAlign(plugin: PluginContext,  structureRef: StateObjectRef<PluginStateObject.Molecule.Structure>, matrix: TransformMatrixType): Promise<void> {
@@ -284,7 +284,7 @@ async function structuralAlignment(plugin: PluginContext, ref:StructureAlignment
         const pdbUnit:{unit: Unit; localScore:Map<number,number>}|undefined = await findFirstInstanceUnit(pdbData,pdb.labelAsymId);
         const refUnit:{unit: Unit; localScore:Map<number,number>}|undefined =  refData ? await findFirstInstanceUnit(refData, ref.labelAsymId) : undefined;
         if( pdbUnit && refUnit && ref.targetAlignment?.aligned_regions && pdb.targetAlignment?.aligned_regions){
-            const alignmentList = AM.getAllTargetIntersections( ref.targetAlignment.aligned_regions as AlignedRegion[], pdb.targetAlignment.aligned_regions as AlignedRegion[])
+            const alignmentList = AM.getAllTargetIntersections( ref.targetAlignment.aligned_regions as AlignedRegions[], pdb.targetAlignment.aligned_regions as AlignedRegions[])
             alignmentList.forEach(alignment=>{
                 const refRange = AM.range(alignment[0].target_begin, alignment[0].target_end);
                 const pdbRange = AM.range(alignment[1].target_begin, alignment[1].target_end);

@@ -24,7 +24,7 @@ import {MsaBehaviourObserver} from "../RcsbFvStructure/StructureViewerBehaviour/
 import {SearchQuery} from "@rcsb/rcsb-api-tools/build/RcsbSearch/Types/SearchQueryInterface";
 import {HelpLinkComponent} from "../RcsbFvSequence/SequenceViews/RcsbView/Components/HelpLinkComponent";
 import {DataContainer} from "../Utils/DataContainer";
-import {AlignmentResponse} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {SequenceAlignments} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {
     MsaPfvManagerFactory,
     MsaPfvManagerInterface
@@ -60,7 +60,7 @@ export class RcsbFv3DUniprot extends RcsbFv3DAbstract<
     > {
     constructor(params:RcsbFv3DUniprotInterface){
         const elementId: string = params.elementId ?? uniqid("RcsbFv3D_");
-        const alignmentResponseContainer:DataContainer<AlignmentResponse> = new DataContainer<AlignmentResponse>();
+        const alignmentResponseContainer:DataContainer<SequenceAlignments> = new DataContainer<SequenceAlignments>();
         super({
             elementId,
             sequenceConfig:{

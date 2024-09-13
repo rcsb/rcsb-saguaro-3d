@@ -4,8 +4,8 @@ import {
     CallbackManagerFactoryInterface, CallbackManagerInterface
 } from "../CallbackManagerFactoryInterface";
 import {
-    AlignedRegion,
-    AlignmentResponse
+    AlignedRegions,
+    SequenceAlignments
 } from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {RegionSelectionInterface} from "../../../../RcsbFvState/RcsbFvSelectorManager";
 import {ChainInfo, SaguaroRegionList} from "../../../../RcsbFvStructure/StructureViewerInterface";
@@ -18,11 +18,11 @@ import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro/lib/RcsbDataMa
 export class MsaCallbackManagerFactory<U> implements CallbackManagerFactoryInterface<U> {
 
     private readonly pluginLoadParamsDefinition:(id: string)=>void;
-    private readonly alignmentResponseContainer: DataContainer<AlignmentResponse>;
+    private readonly alignmentResponseContainer: DataContainer<SequenceAlignments>;
 
     constructor(config: {
         pluginLoadParamsDefinition:(id: string)=>void;
-        alignmentResponseContainer: DataContainer<AlignmentResponse>;
+        alignmentResponseContainer: DataContainer<SequenceAlignments>;
     }) {
         this.pluginLoadParamsDefinition = config.pluginLoadParamsDefinition;
         this.alignmentResponseContainer = config.alignmentResponseContainer;
@@ -42,15 +42,15 @@ type SelectedRegion = {modelId: string, labelAsymId: string, region: RegionSelec
 class MsaCallbackManager<U>  extends AbstractCallbackManager<U>{
 
     private readonly targetIds: { [key: string]: boolean } = {};
-    private readonly alignmentResponseContainer: DataContainer<AlignmentResponse>;
+    private readonly alignmentResponseContainer: DataContainer<SequenceAlignments>;
 
-    constructor(config: CallbackConfigInterface & { loadParamRequest: (id: string) => void; alignmentResponseContainer: DataContainer<AlignmentResponse>; }) {
+    constructor(config: CallbackConfigInterface & { loadParamRequest: (id: string) => void; alignmentResponseContainer: DataContainer<SequenceAlignments>; }) {
         super(config);
         this.alignmentResponseContainer = config.alignmentResponseContainer;
     }
 
     async featureClickCallback(e: RcsbFvTrackDataElementInterface): Promise<void> {
-        const alignment: AlignmentResponse|undefined = await this.rcsbFvContainer.get()?.getAlignmentResponse();
+        const alignment: SequenceAlignments|undefined = await this.rcsbFvContainer.get()?.getAlignmentResponse();
         if(alignment){
             const regions: SelectedRegion[] = this.getModelRegions( e? [e] : [], alignment, Array.from(this.stateManager.assemblyModelSate.getMap().keys()),"query");
             this.stateManager.next<"feature-click",SelectedRegion[]>({type:"feature-click", view:"1d-view", data: regions})
@@ -68,12 +68,12 @@ class MsaCallbackManager<U>  extends AbstractCallbackManager<U>{
     async pfvChangeCallback(params:U): Promise<void> {
         if(typeof this.rcsbFvContainer.get() === "undefined")
             return;
-        const alignmentResponse: AlignmentResponse|undefined = await this.rcsbFvContainer.get()?.getAlignmentResponse();
+        const alignmentResponse: SequenceAlignments|undefined = await this.rcsbFvContainer.get()?.getAlignmentResponse();
         if(!this.alignmentResponseContainer.get() && alignmentResponse) {
             this.alignmentResponseContainer.set(alignmentResponse);
-            alignmentResponse.target_alignment?.forEach(ta=> {if(ta?.target_id) this.targetIds[ta.target_id]=true})
+            alignmentResponse.target_alignments?.forEach(ta=> {if(ta?.target_id) this.targetIds[ta.target_id]=true})
         }else if(alignmentResponse) {
-            const newTargetAlignments = alignmentResponse.target_alignment?.filter(ta=>{
+            const newTargetAlignments = alignmentResponse.target_alignments?.filter(ta=>{
                 if(ta && ta.target_id && !this.targetIds[ta.target_id]){
                     this.targetIds[ta.target_id] = true;
                     return true;
@@ -81,7 +81,7 @@ class MsaCallbackManager<U>  extends AbstractCallbackManager<U>{
             });
             if(newTargetAlignments && this.alignmentResponseContainer.get()){
                 const ar = this.alignmentResponseContainer.get()!;
-                ar.target_alignment = ar.target_alignment?.concat(
+                ar.target_alignments = ar.target_alignments?.concat(
                     newTargetAlignments
                 );
                 this.alignmentResponseContainer.set(ar)
@@ -91,7 +91,7 @@ class MsaCallbackManager<U>  extends AbstractCallbackManager<U>{
 
     protected async innerStructureViewerSelectionChange(mode: "select" | "hover"): Promise<void> {
         const allSel: Array<SaguaroRegionList> | undefined = this.stateManager.selectionState.getSelection(mode);
-        const alignment: AlignmentResponse|undefined = await this.rcsbFvContainer.get()?.getAlignmentResponse();
+        const alignment: SequenceAlignments|undefined = await this.rcsbFvContainer.get()?.getAlignmentResponse();
         let regions: SelectedRegion[] = [];
         if(alignment) {
             allSel.forEach(sel => {
@@ -114,7 +114,7 @@ class MsaCallbackManager<U>  extends AbstractCallbackManager<U>{
     }
 
     private async select(selection: Array<RcsbFvTrackDataElementInterface>, mode:"select"|"hover"): Promise<void> {
-        const alignment: AlignmentResponse|undefined = await this.rcsbFvContainer.get()?.getAlignmentResponse();
+        const alignment: SequenceAlignments|undefined = await this.rcsbFvContainer.get()?.getAlignmentResponse();
         if(alignment) {
             const regions = this.getModelRegions(selection, alignment, Array.from(this.stateManager.assemblyModelSate.getMap()?.keys() ?? []), "query");
             this.stateManager.selectionState.clearSelection(mode);
@@ -125,7 +125,7 @@ class MsaCallbackManager<U>  extends AbstractCallbackManager<U>{
         }
     }
 
-    private getModelRegions(selection: Array<RcsbFvTrackDataElementInterface>, alignment: AlignmentResponse, modelList: string[], pointer:"query"|"target"): SelectedRegion[] {
+    private getModelRegions(selection: Array<RcsbFvTrackDataElementInterface>, alignment: SequenceAlignments, modelList: string[], pointer:"query"|"target"): SelectedRegion[] {
         const regions: SelectedRegion[] = [];
         modelList.forEach(modelId=>{
             const chain: ChainInfo|undefined = this.stateManager.assemblyModelSate.getModelChainInfo(modelId)?.chains.find(
@@ -138,8 +138,8 @@ class MsaCallbackManager<U>  extends AbstractCallbackManager<U>{
             if(!labelAsymId || ! operatorName)
                 return;
             selection.forEach(s=>{
-                const alignedRegions = (alignment.target_alignment?.find(ta=>ta?.target_id === modelId)?.aligned_regions!.filter((o): o is AlignedRegion => o!=null) ?? []).concat(
-                    this.alignmentResponseContainer.get()?.target_alignment?.find(ta=>ta?.target_id === modelId)?.aligned_regions!.filter((o): o is AlignedRegion => o!=null) ?? []
+                const alignedRegions = (alignment.target_alignments?.find(ta=>ta?.target_id === modelId)?.aligned_regions!.filter((o): o is AlignedRegions => o!=null) ?? []).concat(
+                    this.alignmentResponseContainer.get()?.target_alignments?.find(ta=>ta?.target_id === modelId)?.aligned_regions!.filter((o): o is AlignedRegions => o!=null) ?? []
                 );
 
                 if(!alignedRegions)

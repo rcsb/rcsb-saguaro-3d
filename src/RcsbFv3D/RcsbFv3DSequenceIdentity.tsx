@@ -26,7 +26,7 @@ import {
 } from "@rcsb/rcsb-saguaro-app/lib/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
 import {SearchQuery} from "@rcsb/rcsb-api-tools/build/RcsbSearch/Types/SearchQueryInterface";
 import {HelpLinkComponent} from "../RcsbFvSequence/SequenceViews/RcsbView/Components/HelpLinkComponent";
-import {AlignmentResponse} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {SequenceAlignments} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {DataContainer} from "../Utils/DataContainer";
 import {
     MsaPfvManagerFactory, MsaPfvManagerInterface
@@ -61,7 +61,7 @@ export class RcsbFv3DSequenceIdentity extends RcsbFv3DAbstract<
     > {
     constructor(params:RcsbFv3DSequenceIdentityInterface){
         const elementId: string = params.elementId ?? uniqid("RcsbFv3D_");
-        const alignmentResponseContainer:DataContainer<AlignmentResponse> = new DataContainer<AlignmentResponse>();
+        const alignmentResponseContainer:DataContainer<SequenceAlignments> = new DataContainer<SequenceAlignments>();
         super({
             elementId,
             sequenceConfig:{

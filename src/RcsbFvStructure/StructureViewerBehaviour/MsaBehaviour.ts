@@ -19,7 +19,7 @@ import {asyncScheduler, Subscription} from "rxjs";
 import {StructureLoaderInterface} from "../StructureUtils/StructureLoaderInterface";
 import {createSelectionExpressions} from "@rcsb/rcsb-molstar/build/src/viewer/helpers/selection";
 import {RegionSelectionInterface} from "../../RcsbFvState/RcsbFvSelectorManager";
-import {TargetAlignment} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {TargetAlignments} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {FunctionCall} from "../../Utils/FunctionCall";
 import onetimeCall = FunctionCall.onetimeCall;
 import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
@@ -27,7 +27,7 @@ import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
 type MsaBehaviourType<R,L> = StructureLoaderInterface<[
     ViewerCallbackManagerInterface & ViewerActionManagerInterface<R,L>,
     { entryId:string; entityId:string; } | { entryId:string; instanceId:string; },
-    TargetAlignment
+    TargetAlignments
 ],L>;
 
 export class MsaBehaviourObserver<R,L> implements StructureViewerBehaviourObserverInterface<R,L> {
@@ -54,7 +54,7 @@ export class MsaBehaviourObserver<R,L> implements StructureViewerBehaviourObserv
 type SelectedRegion = {modelId: string, labelAsymId: string, region: RegionSelectionInterface, operatorName?: string};
 type AlignmentDataType = {
     pdb:{ entryId:string; entityId:string; } | { entryId:string; instanceId:string; },
-    targetAlignment: TargetAlignment;
+    targetAlignment: TargetAlignments;
 };
 class MsaBehaviour<R,L> implements StructureViewerBehaviourInterface {
 
