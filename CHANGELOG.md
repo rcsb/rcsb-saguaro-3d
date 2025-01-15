@@ -2,6 +2,10 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [4.1.2] - 2025-01-15
+### Dependency update
+- rcsb-saguaro-app v6.3.5
+
 ## [4.1.1] - 2024-08-26
 ### Bug fix
 - Multiple sequence alignment view color bug fixed
