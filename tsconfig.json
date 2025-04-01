@@ -10,15 +10,16 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "module": "esnext",
-    "esModuleInterop": true,
     "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "importHelpers": true,
     "noEmitHelpers": true,
-    "allowSyntheticDefaultImports": true,
     "jsx": "react-jsx",
-    "lib": [ "dom", "es2020"  ],
+    "skipLibCheck": true,
+    "lib": ["dom", "es2020"],
     "rootDir": "src",
     "outDir": "lib"
   },
-  "include": [ "src" ]
+  "include": ["src"]
 }
