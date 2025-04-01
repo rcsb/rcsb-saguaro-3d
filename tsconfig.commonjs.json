@@ -18,7 +18,8 @@
     "jsx": "react-jsx",
     "lib": [ "dom", "es2020"  ],
     "rootDir": "src",
-    "outDir": "lib/commonjs"
+    "outDir": "lib/commonjs",
+    "skipLibCheck": true
   },
   "include": [ "src" ]
 }

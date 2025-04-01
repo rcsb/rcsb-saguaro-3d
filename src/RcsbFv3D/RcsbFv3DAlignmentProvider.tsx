@@ -45,6 +45,7 @@ import {
 } from "../RcsbFvSequence/SequenceViews/RcsbView/RcsbViewBehaviour/AlignmentProviderBehaviour";
 import {TrajectoryHierarchyPresetProvider} from "molstar/lib/mol-plugin-state/builder/structure/hierarchy-preset";
 import {buildDataProviderFv} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvBuilder";
+import {ReactNode} from "react";
 
 export interface RcsbFv3DDataProviderInterface  {
     elementId?: string;
@@ -53,7 +54,7 @@ export interface RcsbFv3DDataProviderInterface  {
         loadParamsProvider?: LoadParamsProviderInterface<{entryId: string; instanceId: string;},LoadMolstarInterface<AlignmentTrajectoryParamsType,LoadMolstarReturnType>>;
         title?: string;
         subtitle?: string;
-        additionalContent?(props: AbstractViewInterface): JSX.Element;
+        additionalContent?(props: AbstractViewInterface): ReactNode;
     };
     additionalConfig?: RcsbFvAdditionalConfig;
     molstarProps?: Partial<ViewerProps>;

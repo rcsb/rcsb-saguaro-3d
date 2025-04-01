@@ -3,7 +3,7 @@
 * @author Joan Segura Mora <joan.segura@rcsb.org>
 */
 
-import React from "react";
+import React, {ReactNode} from "react";
 import * as classes from '../../../../../scss/MsaPfvStyle.module.scss';
 import {Property} from "csstype";
 import {asyncScheduler} from "rxjs";
@@ -38,7 +38,7 @@ export class MsaRowMarkComponent extends React.Component <MsaRowMarkInterface,Ms
         markHoverColor: this.HOVER_COLOR
     }
 
-    public render(): JSX.Element {
+    public render(): ReactNode {
         return (
             <>
                 <div onClick={this.click.bind(this)} onMouseOver={this.hover.bind(this)} style={{visibility: this.state.visibility, cursor:"pointer", display:"inline-block", width:6, height:6, marginBottom: 4, marginRight:5}} >

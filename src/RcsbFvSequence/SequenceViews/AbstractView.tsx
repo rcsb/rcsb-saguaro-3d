@@ -5,6 +5,7 @@ import {asyncScheduler, Subscription} from "rxjs";
 import {RcsbFvDOMConstants} from "../../RcsbFvConstants/RcsbFvConstants";
 import {SequenceViewInterface} from "./SequenceViewInterface";
 import {RcsbFvStateInterface} from "../../RcsbFvState/RcsbFvStateInterface";
+import {ReactNode} from "react";
 
 export interface AbstractViewInterface {
     componentId: string;
@@ -26,7 +27,7 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
         this.rcsbFvDivId = props.componentId+"_"+RcsbFvDOMConstants.PFV_APP_ID;
     }
 
-    render():JSX.Element {
+    render(): ReactNode {
         return (
                 <div id={this.componentDivId} >
                     <div style={{paddingLeft:10, position:"relative"}}>
@@ -65,19 +66,19 @@ export abstract class AbstractView<P,S> extends React.Component <P & AbstractVie
         },300);
     };
 
-    private createTitle(): JSX.Element | null{
+    private createTitle(): ReactNode | null{
         if(this.props.title)
             return (<div id={RcsbFvDOMConstants.TITLE_ID} className={classes.rcsbFvTitle}>{this.props.title}</div>)
         return null;
     }
 
-    private createSubtitle(): JSX.Element | null{
+    private createSubtitle(): ReactNode | null{
         if(this.props.subtitle)
             return (<div id={RcsbFvDOMConstants.SUBTITLE_ID} className={classes.rcsbFvSubtitle}>{this.props.subtitle}</div>)
         return null;
     }
 
-    abstract additionalContent(): JSX.Element | null;
+    abstract additionalContent(): ReactNode | null;
     abstract updateDimensions(): void;
     abstract structureHoverCallback(): void;
     abstract representationChangeCallback(): void;

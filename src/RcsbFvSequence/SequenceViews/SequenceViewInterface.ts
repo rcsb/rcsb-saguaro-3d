@@ -1,3 +1,4 @@
+import {ReactNode} from "react";
 
 export interface SequenceViewInterface {
     structureSelectionCallback(): void;
@@ -5,5 +6,5 @@ export interface SequenceViewInterface {
     representationChangeCallback(): void;
     modelChangeCallback(): void;
     updateDimensions(): void;
-    additionalContent(): JSX.Element | null;
+    additionalContent(): ReactNode | null;
 }

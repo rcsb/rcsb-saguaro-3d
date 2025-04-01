@@ -19,6 +19,7 @@ import {
     CallbackManagerInterface
 } from "./CallbackManagerFactoryInterface";
 import {RcsbViewBehaviourInterface} from "./RcsbViewBehaviourInterface";
+import {ReactNode} from "react";
 
 export interface RcsbViewInterface<T,U> {
     rcsbId: string;
@@ -27,7 +28,7 @@ export interface RcsbViewInterface<T,U> {
     pfvParams:T;
     pfvManagerFactory: PfvManagerFactoryInterface<T,U>;
     callbackManagerFactory: CallbackManagerFactoryInterface<U>;
-    additionalContent?(props:RcsbViewInterface<T,U> & AbstractViewInterface): JSX.Element;
+    additionalContent?(props:RcsbViewInterface<T,U> & AbstractViewInterface): ReactNode;
     buildPfvOnMount?: boolean;
     rcsbViewBehaviour?: RcsbViewBehaviourInterface;
 }
@@ -59,7 +60,7 @@ export class RcsbView<T,U> extends AbstractView<RcsbViewInterface<T,U>, {}>{
         this.props.rcsbViewBehaviour?.observe(this.rcsbFvContainer, this.props.stateManager);
     }
 
-    additionalContent(): JSX.Element {
+    additionalContent(): ReactNode {
         return this.props.additionalContent ? this.props.additionalContent(this.props) : <></>;
     }
 

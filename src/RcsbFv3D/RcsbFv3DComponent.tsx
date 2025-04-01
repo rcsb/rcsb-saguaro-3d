@@ -14,7 +14,7 @@ import {
 } from "../RcsbFvContextManager/RcsbFvContextManager";
 import {Subscription} from "rxjs";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
-import {CSSProperties, MouseEvent} from "react";
+import {CSSProperties, MouseEvent, ReactNode} from "react";
 import {StructureViewerBehaviourObserverInterface} from "../RcsbFvStructure/StructureViewerBehaviourInterface";
 import {RcsbFvStateInterface} from "../RcsbFvState/RcsbFvStateInterface";
 import {RcsbFvStateManager} from "../RcsbFvState/RcsbFvStateManager";
@@ -56,7 +56,7 @@ export class RcsbFv3DComponent<T,R,L,S,U> extends React.Component <RcsbFv3DCompo
         pfvScreenFraction: 0.55
     }
 
-    render(): JSX.Element {
+    render(): ReactNode {
         return (
             <div className={this.props.fullScreen ? classes.fullScreen : classes.fullHeight} >
                 <div
@@ -107,7 +107,7 @@ export class RcsbFv3DComponent<T,R,L,S,U> extends React.Component <RcsbFv3DCompo
        return !this.props.cssConfig?.overwriteCss;
     }
 
-    private panelDelimiter(): JSX.Element {
+    private panelDelimiter(): ReactNode {
         return  this.useDefaultCss() ? <div
             onMouseDown={() => {
                 this.splitPanelMouseDown()

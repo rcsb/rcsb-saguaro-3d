@@ -8,6 +8,7 @@ import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
 import {Subscription} from "rxjs";
 import {RcsbFvStateInterface} from "../../../../../RcsbFvState/RcsbFvStateInterface";
 import {rcsbRequestCtxManager} from "@rcsb/rcsb-saguaro-app/lib/RcsbRequest/RcsbRequestContextManager";
+import {ReactNode} from "react";
 
 interface MsaRowTitleCheckboxInterface {
     disabled:boolean;
@@ -36,7 +37,7 @@ export class MsaRowTitleCheckboxComponent extends React.Component <MsaRowTitleCh
         super(props);
     }
 
-    public render():JSX.Element {
+    public render(): ReactNode {
         return (
             <div
                 style={this.style()}

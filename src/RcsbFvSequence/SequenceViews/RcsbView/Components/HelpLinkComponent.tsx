@@ -1,6 +1,7 @@
 import * as React from "react";
 import {RcsbFvDOMConstants} from "../../../../RcsbFvConstants/RcsbFvConstants";
 import {RcsbFvStateInterface} from "../../../../RcsbFvState/RcsbFvStateInterface";
+import {ReactNode} from "react";
 
 interface HelpLinkInterface {
     unmount:(flag:boolean,callback:()=>void)=>void;
@@ -9,7 +10,7 @@ interface HelpLinkInterface {
 }
 
 export class HelpLinkComponent extends React.Component<HelpLinkInterface> {
-    render(): JSX.Element {
+    render(): ReactNode {
         return(
             <div style={{marginTop:10}}>
                 <div>

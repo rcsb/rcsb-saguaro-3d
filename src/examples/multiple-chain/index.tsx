@@ -22,6 +22,7 @@ import { RcsbFvRowConfigInterface } from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvCo
 import {RcsbFvDisplayTypes} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvConfig/RcsbFvDefaultConfigValues";
 import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro/lib/RcsbDataManager/RcsbDataManager";
 import {RcsbFv} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFv";
+import {ReactNode} from "react";
 
 const rowConfigChainA: Array<RcsbFvRowConfigInterface> = [
     {
@@ -218,7 +219,7 @@ const blockChainB: FeatureBlockInterface<LoadMolstarInterface<unknown,unknown>,L
     featureViewConfig: [fvConfigChainB]
 };
 
-const blockSelectorElement: (blockSelectorManager: BlockSelectorManager) => JSX.Element = (blockSelectorManager: BlockSelectorManager) => {
+const blockSelectorElement: (blockSelectorManager: BlockSelectorManager) => ReactNode = (blockSelectorManager: BlockSelectorManager) => {
     return (
         <div>
             <select onChange={(e)=>{

@@ -4,7 +4,7 @@ import {RcsbFvStructureConfigInterface} from "../RcsbFvStructure/RcsbFvStructure
 import {RcsbFvSequenceInterface} from "../RcsbFvSequence/RcsbFvSequence";
 import {EventType, RcsbFvContextManager} from "../RcsbFvContextManager/RcsbFvContextManager";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
-import {CSSProperties} from "react";
+import {CSSProperties, ReactNode} from "react";
 import {StructureViewerInterface} from "../RcsbFvStructure/StructureViewerInterface";
 import {StructureViewerBehaviourObserverInterface} from "../RcsbFvStructure/StructureViewerBehaviourInterface";
 import {AbstractViewInterface} from "../RcsbFvSequence/SequenceViews/AbstractView";
@@ -16,7 +16,7 @@ export interface RcsbFv3DAbstractInterface<T,R,L,S,U> {
     structureConfig: RcsbFvStructureConfigInterface<R,S>;
     structureViewer: StructureViewerInterface<R,L,S>;
     structureViewerBehaviourObserver: StructureViewerBehaviourObserverInterface<R,L>;
-    additionalContent?(props: AbstractViewInterface): JSX.Element;
+    additionalContent?(props: AbstractViewInterface): ReactNode;
 }
 
 export abstract class RcsbFv3DAbstract<T,R,L,S,U> {

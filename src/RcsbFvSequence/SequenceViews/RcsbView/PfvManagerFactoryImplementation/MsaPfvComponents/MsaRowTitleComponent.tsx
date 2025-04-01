@@ -11,7 +11,7 @@ import {
 import {TargetAlignments} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {Subscription} from "rxjs";
 import {MsaRowTitleCheckboxComponent} from "./MsaRowTitleCheckboxComponent";
-import {MouseEvent} from "react";
+import {MouseEvent, ReactNode} from "react";
 import {Property} from "csstype";
 import {RcsbFvStateInterface} from "../../../../../RcsbFvState/RcsbFvStateInterface";
 import {parseEntityOrInstance} from "../../../../../Utils/RcsbIdParser";
@@ -50,7 +50,7 @@ export class MsaRowTitleComponent extends React.Component <MsaRowTitleInterface,
         this.configData = this.props.data;
     }
 
-    public render(): JSX.Element{
+    public render(): ReactNode {
         return (
            <div style={{textAlign:"right", display:"flex", alignItems:"center"}}
                 onMouseOver={()=>this.hover(true)}

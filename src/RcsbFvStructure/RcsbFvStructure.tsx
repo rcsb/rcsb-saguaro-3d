@@ -3,6 +3,7 @@ import {StructureViewerInterface} from "./StructureViewerInterface";
 import {RcsbFvDOMConstants} from "../RcsbFvConstants/RcsbFvConstants";
 import {StructureViewerBehaviourObserverInterface} from "./StructureViewerBehaviourInterface";
 import {RcsbFvStateInterface} from "../RcsbFvState/RcsbFvStateInterface";
+import {ReactNode} from "react";
 
 export interface RcsbFvStructureConfigInterface<R,S> {
     loadConfig?: R | R[];
@@ -18,7 +19,7 @@ interface RcsbFvStructureAdditionalInterface<R,L,S>{
 
 export class RcsbFvStructure<R,L,S> extends React.Component <RcsbFvStructureConfigInterface<R,S> & RcsbFvStructureAdditionalInterface<R,L,S>, RcsbFvStructureConfigInterface<R,S> > {
 
-    render():JSX.Element {
+    render(): ReactNode {
         return (
             <div id={this.props.componentId+"_"+RcsbFvDOMConstants.MOLSTAR_DIV} >
                 <div id={RcsbFvStructure.componentId(this.props.componentId)} style={{position:"absolute"}}/>

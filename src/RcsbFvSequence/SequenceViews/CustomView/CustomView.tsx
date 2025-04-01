@@ -10,13 +10,14 @@ import {RcsbFvStateInterface} from "../../../RcsbFvState/RcsbFvStateInterface";
 import { RcsbFv } from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFv";
 import {RcsbFvBoardConfigInterface, RcsbFvRowConfigInterface} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvConfig/RcsbFvConfigInterface";
 import { RcsbFvTrackDataElementInterface } from "@rcsb/rcsb-saguaro/lib/RcsbDataManager/RcsbDataManager";
+import {ReactNode} from "react";
 
 export type CustomViewStateInterface<R,L> = Omit<Omit<CustomViewInterface<R,L>, "modelChangeCallback">, "structureViewer">;
 
 export interface CustomViewInterface<R,L> {
 
     blockConfig: FeatureBlockInterface<R,L> | Array<FeatureBlockInterface<R,L>>;
-    blockSelectorElement?: (blockSelector: BlockSelectorManager) => JSX.Element;
+    blockSelectorElement?: (blockSelector: BlockSelectorManager) => ReactNode;
     modelChangeCallback?: () => CustomViewStateInterface<R,L>;
     blockChangeCallback?: (plugin: StructureViewerPublicInterface<R,L>, pfvList: Array<RcsbFv>, stateManager: RcsbFvStateInterface) => void;
 }
@@ -203,7 +204,7 @@ export class CustomView<R,L> extends AbstractView<CustomViewInterface<R,L> & {st
         //TODO
     }
 
-    additionalContent(): JSX.Element {
+    additionalContent(): ReactNode {
         if(this.state.blockSelectorElement == null)
             return <></>;
         return this.state.blockSelectorElement(this.blockViewSelector);

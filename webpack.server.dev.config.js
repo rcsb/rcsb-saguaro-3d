@@ -52,6 +52,7 @@ const commonConfig = {
         extensions: [ '.tsx', '.ts', '.js', '.jsx' ],
         fallback: {
             fs: false,
+            vm: false,
             buffer: require.resolve('buffer'),
             crypto: require.resolve('crypto-browserify'),
             path: require.resolve('path-browserify'),
