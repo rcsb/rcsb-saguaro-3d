@@ -11,7 +11,7 @@ import {asyncScheduler} from "rxjs";
 import {RcsbFvDOMConstants} from "../../../../RcsbFvConstants/RcsbFvConstants";
 import {SelectOptionProps} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvComponents/SelectButton";
 import {ChainDisplayComponent} from "./AssemblyPfvComponents/ChainDisplayComponent";
-import {SequenceAnnotations, AnnotationReference, FeaturesType} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {SequenceAnnotations, AnnotationReference, FeaturesType} from "@rcsb/rcsb-api-tools/lib/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {
     PolymerEntityInstanceInterface
 } from "@rcsb/rcsb-saguaro-app/lib/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
@@ -29,7 +29,7 @@ import {
 import {buildInstanceSequenceFv} from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvBuilder";
 import {RcsbFvUI} from "@rcsb/rcsb-saguaro-app/lib/RcsbExport/RcsbFvUI";
 import {FeatureType, RcsbRequestContextManager} from "@rcsb/rcsb-saguaro-app/lib/app";
-import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
+import {TagDelimiter} from "@rcsb/rcsb-api-tools/lib/RcsbUtils/TagDelimiter";
 
 interface AssemblyPfvManagerInterface extends PfvManagerFactoryConfigInterface<undefined>{
     useOperatorsFlag?: boolean;

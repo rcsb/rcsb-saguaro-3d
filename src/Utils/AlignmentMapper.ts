@@ -3,7 +3,7 @@
 * @author Joan Segura Mora <joan.segura@rcsb.org>
 */
 
-import {AlignedRegions} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {AlignedRegions} from "@rcsb/rcsb-api-tools/lib/RcsbGraphQL/Types/Borrego/GqlTypes";
 
 export namespace AlignmentMapper {
 

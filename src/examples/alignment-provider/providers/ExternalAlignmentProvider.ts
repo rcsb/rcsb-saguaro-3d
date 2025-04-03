@@ -2,7 +2,7 @@ import {
     SequenceAlignments,
     GroupReference,
     SequenceReference,
-} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+} from "@rcsb/rcsb-api-tools/lib/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {
     AlignmentCollectConfig,
     AlignmentCollectorInterface
@@ -37,7 +37,7 @@ import {
 import {
     FlexibleAlignmentTrajectoryPresetProvider
 } from "../../../RcsbFvStructure/StructureViewers/MolstarViewer/TrajectoryPresetProvider/FlexibleAlignmentTrajectoryPresetProvider";
-import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
+import {TagDelimiter} from "@rcsb/rcsb-api-tools/lib/RcsbUtils/TagDelimiter";
 
 const alignment = {
     "info": {

@@ -15,7 +15,7 @@ import {RigidTransformType} from "../../../StructureUtils/StructureLoaderInterfa
 import {FlexibleAlignmentRepresentationPresetProvider} from "./FlexibleAlignmentRepresentationPresetProvider";
 import {FlexibleAlignmentBuiltIn} from "./FlexibleAlignmentBuiltIn";
 import {AlignmentTrajectoryParamsType} from "./AlignmentTrajectoryPresetProvider";
-import {TargetAlignments} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {TargetAlignments} from "@rcsb/rcsb-api-tools/lib/RcsbGraphQL/Types/Borrego/GqlTypes";
 
 export const FlexibleAlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvider({
     id: 'alignment-to-reference',

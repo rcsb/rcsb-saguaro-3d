@@ -25,7 +25,7 @@ import {
     PolymerEntityInstanceInterface
 } from "@rcsb/rcsb-saguaro-app/lib/RcsbCollectTools/DataCollectors/PolymerEntityInstancesCollector";
 import {HelpLinkComponent} from "../RcsbFvSequence/SequenceViews/RcsbView/Components/HelpLinkComponent";
-import {SequenceAlignments} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {SequenceAlignments} from "@rcsb/rcsb-api-tools/lib/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {DataContainer} from "../Utils/DataContainer";
 import {
     MsaPfvManagerFactory, MsaPfvManagerInterface

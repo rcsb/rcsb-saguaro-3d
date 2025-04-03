@@ -10,7 +10,7 @@ import {ParamDefinition, ParamDefinition as PD} from "molstar/lib/mol-util/param
 import {StateObjectRef} from "molstar/lib/mol-state";
 import {RootStructureDefinition} from "molstar/lib/mol-plugin-state/helpers/root-structure";
 import {AlignmentRepresentationPresetProvider} from "./AlignmentRepresentationPresetProvider";
-import {TargetAlignments} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {TargetAlignments} from "@rcsb/rcsb-api-tools/lib/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {Model} from "molstar/lib/mol-model/structure";
 import {RigidTransformType} from "../../../StructureUtils/StructureLoaderInterface";
 import {FocusResidueColorThemeProvider} from "./FocusTheme/FocusColoring";

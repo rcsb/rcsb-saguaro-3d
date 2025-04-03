@@ -6,12 +6,12 @@ import {
 import {
     AlignedRegions,
     SequenceAlignments
-} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+} from "@rcsb/rcsb-api-tools/lib/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {RegionSelectionInterface} from "../../../../RcsbFvState/RcsbFvSelectorManager";
 import {ChainInfo, SaguaroRegionList} from "../../../../RcsbFvStructure/StructureViewerInterface";
 import {AlignmentMapper as AM} from "../../../../Utils/AlignmentMapper";
 import {DataContainer} from "../../../../Utils/DataContainer";
-import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
+import {TagDelimiter} from "@rcsb/rcsb-api-tools/lib/RcsbUtils/TagDelimiter";
 import {RcsbFvTrackDataElementInterface} from "@rcsb/rcsb-saguaro/lib/RcsbDataManager/RcsbDataManager";
 
 

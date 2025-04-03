@@ -8,7 +8,7 @@ import {RcsbFvRowTitleInterface} from "@rcsb/rcsb-saguaro/lib/RcsbFv/RcsbFvRow/R
 import {
     AlignmentRequestContextType
 } from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvFactories/RcsbFvTrackFactory/TrackFactoryImpl/AlignmentTrackFactory";
-import {TargetAlignments} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {TargetAlignments} from "@rcsb/rcsb-api-tools/lib/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {Subscription} from "rxjs";
 import {MsaRowTitleCheckboxComponent} from "./MsaRowTitleCheckboxComponent";
 import {MouseEvent, ReactNode} from "react";

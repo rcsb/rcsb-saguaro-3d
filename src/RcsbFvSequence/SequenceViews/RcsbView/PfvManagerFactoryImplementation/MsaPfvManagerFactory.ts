@@ -12,7 +12,7 @@ import {
 import {
     AlignmentRequestContextType
 } from "@rcsb/rcsb-saguaro-app/lib/RcsbFvWeb/RcsbFvFactories/RcsbFvTrackFactory/TrackFactoryImpl/AlignmentTrackFactory";
-import {SequenceAlignments, TargetAlignments} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {SequenceAlignments, TargetAlignments} from "@rcsb/rcsb-api-tools/lib/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {MsaRowTitleComponent} from "./MsaPfvComponents/MsaRowTitleComponent";
 import {MsaRowMarkComponent} from "./MsaPfvComponents/MsaRowMarkComponent";
 import {

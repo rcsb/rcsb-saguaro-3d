@@ -17,8 +17,8 @@ import {
     AlignmentTrajectoryPresetProvider,
     AlignmentTrajectoryParamsType
 } from "../TrajectoryPresetProvider/AlignmentTrajectoryPresetProvider";
-import {TargetAlignments} from "@rcsb/rcsb-api-tools/build/RcsbGraphQL/Types/Borrego/GqlTypes";
-import {TagDelimiter} from "@rcsb/rcsb-api-tools/build/RcsbUtils/TagDelimiter";
+import {TargetAlignments} from "@rcsb/rcsb-api-tools/lib/RcsbGraphQL/Types/Borrego/GqlTypes";
+import {TagDelimiter} from "@rcsb/rcsb-api-tools/lib/RcsbUtils/TagDelimiter";
 
 
 export class MolstarAlignmentLoader implements StructureLoaderInterface<[
