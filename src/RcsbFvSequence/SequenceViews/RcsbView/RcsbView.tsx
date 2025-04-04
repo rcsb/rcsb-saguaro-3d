@@ -125,8 +125,8 @@ export class RcsbView<T,U> extends AbstractView<RcsbViewInterface<T,U>, {}>{
         return void 0;
     }
 
-    async modelChangeCallback(defaultAuthId?: string, defaultOperatorName?:string): Promise<void> {
-        await this.callbackManager.modelChangeCallback(defaultAuthId, defaultOperatorName);
+    async modelChangeCallback(defaultAsymId?: string, defaultOperatorName?:string): Promise<void> {
+        await this.callbackManager.modelChangeCallback(defaultAsymId, defaultOperatorName);
     }
 
     private async pluginSelectCallback(mode:'select'|'hover'): Promise<void> {

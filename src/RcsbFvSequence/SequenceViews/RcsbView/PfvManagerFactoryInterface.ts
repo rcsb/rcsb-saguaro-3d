@@ -23,7 +23,7 @@ export interface PfvManagerFactoryInterface<T,U> {
 }
 
 export interface BuildPfvInterface {
-    defaultAuthId?: string;
+    defaultAsymId?: string;
     defaultOperatorName?:string;
 }
 

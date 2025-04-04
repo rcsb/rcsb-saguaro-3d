@@ -12,7 +12,7 @@ export interface CallbackManagerInterface<U> {
     featureClickCallback(e?:RcsbFvTrackDataElementInterface): void;
     highlightHoverCallback(selection: RcsbFvTrackDataElementInterface[]): void;
     pfvSelectionChangeCallback(selection: Array<RcsbFvTrackDataElementInterface>): void;
-    modelChangeCallback(defaultAuthId?: string, defaultOperatorName?:string): Promise<void>;
+    modelChangeCallback(defaultAsymId?: string, defaultOperatorName?:string): Promise<void>;
     pfvChangeCallback(args:U): Promise<void>;
 }
 
@@ -54,7 +54,7 @@ export abstract class AbstractCallbackManager<U> implements CallbackManagerInter
 
     public abstract featureClickCallback(e:RcsbFvTrackDataElementInterface): void;
     public abstract highlightHoverCallback(selection: RcsbFvTrackDataElementInterface[]): void;
-    public abstract modelChangeCallback(defaultAuthId?: string, defaultOperatorName?:string): Promise<void>;
+    public abstract modelChangeCallback(defaultAsymId?: string, defaultOperatorName?:string): Promise<void>;
     public abstract pfvChangeCallback(args: U): Promise<void>;
     protected abstract innerStructureViewerSelectionChange(mode: "select" | "hover"): Promise<void> ;
     protected abstract innerPfvSelectionChange(selection: Array<RcsbFvTrackDataElementInterface>): void;

@@ -75,11 +75,11 @@ class AssemblyPfvManager extends AbstractPfvManager<{instanceSequenceConfig?: In
                 this.stateManager.assemblyModelSate.getString("entryId"),
                 {
                     ...this.instanceSequenceConfig,
-                    defaultValue: config.defaultAuthId ?? this.instanceSequenceConfig?.defaultValue,
+                    defaultValue: config.defaultAsymId ?? this.instanceSequenceConfig?.defaultValue,
                     onChangeCallback: (context,module)=>{
                         onChangeCallback.get(this.stateManager.assemblyModelSate.getString("entryId"))?.(context);
                         const entryMap:[string, {entryId: string, assemblyId: string, chains: ChainInfo[]}] | undefined = Array.from(this.stateManager.assemblyModelSate.entries()).find((e)=>(e[1].entryId === context.entryId));
-                        const operator: OperatorInfo|undefined = entryMap && entryMap[0] ? getOperator(this.stateManager.assemblyModelSate.getMap().get(entryMap[0])!, config.defaultAuthId, operatorNameContainer.get()) : undefined;
+                        const operator: OperatorInfo|undefined = entryMap && entryMap[0] ? getOperator(this.stateManager.assemblyModelSate.getMap().get(entryMap[0])!, config.defaultAsymId, operatorNameContainer.get()) : undefined;
                         this.stateManager.pfvContext.set({...context, operator});
                         this.instanceSequenceConfig?.onChangeCallback?.(context, module);
                     },
@@ -89,7 +89,7 @@ class AssemblyPfvManager extends AbstractPfvManager<{instanceSequenceConfig?: In
                         if(!entryMap){
                             throw `Error: no modelId was found for ${x.entryId}`;
                         }
-                        const operator: OperatorInfo|undefined = getOperator(this.stateManager.assemblyModelSate.getMap().get(entryMap[0])!, config.defaultAuthId, operatorNameContainer.get());
+                        const operator: OperatorInfo|undefined = getOperator(this.stateManager.assemblyModelSate.getMap().get(entryMap[0])!, config.defaultAsymId, operatorNameContainer.get());
                         this.addOperatorButton(operator?.name);
                         this.stateManager.assemblyModelSate.setOperator(x.asymId,operator?.name);
                         operatorNameContainer.set(undefined);
@@ -135,7 +135,7 @@ class AssemblyPfvManager extends AbstractPfvManager<{instanceSequenceConfig?: In
                         this.module?.getFv()?.reset();
                         this.stateManager.assemblyModelSate.set({operator:op});
                         await this.create({
-                            defaultAuthId: this.stateManager.assemblyModelSate.getChainInfo()?.auth,
+                            defaultAsymId: this.stateManager.assemblyModelSate.getChainInfo()?.label,
                             defaultOperatorName: op.name
                         })
                     }
@@ -181,8 +181,8 @@ class AssemblyPfvManager extends AbstractPfvManager<{instanceSequenceConfig?: In
 
 }
 
-function getOperator(entryInfo: {entryId: string; assemblyId: string, chains:Array<ChainInfo>;}, defaultAuthId?: string, defaultOperatorName?:string): OperatorInfo | undefined{
-    const chainInfo: ChainInfo | undefined = defaultAuthId ? entryInfo.chains.find(ch=>ch.auth === defaultAuthId) : entryInfo.chains[0];
+function getOperator(entryInfo: {entryId: string; assemblyId: string, chains:Array<ChainInfo>;}, defaultAsymId?: string, defaultOperatorName?:string): OperatorInfo | undefined{
+    const chainInfo: ChainInfo | undefined = defaultAsymId ? entryInfo.chains.find(ch=>ch.label === defaultAsymId) : entryInfo.chains[0];
     if(chainInfo){
         const operatorInfo: OperatorInfo | undefined = defaultOperatorName ? chainInfo.operators.find(op=>op.name === defaultOperatorName) : chainInfo.operators[0];
         if(operatorInfo)

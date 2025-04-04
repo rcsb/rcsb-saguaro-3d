@@ -61,7 +61,7 @@ class MsaCallbackManager<U>  extends AbstractCallbackManager<U>{
         await this.select(selection, "hover");
     }
 
-    modelChangeCallback(defaultAuthId?: string, defaultOperatorName?: string): Promise<void> {
+    modelChangeCallback(defaultAsymId?: string, defaultOperatorName?: string): Promise<void> {
         return Promise.resolve(undefined);
     }
 

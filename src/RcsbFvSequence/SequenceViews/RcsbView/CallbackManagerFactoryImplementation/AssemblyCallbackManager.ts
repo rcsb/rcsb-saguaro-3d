@@ -50,8 +50,8 @@ class AssemblyCallbackManager extends AbstractCallbackManager<undefined> {
         this.select(selection, "hover","set");
     }
 
-    public async modelChangeCallback(defaultAuthId?: string, defaultOperatorName?:string): Promise<void> {
-        this.rcsbFvContainer.set(await this.pfvFactory.create({defaultAuthId, defaultOperatorName}));
+    public async modelChangeCallback(defaultAsymId?: string, defaultOperatorName?:string): Promise<void> {
+        this.rcsbFvContainer.set(await this.pfvFactory.create({defaultAsymId, defaultOperatorName}));
     }
 
     public async pfvChangeCallback(): Promise<void>{
