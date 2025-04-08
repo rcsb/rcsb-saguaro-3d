@@ -2,6 +2,11 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [4.1.10] - 2025-04-03
+### Dependency update
+- rcsb-api-tools v5.0.1
+- rcsb-saguaro-app v6.3.11
+
 ## [4.1.9] - 2025-04-04
 ### Bug Fix
 - Auth chain id bug fixed
