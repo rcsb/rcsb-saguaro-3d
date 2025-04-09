@@ -394,7 +394,7 @@ function residueToLoci(pdb:StructureAlignmentParamsType, pdbIndex:number, struct
             MS.core.rel.eq([MS.acp('operatorName'), pdb.operatorName]),
             MS.core.rel.eq([MS.acp('modelIndex'),1])
         ]),
-        'residue-test':MS.core.rel.eq([MS.ammp('label_seq_id'), pdbIndex]),
+        'residue-test':MS.struct.atomProperty.ihm.hasSeqId([pdbIndex]),
         'atom-test':MS.core.logic.and([
             MS.core.rel.eq([MS.ammp("label_atom_id"),"CA"]),
             MS.core.logic.or([MS.core.rel.eq([MS.ammp("label_alt_id"),""]), MS.core.rel.eq([MS.ammp("label_alt_id"),"A"])])
@@ -413,7 +413,7 @@ function residueListToLoci(pdb:StructureAlignmentParamsType, indexList:number[],
             MS.core.rel.eq([MS.acp('modelIndex'),1])
         ]),
         'residue-test':MS.core.logic.or(
-            indexList.map(index=>MS.core.rel.eq([MS.ammp('label_seq_id'), index]))
+            indexList.map(index=>MS.struct.atomProperty.ihm.hasSeqId([index]))
         ),
         'atom-test':MS.core.logic.and([
             MS.core.rel.eq([MS.ammp("label_atom_id"),"CA"]),

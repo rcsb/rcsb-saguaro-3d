@@ -5,7 +5,7 @@ import {
     ViewerModelMapManagerInterface
 } from "../../StructureViewerInterface";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
-import {Structure, StructureElement, StructureProperties as SP} from "molstar/lib/mol-model/structure";
+import {Structure, StructureElement, StructureProperties as SP, Unit} from "molstar/lib/mol-model/structure";
 import {State} from "molstar/lib/mol-state";
 import {PluginStateObject as PSO} from "molstar/lib/mol-plugin-state/objects";
 import {Viewer} from "@rcsb/rcsb-molstar/build/src/viewer";
@@ -90,7 +90,13 @@ function getChainValues(structure: Structure, modelEntityId: string): [{modelId:
         if(chains.has(chId)){
             chains.get(chId)!.operators.push(opKey(l))
         }else{
-            chains.set(chId, {label:SP.chain.label_asym_id(l), auth:SP.chain.auth_asym_id(l), entityId: SP.entity.id(l), title: SP.entity.pdbx_description(l).join("|"), type: SP.entity.type(l), operators:[opKey(l)]});
+            chains.set(chId, {
+                label: SP.chain.label_asym_id(l),
+                auth:  Unit.isAtomic(l.unit) ? SP.chain.auth_asym_id(l) : SP.chain.label_asym_id(l),
+                entityId: SP.entity.id(l),
+                title: SP.entity.pdbx_description(l).join("|"),
+                type: SP.entity.type(l), operators:[opKey(l)]
+            });
         }
     }
     const id: {modelId:string; entryId:string; assemblyId:string;} = {modelId:l.unit?.model?.id, entryId: l.unit?.model?.entryId, assemblyId: assemblyId};

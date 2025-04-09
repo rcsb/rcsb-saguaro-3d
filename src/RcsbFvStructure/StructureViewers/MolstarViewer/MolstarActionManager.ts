@@ -11,7 +11,6 @@ import {Structure, StructureElement, StructureSelection} from "molstar/lib/mol-m
 import {Expression} from "molstar/lib/commonjs/mol-script/language/expression";
 import {MolScriptBuilder as MS} from "molstar/lib/mol-script/language/builder";
 import {Script} from "molstar/lib/mol-script/script";
-import {SetUtils} from "molstar/lib/mol-util/set";
 import {Loci} from "molstar/lib/mol-model/loci";
 import {StructureRef} from "molstar/lib/mol-plugin-state/manager/structure/hierarchy-state";
 import {ColorTheme} from "molstar/lib/mol-theme/color";
@@ -205,7 +204,9 @@ export class MolstarActionManager<P,L> implements ViewerActionManagerInterface<L
             chainTests.push(MS.core.rel.eq([operatorName, MS.acp('operatorName')]));
         const sel: StructureSelection = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
             'chain-test': Q.core.logic.and(chainTests),
-            'residue-test': Q.core.set.has([MS.set(...SetUtils.toArray(new Set(positions))), MS.ammp('label_seq_id')])
+            'residue-test': Q.core.logic.or(
+                Array.from(new Set(positions)).map(p=>MS.struct.atomProperty.ihm.hasSeqId([p]))
+            )
         }), structure);
         const loci: Loci = StructureSelection.toLociWithSourceUnits(sel);
         if(!StructureElement.Loci.isEmpty(loci)) {

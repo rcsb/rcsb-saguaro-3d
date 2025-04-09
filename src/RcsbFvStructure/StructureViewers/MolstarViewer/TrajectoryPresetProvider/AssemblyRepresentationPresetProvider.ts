@@ -4,7 +4,7 @@ import {
 import {PluginContext} from "molstar/lib/mol-plugin/context";
 import {StateObjectRef} from "molstar/lib/mol-state";
 import {PluginStateObject} from "molstar/lib/mol-plugin-state/objects";
-import {StructureElement, StructureProperties as SP} from "molstar/lib/mol-model/structure";
+import {StructureElement, StructureProperties as SP, Unit} from "molstar/lib/mol-model/structure";
 import {MolScriptBuilder as MS} from "molstar/lib/mol-script/language/builder";
 import uniqid from "uniqid";
 import {PLDDTConfidenceColorThemeProvider} from "molstar/lib/extensions/model-archive/quality-assessment/color/plddt";
@@ -48,7 +48,7 @@ export const AssemblyRepresentationPresetProvider = StructureRepresentationPrese
             if(chains.has(asymId)) continue;
             if(SP.entity.type(l) === "polymer"){
                 chains.add(asymId);
-                const authId = SP.chain.auth_asym_id(l);
+                const authId = Unit.isAtomic(l.unit) ? SP.chain.auth_asym_id(l) : SP.chain.label_asym_id(l);
                 const comp = await plugin.builders.structure.tryCreateComponentFromExpression(
                     structureCell,
                     MS.struct.generator.atomGroups({

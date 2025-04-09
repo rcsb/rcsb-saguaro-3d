@@ -1,6 +1,6 @@
 import {
     Bond,
-    StructureElement,
+    StructureElement, StructureProperties as SP,
     StructureProperties, Unit
 } from 'molstar/lib/mol-model/structure';
 import { Color } from 'molstar/lib/mol-util/color';
@@ -74,7 +74,7 @@ export const FocusResidueColorThemeProvider: ThemeProvider<any, any> = {
 
 function isLocationInLoci(location: StructureElement.Location, loci: StructureElement.Loci): boolean {
     const modelId = location.structure.model.id;
-    const seqId = StructureProperties.residue.label_seq_id(location);
+    const seqId =  Unit.isAtomic(location.unit) ? StructureProperties.residue.label_seq_id(location) : SP.coarse.seq_id_begin(location);
     const asymId = StructureProperties.chain.label_asym_id(location);
 
     const currentLoci = loci;
@@ -87,7 +87,7 @@ function isLocationInLoci(location: StructureElement.Location, loci: StructureEl
             currentLoci.elements[0].unit,
             currentLoci.elements[0].unit.elements[OrderedSet.getAt(currentLoci.elements[0].indices,n)]
         );
-        const layerSeqId = StructureProperties.residue.label_seq_id(loc);
+        const layerSeqId =  Unit.isAtomic(loc.unit) ? StructureProperties.residue.label_seq_id(loc) : SP.coarse.seq_id_begin(loc);
         const layerAsymId = StructureProperties.chain.label_asym_id(loc);
         if(modelId == layerModelId && asymId == layerAsymId && seqId == layerSeqId)
             return true;

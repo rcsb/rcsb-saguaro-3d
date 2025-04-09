@@ -58,7 +58,9 @@ export const FlexibleAlignmentBuiltIn = PluginStateTransform.BuiltIn({
                                 MS.core.rel.eq([MS.ammp('label_asym_id'), alignedAsymId]),
                                 MS.core.rel.eq([MS.acp('operatorName'), alignedOperatorName])
                             ]),
-                            'residue-test': MS.core.set.has([MS.set(...residues.flat()), MS.ammp('label_seq_id')])
+                            'residue-test':  MS.core.logic.or(
+                                (residues.flat()).map(p=>MS.struct.atomProperty.ihm.hasSeqId([p]))
+                            )
                         });
                         const { selection } = StructureQueryHelper.createAndRun(structure, expression);
                         const s = StructureSelection.unionStructure(selection);

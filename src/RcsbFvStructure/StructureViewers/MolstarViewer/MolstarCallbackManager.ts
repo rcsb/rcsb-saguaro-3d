@@ -8,7 +8,7 @@ import {
     Structure,
     StructureElement,
     StructureProperties as SP,
-    StructureSelection
+    StructureSelection, Unit
 } from "molstar/lib/mol-model/structure";
 import {OrderedSet} from "molstar/lib/mol-data/int";
 import {PluginContext} from "molstar/lib/mol-plugin/context";
@@ -67,7 +67,12 @@ export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
                     loc.unit = e.unit;
                     for (let i = 0, il = OrderedSet.size(e.indices); i < il; ++i) {
                         loc.element = e.unit.elements[OrderedSet.getAt(e.indices, i)];
-                        seqIds.add(SP.residue.label_seq_id(loc));
+                        if(Unit.isAtomic(loc.unit))
+                            seqIds.add(SP.residue.label_seq_id(loc));
+                        else
+                            for(let n = SP.coarse.seq_id_begin(loc); n<= SP.coarse.seq_id_end(loc); n++){
+                                seqIds.add(n);
+                            }
                     }
                     sequenceData.push({
                         modelId: this.modelMapManager.getModelId(modelId),
@@ -195,7 +200,12 @@ export class MolstarCallbackManager implements ViewerCallbackManagerInterface{
                         const seqIds = new Set<number>();
                         for (let i = 0, il = OrderedSet.size(e.indices); i < il; ++i) {
                             loc.element = e.unit.elements[OrderedSet.getAt(e.indices, i)];
-                            seqIds.add(SP.residue.label_seq_id(loc));
+                            if(Unit.isAtomic(loc.unit))
+                                seqIds.add(SP.residue.label_seq_id(loc));
+                            else
+                                for(let n = SP.coarse.seq_id_begin(loc); n<= SP.coarse.seq_id_end(loc); n++){
+                                    seqIds.add(n);
+                                }
                         }
                         if(seqIds.size > 0)
                             sequenceData.push({
