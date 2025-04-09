@@ -25,7 +25,7 @@ export const FlexibleAlignmentTrajectoryPresetProvider = TrajectoryHierarchyPres
     isApplicable: (trajectory: PluginStateObject.Molecule.Trajectory, plugin: PluginContext): boolean => true,
     params: (trajectory: PluginStateObject.Molecule.Trajectory | undefined, plugin: PluginContext): ParamDefinition.For<AlignmentTrajectoryParamsType> => ({
         pdb:PD.Value<{entryId:string;entityId:string;}|{entryId:string;instanceId:string;}|undefined>(undefined),
-        modelIndex:PD.Value<number|undefined>(undefined),
+        modelIndex:PD.Value<number>(0),
         transform:PD.Value<RigidTransformType[]|undefined>(undefined),
         targetAlignment: PD.Value<TargetAlignments|undefined>(undefined),
     }),

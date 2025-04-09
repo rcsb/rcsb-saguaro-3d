@@ -19,6 +19,7 @@ import {
 } from "../TrajectoryPresetProvider/AlignmentTrajectoryPresetProvider";
 import {TargetAlignments} from "@rcsb/rcsb-api-tools/lib/RcsbGraphQL/Types/Borrego/GqlTypes";
 import {TagDelimiter} from "@rcsb/rcsb-api-tools/lib/RcsbUtils/TagDelimiter";
+import {RcsbRequestContextManager} from "@rcsb/rcsb-saguaro-app/lib/app";
 
 
 export class MolstarAlignmentLoader implements StructureLoaderInterface<[
@@ -51,7 +52,7 @@ export class MolstarAlignmentLoader implements StructureLoaderInterface<[
                     entryId: pdb.entryId,
                     reprProvider: AlignmentTrajectoryPresetProvider,
                     params:{
-                        modelIndex: 0,
+                        modelIndex: ((await RcsbRequestContextManager.getEntryProperties(pdb.entryId))[0].representativeModel -1),
                         pdb,
                         targetAlignment
                     }

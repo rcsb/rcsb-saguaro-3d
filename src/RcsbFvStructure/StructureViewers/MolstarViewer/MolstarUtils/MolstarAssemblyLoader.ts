@@ -10,6 +10,7 @@ import {
     AssemblyTrajectoryParamsType,
     AssemblyTrajectoryPresetProvider
 } from "../TrajectoryPresetProvider/AssemblyTrajectoryPresetProvider";
+import {RcsbRequestContextManager} from "@rcsb/rcsb-saguaro-app/lib/app";
 
 export class MolstarAssemblyLoader implements StructureLoaderInterface<
     [ViewerActionManagerInterface<LoadMolstarInterface<AssemblyTrajectoryParamsType,LoadMolstarReturnType>,LoadMolstarReturnType>],
@@ -26,6 +27,7 @@ export class MolstarAssemblyLoader implements StructureLoaderInterface<
     }
 
     async load(structureViewer: ViewerActionManagerInterface<LoadMolstarInterface<AssemblyTrajectoryParamsType, LoadMolstarReturnType>, LoadMolstarReturnType>): Promise<LoadMolstarReturnType|undefined> {
+
         return await structureViewer.load({
             loadMethod: LoadMethod.loadPdbId,
             loadParams: {
@@ -34,8 +36,8 @@ export class MolstarAssemblyLoader implements StructureLoaderInterface<
                 id: this.entryId,
                 params: {
                     assemblyId: this.assemblyId,
-                    modelIndex: 0,
-                    asymId: this.asymId
+                    modelIndex: ((await RcsbRequestContextManager.getEntryProperties(this.entryId))[0].representativeModel -1),
+                    asymId: this.asymId ?? 'A'
                 }
             }
         });

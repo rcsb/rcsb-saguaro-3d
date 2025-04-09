@@ -21,7 +21,7 @@ export type AlignmentTrajectoryParamsType = {
     pdb?:{entryId:string;entityId:string;}|{entryId:string;instanceId:string;};
     transform?: RigidTransformType[];
     targetAlignment?: TargetAlignments;
-    modelIndex?: number;
+    modelIndex: number;
 }
 
 export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvider({
@@ -33,13 +33,13 @@ export const AlignmentTrajectoryPresetProvider = TrajectoryHierarchyPresetProvid
     params: (trajectory: PluginStateObject.Molecule.Trajectory | undefined, plugin: PluginContext): ParamDefinition.For<AlignmentTrajectoryParamsType> => ({
         pdb:PD.Value<{entryId:string;entityId:string;}|{entryId:string;instanceId:string;}|undefined>(undefined),
         targetAlignment: PD.Value<TargetAlignments|undefined>(undefined),
-        modelIndex:PD.Value<number|undefined>(undefined),
+        modelIndex:PD.Value<number>(0),
         transform: PD.Value<RigidTransformType[]|undefined>(undefined)
     }),
     apply: async (trajectory: StateObjectRef<PluginStateObject.Molecule.Trajectory>, params: AlignmentTrajectoryParamsType, plugin: PluginContext) => {
         if(!params.pdb)
             return {};
-        const modelParams = { modelIndex: params.modelIndex || 0 };
+        const modelParams = { modelIndex: params.modelIndex };
         const builder = plugin.builders.structure;
 
         const model = await builder.createModel(trajectory, modelParams);
