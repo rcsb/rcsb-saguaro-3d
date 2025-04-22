@@ -86,10 +86,10 @@
     "webpack-dev-server": "^5.2.1"
   },
   "dependencies": {
-    "@rcsb/rcsb-api-tools": "^5.0.1",
+    "@rcsb/rcsb-api-tools": "^5.0.2-dev-js-ihm.4",
     "@rcsb/rcsb-molstar": "^2.11.5-dev-js-ihm.1",
     "@rcsb/rcsb-saguaro": "^3.1.7",
-    "@rcsb/rcsb-saguaro-app": "^6.3.12-dev-js-ihm.3",
+    "@rcsb/rcsb-saguaro-app": "^6.3.12-dev-js-ihm.5",
     "molstar": "^4.11.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
