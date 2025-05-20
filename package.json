@@ -1,6 +1,6 @@
 {
   "name": "@rcsb/rcsb-saguaro-3d",
-  "version": "4.1.11-dev-js-ihm.3",
+  "version": "4.2.0",
   "description": "RCSB Molstar/Saguaro Web App",
   "main": "build/dist/app.js",
   "files": [
@@ -19,7 +19,7 @@
     "copyDef": "ncp lib/app.d.ts build/app.d.ts",
     "buildDoc": "typedoc --excludeExternals --externalPattern \"**/node_modules/**\" --plugin typedoc-plugin-missing-exports  --plugin typedoc-theme-hierarchy --theme hierarchy --entryPointStrategy expand ./src && sed -i '' '/---/d' docs/index.html",
     "clean": "del-cli lib && del-cli build",
-    "publishApp": "npm publish --tag dev-js-ihm",
+    "publishApp": "npm publish",
     "packApp": "npm run buildApp && npm pack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -86,10 +86,10 @@
     "webpack-dev-server": "^5.2.1"
   },
   "dependencies": {
-    "@rcsb/rcsb-api-tools": "^5.0.2-dev-js-ihm.4",
-    "@rcsb/rcsb-molstar": "^2.11.5-dev-js-ihm.1",
+    "@rcsb/rcsb-api-tools": "^5.1.0",
+    "@rcsb/rcsb-molstar": "^2.12.0",
     "@rcsb/rcsb-saguaro": "^3.1.7",
-    "@rcsb/rcsb-saguaro-app": "^6.3.12-dev-js-ihm.5",
+    "@rcsb/rcsb-saguaro-app": "^6.4.0",
     "molstar": "^4.11.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
