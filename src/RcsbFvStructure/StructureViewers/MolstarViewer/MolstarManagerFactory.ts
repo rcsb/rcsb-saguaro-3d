@@ -26,7 +26,10 @@ export class MolstarManagerFactory<P,L> implements ViewerManagerFactoryInterface
                 multiSample: {
                     mode: 'off'
                 }
-            }
+            },
+            showWelcomeToast: false,
+            showValidationReportControls: false,
+            showStructureSourceControls: false
         });
         viewer.plugin.selectionMode = true;
         const modelMapManager:MolstarModelMapManager<L> = new MolstarModelMapManager(viewer, this.getModelIdFromTrajectory);

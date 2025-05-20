@@ -2,6 +2,15 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [4.1.11] - 2025-05-02
+### Display config
+- No welcome toast
+- No Validation Report
+- No Structure Source
+
+### Dependency update
+- audit fix
+
 ## [4.1.10] - 2025-04-03
 ### Dependency update
 - rcsb-api-tools v5.0.1
