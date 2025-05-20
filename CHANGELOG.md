@@ -2,6 +2,15 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [4.2.0] - 2025-05-20
+### Improvements
+- IHM adjustments
+
+### Dependency update
+- rcsb-api-tools v5.1.0
+- rcsb-saguaro-app v6.4.0
+- rcsb-molstar v2.12.0
+
 ## [4.1.11] - 2025-05-02
 ### Display config
 - No welcome toast
