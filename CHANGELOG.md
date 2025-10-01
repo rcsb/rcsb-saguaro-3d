@@ -2,6 +2,14 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [4.2.3] - 2025-10-01
+
+### Dependency update
+- rcsb-saguaro v3.1.9
+- rcsb-saguaro-app v6.4.3
+- audit fix
+- Updated all dependencies
+
 ## [4.2.2] - 2025-06-12
 ### Dependency update
 - rcsb-saguaro-app v6.4.2
