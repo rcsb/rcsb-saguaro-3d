@@ -2,6 +2,11 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [4.2.5]  - 2025-10-02
+
+### Bug fix
+- package-lock leftover reference bug
+
 ## [4.2.4]  - 2025-10-02
 
 ### Dependency update
