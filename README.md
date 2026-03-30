@@ -13,7 +13,7 @@ RCSB Protein Data Bank 1D3D module: displaying positional features on macromolec
 
 <!---
 <div id="pfv"></div>
-<script crossorigin src="https://unpkg.com/react@19/cjs/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react@19/cjs/react.production.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@19/cjs/react-dom.production.js"></script>
 <script crossorigin src="https://cdn.jsdelivr.net/npm/@rcsb/rcsb-saguaro-3d/build/app.js"></script>
 <script type="text/javascript">
