@@ -2,6 +2,13 @@
 
 [Semantic Versioning](https://semver.org/)
 
+## [4.2.6]  - 2026-03-30
+
+### Dependency update
+- rcsb-saguaro v3.1.12
+- rcsb-saguaro-app v6.4.7
+- molstar v5.7.0
+
 ## [4.2.5]  - 2025-10-02
 
 ### Bug fix
