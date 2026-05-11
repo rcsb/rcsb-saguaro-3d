@@ -53,10 +53,10 @@ const commonConfig = {
         fallback: {
             fs: false,
             vm: false,
-            buffer: require.resolve('buffer'),
-            crypto: require.resolve('crypto-browserify'),
-            path: require.resolve('path-browserify'),
-            stream: require.resolve('stream-browserify')
+            buffer: false,
+            crypto: false,
+            path: false,
+            stream: false
         }
     }
 };

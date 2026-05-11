@@ -72,7 +72,7 @@ export class RcsbFvSelectorManager {
             this.selection.filter(d=>(d.modelId===modelId && d.labelAsymId === labelAsymId && (d.operatorName === operatorName || !operatorName))) :
             this.hover.filter(d=>(d.modelId===modelId && d.labelAsymId === labelAsymId && (d.operatorName === operatorName || !operatorName)));
         if(sel.length > 0)
-            return {modelId: sel[0].modelId, labelAsymId: sel[0].labelAsymId, operatorName: operatorName, regions:[].concat.apply([],sel.map(s=>s.regions))};
+            return {modelId: sel[0].modelId, labelAsymId: sel[0].labelAsymId, operatorName: operatorName, regions:sel.flatMap(s=>s.regions)};
     }
 
     public clearSelection(mode:'select'|'hover', selection?:Partial<SaguaroChain>): void {
